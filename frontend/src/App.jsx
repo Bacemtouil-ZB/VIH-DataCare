@@ -1,35 +1,56 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import MainWorkspaceLayout from "./layouts/MainWorkspaceLayout";
+import "./App.css";
 
-function App() {
-  const [count, setCount] = useState(0)
-
+export default function App() {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <div className="app">
+      {/* Header principal */}
+      <header className="app-header">
+        <div className="header-left">
+          <h1 className="app-title">VIHDataCare</h1>
+        </div>
+        
+        <div className="header-right">
+          <button className="header-icon"></button>
+          <span className="hospital-name">VIH</span>
+          <button className="header-icon"></button>
+          <button className="header-icon"></button>
+          <button className="header-icon"></button>
+          <button className="header-icon"></button>
+        </div>
+      </header>
 
-export default App
+      {/* Menu de navigation */}
+      <nav className="nav-menu">
+        <button className="nav-item"></button>
+        <button className="nav-item"></button>
+        <button className="nav-item"></button>
+        <button className="nav-item"></button>
+        <button className="nav-item"></button>
+        <button className="nav-item"></button>
+        <button className="nav-item"></button>
+        <button className="nav-item"></button>
+        <button className="nav-item"></button>
+        <button className="nav-item"></button>
+      </nav>
+
+      {/* Barre de recherche */}
+      <div className="search-bar">
+        <div className="search-container">
+          <input 
+            type="text" 
+            placeholder="Search for patient" 
+            className="patient-search"
+          />
+        </div>
+        <div className="action-buttons">
+          <button className="action-btn"></button>
+          <button className="action-btn"></button>
+        </div>
+      </div>
+
+      {/* Layout principal avec panels resizables */}
+      <MainWorkspaceLayout />
+    </div>
+  );
+}

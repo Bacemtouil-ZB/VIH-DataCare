@@ -1,0 +1,273 @@
+.main-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: white;
+  overflow: hidden;
+}
+
+/* Barre d'onglets principale */
+.tabs-bar {
+  display: flex;
+  gap: 5px;
+  background: #f5f5f5;
+  padding: 8px 15px;
+  border-bottom: 2px solid #e0e0e0;
+  overflow-x: auto;
+}
+
+.tab {
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  color: #666;
+  white-space: nowrap;
+  transition: all 0.2s;
+  border-radius: 4px 4px 0 0;
+}
+
+.tab:hover {
+  background: rgba(209, 122, 58, 0.1);
+  color: #d17a3a;
+}
+
+.tab.active {
+  background: white;
+  color: #d17a3a;
+  border-bottom: 3px solid #d17a3a;
+}
+
+/* Sous-onglets */
+.sub-tabs-bar {
+  display: flex;
+  gap: 8px;
+  background: white;
+  padding: 10px 15px;
+  border-bottom: 1px solid #e0e0e0;
+  overflow-x: auto;
+  flex-wrap: wrap;
+}
+
+.sub-tab {
+  padding: 6px 12px;
+  background: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 500;
+  color: #555;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.sub-tab:hover {
+  background: #d17a3a;
+  color: white;
+  border-color: #d17a3a;
+}
+
+/* Barre d'outils */
+.toolbar {
+  display: flex;
+  gap: 10px;
+  padding: 12px 15px;
+  background: white;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.tool-btn {
+  padding: 8px 15px;
+  background: #d17a3a;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.tool-btn:hover {
+  background: #b86a2f;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.save-btn {
+  background: #4caf50;
+  margin-left: auto;
+}
+
+.save-btn:hover {
+  background: #45a049;
+}
+
+/* Fichiers attachés */
+.attachments {
+  display: flex;
+  gap: 10px;
+  padding: 10px 15px;
+  background: #fffacd;
+  border-bottom: 1px solid #e0e0e0;
+  flex-wrap: wrap;
+}
+
+.attachment-tag {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  color: #d17a3a;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0 4px;
+}
+
+.remove-btn:hover {
+  color: #ff0000;
+}
+
+/* En-tête de note */
+.note-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 15px;
+  background: white;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.note-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.search-templates {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.voice-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.voice-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.2s;
+}
+
+.voice-btn:first-child {
+  background: #4caf50;
+  color: white;
+}
+
+.voice-btn:last-child {
+  background: #2196f3;
+  color: white;
+}
+
+.voice-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Barre d'outils de l'éditeur */
+.text-editor-toolbar {
+  display: flex;
+  gap: 5px;
+  padding: 10px 15px;
+  background: #f9f9f9;
+  border-bottom: 1px solid #e0e0e0;
+  overflow-x: auto;
+  flex-wrap: wrap;
+}
+
+.editor-btn {
+  min-width: 32px;
+  height: 32px;
+  padding: 4px 8px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.editor-btn:hover {
+  background: #e0e0e0;
+  border-color: #999;
+}
+
+.format-select {
+  padding: 4px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: white;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+/* Zone d'édition */
+.editor-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background: white;
+}
+
+.note-textarea {
+  width: 100%;
+  height: 100%;
+  min-height: 400px;
+  border: none;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+  resize: none;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.note-textarea:focus {
+  outline: none;
+}
+
+/* Scrollbar custom */
+.editor-content::-webkit-scrollbar,
+.tabs-bar::-webkit-scrollbar,
+.sub-tabs-bar::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+.editor-content::-webkit-scrollbar-thumb,
+.tabs-bar::-webkit-scrollbar-thumb,
+.sub-tabs-bar::-webkit-scrollbar-thumb {
+  background: #d17a3a;
+  border-radius: 3px;
+}
