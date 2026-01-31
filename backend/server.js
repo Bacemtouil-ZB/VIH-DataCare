@@ -1,15 +1,15 @@
 import express from "express";
 import dotenv from "dotenv";
 import db from "./src/config/db.js"; // pour connecter PostgreSQL
+import authRoutes from "./src/routes/authRoutes.js";
 
 dotenv.config();
 const app = express();
 
 app.use(express.json());
 
-// Routes
-// //exemple
-// app.use("/api/patients", patientRoutes);
+// Routes d'authentification
+app.use("/api/auth", authRoutes);
 
 // Route racine test
 app.get("/", (req, res) => {
