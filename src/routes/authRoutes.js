@@ -2,21 +2,31 @@ import express from "express";
 import {
   loginController,
   registerController,
+  logoutController,
+  toggleActivationController,
+  listUsersController,
+  
 } from "../controllers/authController.js";
 import {
   validateLogin,
   validateRegister,
   protect,
+  authorizeAdmin,
   authorizePharmacien,
   authorizeMedecin,
   authorizeAnalyste,
-  authorize,
-  authorizeAdmin,
 } from "../middlewares/authMiddleware.js";
 const router = express.Router();
 
 router.post("/login", validateLogin, loginController);
 router.post("/register", validateRegister, registerController);
+router.post("/logout", protect, logoutController);
+
+router.get("/admin/users", protect, authorizeAdmin, listUsersController);
+
+
+
+
 
 router.get("/admin/dashbord", protect, authorizeAdmin, (req, res) => {
   res.json({
@@ -24,6 +34,7 @@ router.get("/admin/dashbord", protect, authorizeAdmin, (req, res) => {
     user: req.user
   });
 });
+
 
 router.get("/medecin/dashbord", protect, authorizeMedecin, (req, res) => {
   res.json({

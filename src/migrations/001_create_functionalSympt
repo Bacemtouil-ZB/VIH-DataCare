@@ -1,0 +1,10 @@
+CREATE TABLE FunctionalSymptoms (
+    fontSymptomsId SERIAL PRIMARY KEY,
+    effectiveDate DATE,
+    cough BOOLEAN,
+    dyspnea BOOLEAN,
+    diarrhea BOOLEAN,
+    arthralgia BOOLEAN,
+    headache BOOLEAN,
+    night_sweats BOOLEAN,
+);

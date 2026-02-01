@@ -1,4 +1,7 @@
-import { loginUser, registerUser } from "../services/authService.js";
+import {
+  loginUser, registerUser, toggleUserActivation,
+  listAllUsers
+} from "../services/authService.js";
 
 // Login controller
 export const loginController = async (req, res) => {
@@ -18,17 +21,20 @@ export const loginController = async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "Strict",
-      maxAge:  30 * 24 * 60 * 60 * 1000, // mois
+      maxAge: 30 * 24 * 60 * 60 * 1000, // mois
     });
 
- // Retourner aussi role et isActivated
+    // Retourner aussi role et isActivated
     res.status(200).json({
+      success: true,
       message: "Connexion réussie",
-      user: { 
-        id: user.id, 
+      user: {
+        id: user.id,
+        nom: user.nom,
+        prenom: user.prenom,
         email: user.email,
         role: user.role,
-        isActivated: user.isactivated
+        isActivated: user.isactivated,
       },
     });
   } catch (error) {
@@ -37,24 +43,104 @@ export const loginController = async (req, res) => {
   }
 };
 
-// Register controller
-export const registerController = async (req, res) => {
-  const { email, password } = req.body;
 
-  if (!email || !password) {
-    return res.status(400).json({
-      message: "Email et mot de passe sont requis",
-    });
-  }
+/**
+ * Contrôleur pour l'inscription
+ */
+export const registerController = async (req, res) => {
+  const { nom, prenom, email, password } = req.body;
 
   try {
-    const user = await registerUser(email, password);
+    const user = await registerUser(nom, prenom, email, password);
+
     res.status(201).json({
-      message: "Utilisateur créé avec succès",
-      user: { id: user.id, email: user.email },
+      success: true,
+      message: "Utilisateur créé avec succès. Votre compte doit être activé par un administrateur avant de pouvoir vous connecter.",
+      user: {
+        id: user.id,
+        nom: user.nom,
+        prenom: user.prenom,
+        email: user.email,
+        isActivated: user.isactivated,
+      },
     });
   } catch (error) {
-    console.error("Register error:", error.message);
-    res.status(400).json({ message: error.message });
+    console.error(" Register error:", error.message);
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+/**
+ * Contrôleur pour la déconnexion
+ */
+export const logoutController = async (req, res) => {
+  try {
+    // Supprimer le cookie
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "Strict",
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Déconnexion réussie",
+    });
+  } catch (error) {
+    console.error("Logout error:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Erreur lors de la déconnexion"
+    });
+  }
+};
+
+/**
+ * Contrôleur pour activer/désactiver un utilisateur (admin uniquement)
+ */
+export const toggleActivationController = async (req, res) => {
+  const { userId, isActivated } = req.body;
+
+  try {
+    const user = await toggleUserActivation(userId, isActivated);
+
+    res.status(200).json({
+      success: true,
+      message: `Utilisateur ${isActivated ? 'activé' : 'désactivé'} avec succès`,
+      user: {
+        id: user.id,
+        nom: user.nom,
+        prenom: user.prenom,
+        email: user.email,
+        isActivated: user.isactivated,
+      },
+    });
+  } catch (error) {
+    console.error("Toggle activation error:", error.message);
+    res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+/**
+ * Contrôleur pour lister tous les utilisateurs (admin uniquement)
+ */
+export const listUsersController = async (req, res) => {
+  try {
+    const users = await listAllUsers(role);
+    res.status(200).json({
+      success: true,
+      count: users.length,
+      users,
+    });
+  } catch (error) {
+    console.error(" List users error:", error.message);
+    res.status(500).json({ 
+      success: false,
+      message: "Erreur lors de la récupération des utilisateurs" 
+    });
   }
 };

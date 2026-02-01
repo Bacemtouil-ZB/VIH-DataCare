@@ -1,0 +1,12 @@
+CREATE TABLE MedicalHistory (
+    medicalHistoryId SERIAL PRIMARY KEY,
+    vaccineCode INTEGER,
+    vaccineName VARCHAR(100),
+    vaccineDateAdministered DATE,
+    batchNumber INTEGER,
+    doseType VARCHAR(50),
+    vaccineStatus VARCHAR(50),
+    medicationName VARCHAR(100),
+    medicationStartDate DATE,
+
+);
