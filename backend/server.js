@@ -13,7 +13,7 @@ app.use("/api/auth", authRoutes);
 
 // Route racine test
 app.get("/", (req, res) => {
-  res.send("Backend MediVIH fonctionne !");
+  res.send("Backend VIHDATACARE fonctionne !");
 });
 
 // Fonction pour lancer le serveur après connexion DB
