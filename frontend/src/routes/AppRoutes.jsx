@@ -2,13 +2,18 @@ import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import Landing from "../pages/Landing/Landing";
-import Login from "../pages/Auth/Login";
-import Signup from "../pages/Auth/Signup";
+
+import authRoutes from "./authRoutes";
+import medecinRoutes from "../modules/medecin/routes/MedecinRoutes";
+import AminRoutes from "../modules/admin/routes/AdminRoutes";
+// plus tard : adminRoutes, analysteRoutes...
 
 const router = createBrowserRouter([
   { path: "/", element: <Landing /> },
-  { path: "/login", element: <Login /> },
-  { path: "/signup", element: <Signup /> },
+
+  ...authRoutes,
+  ...medecinRoutes,
+  ...AminRoutes,
 ]);
 
 function AppRoutes() {

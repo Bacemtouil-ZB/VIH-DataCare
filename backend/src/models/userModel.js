@@ -10,7 +10,14 @@ export const findUserByEmail = async (email) => {
 };
 
 // create user
-export const createUser = async (nom, prenom, email, hashedPassword, role, isActivated = false) => {
+export const createUser = async (
+  nom,
+  prenom,
+  email,
+  hashedPassword,
+  role,
+  isActivated = false,
+) => {
   const query = `
     INSERT INTO users (nom, prenom, email, password, role, isActivated)
     VALUES ($1, $2, $3, $4, $5, $6)
@@ -37,26 +44,19 @@ export const updateUserActivationStatus = async (userId, isActivated) => {
   const result = await pool.query(query, values);
   return result.rows[0];
 };
-  /// a reviser : 
+/// a reviser :
 /**
  * Récupère tous les utilisateurs (pour l'admin)
 
  */
-export const getAllUsers = async (roleFilter = null) => {
+export const getAllUsers = async () => {
   let query = `
-    SELECT id, nom, prenom, email, role, isActivated, created_at, updated_at
+    SELECT  nom, prenom, email, role, isActivated, created_at, updated_at
     FROM users
   `;
   const values = [];
-
-  if (roleFilter) {
-    query += " WHERE role = $1";
-    values.push(roleFilter);
-  }
-
   query += " ORDER BY created_at DESC";
 
   const result = await pool.query(query, values);
   return result.rows;
 };
-

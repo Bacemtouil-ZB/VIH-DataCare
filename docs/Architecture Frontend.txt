@@ -430,4 +430,45 @@ Chaque module a ses permissions définies dans :
     "recharts": "^2.10.0"
   }
 }
+
+//lien entre backend et frontend
+
+
+Context Il sert à :
+Stocker les données globales
+Fournir ces données à toute l’application
+Centraliser la logique globale
+
+
+
+┌─────────────┐
+│   Signup    │ (Composant UI)
+│   Component │
+└──────┬──────┘
+       │
+       │ utilise useAuth()
+       ▼
+┌─────────────────┐
+│  AuthContext    │ (Gestion d'état globale) 
+│  (AuthProvider) │
+└──────┬──────────┘
+       │
+       │ appelle
+       ▼
+┌─────────────────┐
+│  authService    │ (Logique métier)
+└──────┬──────────┘
+       │
+       │ utilise
+       ▼
+┌─────────────────┐
+│   axios (API)   │ (Communication HTTP)
+└──────┬──────────┘
+       │
+       │ requête HTTP
+       ▼
+┌─────────────────┐
+│    BACKEND      │
+│  (Node.js API)  │
+└─────────────────┘
 ```

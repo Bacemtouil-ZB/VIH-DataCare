@@ -1,12 +1,21 @@
 import express from "express";
 import dotenv from "dotenv";
 import db from "./src/config/db.js"; // pour connecter PostgreSQL
+import cors from "cors";
+import cookieParser from "cookie-parser";
 import authRoutes from "./src/routes/authRoutes.js";
 
 dotenv.config();
 const app = express();
-
 app.use(express.json());
+app.use(cookieParser());
+// CORS
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  }),
+);
 
 // Routes d'authentification
 app.use("/api/auth", authRoutes);

@@ -2,16 +2,24 @@ import React from "react";
 
 function Hero() {
   return (
-    <section className="min-h-screen flex flex-col justify-center items-center bg-linear-to-r from-blue-500 to-indigo-600 text-white px-6 text-center">
-      <h1 className="text-5xl font-bold mb-4">Welcome to MyApp</h1>
-      <p className="text-lg max-w-xl mb-6">
-        Simplify patient management with a modern, easy-to-use system for healthcare professionals.
+    <section className="min-h-screen flex flex-col justify-center items-center bg-white text-[#1B5E20] px-6 text-center"
+>
+      {/* Titre */}
+      <h1 className="text-5xl md:text-6xl font-bold mb-4">
+        Bienvenue sur VIHDATACARE
+      </h1>
+
+      {/* Description */}
+      <p className="text-lg md:text-xl max-w-2xl mb-6">
+        Simplifiez la gestion des patients grâce à un système moderne et facile à utiliser pour les professionnels de santé.
       </p>
+
+      {/* Bouton CTA */}
       <a
         href="/signup"
-        className="px-6 py-3 bg-white text-blue-600 rounded-lg font-semibold hover:bg-gray-100 transition"
+        className="px-8 py-3 bg-white text-[#1B5E20] rounded-lg font-semibold hover:bg-gray-100 transition-colors shadow-lg"
       >
-        Get Started
+        Commencer
       </a>
     </section>
   );

@@ -1,0 +1,137 @@
+/* Footer.css - Footer fixé en bas avec style Overleaf */
+
+.footer-fixed {
+  position: fixed;
+  bottom: 0;
+  left: 240px; /* Décalé pour laisser place à la sidebar */
+  right: 0;
+  background-color: #f4f5f6;
+  border-top: 1px solid #e5e5e5;
+  padding: 0.75rem 0;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+  z-index: 998;
+}
+
+/* Cookie Notice */
+.cookie-notice {
+  background-color: #f8f9fa;
+  border: 1px solid #e5e5e5;
+  border-radius: 6px;
+  padding: 0.75rem 1rem;
+}
+
+.cookie-link {
+  color: #2e7d32 !important;
+  font-weight: 500;
+}
+
+.cookie-link:hover {
+  color: #1b5e20 !important;
+  text-decoration: underline !important;
+}
+
+/* Success Button - Vert comme thème */
+.btn-success-green {
+  background: linear-gradient(135deg, #2e7d32 0%, #388e3c 100%);
+  color: white;
+  border: none;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(46, 125, 50, 0.2);
+}
+
+.btn-success-green:hover {
+  background: linear-gradient(135deg, #388e3c 0%, #43a047 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(46, 125, 50, 0.3);
+  color: white;
+}
+
+/* Quote Container */
+.quote-container {
+  animation: fadeIn 0.8s ease;
+}
+
+.quote-icon {
+  color: #2e7d32;
+  opacity: 0.7;
+}
+
+.quote-text {
+  font-size: 0.85rem;
+  font-style: italic;
+  line-height: 1.5;
+  color: #4d4d4d;
+  animation: slideInLeft 0.6s ease;
+}
+
+.quote-author {
+  font-size: 0.75rem;
+  color: #888;
+  margin-top: 0.25rem;
+}
+
+.quote-author cite {
+  font-style: normal;
+  color: #888;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .footer-fixed {
+    left: 70px; /* Sidebar réduite sur mobile */
+  }
+  
+  .cookie-notice {
+    text-align: center;
+    padding: 0.5rem;
+  }
+  
+  .cookie-notice .d-flex {
+    flex-direction: column;
+  }
+  
+  .quote-text {
+    font-size: 0.8rem;
+  }
+  
+  .footer-fixed .text-md-end {
+    text-align: center !important;
+    margin-top: 0.5rem;
+  }
+}
+
+/* Pour le contenu principal - ajouter un padding-bottom pour éviter que le footer cache le contenu */
+body {
+  padding-bottom: 120px; /* Ajuster selon la hauteur du footer */
+}
+
+/* Links styling */
+.footer-fixed a {
+  transition: all 0.2s ease;
+}
+
+.footer-fixed a:hover {
+  opacity: 0.8;
+}
