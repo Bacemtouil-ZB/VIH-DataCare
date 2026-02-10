@@ -1,14 +1,15 @@
 import {
   updateUserActivationStatus,
   getAllUsers,
+  updateUserRole,
 } from "../models/userModel.js";
 
 /**
  * Récupère la liste de tous les utilisateurs
  * Réservé aux admins uniquement
  */
-export const listAllUsers = async (roleFilter = null) => {
-  const users = await getAllUsers(roleFilter);
+export const listAllUsers = async () => {
+  const users = await getAllUsers();
 
   // Ne pas retourner les mots de passe
   return users.map((user) => {
@@ -19,11 +20,27 @@ export const listAllUsers = async (roleFilter = null) => {
 /*
  * Réservé aux admins uniquement
  */
-export const toggleUserActivation = async (userId, isActivated) => {
-  const updatedUser = await updateUserActivationStatus(userId, isActivated);
+export const toggleUserActivation = async (userId, isactivated) => {
+  const updatedUser = await updateUserActivationStatus(userId, isactivated);
+  if (!updatedUser) {
+    throw new Error("Utilisateur non trouvé");
+  }
 
   // Ne pas retourner le mot de passe
   const { password: _, ...userWithoutPassword } = updatedUser;
   return userWithoutPassword;
 };
-e;
+// ── Service pour changer le rôle d'un utilisateur
+export const changeUserRole = async (userId, role) => {
+  // Ici tu peux ajouter des validations supplémentaires si besoin
+  if (!["admin", "medecin", "pharmacien", "analyste"].includes(role)) {
+    throw new Error("Rôle invalide");
+  }
+
+  const updatedUser = await updateUserRole(userId, role);
+  if (!updatedUser) {
+    throw new Error("Utilisateur non trouvé");
+  }
+
+  return updatedUser;
+};

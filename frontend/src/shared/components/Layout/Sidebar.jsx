@@ -12,67 +12,76 @@ const Sidebar = () => {
   const roleLinks = {
     admin: [
       {
-        to: '/UsersPage',
+        to: 'users', // ajouter admin pour asuurer que css isActive fonctionne correctement
         icon: 'bi-people-fill',
-        label: 'Utilisateurs'
+        label: 'Utilisateurs',
+        end : true,
       },
       {
-        to: '/TreatmentManagement',
+        to: 'treatments',
         icon: 'bi-capsule-pill',
-        label: 'Traitements'
+        label: 'Traitements',
+        end : true,
       },
       {
-        to: '/dashbords',
+        to: 'dashboard',
         icon: 'bi-speedometer2',
-        label: 'Dashboard'
+        label: 'Dashboard',
+        end : true,   
       },
  
     ],
+    
     medecin: [
-      {
-        to: '/mainPageMed',
-        icon: 'bi-person-hearts',
-        label: 'Mes Patients'
-      },
-      {
-        to: '/dashbords',
-        icon: 'bi-speedometer2',
-        label: 'Dashboard'
-      },
+    {
+      to: "/medecin/patients",
+      icon: "bi-person-hearts",
+      label: "Mes Patients",
+      end : true,
+    },
+    {
+      to: "dashboard",
+      icon: "bi-speedometer2",
+      label: "Dashboard",
+      end : true,
+    },
+  ],
 
-    ],
-    pharmacien: [
-      {
-        to: '/stock',
-        icon: 'bi-box-seam',
-        label: 'Stock'
-      },
-      {
-        to: '/dashbords',
-        icon: 'bi-speedometer2',
-        label: 'Dashboard'
-      },
+  pharmacien: [
+    {
+      to: "/pharmacien/stock",
+      icon: "bi-box-seam",
+      label: "Stock",
+      end : true,
+    },
+    {
+      to: "dashboard",
+      icon: "bi-speedometer2",
+      label: "Dashboard",
+      end : true,
+    },
+  ],
 
-
-    ],
-    analyste: [
-      {
-        to: '/statistiques',
-        icon: 'bi-graph-up',
-        label: 'Statistiques'
-      },
-      {
-        to: '/rapports',
-        icon: 'bi-file-earmark-text',
-        label: 'Rapports'
-      },
-      {
-        to: '/dashbords',
-        icon: 'bi-speedometer2',
-        label: 'Dashboard'
-      },
-
-    ]
+  analyste: [
+    {
+      to: "/analyste/statistiques",
+      icon: "bi-graph-up",
+      label: "Statistiques",
+      end : true,
+    },
+    {
+      to: "rapports",
+      icon: "bi-file-earmark-text",
+      label: "Rapports",
+      end : true,
+    },
+    {
+      to: "dashboard",
+      icon: "bi-speedometer2",
+      label: "Dashboard",
+      end : true,
+    },
+  ],
   };
 
   // Utiliser les liens personnalisés ou ceux du rôle
@@ -100,6 +109,7 @@ const Sidebar = () => {
             <li className="nav-item" key={index}>
               <NavLink
                 to={link.to}
+                end={link.end}
                 className={({ isActive }) =>
                   `nav-link sidebar-link ${isActive ? 'active' : ''}`
                 }

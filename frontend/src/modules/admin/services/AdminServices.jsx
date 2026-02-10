@@ -1,19 +1,31 @@
-import API from "../utils/api.js";
+import API from "../../../shared/utils/api";
 // ── LISTE DES UTILISATEURS (admin) ──
-// Backend : GET /api/auth/admin/users?role=medecin  (role optionnel)
+// Backend : GET /api/admin/users?role=medecin  (role optionnel)
 // Reçoit  : { success, count, users: [...] }
 export const getUsers = async (role) => {
-  const res = await API.get("/auth/admin/users", {
+  const res = await API.get("/admin/users", {
     params: { role },
   });
   return res.data;
 };
 
-// ── ACTIVER / DÉSACTIVER UN UTILISATEUR (admin) ──
-// Backend : POST /api/auth/admin/activation
-// Envoie  : { userId, isActivated }
-// Reçoit  : { success, message, user }
-export const activateUser = async (userId, isActivated) => {
-  const res = await API.post("/auth/admin/activation", { userId, isActivated });
+
+export const activateUser = async (userId, isactivated) => {
+  try {
+    const res = await API.post("/admin/activation", { 
+      userId, 
+      isactivated 
+    });
+    console.log("Réponse succès:", res.data);
+    return res.data;
+  } catch (error) {
+    console.error("Erreur", error.response ? error.response.data : error.message);
+    throw error;
+  }
+};
+
+// ── Changer rôle
+export const changeUserRole = async (userId, role) => {
+  const res = await API.post("/admin/change-role", { userId, role });
   return res.data;
 };

@@ -128,6 +128,7 @@ const displayError = localError || error;
                 value={formData.email}
                 onChange={handleChange}
                 placeholder="user@example.com"
+                autoComplete="email"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all"
                 disabled={isSubmitting}
                 required
@@ -167,7 +168,7 @@ const displayError = localError || error;
                 <span className="ml-2 text-sm text-gray-600">Se souvenir de moi</span>
               </label>
               <Link 
-                to="/forgotPassword" 
+                to="/forgot-password" 
                 className="text-sm text-green-600 hover:text-green-700 font-medium"
               >
                 Mot de passe oublié ?

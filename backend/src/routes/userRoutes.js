@@ -2,6 +2,7 @@ import express from "express";
 import {
   toggleActivationController,
   listUsersController,
+  changeRoleController,
 } from "../controllers/userController.js";
 import {
   protect,
@@ -11,6 +12,7 @@ import {
   authorizeAnalyste,
 } from "../middlewares/authMiddleware.js";
 const router = express.Router();
+
 // ── ROUTES ADMIN ──
 router.post(
   "/admin/activation",
@@ -27,6 +29,13 @@ router.get("/admin/dashbord", protect, authorizeAdmin, (req, res) => {
     user: req.user,
   });
 });
+
+router.post(
+  "/admin/change-role",
+  protect,
+  authorizeAdmin,
+  changeRoleController,
+);
 // ── ROUTES MÉDECIN
 router.get("/medecin/dashbord", protect, authorizeMedecin, (req, res) => {
   res.json({

@@ -96,7 +96,7 @@ function ResetPassword() {
           </div>
           
           <NavLink 
-            to="/ProfilePageMed" 
+            to="/login" 
             className="mt-8 bg-white text-green-600 font-semibold py-3 px-10 rounded-lg shadow-lg"
           >
             RETOUR

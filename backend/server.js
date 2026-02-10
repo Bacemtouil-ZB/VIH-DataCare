@@ -4,6 +4,7 @@ import db from "./src/config/db.js"; // pour connecter PostgreSQL
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import authRoutes from "./src/routes/authRoutes.js";
+import userRoutes from "./src/routes/userRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -19,6 +20,7 @@ app.use(
 
 // Routes d'authentification
 app.use("/api/auth", authRoutes);
+app.use("/api", userRoutes);
 
 // Route racine test
 app.get("/", (req, res) => {

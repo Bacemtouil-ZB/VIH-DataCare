@@ -1,7 +1,7 @@
 /* Sidebar principale  */
 
 .sidebar-custom {
-  position: fixed;
+  position: relative;
   top: 0;
   left: 0;
   height: 100vh;
@@ -135,7 +135,7 @@
 /* Section Footer */
 /* Footer sidebar */
 .sidebar-footer-section {
-  position: absolute;   /* fixe en bas */
+  position: relative;   /* fixe en bas */
   bottom: 0;
   left: 0;              /* aligné à gauche */
   width: 100%;          /* prend toute la largeur de la sidebar */
@@ -152,4 +152,21 @@
   width: 30px;           /* taille fixe du bouton */
   margin: 0;             /* pas de centrage */
   padding-left: 0.25rem; /* petit espace depuis le bord si nécessaire */
+}
+/* Desktop */
+@media (min-width: 992px) {
+  .sidebar-custom {
+    position: fixed;
+    width: 250px;      /* largeur fixe sur grand écran */
+    height: 100vh;
+  }
+}
+
+/* Mobile / tablette */
+@media (max-width: 991px) {
+  .sidebar-custom {
+    position: relative;   /* prend sa place dans le flux */
+    width: 100%;          /* occupe tout l'espace */
+    height: auto;         /* s’adapte au contenu */
+  }
 }

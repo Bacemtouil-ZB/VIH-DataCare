@@ -1,26 +1,36 @@
-import { toggleUserActivation, listAllUsers } from "../services/userService.js";
+import {
+  toggleUserActivation,
+  listAllUsers,
+  changeUserRole,
+} from "../services/userService.js";
 /**
  * Contrôleur pour activer/désactiver un utilisateur (admin uniquement)
  */
 export const toggleActivationController = async (req, res) => {
-  const { userId, isActivated } = req.body;
+  const { userId, isactivated } = req.body;
 
   try {
-    const user = await toggleUserActivation(userId, isActivated);
+    // Validation
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: "userId est requis",
+      });
+    }
+
+    if (typeof isactivated !== "boolean") {
+      return res.status(400).json({
+        success: false,
+        message: "isActivated doit être un boolean",
+      });
+    }
+    const user = await toggleUserActivation(userId, isactivated);
 
     res.status(200).json({
       success: true,
-      message: `Utilisateur ${isActivated ? "activé" : "désactivé"} avec succès`,
-      user: {
-        id: user.id,
-        nom: user.nom,
-        prenom: user.prenom,
-        email: user.email,
-        isActivated: user.isactivated,
-      },
+      message: `Utilisateur ${isactivated ? "activé" : "désactivé"} avec succès`,
     });
   } catch (error) {
-    console.error("Toggle activation error:", error.message);
     res.status(400).json({
       success: false,
       message: error.message,
@@ -40,10 +50,25 @@ export const listUsersController = async (req, res) => {
       users,
     });
   } catch (error) {
-    console.error(" List users error:", error.message);
     res.status(500).json({
       success: false,
       message: "Erreur lors de la récupération des utilisateurs",
     });
+  }
+};
+// ── Changer rôle utilisateur
+export const changeRoleController = async (req, res) => {
+  const { userId, role } = req.body;
+  try {
+    const updatedUser = await changeUserRole(userId, role);
+    if (!updatedUser) throw new Error("Utilisateur non trouvé");
+
+    res.status(200).json({
+      success: true,
+      message: "Rôle mis à jour avec succès",
+      user: updatedUser,
+    });
+  } catch (err) {
+    res.status(400).json({ success: false, message: err.message });
   }
 };

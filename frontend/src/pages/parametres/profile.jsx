@@ -415,7 +415,7 @@ const ProfilPage = () => {
                                 <i className="bi bi-shield-lock me-2" style={{ color: '#22c55e' }}></i>
                                 Sécurité
                             </h5>
-                            <NavLink to="/ResetPassword">
+                            <NavLink to="/reset-password">
                             <div className="row g-3">
                                 <div className="col-md-6">
                                     
