@@ -6,6 +6,11 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./src/routes/authRoutes.js";
 import userRoutes from "./src/routes/userRoutes.js";
 import patientRoutes from "./src/routes/patientRoutes.js"
+import socialRoutes from "./src/routes/socialRoute.js"
+import vihRoutes from "./src/routes/vihRoute.js"
+
+
+
 dotenv.config();
 const app = express();
 app.use(express.json());
@@ -22,6 +27,9 @@ app.use(
 app.use("/api/auth", authRoutes);
 app.use("/api", userRoutes);
 app.use("/api/patients", patientRoutes);
+app.use("/api/social", socialRoutes);
+app.use("/api/vih", vihRoutes);
+
 
 // Route racine test
 app.get("/", (req, res) => {
