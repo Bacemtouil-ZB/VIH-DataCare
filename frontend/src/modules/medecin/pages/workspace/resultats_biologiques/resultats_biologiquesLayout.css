@@ -1,0 +1,61 @@
+.examen-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 20px;
+}
+
+/* Title */
+.examen-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1f2937;
+  margin-bottom: 15px;
+}
+
+/* Tabs container */
+.tabs {
+  display: flex;
+  gap: 25px;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 8px;
+}
+
+/* Tab link */
+.tab-link {
+  text-decoration: none;
+  font-size: 14px;
+  color: #6b7280;
+  padding-bottom: 6px;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+/* Hover */
+.tab-link:hover {
+  color: #408d47;
+}
+
+/* Active tab */
+.tab-link.active {
+  color: #408d47;
+  font-weight: 600;
+}
+
+/* Active underline */
+.tab-link.active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -9px;
+  width: 100%;
+  height: 2px;
+  background-color: #408d47;
+}
+
+/* Content area */
+.tab-content {
+  margin-top: 20px;
+  flex: 1;
+  overflow: auto;
+}

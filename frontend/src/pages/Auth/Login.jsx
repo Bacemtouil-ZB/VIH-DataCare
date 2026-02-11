@@ -53,73 +53,76 @@ const Login = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLocalError('');
-  setIsSubmitting(true);
+    e.preventDefault();
+    setLocalError('');
+    setIsSubmitting(true);
 
-  if (!formData.email.trim() || !formData.password.trim()) {
-    setLocalError('Tous les champs sont requis');
-    setIsSubmitting(false);
-    return;
-  }
+    if (!formData.email.trim() || !formData.password.trim()) {
+      setLocalError('Tous les champs sont requis');
+      setIsSubmitting(false);
+      return;
+    }
 
-  try {
-    // ✅ Passer les deux arguments séparément
-    await handleLogin(formData.email.trim(), formData.password.trim());
-  } catch (err) {
-    console.error('Erreur de connexion:', err);
-    setLocalError(
-      err.response?.data?.message || 'Erreur de connexion, vérifiez vos identifiants'
-    );
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+    try {
+      await handleLogin(formData.email.trim(), formData.password.trim());
+    } catch (err) {
+      console.error('Erreur de connexion:', err);
+      setLocalError(
+        err.response?.data?.message || 'Erreur de connexion, vérifiez vos identifiants'
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
-
-// 🔹 Pour l'affichage
-const displayError = localError || error;
-
+  const displayError = localError || error;
 
   return (
-    <div className="min-h-screen flex">
-      {/* Partie gauche - Bienvenue */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-green-500 to-green-700 text-white p-12 flex-col justify-center">
-        <h1 className="text-5xl font-bold mb-6">Bienvenue</h1>
-        <p className="text-xl mb-4">Rejoignez</p>
-        <p className="text-xl mb-4">Notre Plateforme</p>
-        <p className="text-xl mb-4">Unique</p>
-        <p className="text-xl mb-8">Découvrez Une</p>
-        <p className="text-xl">Nouvelle Expérience</p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 flex items-center justify-center p-6">
+      <div className="flex max-w-4xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden">
         
-        <Link 
-          to="/signup" 
-          className="mt-12 inline-block bg-white text-green-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors text-center max-w-xs"
-        >
-          S'INSCRIRE
-        </Link>
-      </div>
+        {/* Section gauche - Welcome */}
+        <div className="w-5/12 bg-gradient-to-br from-green-500 to-green-600 text-white p-10 flex flex-col justify-center items-start relative">
+          <div className="mb-6">
+            <h1 className="text-4xl font-bold mb-4 leading-tight">Bienvenue</h1>
+            <p className="text-base leading-relaxed opacity-90">
+              Rejoignez<br />
+              Notre Plateforme<br />
+              Unique<br />
+              Découvrez Une<br />
+              Nouvelle Expérience
+            </p>
+          </div>
+          
+          <Link 
+            to="/signup" 
+            className="mt-6 bg-white text-green-600 font-semibold py-3 px-10 rounded-lg shadow-lg hover:bg-gray-50 transition-all"
+          >
+            S'INSCRIRE
+          </Link>
+        </div>
 
-      {/* Partie droite - Formulaire */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gray-50">
-        <div className="w-full max-w-md">
-          <h2 className="text-3xl font-bold text-gray-800 mb-8">Connexion</h2>
+        {/* Section droite - Login Form */}
+        <div className="w-7/12 p-8 flex flex-col justify-center">
+          <h2 className="text-3xl font-bold text-gray-800 mb-4">Connexion</h2>
 
           {/* Message d'erreur */}
           {displayError && (
-            <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg flex items-center">
-              <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-              </svg>
-              {displayError}
+            <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex items-center">
+                <svg className="w-5 h-5 text-red-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+                <p className="text-sm text-red-700">{displayError}</p>
+              </div>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Email */}
+          <form onSubmit={handleSubmit} className="space-y-3">
+            {/* Email Input */}
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email <span className="text-red-500">*</span>
+              <label className="block text-gray-800 text-sm font-medium mb-1" htmlFor="email">
+                Email *
               </label>
               <input
                 type="email"
@@ -127,18 +130,18 @@ const displayError = localError || error;
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                placeholder="user@example.com"
+                className="w-full px-3 py-2 bg-gray-100 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 placeholder-gray-400 border border-gray-200"
+                placeholder="Entrez votre email"
                 autoComplete="email"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all"
                 disabled={isSubmitting}
                 required
               />
             </div>
 
-            {/* Mot de passe */}
+            {/* Password Input */}
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
-                Mot de passe <span className="text-red-500">*</span>
+              <label className="block text-gray-800 text-sm font-medium mb-1" htmlFor="password">
+                Mot de passe *
               </label>
               <input
                 type="password"
@@ -146,23 +149,23 @@ const displayError = localError || error;
                 name="password"
                 value={formData.password}
                 onChange={handleChange}
-                placeholder="••••••••"
+                className="w-full px-3 py-2 bg-gray-100 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 placeholder-gray-400 border border-gray-200"
+                placeholder="Entrez votre mot de passe"
                 autoComplete="current-password"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none transition-all"
                 disabled={isSubmitting}
                 required
               />
             </div>
 
             {/* Se souvenir / Mot de passe oublié */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between pt-1">
               <label className="flex items-center">
                 <input
                   type="checkbox"
                   name="rememberMe"
                   checked={formData.rememberMe}
                   onChange={handleChange}
-                  className="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500"
+                  className="w-4 h-4 text-green-500 border-gray-300 rounded focus:ring-green-400"
                   disabled={isSubmitting}
                 />
                 <span className="ml-2 text-sm text-gray-600">Se souvenir de moi</span>
@@ -175,11 +178,11 @@ const displayError = localError || error;
               </Link>
             </div>
 
-            {/* Bouton de connexion */}
+            {/* Login Button */}
             <button
               type="submit"
               disabled={isSubmitting || loading}
-              className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center"
+              className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg mt-3 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
             >
               {isSubmitting || loading ? (
                 <>
@@ -194,20 +197,11 @@ const displayError = localError || error;
               )}
             </button>
 
-            <p className="text-center text-sm text-gray-500">
+            {/* Info */}
+            <p className="text-xs text-gray-500 mt-2 text-center">
               * Champs obligatoires
             </p>
           </form>
-
-          {/* Lien d'inscription pour mobile */}
-          <div className="mt-6 text-center lg:hidden">
-            <p className="text-gray-600">
-              Pas encore de compte ?{' '}
-              <Link to="/signup" className="text-green-600 hover:text-green-700 font-semibold">
-                S'inscrire
-              </Link>
-            </p>
-          </div>
         </div>
       </div>
     </div>

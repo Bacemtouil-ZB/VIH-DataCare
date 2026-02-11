@@ -1,0 +1,20 @@
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #408d47;
+  margin-bottom: 20px;
+}
+
+.btn-primary {
+  background-color: #408d47;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.btn-primary:hover {
+  background-color: #2f6e3a;
+}

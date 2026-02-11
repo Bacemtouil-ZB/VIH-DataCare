@@ -1,0 +1,44 @@
+.workspace-header {
+  height: 48px; /* SMALL */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Left side */
+.workspace-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* Right side */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Time */
+.header-time {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* Small icon buttons */
+.header-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  transition: background 0.2s ease;
+}
+
+.header-btn:hover {
+  background-color: #f3f4f6;
+}

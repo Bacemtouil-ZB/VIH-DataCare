@@ -7,8 +7,6 @@ function ResetPassword() {
     confirmPassword: "",
   });
   const [isReset, setIsReset] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState({
     password: "",
     confirmPassword: "",
@@ -25,6 +23,9 @@ function ResetPassword() {
     }
     if (!/[A-Z]/.test(password)) {
       return "Le mot de passe doit contenir au moins une majuscule";
+    }
+    if (!/[a-z]/.test(password)) {
+      return "Le mot de passe doit contenir au moins une minuscule";
     }
     if (!/[0-9]/.test(password)) {
       return "Le mot de passe doit contenir au moins un chiffre";
@@ -45,10 +46,16 @@ function ResetPassword() {
 
   // Gérer les changements de champs
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    // Effacer l'erreur du champ modifié
+    setErrors(prev => ({
+      ...prev,
+      [name]: ""
+    }));
   };
 
   // Soumettre le formulaire
@@ -56,6 +63,7 @@ function ResetPassword() {
     e.preventDefault();
     const passwordError = validatePassword(formData.password);
     const confirmPasswordError = validateConfirmPassword(formData.confirmPassword, formData.password);
+    
     setErrors({
       password: passwordError,
       confirmPassword: confirmPasswordError,
@@ -77,17 +85,17 @@ function ResetPassword() {
       <div className="flex max-w-4xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden">
         
         {/* Section gauche - Welcome */}
-        <div className="w-5/12 bg-gradient-to-br from-green-400 to-green-500 text-white p-12 flex flex-col justify-center items-start relative">
-          <div className="mb-8">
-            <div className="mb-6">
-              <div className="w-20 h-20 bg-white bg-opacity-20 rounded-full flex items-center justify-center mb-4">
-                <i className="text-5xl">🔑</i>
+        <div className="w-5/12 bg-gradient-to-br from-green-500 to-green-600 text-white p-10 flex flex-col justify-center items-start relative">
+          <div className="mb-6">
+            <div className="mb-4">
+              <div className="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                <span className="text-4xl">🔑</span>
               </div>
             </div>
-            <h1 className="text-4xl font-bold mb-6 leading-tight">
+            <h1 className="text-4xl font-bold mb-4 leading-tight">
               Nouveau<br />mot de passe
             </h1>
-            <p className="text-lg leading-relaxed opacity-90">
+            <p className="text-base leading-relaxed opacity-90">
               Créez un nouveau<br />
               mot de passe<br />
               sécurisé pour<br />
@@ -97,101 +105,76 @@ function ResetPassword() {
           
           <NavLink 
             to="/login" 
-            className="mt-8 bg-white text-green-600 font-semibold py-3 px-10 rounded-lg shadow-lg"
+            className="mt-6 bg-white text-green-600 font-semibold py-3 px-10 rounded-lg shadow-lg hover:bg-gray-50 transition-all"
           >
             RETOUR
           </NavLink>
         </div>
 
         {/* Section droite - Reset Password Form */}
-        <div className="w-7/12 p-12 flex flex-col justify-center">
+        <div className="w-7/12 p-8 flex flex-col justify-center">
           {!isReset ? (
             <>
-              <h2 className="text-4xl font-bold text-gray-800 mb-4">Réinitialisation</h2>
-              <p className="text-gray-600 mb-8">
+              <h2 className="text-3xl font-bold text-gray-800 mb-4">Réinitialisation</h2>
+              <p className="text-gray-600 mb-6 text-sm">
                 Entrez votre nouveau mot de passe. Assurez-vous qu'il soit fort et sécurisé.
               </p>
               
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-3">
                 {/* Password Input */}
                 <div>
-                  <label className="block text-gray-800 text-sm font-medium mb-2" htmlFor="password">
-                    Nouveau mot de passe
+                  <label className="block text-gray-800 text-sm font-medium mb-1" htmlFor="password">
+                    Nouveau mot de passe *
                   </label>
-                  <div className="relative">
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      id="password"
-                      name="password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-3 bg-gray-100 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 placeholder-gray-400 border border-gray-200 ${
-                        errors.password
-                          ? 'border-red-500 focus:ring-red-400'
-                          : 'border-gray-200 focus:ring-green-400'
-                      }`}
-                      placeholder="Entrez votre nouveau mot de passe"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                    >
-                    </button>
-                  </div>
+                  <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className={`w-full px-3 py-2 bg-gray-100 text-black rounded-lg focus:outline-none focus:ring-2 placeholder-gray-400 border ${
+                      errors.password ? 'border-red-500 focus:ring-red-400' : 'border-gray-200 focus:ring-green-400'
+                    }`}
+                    placeholder="Entrez votre nouveau mot de passe"
+                  />
                   {errors.password && (
-                    <p className="mt-1 text-xs text-red-600 flex items-center">
-                      <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                      </svg>
-                      {errors.password}
-                    </p>
+                    <p className="mt-1 text-xs text-red-600">{errors.password}</p>
                   )}
                 </div>
 
                 {/* Confirm Password Input */}
                 <div>
-                  <label className="block text-gray-800 text-sm font-medium mb-2" htmlFor="confirmPassword">
-                    Confirmer le mot de passe
+                  <label className="block text-gray-800 text-sm font-medium mb-1" htmlFor="confirmPassword">
+                    Confirmer le mot de passe *
                   </label>
-                  <div className="relative">
-                    <input
-                      type={showConfirmPassword ? "text" : "password"}
-                      id="confirmPassword"
-                      name="confirmPassword"
-                      value={formData.confirmPassword}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-3 bg-gray-100 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-green-400 placeholder-gray-400 border border-gray-200 ${
-                        errors.confirmPassword
-                          ? 'border-red-500 focus:ring-red-400'
-                          : 'border-gray-200 focus:ring-green-400'
-                      }`}
-                      placeholder="Confirmez votre nouveau mot de passe"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                    >
-                    </button>
-                  </div>
+                  <input
+                    type="password"
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    className={`w-full px-3 py-2 bg-gray-100 text-black rounded-lg focus:outline-none focus:ring-2 placeholder-gray-400 border ${
+                      errors.confirmPassword ? 'border-red-500 focus:ring-red-400' : 'border-gray-200 focus:ring-green-400'
+                    }`}
+                    placeholder="Confirmez votre nouveau mot de passe"
+                  />
                   {errors.confirmPassword && (
-                    <p className="mt-1 text-xs text-red-600 flex items-center">
-                      <svg className="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                      </svg>
-                      {errors.confirmPassword}
-                    </p>
+                    <p className="mt-1 text-xs text-red-600">{errors.confirmPassword}</p>
                   )}
                 </div>
 
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+                  className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg mt-3"
                 >
                   RÉINITIALISER LE MOT DE PASSE
                 </button>
+
+                {/* Info */}
+                <p className="text-xs text-gray-500 mt-2 text-center">
+                  * Champs obligatoires
+                </p>
               </form>
             </>
           ) : (
@@ -209,17 +192,17 @@ function ResetPassword() {
                 <h2 className="text-3xl font-bold text-gray-800 mb-4">
                   Mot de passe réinitialisé !
                 </h2>
-                <p className="text-gray-600 mb-8">
+                <p className="text-gray-600 mb-6 text-sm">
                   Votre mot de passe a été modifié avec succès.
                 </p>
                 
-                <p className="text-sm text-gray-500 mb-6">
+                <p className="text-xs text-gray-500 mb-6">
                   Vous allez être redirigé vers la page de connexion...
                 </p>
 
                 <NavLink 
                   to="/login"
-                  className="inline-block bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+                  className="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-8 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
                 >
                   SE CONNECTER MAINTENANT
                 </NavLink>
