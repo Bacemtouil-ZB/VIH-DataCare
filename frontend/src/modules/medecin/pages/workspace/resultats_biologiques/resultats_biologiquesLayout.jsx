@@ -3,7 +3,7 @@ import { NavLink, Outlet } from "react-router-dom";
 
 export default function ResultatsBiologiquesLayout() {
   return (
-    <div className="examen-container">
+    <div className="resultats-biologiques-container">
 
       {/* Tabs */}
       <div className="tabs">

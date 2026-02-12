@@ -46,13 +46,15 @@ const medecinRoutes = [
   },
 
   {
-  path: "/medecin/workspace",
+  path: "/medecin/patient/:patientId/workspace",
   element: (
     <ProtectedRoute allowedRoles={["medecin"]}>
       <MainWorkspaceLayout />
     </ProtectedRoute>
   ),
   children: [
+      { index: true, element: <Navigate to="profil" replace /> },
+
     {
       path: "profil",
       element: <Profilpage />,

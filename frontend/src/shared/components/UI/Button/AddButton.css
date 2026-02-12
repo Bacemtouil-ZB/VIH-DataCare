@@ -1,12 +1,12 @@
-.new-project-button {
-  background: #388E3C;
-  color: #ffffff;
+.add-button { 
+  background-color: #388E3C;
+  color: #388E3C;
   border: none;
   border-radius: 10px;
   padding: 0.65rem 1rem;
   font-size: 0.9rem;
   font-weight: 600;
-  box-shadow: 0 4px 8px rgba(46, 125, 50, 0.3);
+  box-shadow: 0 4px 8px rgba(8, 31, 9, 0.3);
   transition: all 0.25s ease;
   margin-top: 0.5rem;
   display: flex;
@@ -15,13 +15,13 @@
 }
 
 /* Hover */
-.new-project-button:hover {
+.add-button:hover {
   background: linear-gradient(135deg, #388E3C 0%, #43A047 100%);
   color: #ffffff;
   transform: translateY(-1px);
 }
 
 /* Active */
-.new-project-button:active {
+.add-button:active {
   transform: translateY(0);
 }

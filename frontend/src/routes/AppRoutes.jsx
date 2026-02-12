@@ -5,7 +5,8 @@ import Landing from "../pages/Landing/Landing";
 
 import authRoutes from "./authRoutes";
 import medecinRoutes from "../modules/medecin/routes/MedecinRoutes";
-import AminRoutes from "../modules/admin/routes/AdminRoutes";
+import AdminRoutes from "../modules/admin/routes/AdminRoutes";
+import PharmacienRoutes from "../modules/Pharmacist/routes/PharmacienRoutes";
 // plus tard : adminRoutes, analysteRoutes...
 
 const router = createBrowserRouter([
@@ -13,7 +14,8 @@ const router = createBrowserRouter([
 
   ...authRoutes,
   ...medecinRoutes,
-  ...AminRoutes,
+  ...AdminRoutes,
+  ...PharmacienRoutes,
 ]);
 
 function AppRoutes() {

@@ -49,8 +49,14 @@ const Sidebar = () => {
 
   pharmacien: [
     {
-      to: "/pharmacien/stock",
-      icon: "bi-box-seam",
+      to: 'patients', // ajouter admin pour asuurer que css isActive fonctionne correctement
+        icon: 'bi-people-fill',
+        label: 'Patients',
+        end : true,
+    },
+    {
+      to: "stock",
+      icon: "bi-people-fill",
       label: "Stock",
       end : true,
     },

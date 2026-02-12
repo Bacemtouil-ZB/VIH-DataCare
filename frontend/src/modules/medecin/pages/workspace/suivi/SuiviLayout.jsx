@@ -3,7 +3,7 @@ import "./SuiviLayout.css"; // Import CSS for styling
 
 export default function SuiviLayout() {
   return (
-    <div className="examen-container">
+    <div className="suivi-container">
 
       {/* Tabs */}
       <div className="tabs">

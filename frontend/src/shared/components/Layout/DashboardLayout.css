@@ -25,7 +25,7 @@ main > div {
   flex-direction: column; /* si tu as header, editor, footer */
   box-shadow: 0 0 10px rgba(0,0,0,0.1);
   border-radius: 5px;
-  overflow: hidden;
+  overflow: hidden; /* pour éviter les débordements */
 }
 
 /* Conteneur de l'outlet / zone de contenu */

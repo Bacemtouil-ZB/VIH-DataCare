@@ -25,12 +25,12 @@ export default function Header() {
 
       {/* LEFT SIDE */}
       <div className="header-left">
-        <NavLink to="/medecin" className="icon-btn">
+        <NavLink to="/pharmacien" className="icon-btn">
           <ArrowLeft size={16} />
         </NavLink>
 
         <span className="workspace-title">
-          Patient Workspace
+          Pharmacien Workspace
         </span>
       </div>
 

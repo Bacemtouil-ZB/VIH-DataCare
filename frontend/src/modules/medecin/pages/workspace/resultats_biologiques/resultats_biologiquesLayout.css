@@ -1,4 +1,4 @@
-.examen-container {
+.resultats-biologiques-container {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -6,7 +6,7 @@
 }
 
 /* Title */
-.examen-title {
+.resultats-biologiques-title {
   font-size: 18px;
   font-weight: 600;
   color: #1f2937;

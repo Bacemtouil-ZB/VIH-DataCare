@@ -1,0 +1,86 @@
+.patient-panel {
+  width: 260px;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* HEADER */
+.patient-header {
+  text-align: center;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 20px;
+}
+
+.patient-avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #408d47, #2f6d34);
+  color: white;
+  font-size: 28px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 15px auto;
+  box-shadow: 0 4px 12px rgba(64, 141, 71, 0.3);
+}
+
+.patient-name {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 5px 0;
+  color: #333;
+}
+
+.patient-id {
+  font-size: 13px;
+  color: #888;
+}
+
+/* INFO SECTION */
+.patient-info {
+  margin-top: 20px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  font-size: 14px;
+  color: #444;
+}
+
+.info-row span:first-child {
+  font-weight: 500;
+  color: #666;
+}
+
+/* BADGES */
+.badge-active {
+  background: #e6f6ec;
+  color: #2f6d34;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-warning {
+  background: #fff3cd;
+  color: #b78103;
+  padding: 4px 10px;
+  border-radius: 14px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.patient-status {
+  margin-top: 25px;
+  text-align: center;
+}

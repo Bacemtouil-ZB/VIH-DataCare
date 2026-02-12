@@ -1,6 +1,5 @@
 import { NavLink, Outlet } from "react-router-dom";
-import "./AntecedentLayout.css";
-
+import "./AntecedentLayout.css"; // Import the CSS file for styling
 export default function AntecedentsLayout() {
   return (
     <div className="antecedent-container">

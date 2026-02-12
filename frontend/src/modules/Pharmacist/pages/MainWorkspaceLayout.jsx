@@ -68,7 +68,7 @@ export default function MainWorkspaceLayout() {
           ref={rightRef}
           defaultSize={18}
           minSize={0}
-          maxSize={18}
+          maxSize={40}
           collapsible
           onCollapse={() => setRightClosed(true)}
           onExpand={() => setRightClosed(false)}
