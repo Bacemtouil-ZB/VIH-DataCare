@@ -1,0 +1,65 @@
+import pool from "../config/db.js";
+
+
+export const createExamenClinique = async (examenData) => {
+  const { patient_id, medecin_id, date_examen } = examenData;
+
+  const query = `
+    INSERT INTO examen_clinique (patient_id, medecin_id, date_examen)
+    VALUES ($1, $2, $3)
+    RETURNING *;
+  `;
+
+  const values = [patient_id, medecin_id, date_examen || new Date()];
+  const result = await pool.query(query, values);
+  return result.rows[0];
+};
+
+export const getExamenCliniqueById = async (id) => {
+  const query = `
+    SELECT 
+      e.*,
+      p.name as patient_name,
+      p.surname as patient_surname,
+      u.nom as medecin_nom,
+      u.prenom as medecin_prenom
+    FROM examen_clinique e
+    LEFT JOIN patients p ON e.patient_id = p.id
+    LEFT JOIN users u ON e.medecin_id = u.id
+    WHERE e.id = $1;
+  `;
+
+  const result = await pool.query(query, [id]);
+  return result.rows[0] || null;
+};
+
+export const getExamensByPatientId = async (patientId) => {
+  const query = `
+    SELECT 
+      e.*,
+      u.nom as medecin_nom,
+      u.prenom as medecin_prenom
+    FROM examen_clinique e
+    LEFT JOIN users u ON e.medecin_id = u.id
+    WHERE e.patient_id = $1
+    ORDER BY e.date_examen DESC;
+  `;
+
+  const result = await pool.query(query, [patientId]);
+  return result.rows;
+};
+
+export const updateExamenClinique = async (id, examenData) => {
+  const { date_examen } = examenData;
+
+  const query = `
+    UPDATE examen_clinique
+    SET date_examen = COALESCE($1, date_examen), updated_at = NOW()
+    WHERE id = $2
+    RETURNING *;
+  `;
+
+  const result = await pool.query(query, [date_examen, id]);
+  return result.rows[0];
+};
+

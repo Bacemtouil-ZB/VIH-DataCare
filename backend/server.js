@@ -8,6 +8,7 @@ import userRoutes from "./src/routes/userRoutes.js";
 import patientRoutes from "./src/routes/patientRoutes.js"
 import socialRoutes from "./src/routes/socialRoute.js"
 import vihRoutes from "./src/routes/vihRoute.js"
+import clinicalRoutes from "./src/routes/clinicalRoute.js"
 
 
 
@@ -29,6 +30,7 @@ app.use("/api", userRoutes);
 app.use("/api/patients", patientRoutes);
 app.use("/api/social", socialRoutes);
 app.use("/api/vih", vihRoutes);
+app.use("/api/clinical",clinicalRoutes);
 
 
 // Route racine test
