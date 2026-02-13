@@ -5,6 +5,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import authRoutes from "./src/routes/authRoutes.js";
 import userRoutes from "./src/routes/userRoutes.js";
+import patientRoutes from "./src/routes/patientRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -21,6 +22,7 @@ app.use(
 // Routes d'authentification
 app.use("/api/auth", authRoutes);
 app.use("/api", userRoutes);
+app.use("/api/patients", patientRoutes);
 
 // Route racine test
 app.get("/", (req, res) => {

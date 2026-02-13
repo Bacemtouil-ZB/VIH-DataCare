@@ -1,101 +1,101 @@
-import { body, param } from "express-validator";
-//Middleware pour valider la création d'un patient
+import { body, validationResult } from "express-validator";
 
+// Middleware pour vérifier les erreurs de validation
+export const handleValidationErrors = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      success: false,
+      errors: errors.array().map((err) => ({
+        field: err.path,
+        message: err.msg,
+      })),
+    });
+  }
+  next();
+};
+
+// Validation personnalisée pour la date de naissance
+const validateBirthdate = (value) => {
+  const birthDate = new Date(value);
+  const today = new Date();
+
+  if (birthDate > today) {
+    throw new Error("La date de naissance ne peut pas être dans le futur");
+  }
+
+  const age = today.getFullYear() - birthDate.getFullYear();
+  if (age > 150) {
+    throw new Error("La date de naissance semble incorrecte (âge > 150 ans)");
+  }
+
+  return true;
+};
+
+// Validation personnalisée pour le numéro de téléphone
+const validatePhone = (value) => {
+  if (!value) return true;
+
+  const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+  if (!phoneRegex.test(value)) {
+    throw new Error("Le numéro de téléphone contient des caractères invalides");
+  }
+
+  return true;
+};
+
+// Middleware pour valider la création d'un patient
 export const validateCreatePatient = [
   body("name")
     .trim()
     .notEmpty()
+    .withMessage("Le prénom est requis")
     .isLength({ min: 2, max: 100 })
     .withMessage("Le prénom doit contenir entre 2 et 100 caractères"),
 
   body("surname")
     .trim()
     .notEmpty()
+    .withMessage("Le nom de famille est requis")
     .isLength({ min: 2, max: 100 })
     .withMessage("Le nom de famille doit contenir entre 2 et 100 caractères"),
 
   body("birthdate")
     .notEmpty()
+    .withMessage("La date de naissance est requise")
     .isDate()
-    .withMessage("La date de naissance doit être une date valide (YYYY-MM-DD)"),
+    .withMessage("La date de naissance doit être une date valide (YYYY-MM-DD)")
+    .custom(validateBirthdate),
 
-  body("gender").notEmpty().notEmpty(),
+  body("gender").trim().notEmpty().withMessage("Le genre est requis"),
 
-  body("city").trim().notEmpty(),
-
-  body("state").trim().notEmpty(),
-
-  body("postalcode").trim().notEmpty(),
-
-  body("nationality").trim().notEmpty(),
-
-  body("height")
-    .optional()
-    .isFloat({ min: 30, max: 300 })
-    .withMessage("La taille doit être entre 30 et 300 cm"),
-
-  body("modeoftransmission")
-    .optional()
+  body("city_of_birth")
     .trim()
-    .isLength({ max: 100 })
-    .withMessage("Le mode de transmission ne peut pas dépasser 100 caractères"),
+    .notEmpty()
+    .withMessage("La ville de naissance est requise"),
 
-  body("maritalstatus")
-    .optional()
-    .isIn(["Célibataire", "Marié(e)", "Divorcé(e)", "Veuf(ve)"])
-    .withMessage(
-      "Le statut marital doit être: Célibataire, Marié(e), Divorcé(e) ou Veuf(ve)",
-    ),
+  body("city_of_residence")
+    .trim()
+    .notEmpty()
+    .withMessage("La ville de résidence est requise"),
 
-  body("numberchildren")
-    .isInt({ min: 0 })
-    .withMessage("Le nombre d'enfants doit être un entier positif"),
+  body("phone")
+    .trim()
+    .notEmpty()
+    .withMessage("Le numéro de téléphone est requis")
+    .custom(validatePhone),
 
-  body("educationlevel").trim(),
+  body("address").optional().trim(),
 
-  body("housing").trim(),
+  body("hospitalisation")
+    .trim()
+    .notEmpty()
+    .withMessage("Le type d'hospitalisation est requis")
+    .isIn(["interne", "externe"])
+    .withMessage("L'hospitalisation doit être 'interne' ou 'externe'"),
+
+  handleValidationErrors,
 ];
 
-//Middleware pour valider la mise à jour d'un patient
-
-export const validateUpdatePatient = [
-  param("id")
-    .isInt({ min: 1 })
-    .withMessage("L'ID du patient doit être un entier valide"),
-
-  body("name")
-    .trim()
-    .isLength({ min: 2, max: 100 })
-    .withMessage("Le prénom doit contenir entre 2 et 100 caractères"),
-
-  body("surname")
-    .trim()
-    .isLength({ min: 2, max: 100 })
-    .withMessage("Le nom de famille doit contenir entre 2 et 100 caractères"),
-
-  body("birthdate")
-    .isDate()
-    .withMessage("La date de naissance doit être une date valide (YYYY-MM-DD)"),
-
-  body("gender").trim(),
-  body("city").trim(),
-
-  body("state").trim(),
-
-  body("postalcode").trim(),
-
-  body("nationality").trim(),
-
-  body("height")
-    .isFloat({ min: 30, max: 300 })
-    .withMessage("La taille doit être entre 30 et 300 cm"),
-
-  body("modeoftransmission").trim(),
-  body("maritalstatus"),
-  body("numberchildren")
-    .optional()
-    .isInt({ min: 0 })
-    .withMessage("Le nombre d'enfants doit être un entier positif"),
-  body("educationlevel").trim(),
-  body("housing").trim(),
-];
+// Middleware pour valider les filtres de getAllPatients
+export const validateGetAllPatientsFilters = [handleValidationErrors];

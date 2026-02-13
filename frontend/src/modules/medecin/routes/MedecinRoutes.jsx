@@ -41,12 +41,24 @@ const medecinRoutes = [
       { index: true, element: <Navigate to="patients" replace /> }, // default /medecin
       { path: "patients", element: <PatientsPage /> },
       { path: "dashboard", element: <DashboardMed /> },
-      { path: "settings", element: <ProfilPage /> }, 
+      { path: "settings", element: <ProfilPage /> },
+      
+
     ],
   },
-
   {
-  path: "/medecin/patient/:patientId/workspace",
+    path: "/medecin/patient/new/workspace", //for new patient workspace
+    element: (
+      <ProtectedRoute allowedRoles={["medecin"]}>
+        <MainWorkspaceLayout />
+      </ProtectedRoute>
+    ),
+    children: [
+        { index: true, element: <Navigate to="profil" replace /> },
+    ]
+    },
+  {
+  path: "/medecin/patient/:numero/workspace",//for existing patient workspace
   element: (
     <ProtectedRoute allowedRoles={["medecin"]}>
       <MainWorkspaceLayout />

@@ -2,138 +2,277 @@ import pool from "../config/db.js";
 
 export const createPatient = async (patientData, createdBy) => {
   const {
+    numero,
     name,
     surname,
     birthdate,
     gender,
-    city,
-    state,
-    postalcode,
-    nationality,
-    height,
-    modeoftransmission,
-    maritalstatus,
-    numberchildren,
-    educationlevel,
-    housing
+    city_of_birth,
+    city_of_residence,
+    phone,
+    address,
+    hospitalisation,
   } = patientData;
 
   const query = `
     INSERT INTO patients (
-      name, surname, birthdate, gender, city, state, postalcode,
-      nationality, height, modeoftransmission, maritalstatus,
-      numberchildren, educationlevel, housing, created_by
+      numero, name, surname, birthdate, gender, 
+      city_of_birth, city_of_residence, phone, address,
+      hospitalisation, created_by
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
     RETURNING *;
   `;
 
   const values = [
-    name, surname, birthdate, gender, city, state, postalcode,
-    nationality, height, modeoftransmission, maritalstatus,
-    numberchildren, educationlevel, housing, createdBy
+    numero,
+    name,
+    surname,
+    birthdate,
+    gender,
+    city_of_birth,
+    city_of_residence,
+    phone,
+    address || null,
+    hospitalisation,
+    createdBy,
   ];
 
   const result = await pool.query(query, values);
   return result.rows[0];
 };
 
-
- // Récupère un patient par son ID:
-
 export const getPatientById = async (id) => {
   const query = `
-    SELECT p.*, 
-           u1.nom as created_by_nom, u1.prenom as created_by_prenom,
-           u2.nom as updated_by_nom, u2.prenom as updated_by_prenom
+    SELECT
+      p.*,
+      u1.nom as created_by_nom,
+      u1.prenom as created_by_prenom,
+      u2.nom as updated_by_nom,
+      u2.prenom as updated_by_prenom
     FROM patients p
     LEFT JOIN users u1 ON p.created_by = u1.id
     LEFT JOIN users u2 ON p.updated_by = u2.id
     WHERE p.id = $1;
   `;
-  const values = [id];
 
-  const result = await pool.query(query, values);
+  const result = await pool.query(query, [id]);
   return result.rows[0] || null;
 };
 
-
-// Récupère tous les patients avec pagination et filtres:
-export const getAllPatients = async () => {
+export const getPatientByNumero = async (numero) => {
   const query = `
-    SELECT * FROM patients
-    ORDER BY created_at DESC;
+    SELECT 
+      p.*,
+      u1.nom as created_by_nom, 
+      u1.prenom as created_by_prenom,
+      u2.nom as updated_by_nom, 
+      u2.prenom as updated_by_prenom
+    FROM patients p
+    LEFT JOIN users u1 ON p.created_by = u1.id
+    LEFT JOIN users u2 ON p.updated_by = u2.id
+    WHERE p.numero = $1;
   `;
-  const result = await pool.query(query);
+
+  const result = await pool.query(query, [numero]);
+  return result.rows[0] || null;
+};
+
+export const checkNumeroExists = async (numero) => {
+  const query = `
+    SELECT COUNT(*) as count FROM patients
+    WHERE numero = $1
+  `;
+  const result = await pool.query(query, [numero]);
+  return parseInt(result.rows[0].count) > 0;
+};
+
+export const getAllPatients = async (options = {}) => {
+  let query = `
+    SELECT * FROM patients
+    WHERE 1=1
+  `;
+  const values = [];
+  let paramCount = 1;
+
+  // Filtre par nom
+  if (options.name) {
+    query += ` AND LOWER(name) LIKE LOWER($${paramCount})`;
+    values.push(`%${options.name}%`);
+    paramCount++;
+  }
+
+  // Filtre par prénom
+  if (options.surname) {
+    query += ` AND LOWER(surname) LIKE LOWER($${paramCount})`;
+    values.push(`%${options.surname}%`);
+    paramCount++;
+  }
+
+  // Filtre par numéro de dossier
+  if (options.numero) {
+    query += ` AND numero = $${paramCount}`;
+    values.push(options.numero);
+    paramCount++;
+  }
+
+  // Filtre par ville
+  if (options.city) {
+    query += ` AND LOWER(city_of_residence) LIKE LOWER($${paramCount})`;
+    values.push(`%${options.city}%`);
+    paramCount++;
+  }
+
+  // Filtre par genre
+  if (options.gender) {
+    query += ` AND gender = $${paramCount}`;
+    values.push(options.gender);
+    paramCount++;
+  }
+
+  // Filtre par hospitalisation
+  if (options.hospitalisation) {
+    query += ` AND hospitalisation = $${paramCount}`;
+    values.push(options.hospitalisation);
+    paramCount++;
+  }
+
+  query += ` ORDER BY created_at ${options.sortOrder || "DESC"}`;
+
+  const result = await pool.query(query, values);
   return result.rows;
 };
 
-// Met à jour un patient:
-
 export const updatePatient = async (id, patientData, updatedBy) => {
   const {
-    name, surname, birthdate, gender, city, state, postalcode,
-    nationality, height, modeoftransmission, maritalstatus,
-    numberchildren, educationlevel, housing
+    numero,
+    name,
+    surname,
+    birthdate,
+    gender,
+    city_of_birth,
+    city_of_residence,
+    phone,
+    address,
+    hospitalisation,
+    last_visit_date,
   } = patientData;
 
-  //COALESCE sert à choisir la première valeur non NULL parmi celles qu’on lui donne.
   const query = `
     UPDATE patients
     SET 
-      name = COALESCE($1, name),
-      surname = COALESCE($2, surname),
-      birthdate = COALESCE($3, birthdate),
-      gender = COALESCE($4, gender),
-      city = COALESCE($5, city),
-      state = COALESCE($6, state),
-      postalcode = COALESCE($7, postalcode),
-      nationality = COALESCE($8, nationality),
-      height = COALESCE($9, height),
-      modeoftransmission = COALESCE($10, modeoftransmission),
-      maritalstatus = COALESCE($11, maritalstatus),
-      numberchildren = COALESCE($12, numberchildren),
-      educationlevel = COALESCE($13, educationlevel),
-      housing = COALESCE($14, housing),
-      updated_by = $15
-    WHERE id = $16
+      numero = COALESCE($1, numero),
+      name = COALESCE($2, name),
+      surname = COALESCE($3, surname),
+      birthdate = COALESCE($4, birthdate),
+      gender = COALESCE($5, gender),
+      city_of_birth = COALESCE($6, city_of_birth),
+      city_of_residence = COALESCE($7, city_of_residence),
+      phone = COALESCE($8, phone),
+      address = COALESCE($9, address),
+      hospitalisation = COALESCE($10, hospitalisation),
+      last_visit_date = COALESCE($11, last_visit_date),
+      updated_by = $12
+    WHERE id = $13
     RETURNING *;
   `;
 
   const values = [
-    name, surname, birthdate, gender, city, state, postalcode,
-    nationality, height, modeoftransmission, maritalstatus,
-    numberchildren, educationlevel, housing, updatedBy, id
+    numero,
+    name,
+    surname,
+    birthdate,
+    gender,
+    city_of_birth,
+    city_of_residence,
+    phone,
+    address,
+    hospitalisation,
+    last_visit_date,
+    updatedBy,
+    id,
   ];
 
   const result = await pool.query(query, values);
   return result.rows[0];
 };
-// chercher :
-export const searchPatient = async (name, surname) => {
-  const query = `
-    SELECT * FROM patients
-    WHERE name ILIKE $1 OR surname ILIKE $2
-    ORDER BY surname, name
-    LIMIT 50;
-  `;
-  const values = [`%${name}%`, `%${surname}%`];
-  const result = await pool.query(query, values);
-  return result.rows;
+
+// export const searchPatients = async (searchParams) => {
+//   const { birthdate, numero, lastVisitFrom, lastVisitTo, name, surname } =
+//     searchParams;
+
+//   let query = `
+//     SELECT
+//       p.*,
+//       u1.nom as created_by_nom,
+//       u1.prenom as created_by_prenom
+//     FROM patients p
+//     LEFT JOIN users u1 ON p.created_by = u1.id
+//   `;
+
+//   const values = [];
+//   const conditions = [];
+//   let paramCount = 1;
+
+//   // Recherche par numéro de dossier (exacte)
+//   if (numero) {
+//     conditions.push(`p.numero = $${paramCount}`);
+//     values.push(numero);
+//     paramCount++;
+//   }
+//   if (birthdate) {
+//     conditions.push(`p.birthdate = $${paramCount}`);
+//     values.push(birthdate);
+//     paramCount++;
+//   }
+//   if (name) {
+//     conditions.push(`LOWER(p.name) LIKE LOWER($${paramCount})`);
+//     values.push(`%${name}%`);
+//     paramCount++;
+//   }
+//   if (surname) {
+//     conditions.push(`LOWER(p.surname) LIKE LOWER($${paramCount})`);
+//     values.push(`%${surname}%`);
+//     paramCount++;
+//   }
+
+//   // Recherche par plage de dernière visite
+//   if (lastVisitFrom) {
+//     conditions.push(`p.last_visit_date >= $${paramCount}`);
+//     values.push(lastVisitFrom);
+//     paramCount++;
+//   }
+
+//   if (lastVisitTo) {
+//     conditions.push(`p.last_visit_date <= $${paramCount}`);
+//     values.push(lastVisitTo);
+//     paramCount++;
+//   }
+
+//   if (conditions.length > 0) {
+//     query += ` WHERE ${conditions.join(" AND ")}`;
+//   }
+
+//   query += ` ORDER BY p.created_at DESC`;
+
+//   const result = await pool.query(query, values);
+//   return result.rows;
+// };
+
+export const countPatients = async () => {
+  const query = `SELECT COUNT(*) as count FROM patients`;
+  const result = await pool.query(query);
+  return parseInt(result.rows[0].count);
 };
 
+// export const updateLastVisitDate = async (id) => {
+//   const query = `
+//     UPDATE patients
+//     SET last_visit_date = NOW()
+//     WHERE id = $1
+//     RETURNING *;
+//   `;
 
-
-//Vérifie si un patient existe deja
-export const checkPatientExists = async (name, surname, birthdate) => {
-  const query = `
-    SELECT COUNT(*) FROM patients
-    WHERE LOWER(name) = LOWER($1) 
-      AND LOWER(surname) = LOWER($2)
-      AND birthdate = $3;
-  `;
-  const values = [name, surname, birthdate];
-
-  const result = await pool.query(query, values);
-  return parseInt(result.rows[0].count) > 0;
-};
+//   const result = await pool.query(query, [id]);
+//   return result.rows[0];
+// };
