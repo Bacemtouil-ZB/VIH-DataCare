@@ -10,7 +10,7 @@ import {
   //updateLastVisitController,
 } from "../controllers/patientController.js";
 import { validateCreatePatient } from "../middlewares/patientMiddleware.js";
-import { protect, authorizeMedecin } from "../middlewares/authMiddleware.js";
+import { protect, authorizeMedecin,authorizePharmacien } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
@@ -52,3 +52,6 @@ router.put("/update/:id", protect, authorizeMedecin, updatePatientController);
 // );
 
 export default router;
+
+
+

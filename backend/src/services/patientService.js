@@ -97,3 +97,4 @@ export const updatePatient = async (id, patientData, userId) => {
 // export const getNextPatientNumero = async () => {
 //   return await getNextPatientNumeroModel();
 // };
+

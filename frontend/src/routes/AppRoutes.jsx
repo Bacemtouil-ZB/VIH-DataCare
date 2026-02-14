@@ -6,7 +6,7 @@ import Landing from "../pages/Landing/Landing";
 import authRoutes from "./authRoutes";
 import medecinRoutes from "../modules/medecin/routes/MedecinRoutes";
 import AdminRoutes from "../modules/admin/routes/AdminRoutes";
-import PharmacienRoutes from "../modules/Pharmacist/routes/PharmacienRoutes";
+import PharmacienRoutes from "../modules/Pharmacist/routes/pharmaRoutes";
 // plus tard : adminRoutes, analysteRoutes...
 
 const router = createBrowserRouter([

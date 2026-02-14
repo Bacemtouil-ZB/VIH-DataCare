@@ -1,155 +1,202 @@
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import API from "../../../../../shared/utils/api";
+import VihForm from "../../../components/forms/vihForm";
 import "./VihForm.css";
-import { useState } from "react";
 
-export default function VihForm() {
+export default function VihPage() {
+  const { patientId } = useParams();
+  const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
-    mode_contamination: "",
-    type_depistage: "",
-    circonstance_decouverte: "",
-    date_derniere_negative: "",
-    date_contamination: "",
-    date_vih_positif: "",
-    stade_cdc: "",
-    debut_stade_c: "",
-    profil_seroconversion: false,
-    typage_hla_b5701: "",
-  });
+  const [vihData, setVihData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [successMessage, setSuccessMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value
-    }));
+  // Récupérer les données VIH existantes au chargement
+  useEffect(() => {
+    if (patientId) {
+      fetchVihData();
+    }
+  }, [patientId]);
+
+  /**
+   * Récupère les données VIH du patient (en arrière-plan, ne bloque pas l'affichage)
+   */
+  const fetchVihData = async () => {
+    try {
+      const response = await API.get(`/api/vih/patient/${patientId}`);
+      
+      // Succès - données trouvées
+      if (response.data && response.data.vih) {
+        setVihData(response.data.vih);
+      }
+      
+    } catch (error) {
+      // ✅ Si 404 ou erreur, on affiche quand même le formulaire vide (mode création)
+      console.log("Aucune donnée VIH trouvée, mode création activé");
+      setVihData(null);
+    }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Fiche VIH :", formData);
-    // Ici appeler API createVih(formData) ou updateVih(formData)
+  /**
+   * Gère la soumission du formulaire (création ou mise à jour)
+   */
+  const handleSubmit = async (formData) => {
+    try {
+      setIsLoading(true);
+      setErrors({});
+      setSuccessMessage("");
+      setErrorMessage("");
+
+      const isUpdate = vihData !== null;
+
+      let response;
+
+      if (isUpdate) {
+        // Mise à jour - PUT /api/vih/update/:id
+        response = await API.put(`/api/vih/update/${vihData.id}`, formData);
+      } else {
+        // Création - POST /api/vih/add avec patient_id dans le body
+        response = await API.post("/api/vih/add", {
+          ...formData,
+          patient_id: parseInt(patientId)
+        });
+      }
+
+      // Succès
+      setSuccessMessage(
+        isUpdate
+          ? "Fiche VIH mise à jour avec succès"
+          : "Fiche VIH créée avec succès"
+      );
+
+      // Recharger les données
+      await fetchVihData();
+
+      // Faire défiler vers le haut pour voir le message
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+    } catch (error) {
+      console.error("Erreur:", error);
+
+      // Gérer les erreurs de validation
+      if (error.response?.data?.errors) {
+        const errorObj = {};
+        error.response.data.errors.forEach((err) => {
+          errorObj[err.field] = err.message;
+        });
+        setErrors(errorObj);
+      } else {
+        setErrorMessage(
+          error.response?.data?.message || 
+          "Une erreur s'est produite lors de l'enregistrement"
+        );
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
 
+  /**
+   * Supprime la fiche VIH (admin uniquement)
+   */
+  const handleDelete = async () => {
+    if (!window.confirm("Êtes-vous sûr de vouloir supprimer cette fiche VIH ?")) {
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+
+      await API.delete(`/api/vih/${vihData.id}`);
+
+      setSuccessMessage("Fiche VIH supprimée avec succès");
+
+      // Rediriger après 1 seconde
+      setTimeout(() => {
+        navigate(-1);
+      }, 1000);
+
+    } catch (error) {
+      console.error("Erreur:", error);
+      setErrorMessage(
+        error.response?.data?.message || 
+        "Une erreur s'est produite lors de la suppression"
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // ✅ CHANGEMENT : Afficher immédiatement le formulaire, pas de loading
   return (
     <div className="medical-page">
-
+      
+      {/* En-tête de la page */}
       <div className="page-header">
-        <h2>Fiche VIH du patient</h2>
-      </div>
-
-      <div className="form-card">
-        <form onSubmit={handleSubmit} className="form-grid">
-
-          <div className="form-group">
-            <label>Mode de contamination</label>
-            <input
-              name="mode_contamination"
-              value={formData.mode_contamination}
-              onChange={handleChange}
-              placeholder="Ex: Sexuelle, Mère-Enfant..."
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Type de dépistage</label>
-            <input
-              name="type_depistage"
-              value={formData.type_depistage}
-              onChange={handleChange}
-              placeholder="Ex: Routinier, Symptômes..."
-            />
-          </div>
-
-          <div className="form-group full-width">
-            <label>Circonstance de découverte</label>
-            <input
-              name="circonstance_decouverte"
-              value={formData.circonstance_decouverte}
-              onChange={handleChange}
-              placeholder="Ex: Consultation, dépistage volontaire..."
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Date dernière négative</label>
-            <input
-              type="date"
-              name="date_derniere_negative"
-              value={formData.date_derniere_negative}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Date de contamination</label>
-            <input
-              type="date"
-              name="date_contamination"
-              value={formData.date_contamination}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Date VIH positif</label>
-            <input
-              type="date"
-              name="date_vih_positif"
-              value={formData.date_vih_positif}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Stade CDC</label>
-            <input
-              name="stade_cdc"
-              value={formData.stade_cdc}
-              onChange={handleChange}
-              placeholder="Ex: A, B, C"
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Début stade C</label>
-            <input
-              type="date"
-              name="debut_stade_c"
-              value={formData.debut_stade_c}
-              onChange={handleChange}
-            />
-          </div>
-
-          <div className="form-group">
-            <label>
-              <input
-                type="checkbox"
-                name="profil_seroconversion"
-                checked={formData.profil_seroconversion}
-                onChange={handleChange}
-              />
-              Profil de séroconversion
-            </label>
-          </div>
-
-          <div className="form-group">
-            <label>Typage HLA-B5701</label>
-            <input
-              name="typage_hla_b5701"
-              value={formData.typage_hla_b5701}
-              onChange={handleChange}
-              placeholder="Ex: Positif, Négatif"
-            />
-          </div>
-
-          <div className="form-group full-width">
-            <button type="submit" className="save-btn">
-              Enregistrer la fiche VIH
+        <div>
+          <h2>Fiche VIH du patient</h2>
+          {vihData && (
+            <p className="subtitle">
+              Dernière modification : {new Date(vihData.updated_at).toLocaleDateString("fr-FR")}
+            </p>
+          )}
+        </div>
+        
+        {/* Boutons d'action */}
+        <div className="header-actions">          
+          {vihData && (
+            <button 
+              onClick={handleDelete}
+              className="btn-danger"
+              disabled={isLoading}
+            >
+              🗑️ Supprimer
             </button>
-          </div>
-
-        </form>
+          )}
+        </div>
       </div>
+
+      {/* Messages de succès */}
+      {successMessage && (
+        <div className="alert alert-success">
+          <svg className="alert-icon" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+          </svg>
+          {successMessage}
+        </div>
+      )}
+
+      {/* Messages d'erreur */}
+      {errorMessage && (
+        <div className="alert alert-error">
+          <svg className="alert-icon" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+          </svg>
+          {errorMessage}
+        </div>
+      )}
+
+      {/* Info mode création/édition */}
+      {!vihData && (
+        <div className="alert alert-info">
+          <svg className="alert-icon" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
+          </svg>
+          Aucune fiche VIH trouvée pour ce patient. Créez-en une nouvelle ci-dessous.
+        </div>
+      )}
+
+      {/* ✅ Formulaire VIH - Toujours affiché */}
+      <VihForm
+        initialData={vihData}
+        onSubmit={handleSubmit}
+        isLoading={isLoading}
+        errors={errors}
+      />
+
     </div>
   );
 }
