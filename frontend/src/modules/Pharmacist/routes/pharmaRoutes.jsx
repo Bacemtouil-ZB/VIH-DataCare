@@ -4,12 +4,8 @@ import DashboardLayout from "../../../shared/components/layout/DashboardLayout";
 import ProfilPage from "../../../pages/parametres/profile";
 import Patientsordonnances from "../pages/Patientsordonnances.jsx";
 import MainWorkspaceLayout from "../pages/MainWorkspaceLayout";
+import Ordonnancedetail from "../pages/workspace/Ordonnancedetail.jsx";
 
-/**
- * ==========================================
- * ROUTES PHARMACIEN - CORRIGÉES
- * ==========================================
- */
 const pharmacienRoutes = [
   {
     path: "/pharmacien",
@@ -19,25 +15,14 @@ const pharmacienRoutes = [
       </ProtectedRoute>
     ),
     children: [
-      // ✅ Redirection par défaut vers patients
       { 
         index: true, 
-        element: <Navigate to="patients" replace /> 
+        element: <Navigate to="ordonnances" replace /> 
       },
-      
-      // ✅ Liste des patients avec ordonnances
-      { 
-        path: "patients", 
-        element: <Patientsordonnances /> 
-      },
-      
-      // ✅ AJOUTER cette route si vous voulez /pharmacien/ordonnances
       { 
         path: "ordonnances", 
         element: <Patientsordonnances /> 
       },
-      
-      // Paramètres
       { 
         path: "settings", 
         element: <ProfilPage /> 
@@ -45,17 +30,19 @@ const pharmacienRoutes = [
     ],
   },
 
-  // ==========================================
-  // WORKSPACE
-  // ==========================================
   {
-    path: "/pharmacien/workspace",
+    path: "/pharmacien/workspace/:numero",
     element: (
       <ProtectedRoute allowedRoles={["pharmacien"]}>
         <MainWorkspaceLayout />
       </ProtectedRoute>
     ),
-    // PAS de children - MainPanel gère tout
+    children: [
+      {
+        index: true,
+        element: <Ordonnancedetail />
+      }
+    ],
   },
 ];
 

@@ -140,15 +140,6 @@ export const updateVih = async (id, vihData, updatedBy) => {
   return result.rows[0];
 };
 
-/**
- * Supprime un dossier VIH
- */
-export const deleteVih = async (id) => {
-  const query = `DELETE FROM vih WHERE id = $1 RETURNING id`;
-  const result = await pool.query(query, [id]);
-  return result.rows.length > 0;
-};
-
 export const checkVihExistsForPatient = async (patientId) => {
   const query = `
     SELECT COUNT(*) as count FROM vih
@@ -156,4 +147,34 @@ export const checkVihExistsForPatient = async (patientId) => {
   `;
   const result = await pool.query(query, [patientId]);
   return parseInt(result.rows[0].count) > 0;
+};
+export const getVihHistoryByPatientId = async (patientId) => {
+  const query = `
+    SELECT 
+      v.id,
+      v.mode_contamination,
+      v.type_depistage,
+      v.circonstance_decouverte,
+      v.date_derniere_negative,
+      v.date_contamination,
+      v.date_vih_positif,
+      v.stade_cdc,
+      v.debut_stade_c,
+      v.typage_hla_b5701,
+      v.profil_seroconversion,
+      v.created_at,
+      v.updated_at,
+      u1.nom as created_by_nom,
+      u1.prenom as created_by_prenom,
+      u2.nom as updated_by_nom,
+      u2.prenom as updated_by_prenom
+    FROM vih v
+    LEFT JOIN users u1 ON v.created_by = u1.id
+    LEFT JOIN users u2 ON v.updated_by = u2.id
+    WHERE v.patient_id = $1
+    ORDER BY v.updated_at DESC, v.created_at DESC;
+  `;
+
+  const result = await pool.query(query, [patientId]);
+  return result.rows;
 };

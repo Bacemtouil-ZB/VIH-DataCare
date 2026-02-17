@@ -34,6 +34,7 @@
 .header-actions {
   display: flex;
   gap: 10px;
+  flex-wrap: wrap;
 }
 
 /* ========================================
@@ -90,12 +91,50 @@
    BOUTONS
 ======================================== */
 
+.btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #388E3C 0%, #2e7d32 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(56, 142, 60, 0.3);
+}
+
+.btn-success:hover {
+  background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(56, 142, 60, 0.4);
+}
+
 .btn-secondary {
   background-color: #e5e7eb;
   color: #374151;
   border: 1px solid #d1d5db;
   border-radius: 8px;
-  padding: 8px 16px;
+  padding: 10px 20px;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -107,25 +146,10 @@
   transform: translateY(-1px);
 }
 
-.btn-danger {
-  background-color: #fee2e2;
-  color: #991b1b;
-  border: 1px solid #fca5a5;
-  border-radius: 8px;
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-danger:hover {
-  background-color: #fecaca;
-  transform: translateY(-1px);
-}
-
 .btn-danger:disabled,
-.btn-secondary:disabled {
+.btn-secondary:disabled,
+.btn-primary:disabled,
+.btn-success:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
@@ -148,7 +172,6 @@
   gap: 16px;
 }
 
-/* Groupes de champs */
 .form-group {
   display: flex;
   flex-direction: column;
@@ -165,7 +188,29 @@
   margin-bottom: 6px;
 }
 
-/* Inputs, selects, textarea */
+.form-group label .required {
+  color: #ef4444;
+  margin-left: 2px;
+}
+
+/* ✅ Info pour le champ "Début stade C" */
+.form-group label .field-info {
+  font-size: 12px;
+  font-weight: 400;
+  color: #6b7280;
+  font-style: italic;
+  margin-left: 6px;
+}
+
+/* ✅ Hint sous le champ */
+.field-hint {
+  display: block;
+  font-size: 12px;
+  color: #6b7280;
+  margin-top: 4px;
+  font-style: italic;
+}
+
 .form-group input,
 .form-group textarea,
 .form-group select {
@@ -190,19 +235,15 @@
 .form-group textarea:disabled,
 .form-group select:disabled {
   background-color: #f9fafb;
+  color: #6b7280;
   cursor: not-allowed;
-  opacity: 0.6;
+  opacity: 0.8;
+  border-color: #e5e7eb;
 }
 
-/* État d'erreur */
-.form-group input.error,
-.form-group select.error {
-  border-color: #ef4444;
-}
-
-.form-group input.error:focus,
-.form-group select.error:focus {
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+.form-group input[type="radio"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .error-message {
@@ -249,6 +290,11 @@
   accent-color: #388E3C;
 }
 
+.radio-label input[type="radio"]:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 .radio-label span {
   user-select: none;
 }
@@ -275,7 +321,7 @@
   width: 100%;
 }
 
-.save-btn:hover {
+.save-btn:hover:not(:disabled) {
   background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%);
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(46, 125, 50, 0.4);
@@ -336,6 +382,36 @@
   font-size: 14px;
 }
 
+/* ✅ Loading pour formulaire et historique */
+.form-loading,
+.history-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px 20px;
+  background: #f9fafb;
+  border-radius: 12px;
+  margin: 20px 0;
+}
+
+.form-loading .spinner,
+.history-loading .spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #388E3C;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+.form-loading p,
+.history-loading p {
+  color: #6b7280;
+  font-size: 14px;
+  margin: 0;
+}
+
 /* ========================================
    RESPONSIVE
 ======================================== */
@@ -356,7 +432,8 @@
   }
 
   .btn-secondary,
-  .btn-danger {
+  .btn-primary,
+  .btn-success {
     width: 100%;
   }
 

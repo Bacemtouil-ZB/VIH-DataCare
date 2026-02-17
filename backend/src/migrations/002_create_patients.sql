@@ -1,19 +1,16 @@
 CREATE TABLE patients (
   id SERIAL PRIMARY KEY,
+  numero VARCHAR(100) UNIQUE NOT NULL, --FORMATTTTTTTTTTTTTTTT
   name VARCHAR(100) NOT NULL,
   surname VARCHAR(100) NOT NULL,
   birthdate DATE NOT NULL,
   gender VARCHAR(100),
-  city VARCHAR(100) NOT NULL,
-  state VARCHAR(100) NOT NULL,
-  postalcode VARCHAR(20) NOT NULL,
-  nationality VARCHAR(100) NOT NULL,
-  height DECIMAL(5,2)  NOT NULL,
-  modeoftransmission VARCHAR(100)  NOT NULL,
-  maritalstatus VARCHAR(50)  NOT NULL ,
-  numberchildren INTEGER DEFAULT 0,
-  educationlevel VARCHAR(100),
-  housing VARCHAR(100),
+  city_of_Birth VARCHAR(100) NOT NULL,
+  city_of_Residence VARCHAR(100) NOT NULL,
+  phone VARCHAR(20) NOT NULL,
+  address VARCHAR(100),
+  hospitalisation VARCHAR(20) NOT NULL CHECK (hospitalisation IN ('interne', 'externe')),
+  last_visit_date TIMESTAMP,
   created_by INTEGER REFERENCES users(id), -- Qui a créé ce patient
   updated_by INTEGER REFERENCES users(id), -- Qui a mis à jour ce patient
   created_at TIMESTAMP DEFAULT NOW(),
@@ -24,6 +21,8 @@ CREATE TABLE patients (
 CREATE INDEX idx_patients_name ON patients(name);
 CREATE INDEX idx_patients_surname ON patients(surname);
 CREATE INDEX idx_patients_birthdate ON patients(birthdate);
+CREATE INDEX idx_patients_last_visit_date ON patients(last_visit_date);
+CREATE INDEX idx_patients_hospitalisation ON patients(hospitalisation);
 
 -- Trigger pour mettre à jour updated_at
 CREATE OR REPLACE FUNCTION update_patients_updated_at()

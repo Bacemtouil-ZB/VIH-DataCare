@@ -96,14 +96,14 @@ export const getNextIntakeDate = async (ordonnanceId) => {
 
 export const getOrdonnanceById = async (id) => {
   const query = `
-    SELECT * FROM v_ordonnances_details
+    SELECT * FROM ordonnances
     WHERE id = $1;
   `;
   
   const result = await pool.query(query, [id]);
   return result.rows[0] || null;
 };
-//medecin
+//medecin: 
 export const updateOrdonnance = async (id, data) => {
   const {
     nom_traitement,
@@ -152,7 +152,6 @@ export const countOrdonnancesByStatut = async () => {
   return result.rows;
 };
 
-
 export const getPatientsPerduDeVue = async () => {
   const query = `
     SELECT DISTINCT
@@ -172,7 +171,6 @@ export const getPatientsPerduDeVue = async () => {
   const result = await pool.query(query);
   return result.rows;
 };
-
 
 export const updateDateProchainePrise = async (ordonnanceId, dateProchainePrise) => {
   const query = `

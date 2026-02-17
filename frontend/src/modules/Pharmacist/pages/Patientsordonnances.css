@@ -1,309 +1,361 @@
-/* ========================================
-   PAGE PATIENTS ORDONNANCES
-======================================== */
+/* ==========================================
+   ORDONNANCES PAGE - PROFESSIONNEL
+   ========================================== */
 
-.patients-page {
-  padding: 20px;
-  max-width: 1400px;
-  margin: 0 auto;
+.ordonnances-page-container {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #f8f9fa;
+  overflow: hidden;
 }
 
-/* ========================================
+/* ==========================================
    HEADER
-======================================== */
-
-.header {
+   ========================================== */
+.ordonnances-header {
+  padding: 1.5rem 2rem;
+  background: white;
+  border-bottom: 2px solid #e5e7eb;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
-  padding-bottom: 15px;
-  border-bottom: 2px solid #e5e7eb;
+  flex-shrink: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.header h2 {
-  font-size: 24px;
+.page-title {
+  font-size: 1.5rem;
+  color: #1f2937;
   font-weight: 700;
-  color: #388E3C;
   margin: 0;
 }
 
-.search {
-  padding: 10px 16px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 14px;
-  width: 300px;
-  transition: all 0.2s ease;
-}
-
-.search:focus {
+.search-input {
+  padding: 0.75rem 1.25rem;
+  border: 2px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  width: 400px;
   outline: none;
-  border-color: #388E3C;
-  box-shadow: 0 0 0 3px rgba(56, 142, 60, 0.1);
+  transition: all 0.2s;
 }
 
-/* ========================================
-   LOADING & ERROR
-======================================== */
-
-.loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
-  text-align: center;
+.search-input:focus {
+  border-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
 }
 
-.spinner {
-  width: 48px;
-  height: 48px;
-  border: 4px solid #e5e7eb;
-  border-top-color: #388E3C;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  margin-bottom: 16px;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.loading p {
-  color: #6b7280;
-  font-size: 14px;
-}
-
-.error-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
-  text-align: center;
-}
-
-.error-message {
-  color: #991b1b;
-  font-size: 16px;
-  margin-bottom: 16px;
-}
-
-.btn-retry {
-  background-color: #388E3C;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 20px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.btn-retry:hover {
-  background-color: #2e7d32;
-  transform: translateY(-1px);
-}
-
-/* ========================================
-   TABLE
-======================================== */
-
-.table {
-  width: 100%;
-  border-collapse: collapse;
+/* ==========================================
+   TABLE WRAPPER
+   ========================================== */
+.ordonnances-table-wrapper {
+  flex: 1;
+  overflow: auto;
   background: white;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  margin: 0;
+  padding: 0;
 }
 
-.table thead {
-  background: linear-gradient(135deg, #388E3C 0%, #2e7d32 100%);
-  color: white;
+/* ==========================================
+   TABLE
+   ========================================== */
+.ordonnances-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.9rem;
 }
 
-.table thead th {
-  padding: 14px 12px;
+/* THEAD */
+.ordonnances-table thead {
+  position: sticky;
+  top: 0;
+  background: #f9fafb;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.ordonnances-table th {
+  padding: 1rem 1.25rem;
   text-align: left;
-  font-size: 13px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.table tbody tr {
-  border-bottom: 1px solid #e5e7eb;
-  transition: background-color 0.2s ease;
-}
-
-.table tbody tr:hover {
-  background-color: #f9fafb;
-  cursor: pointer;
-}
-
-.table tbody td {
-  padding: 14px 12px;
-  font-size: 14px;
-  color: #1f2937;
-}
-
-.table-row {
-  cursor: pointer;
-}
-
-.no-data {
-  text-align: center;
-  padding: 40px 20px !important;
+  font-size: 0.75rem;
+  font-weight: 700;
   color: #6b7280;
-  font-style: italic;
-}
-
-/* Colonnes spécifiques */
-.td-name {
-  font-weight: 600;
-  color: #388E3C;
-}
-
-.td-surname {
-  color: #4b5563;
-}
-
-.td-traitement {
-  font-weight: 500;
-}
-
-.td-quantite {
-  text-align: center;
-  font-weight: 600;
-}
-
-/* ========================================
-   BADGES DE STATUT
-======================================== */
-
-.badge {
-  display: inline-block;
-  padding: 5px 12px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: #f9fafb;
+  border-bottom: 2px solid #e5e7eb;
   white-space: nowrap;
 }
 
-/* Perdu de vue - Rouge */
-.statut-perdu {
-  background-color: #fee2e2;
-  color: #991b1b;
+/* LARGEURS COLONNES - SANS ACTION */
+.col-numero { width: 13%; min-width: 140px; }
+.col-nom { width: 12%; min-width: 120px; }
+.col-prenom { width: 12%; min-width: 120px; }
+.col-traitement { width: 24%; min-width: 220px; }
+.col-date { width: 12%; min-width: 120px; }
+.col-quantite { width: 9%; min-width: 100px; text-align: center; }
+.col-statut { width: 15%; min-width: 160px; }
+
+/* TBODY */
+.ordonnances-table tbody tr {
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid #f3f4f6;
 }
 
-/* En retard - Orange */
-.statut-retard {
-  background-color: #fed7aa;
-  color: #9a3412;
+.ordonnances-table tbody tr:hover {
+  background: #f0fdf4;
+  transform: translateX(2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-/* Retard léger - Jaune */
-.statut-retard-leger {
-  background-color: #fef3c7;
-  color: #92400e;
+.ordonnances-table td {
+  padding: 1.125rem 1.25rem;
+  color: #374151;
+  vertical-align: middle;
+  border-bottom: 1px solid #f3f4f6;
 }
 
-/* À venir - Bleu */
-.statut-a-venir {
-  background-color: #dbeafe;
-  color: #1e40af;
+/* ==========================================
+   CELLULES SPÉCIFIQUES
+   ========================================== */
+
+/* N° Dossier - SANS EFFET VERT */
+.td-numero {
+  font-weight: 700;
 }
 
-/* En cours - Vert */
-.statut-en-cours {
-  background-color: #d1fae5;
-  color: #065f46;
+.numero-simple {
+  display: inline-block;
+  padding: 0.5rem 0.875rem;
+  background: #f3f4f6;
+  color: #374151;
+  border-radius: 0.5rem;
+  font-family: 'Courier New', monospace;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  border: 2px solid #e5e7eb;
 }
 
-/* Inconnu - Gris */
-.statut-inconnu {
-  background-color: #f3f4f6;
+/* Nom */
+.td-nom {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 0.95rem;
+}
+
+/* Prénom */
+.td-prenom {
   color: #4b5563;
 }
 
-/* ========================================
-   BOUTON ACTION
-======================================== */
+/* Traitement */
+.td-traitement {
+  line-height: 1.4;
+  color: #374151;
+}
 
-.btn-action {
-  background: none;
+/* Date */
+.td-date {
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.date-retard {
+  display: inline-block;
+  padding: 0.375rem 0.75rem;
+  background: #fee2e2;
+  color: #991b1b;
+  border-radius: 0.375rem;
+  font-weight: 700;
+  border: 1px solid #fecaca;
+}
+
+.date-future {
+  display: inline-block;
+  padding: 0.375rem 0.75rem;
+  background: #fed7aa;
+  color: #c2410c;
+  border-radius: 0.375rem;
+  font-weight: 700;
+  border: 1px solid #fdba74;
+}
+
+/* Quantité */
+.td-quantite {
+  text-align: center;
+  font-weight: 700;
+  color: #059669;
+  font-size: 1.05rem;
+}
+
+/* ==========================================
+   STATUT
+   ========================================== */
+.td-statut {
+  min-width: 150px;
+}
+
+.statut-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  align-items: flex-start;
+}
+
+.statut-badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+  text-transform: capitalize;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.statut-badge.statut-actif {
+  background: #dbeafe;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+}
+
+.statut-badge.statut-avenir {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.statut-badge.statut-leger {
+  background: #fef3c7;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+.statut-badge.statut-retard {
+  background: #fed7aa;
+  color: #c2410c;
+  border: 1px solid #fdba74;
+}
+
+.statut-badge.statut-perdu {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.statut-badge.statut-default {
+  background: #f3f4f6;
+  color: #1f2937;
+  border: 1px solid #e5e7eb;
+}
+
+.ecart-badge {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  background: #fef2f2;
+  color: #dc2626;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border: 1px solid #fecaca;
+}
+
+/* ==========================================
+   LOADING & ERROR
+   ========================================== */
+.loading-state,
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 1.5rem;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #e5e7eb;
+  border-top-color: #10b981;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error-message {
+  color: #dc2626;
+  background: #fee2e2;
+  padding: 1rem 2rem;
+  border-radius: 0.5rem;
+  border: 1px solid #fecaca;
+  font-weight: 600;
+}
+
+.btn-retry {
+  padding: 0.75rem 2rem;
+  background: #10b981;
+  color: white;
   border: none;
-  font-size: 18px;
+  border-radius: 0.5rem;
+  font-weight: 700;
   cursor: pointer;
-  padding: 6px 10px;
-  border-radius: 6px;
-  transition: all 0.2s ease;
+  transition: all 0.2s;
 }
 
-.btn-action:hover {
-  background-color: #e5e7eb;
-  transform: scale(1.1);
+.btn-retry:hover {
+  background: #059669;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
 }
 
-/* ========================================
+/* NO DATA */
+.no-data {
+  text-align: center;
+  padding: 4rem;
+  color: #9ca3af;
+  font-style: italic;
+  font-size: 1rem;
+}
+
+/* ==========================================
    RESPONSIVE
-======================================== */
-
-@media (max-width: 1200px) {
-  .table {
-    font-size: 13px;
+   ========================================== */
+@media (max-width: 1600px) {
+  .ordonnances-table {
+    font-size: 0.85rem;
   }
-
-  .table thead th,
-  .table tbody td {
-    padding: 10px 8px;
+  
+  .ordonnances-table th,
+  .ordonnances-table td {
+    padding: 0.875rem 1rem;
   }
 }
 
-@media (max-width: 768px) {
-  .header {
+@media (max-width: 1024px) {
+  .ordonnances-header {
     flex-direction: column;
-    gap: 12px;
+    gap: 1rem;
     align-items: flex-start;
   }
 
-  .search {
+  .search-input {
     width: 100%;
   }
 
-  .table {
-    display: block;
+  .ordonnances-table-wrapper {
     overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
   }
 
-  .table thead th,
-  .table tbody td {
-    min-width: 100px;
-  }
-}
-
-@media (max-width: 480px) {
-  .patients-page {
-    padding: 12px;
-  }
-
-  .header h2 {
-    font-size: 20px;
-  }
-
-  .table {
-    font-size: 12px;
-  }
-
-  .badge {
-    font-size: 11px;
-    padding: 4px 10px;
+  .ordonnances-table {
+    min-width: 1200px;
   }
 }

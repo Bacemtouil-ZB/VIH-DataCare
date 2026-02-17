@@ -3,7 +3,7 @@ import {
   getVihById as getVihByIdService,
   getVihByPatientId as getVihByPatientIdService,
   updateVih as updateVihService,
-  deleteVih as deleteVihService,
+  getVihHistory as getVihHistoryService
 } from "../services/vihService.js";
 
 export const createVihController = async (req, res) => {
@@ -96,22 +96,20 @@ export const updateVihController = async (req, res) => {
     });
   }
 };
-
-export const deleteVihController = async (req, res) => {
+export const getVihHistoryController = async (req, res) => {
   try {
-    const { id } = req.params;
-    await deleteVihService(parseInt(id));
+    const { patientId } = req.params;
+    const history = await getVihHistoryService(parseInt(patientId));
 
     res.status(200).json({
       success: true,
-      message: "Dossier VIH supprimé avec succès",
+      history,
+      total: history.length,
     });
   } catch (error) {
-    console.error("Delete VIH error:", error.message);
+    console.error(" Get VIH history error:", error.message);
     
-    const statusCode = error.message.includes("non trouvé") ? 404 : 400;
-    
-    res.status(statusCode).json({
+    res.status(400).json({
       success: false,
       message: error.message,
     });

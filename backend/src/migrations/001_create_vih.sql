@@ -1,12 +1,12 @@
 CREATE TABLE vih (
-  id SERIAL PRIMARY KEY,
-  patient_id INTEGER NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+    id SERIAL PRIMARY KEY,
+    patient_id INTEGER NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
     mode_contamination VARCHAR(50) ,
     type_depistage VARCHAR(20),
     circonstance_decouverte VARCHAR(100) , --not null 
     date_derniere_negative DATE,
-  date_contamination DATE,
-  date_vih_positif DATE,
+    date_contamination DATE,
+    date_vih_positif DATE,
     stade_cdc VARCHAR(10) ,
     debut_stade_c DATE,
     profil_seroconversion BOOLEAN DEFAULT FALSE,
@@ -16,8 +16,9 @@ CREATE TABLE vih (
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW(),
   
-  UNIQUE(patient_id)
 );
+ALTER TABLE vih DROP CONSTRAINT IF EXISTS vih_patient_id_key;
+COMMIT
 -- Index pour optimiser les recherches
 CREATE INDEX idx_vih_patient_id ON vih(patient_id);
 -- Trigger pour mettre à jour updated_at automatiquement

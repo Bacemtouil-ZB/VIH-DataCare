@@ -35,19 +35,23 @@ export const findMedicalTreatmentByNumeroDossier = async (numeroDossier) => {
   }
 
   const ordonnances = await findByNumeroModel(numeroDossier);
-  
-  return ordonnances;
+    return {
+    success: true,
+    ordonnances: ordonnances,
+    patient: patient,
+  };
 };
 
 export const getThreeLastPrise = async (numeroDossier) => {
-  // Vérifier que le patient existe
   const patient = await getPatientByNumero(numeroDossier);
   if (!patient) {
     throw new Error("Patient non trouvé");
   }
-
   const prises = await getThreeLastPriseModel(numeroDossier);
-  return prises;
+  return {
+    success: true,
+    prises: prises,
+  };
 };
 
 export const getTreatmentStartDate = async (ordonnanceId) => {

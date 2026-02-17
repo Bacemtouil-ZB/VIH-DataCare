@@ -1,202 +1,586 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import toast, { Toaster } from 'react-hot-toast';
 import API from "../../../../../shared/utils/api";
-import VihForm from "../../../components/forms/vihForm";
-import "./VihForm.css";
+import VihHistory from "../../../components/layout/vihhistory";
+
+const MODES_CONTAMINATION = [
+  "A.E.S", "Homosexuel", "Bisexuel", "Hémophile", "Hétérosexuel",
+  "Mère/Nouveau-né", "Toxicomanie IV", "Transfusion", "Hémophilie", "Inconnu", "Autre"
+];
+
+const TYPES_DEPISTAGE = ["Trod", "Elisa", "Autres"];
+
+const CIRCONSTANCES_DECOUVERTE = [
+  "Proposition d'une association",
+  "Proposition à l'initiative du patient",
+  "Proposition du médecin",
+  "Demande du patient",
+  "Autres circonstances"
+];
+
+const STADES_CDC = [
+  "A0", "A1", "A2", "A3",
+  "B0", "B1", "B2", "B3",
+  "C0", "C1", "C2", "C3"
+];
 
 export default function VihPage() {
-  const { patientId } = useParams();
+  const { numero } = useParams();
   const navigate = useNavigate();
 
-  const [vihData, setVihData] = useState(null);
+  const [patientId, setPatientId] = useState(null);
+  const [currentVih, setCurrentVih] = useState(null);
+  const [vihHistory, setVihHistory] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState({});
-  const [successMessage, setSuccessMessage] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  const [isLoadingPatient, setIsLoadingPatient] = useState(true);
+  const [mode, setMode] = useState("view");
+  const [showForm, setShowForm] = useState(false);
+  const [existingDebutStadeC, setExistingDebutStadeC] = useState(null);
 
-  // Récupérer les données VIH existantes au chargement
+  const [formData, setFormData] = useState({
+    mode_contamination: "",
+    type_depistage: "",
+    circonstance_decouverte: "",
+    date_derniere_negative: "",
+    date_contamination: "",
+    date_vih_positif: "",
+    stade_cdc: "",
+    debut_stade_c: "",
+    typage_hla_b5701: "",
+    profil_seroconversion: false,
+  });
+
+  const formatDateForInput = (isoDate) => {
+    if (!isoDate) return "";
+    const date = new Date(isoDate);
+    if (isNaN(date.getTime())) return "";
+    return date.toISOString().split('T')[0];
+  };
+
+  useEffect(() => {
+    if (numero) {
+      fetchPatientId();
+    }
+  }, [numero]);
+
   useEffect(() => {
     if (patientId) {
-      fetchVihData();
+      fetchVihHistory();
     }
   }, [patientId]);
 
-  /**
-   * Récupère les données VIH du patient (en arrière-plan, ne bloque pas l'affichage)
-   */
-  const fetchVihData = async () => {
+  useEffect(() => {
+    if (currentVih) {
+      setFormData({
+        mode_contamination: currentVih.mode_contamination || "",
+        type_depistage: currentVih.type_depistage || "",
+        circonstance_decouverte: currentVih.circonstance_decouverte || "",
+        date_derniere_negative: formatDateForInput(currentVih.date_derniere_negative),
+        date_contamination: formatDateForInput(currentVih.date_contamination),
+        date_vih_positif: formatDateForInput(currentVih.date_vih_positif),
+        stade_cdc: currentVih.stade_cdc || "",
+        debut_stade_c: formatDateForInput(currentVih.debut_stade_c),
+        typage_hla_b5701: currentVih.typage_hla_b5701 || "",
+        profil_seroconversion: currentVih.profil_seroconversion || false,
+      });
+    } else if (mode === "create" && existingDebutStadeC) {
+      setFormData(prev => ({
+        ...prev,
+        debut_stade_c: formatDateForInput(existingDebutStadeC)
+      }));
+    } else if (mode === "create") {
+      setFormData({
+        mode_contamination: "",
+        type_depistage: "",
+        circonstance_decouverte: "",
+        date_derniere_negative: "",
+        date_contamination: "",
+        date_vih_positif: "",
+        stade_cdc: "",
+        debut_stade_c: "",
+        typage_hla_b5701: "",
+        profil_seroconversion: false,
+      });
+    }
+  }, [currentVih, mode, existingDebutStadeC]);
+
+  const fetchPatientId = async () => {
     try {
-      const response = await API.get(`/api/vih/patient/${patientId}`);
+      setIsLoadingPatient(true);
+      const response = await API.get(`/patients/numero/${numero}`);
       
-      // Succès - données trouvées
-      if (response.data && response.data.vih) {
-        setVihData(response.data.vih);
+      if (response.data && response.data.patient) {
+        setPatientId(response.data.patient.id);
+      } else {
+        toast.error(" Patient non trouvé");
       }
-      
     } catch (error) {
-      // ✅ Si 404 ou erreur, on affiche quand même le formulaire vide (mode création)
-      console.log("Aucune donnée VIH trouvée, mode création activé");
-      setVihData(null);
+      console.error(" Erreur récupération patient:", error);
+      toast.error(" Impossible de récupérer les informations du patient");
+    } finally {
+      setIsLoadingPatient(false);
     }
   };
 
-  /**
-   * Gère la soumission du formulaire (création ou mise à jour)
-   */
-  const handleSubmit = async (formData) => {
+  const fetchVihHistory = async () => {
+    try {
+      const response = await API.get(`/vih/history/${patientId}`);
+      
+      if (response.data && response.data.history) {
+        const history = response.data.history;
+        setVihHistory(history);
+        
+        const firstWithDebutStadeC = history
+          .slice()
+          .reverse()
+          .find(vih => vih.debut_stade_c);
+        
+        setExistingDebutStadeC(firstWithDebutStadeC?.debut_stade_c || null);
+        
+        if (history.length > 0) {
+          setCurrentVih(history[0]);
+          setMode("view");
+          setShowForm(false);
+        } else {
+          setCurrentVih(null);
+          setMode("create");
+          setShowForm(false);
+        }
+      }
+      
+    } catch (error) {
+      if (error.response?.status === 404) {
+        setVihHistory([]);
+        setCurrentVih(null);
+        setMode("create");
+        setShowForm(false);
+      } else {
+        console.error("Erreur:", error);
+        toast.error("Erreur lors du chargement de l'historique");
+      }
+    }
+  };
+
+  const handleFormChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const toastId = toast.loading(" Enregistrement en cours...");
+    
     try {
       setIsLoading(true);
-      setErrors({});
-      setSuccessMessage("");
-      setErrorMessage("");
 
-      const isUpdate = vihData !== null;
-
-      let response;
-
-      if (isUpdate) {
-        // Mise à jour - PUT /api/vih/update/:id
-        response = await API.put(`/api/vih/update/${vihData.id}`, formData);
-      } else {
-        // Création - POST /api/vih/add avec patient_id dans le body
-        response = await API.post("/api/vih/add", {
+      if (mode === "edit") {
+        await API.put(`/vih/update/${currentVih.id}`, formData);
+        toast.success(" Fiche VIH mise à jour avec succès", { id: toastId });
+      } else if (mode === "create") {
+        await API.post("/vih/add", {
           ...formData,
-          patient_id: parseInt(patientId)
+          patient_id: patientId
         });
+        toast.success(" Nouvelle fiche VIH créée avec succès", { id: toastId });
       }
 
-      // Succès
-      setSuccessMessage(
-        isUpdate
-          ? "Fiche VIH mise à jour avec succès"
-          : "Fiche VIH créée avec succès"
-      );
-
-      // Recharger les données
-      await fetchVihData();
-
-      // Faire défiler vers le haut pour voir le message
+      await fetchVihHistory();
+      setMode("view");
+      setShowForm(false);
       window.scrollTo({ top: 0, behavior: "smooth" });
 
     } catch (error) {
-      console.error("Erreur:", error);
+      console.error(" Erreur soumission:", error);
 
-      // Gérer les erreurs de validation
-      if (error.response?.data?.errors) {
-        const errorObj = {};
-        error.response.data.errors.forEach((err) => {
-          errorObj[err.field] = err.message;
+      if (error.response?.data?.errors && Array.isArray(error.response.data.errors)) {
+        toast.error(" Erreurs de validation", { id: toastId });
+        
+        error.response.data.errors.forEach((err, index) => {
+          setTimeout(() => {
+            const fieldName = getFieldLabel(err.field);
+            toast.error(`⚠️ ${fieldName}: ${err.message}`, {
+              duration: 5000
+            });
+          }, index * 100);
         });
-        setErrors(errorObj);
       } else {
-        setErrorMessage(
-          error.response?.data?.message || 
-          "Une erreur s'est produite lors de l'enregistrement"
-        );
+        const message = error.response?.data?.message || "Une erreur s'est produite";
+        toast.error(` ${message}`, { id: toastId });
       }
     } finally {
       setIsLoading(false);
     }
   };
 
-  /**
-   * Supprime la fiche VIH (admin uniquement)
-   */
-  const handleDelete = async () => {
-    if (!window.confirm("Êtes-vous sûr de vouloir supprimer cette fiche VIH ?")) {
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-
-      await API.delete(`/api/vih/${vihData.id}`);
-
-      setSuccessMessage("Fiche VIH supprimée avec succès");
-
-      // Rediriger après 1 seconde
-      setTimeout(() => {
-        navigate(-1);
-      }, 1000);
-
-    } catch (error) {
-      console.error("Erreur:", error);
-      setErrorMessage(
-        error.response?.data?.message || 
-        "Une erreur s'est produite lors de la suppression"
-      );
-    } finally {
-      setIsLoading(false);
-    }
+  const getFieldLabel = (field) => {
+    const labels = {
+      mode_contamination: "Mode de contamination",
+      type_depistage: "Type de dépistage",
+      circonstance_decouverte: "Circonstance de découverte",
+      date_derniere_negative: "Date dernière négative",
+      date_contamination: "Date de contamination",
+      date_vih_positif: "Date VIH positif",
+      stade_cdc: "Stade CDC",
+      debut_stade_c: "Début stade C",
+      typage_hla_b5701: "Typage HLA-B5701",
+      profil_seroconversion: "Profil de séroconversion"
+    };
+    return labels[field] || field;
   };
 
-  // ✅ CHANGEMENT : Afficher immédiatement le formulaire, pas de loading
+  const handleEdit = () => {
+    setMode("edit");
+    setShowForm(true);
+    setTimeout(() => window.scrollTo({ top: 300, behavior: "smooth" }), 100);
+    toast.success("Mode édition activé");
+  };
+
+  const handleAddNew = () => {
+    setCurrentVih(null);
+    setMode("create");
+    setShowForm(true);
+    setTimeout(() => window.scrollTo({ top: 300, behavior: "smooth" }), 100);
+    toast.success("Nouvelle fiche VIH");
+  };
+
+  const handleCancel = () => {
+    if (vihHistory.length > 0) {
+      setCurrentVih(vihHistory[0]);
+      setMode("view");
+    } else {
+      setCurrentVih(null);
+      setMode("create");
+    }
+    setShowForm(false);
+    toast.info(" Modifications annulées");
+  };
+
+  const handleLoadVih = (vih) => {
+    setCurrentVih(vih);
+    setMode("view");
+    setShowForm(true);
+    setTimeout(() => window.scrollTo({ top: 300, behavior: "smooth" }), 100);
+    toast.success("Fiche chargée");
+  };
+
+  const isReadOnly = mode === "view";
+  const isDebutStadeCDisabled = isReadOnly || (vihHistory.length > 0 && existingDebutStadeC && mode === "create");
+
+  if (isLoadingPatient) {
+    return (
+      <div className="container mt-5">
+        <Toaster position="top-right" />
+        <div className="text-center">
+          <div className="spinner-border text-success" role="status">
+            <span className="visually-hidden">Chargement...</span>
+          </div>
+          <p className="mt-3">Chargement du patient...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!patientId) {
+    return (
+      <div className="container mt-5">
+        <Toaster position="top-right" />
+        <div className="alert alert-danger" role="alert">
+          <i className="bi bi-exclamation-triangle-fill me-2"></i>
+          Patient non trouvé (Numéro: {numero})
+        </div>
+        <button onClick={() => navigate(-1)} className="btn btn-secondary">
+          <i className="bi bi-arrow-left me-2"></i>Retour
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className="medical-page">
+    <div className="container-fluid py-4">
+      <Toaster position="top-right" />
       
-      {/* En-tête de la page */}
-      <div className="page-header">
+      {/* En-tête */}
+      <div className="d-flex justify-content-between align-items-start mb-4 pb-3 border-bottom">
         <div>
-          <h2>Fiche VIH du patient</h2>
-          {vihData && (
-            <p className="subtitle">
-              Dernière modification : {new Date(vihData.updated_at).toLocaleDateString("fr-FR")}
-            </p>
-          )}
+          <h2 className="text-success mb-1">Fiche VIH du patient</h2>
+          <p className="text-muted small mb-0">
+            {vihHistory.length > 0 ? `${vihHistory.length} fiche(s) enregistrée(s)` : "Aucune fiche"}
+          </p>
         </div>
         
-        {/* Boutons d'action */}
-        <div className="header-actions">          
-          {vihData && (
-            <button 
-              onClick={handleDelete}
-              className="btn-danger"
-              disabled={isLoading}
-            >
-              🗑️ Supprimer
+        <div className="d-flex gap-2">
+          {showForm && mode === "view" && currentVih && (
+            <button onClick={handleEdit} className="btn btn-primary">
+              <i className="bi bi-pencil me-2"></i>Modifier
+            </button>
+          )}
+
+          {mode !== "create" && (
+            <button onClick={handleAddNew} className="btn btn-success">
+              <i className="bi bi-plus-circle me-2"></i>Ajouter nouvelle fiche
+            </button>
+          )}
+
+          {showForm && (mode === "edit" || mode === "create") && (
+            <button onClick={handleCancel} className="btn btn-secondary" disabled={isLoading}>
+              <i className="bi bi-x-circle me-2"></i>Annuler
             </button>
           )}
         </div>
       </div>
 
-      {/* Messages de succès */}
-      {successMessage && (
-        <div className="alert alert-success">
-          <svg className="alert-icon" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-          </svg>
-          {successMessage}
+      {/* Messages */}
+      {!showForm && vihHistory.length === 0 && (
+        <div className="alert alert-info" role="alert">
+          <i className="bi bi-info-circle me-2"></i>
+          Aucune fiche VIH trouvée pour ce patient. Cliquez sur <strong>"Ajouter nouvelle fiche"</strong> pour créer la première fiche.
+        </div>
+      )}
+      {/* ✅ FORMULAIRE INTÉGRÉ */}
+      {showForm && (
+        <div className="card shadow-sm mb-4">
+          <div className="card-body">
+            <form onSubmit={handleSubmit}>
+              <div className="row g-3">
+
+                <div className="col-md-6">
+                  <label className="form-label fw-semibold">
+                    Mode de contamination <span className="text-danger">*</span>
+                  </label>
+                  <select
+                    name="mode_contamination"
+                    className="form-select"
+                    value={formData.mode_contamination}
+                    onChange={handleFormChange}
+                    disabled={isReadOnly || isLoading}
+                    required
+                  >
+                    <option value="">-- Sélectionner --</option>
+                    {MODES_CONTAMINATION.map(mode => (
+                      <option key={mode} value={mode}>{mode}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="col-md-6">
+                  <label className="form-label fw-semibold">
+                    Type de dépistage <span className="text-danger">*</span>
+                  </label>
+                  <select
+                    name="type_depistage"
+                    className="form-select"
+                    value={formData.type_depistage}
+                    onChange={handleFormChange}
+                    disabled={isReadOnly || isLoading}
+                    required
+                  >
+                    <option value="">-- Sélectionner --</option>
+                    {TYPES_DEPISTAGE.map(type => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="col-12">
+                  <label className="form-label fw-semibold">
+                    Circonstance de découverte <span className="text-danger">*</span>
+                  </label>
+                  <select
+                    name="circonstance_decouverte"
+                    className="form-select"
+                    value={formData.circonstance_decouverte}
+                    onChange={handleFormChange}
+                    disabled={isReadOnly || isLoading}
+                    required
+                  >
+                    <option value="">-- Sélectionner --</option>
+                    {CIRCONSTANCES_DECOUVERTE.map(circonstance => (
+                      <option key={circonstance} value={circonstance}>{circonstance}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="col-md-6">
+                  <label className="form-label fw-semibold">Date dernière négative</label>
+                  <input
+                    type="date"
+                    name="date_derniere_negative"
+                    className="form-control"
+                    value={formData.date_derniere_negative}
+                    onChange={handleFormChange}
+                    disabled={isReadOnly || isLoading}
+                  />
+                </div>
+
+                <div className="col-md-6">
+                  <label className="form-label fw-semibold">Date de contamination</label>
+                  <input
+                    type="date"
+                    name="date_contamination"
+                    className="form-control"
+                    value={formData.date_contamination}
+                    onChange={handleFormChange}
+                    disabled={isReadOnly || isLoading}
+                  />
+                </div>
+
+                <div className="col-md-6">
+                  <label className="form-label fw-semibold">
+                    Date VIH positif <span className="text-danger">*</span>
+                  </label>
+                  <input
+                    type="date"
+                    name="date_vih_positif"
+                    className="form-control"
+                    value={formData.date_vih_positif}
+                    onChange={handleFormChange}
+                    disabled={isReadOnly || isLoading}
+                    required
+                  />
+                </div>
+
+                <div className="col-md-6">
+                  <label className="form-label fw-semibold">
+                    Stade CDC <span className="text-danger">*</span>
+                  </label>
+                  <select
+                    name="stade_cdc"
+                    className="form-select"
+                    value={formData.stade_cdc}
+                    onChange={handleFormChange}
+                    disabled={isReadOnly || isLoading}
+                    required
+                  >
+                    <option value="">-- Sélectionner --</option>
+                    {STADES_CDC.map(stade => (
+                      <option key={stade} value={stade}>{stade}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="col-md-6">
+                  <label className="form-label fw-semibold">
+                    Début stade C
+                    {existingDebutStadeC && vihHistory.length > 0 && mode === "create" && (
+                      <small className="text-muted ms-2">(Déjà enregistré)</small>
+                    )}
+                  </label>
+                  <input
+                    type="date"
+                    name="debut_stade_c"
+                    className="form-control"
+                    value={formData.debut_stade_c}
+                    onChange={handleFormChange}
+                    disabled={isDebutStadeCDisabled || isLoading}
+                  />
+                  {existingDebutStadeC && vihHistory.length > 0 && mode === "create" && (
+                    <small className="text-muted">
+                      <i className="bi bi-pin-angle-fill me-1"></i>
+                      Date enregistrée le {new Date(existingDebutStadeC).toLocaleDateString("fr-FR")}
+                    </small>
+                  )}
+                </div>
+
+                <div className="col-md-6">
+                  <label className="form-label fw-semibold">
+                    Typage HLA-B5701 <span className="text-danger">*</span>
+                  </label>
+                  <div className="d-flex gap-3 mt-2">
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="typage_hla_b5701"
+                        value="Positif"
+                        checked={formData.typage_hla_b5701 === "Positif"}
+                        onChange={handleFormChange}
+                        disabled={isReadOnly || isLoading}
+                      />
+                      <label className="form-check-label">Positif</label>
+                    </div>
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="typage_hla_b5701"
+                        value="Négatif"
+                        checked={formData.typage_hla_b5701 === "Négatif"}
+                        onChange={handleFormChange}
+                        disabled={isReadOnly || isLoading}
+                      />
+                      <label className="form-check-label">Négatif</label>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="col-md-6">
+                  <label className="form-label fw-semibold">Profil de séroconversion (Fiebig I à V)</label>
+                  <div className="d-flex gap-3 mt-2">
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="profil_seroconversion"
+                        checked={formData.profil_seroconversion === true}
+                        onChange={() => setFormData(prev => ({ ...prev, profil_seroconversion: true }))}
+                        disabled={isReadOnly || isLoading}
+                      />
+                      <label className="form-check-label">Oui</label>
+                    </div>
+                    <div className="form-check">
+                      <input
+                        className="form-check-input"
+                        type="radio"
+                        name="profil_seroconversion"
+                        checked={formData.profil_seroconversion === false}
+                        onChange={() => setFormData(prev => ({ ...prev, profil_seroconversion: false }))}
+                        disabled={isReadOnly || isLoading}
+                      />
+                      <label className="form-check-label">Non</label>
+                    </div>
+                  </div>
+                </div>
+
+                {!isReadOnly && (
+                  <div className="col-12 mt-4">
+                    <button 
+                      type="submit" 
+                      className="btn btn-success w-100 py-2"
+                      disabled={isLoading}
+                    >
+                      {isLoading ? (
+                        <>
+                          <span className="spinner-border spinner-border-sm me-2" role="status"></span>
+                          Enregistrement...
+                        </>
+                      ) : (
+                        <>
+                          <i className="bi bi-save me-2"></i>
+                          {mode === "create" ? "Enregistrer la fiche VIH" : "Enregistrer les modifications"}
+                        </>
+                      )}
+                    </button>
+                  </div>
+                )}
+
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
-      {/* Messages d'erreur */}
-      {errorMessage && (
-        <div className="alert alert-error">
-          <svg className="alert-icon" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-          </svg>
-          {errorMessage}
-        </div>
+      {/* Historique */}
+      {vihHistory.length > 0 && (
+        <VihHistory 
+          history={vihHistory}
+          currentVihId={currentVih?.id}
+          onLoadVih={handleLoadVih}
+        />
       )}
-
-      {/* Info mode création/édition */}
-      {!vihData && (
-        <div className="alert alert-info">
-          <svg className="alert-icon" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-          </svg>
-          Aucune fiche VIH trouvée pour ce patient. Créez-en une nouvelle ci-dessous.
-        </div>
-      )}
-
-      {/* ✅ Formulaire VIH - Toujours affiché */}
-      <VihForm
-        initialData={vihData}
-        onSubmit={handleSubmit}
-        isLoading={isLoading}
-        errors={errors}
-      />
-
     </div>
   );
 }

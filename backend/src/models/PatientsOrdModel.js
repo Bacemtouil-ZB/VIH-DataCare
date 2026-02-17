@@ -1,9 +1,10 @@
 import pool from "../config/db.js";
 
-
 export const getPatientsWithOrdonnances = async () => {
   const query = `
     SELECT 
+      p.id as patient_id,
+      p.numero as numero_dossier,
       p.name as patient_name,
       p.surname as patient_surname,
       o.id as ordonnance_id,
@@ -11,10 +12,11 @@ export const getPatientsWithOrdonnances = async () => {
       o.date_debut_traitement,
       o.date_prochaine_prise,
       o.quantite_prescrite,
-      o.statut
+      o.statut,
+      o.created_at as ordonnance_created_at
     FROM patients p
     INNER JOIN ordonnances o ON p.id = o.patient_id
-    WHERE o.statut IS NOT NULL
+    WHERE o.statut IS NOT NULL AND o.statut != 'decedé'
     ORDER BY o.date_prochaine_prise DESC;
   `;
 

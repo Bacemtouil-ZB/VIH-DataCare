@@ -39,6 +39,12 @@ router.get(
   authorizeMedecin,
   getPatientByNumeroController,
 );
+router.get(
+  "/pharmacien/numero/:numero",
+  protect,
+  authorizePharmacien,
+  getPatientByNumeroController,
+);
 
 // router.get("/:id", protect, authorizeMedecin, getPatientController);
 
