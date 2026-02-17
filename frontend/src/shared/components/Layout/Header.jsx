@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../../../shared/hooks/useAuth'; // adapte le chemin si besoin
 import './Header.css';
 
-const Header = ({ userName = "Docteur", userPrenom = "" }) => {
+const Header = () => {
+  const { user } = useAuth(); 
   const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
@@ -41,22 +43,26 @@ const Header = ({ userName = "Docteur", userPrenom = "" }) => {
     <header className="header-custom">
       <div className="container-fluid px-4">
         <div className="row align-items-center">
-          {/* Section droite - tout aligné à droite */}
           <div className="col-12 d-flex justify-content-end">
             <div className="header-right-content">
+              
               {/* User Info */}
               <div className="user-greeting">
                 <span className="text-muted">
-                  {getGreeting()}, <strong>Dr. {userPrenom} {userName}</strong>
+                  {getGreeting()},{" "}
+                  <strong>
+                     {user?.prenom || ""} {user?.nom || ""}
+                  </strong>
                 </span>
               </div>
+
               {/* Time Display */}
               <div className="time-badge">
                 <i className="bi bi-clock me-1"></i>
                 <span>{formatTime(currentTime)}</span>&nbsp;/&nbsp;
                 <span>{formatDate(currentTime)}</span>
-                
               </div>
+
             </div>
           </div>
         </div>

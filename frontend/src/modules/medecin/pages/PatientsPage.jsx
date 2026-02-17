@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import AddButton from "../../../shared/components/UI/Button/AddButton";
 import { getAllPatients } from "../services/patientServices";
 import "./PatientsPage.css";
 
@@ -38,92 +37,131 @@ export default function PatientsPage() {
     : [];
 
   return (
-    <div className="patients-page">
-      <div className="patients-header">
-        <h2>Mes Patients</h2>
+      <div className="patients-page">
 
-        <div className="header-actions">
-          <input
-            type="text"
-            placeholder="Rechercher par nom ou numéro..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+        <div className="patients-toolbar">
+          <div className="toolbar-left">
+            <h2>Patients</h2>
+            <span className="count">{filteredPatients.length} résultats</span>
+          </div>
 
-          <select value={filter} onChange={(e) => setFilter(e.target.value)}>
-            <option value="">Tous</option>
-            <option value="interne">Interne</option>
-            <option value="externe">Externe</option>
-          </select>
+          <div className="toolbar-right">
+            <div className="search-box">
+              <input
+                type="text"
+                placeholder="Rechercher patient..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
 
-          {/* Nouveau patient */}
-          <NavLink
-            to="/medecin/patient/new/workspace"
-            className="td-link"
-          >
-            <AddButton />
-          </NavLink>
+            <select
+              className="filter-select"
+              value={filter}
+              onChange={(e) => setFilter(e.target.value)}
+            >
+              <option value="">Tous</option>
+              <option value="interne">Interne</option>
+              <option value="externe">Externe</option>
+            </select>
+
+            <NavLink
+              to="/medecin/patient/new/workspace"
+              className="btn-primary"
+            >
+              + Nouveau patient
+            </NavLink>
+          </div>
+        </div>
+
+        <div className="table-wrapper">
+          {loading ? (
+            <div className="skeleton-table">
+              <div className="skeleton-row" />
+              <div className="skeleton-row" />
+              <div className="skeleton-row" />
+            </div>
+          ) : (
+            <table>
+              <thead>
+                <tr>
+                  <th>Dossier</th>
+                  <th>Patient</th>
+                  <th>Statut</th>
+                  <th>Créé par</th>
+                  <th>Modifié par</th> 
+                </tr>
+              </thead>
+
+              <tbody>
+                {filteredPatients.length === 0 ? (
+                  <tr>
+                    <td colSpan="5" className="empty">
+                      Aucun patient trouvé
+                    </td>
+                  </tr>
+                ) : (
+                  filteredPatients.map((patient) => (
+                    <tr key={patient.numero}>
+                      <td>
+                        <NavLink
+                          to={`/medecin/patient/${patient.numero}/workspace`}
+                          className="link"
+                        >
+                          {patient.numero}
+                        </NavLink>
+                      </td>
+
+                      <td>
+                        <div className="patient-cell">
+                          <div className="avatar">
+                            {patient.name?.charAt(0)}
+                          </div>
+                          <div>
+                            <div className="name">
+                              {patient.name} {patient.surname}
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td>
+                        <span
+                          className={
+                            patient.hospitalisation === "interne"
+                              ? "badge danger"
+                              : "badge success"
+                          }
+                        >
+                          {patient.hospitalisation}
+                        </span>
+                      </td>
+
+                      <td>
+                        <div className="user-cell">
+                          <div className="mini-avatar">
+                            {patient.created_by_name?.charAt(0) || "-"}
+                          </div>
+                          {patient.created_by_name }
+                        </div>
+                      </td>
+
+                      <td>
+                        <div className="user-cell">
+                          <div className="mini-avatar">
+                            {patient.updated_by_name?.charAt(0) || "-"}
+                          </div>
+                          {patient.updated_by_name }
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          )}
         </div>
       </div>
+    );
 
-      <div className="patients-table">
-        {loading ? (
-          <p>Chargement...</p>
-        ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>Numéro dossier</th>
-                <th>Nom</th>
-                <th>Prénom</th>
-                <th>Statut</th>
-                <th>Créé par</th>
-                <th>Modifié par</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredPatients.length === 0 ? (
-                <tr>
-                  <td colSpan="6">Aucun patient trouvé</td>
-                </tr>
-              ) : (
-                filteredPatients.map((patient) => (
-                  <tr key={patient.numero}>
-                    <td>
-                      <NavLink
-                        to={`/medecin/patient/${patient.numero}/workspace`}
-                        className="td-link"
-                      >
-                        {patient.numero}
-                      </NavLink>
-                    </td>
-
-                    <td>{patient.name}</td>
-                    <td>{patient.surname}</td>
-
-                    <td>
-                      <span
-                        className={
-                          patient.hospitalisation === "interne"
-                            ? "badge red"
-                            : "badge green"
-                        }
-                      >
-                        {patient.hospitalisation === "interne"
-                          ? "Interne"
-                          : "Externe"}
-                      </span>
-                    </td>
-
-                    <td>{patient.created_by_name || "-"}</td>
-                    <td>{patient.updated_by_name || "-"}</td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        )}
-      </div>
-    </div>
-  );
 }

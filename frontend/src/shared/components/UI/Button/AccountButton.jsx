@@ -1,21 +1,24 @@
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { useAuth } from "../../../hooks/useAuth"; // ton hook personnalisé
+import { useAuth } from "../../../hooks/useAuth";
 import './AccountButton.css';
 
 function AccountButton() {
-  const { user } = useAuth(); // ✅ récupère directement les données de l'utilisateur
+  const { user, handleLogout } = useAuth(); // ✅ récupère user et handleLogout
   const location = useLocation();
   const [open, setOpen] = useState(false);
 
   // Déconnexion
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    window.location.href = '/login';
+  const onLogoutClick = async () => {
+    try {
+      await handleLogout(); // Supprime le cookie + reset user
+    } catch (err) {
+      console.error("Erreur lors de la déconnexion :", err);
+    }
   };
 
   // Calcul dynamique du chemin vers la page profil/settings selon le rôle et le parent
-  const parentPath = location.pathname.split("/")[1]; // ex: 'admin' ou 'dashboard'
+  const parentPath = location.pathname.split("/")[1]; 
   const settingsPath = (() => {
     switch (user?.role) {
       case "admin":
@@ -47,9 +50,15 @@ function AccountButton() {
           </li>
 
           {/* Déconnexion */}
-          <li className="danger" onClick={handleLogout}>
-            <i className="bi bi-box-arrow-right me-2"></i>
-            Déconnexion
+          <li className="danger">
+            <NavLink
+              to="/login"
+              onClick={onLogoutClick} // Déconnexion avant la navigation
+              className="nav-link"
+            >
+              <i className="bi bi-box-arrow-right me-2"></i>
+              Déconnexion
+            </NavLink>
           </li>
         </ul>
       )}

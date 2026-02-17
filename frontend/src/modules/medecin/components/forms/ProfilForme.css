@@ -71,25 +71,92 @@
   grid-column: span 2;
 }
 
-/* Button */
-.save-btn {
-  background-color: #388E3C;      /* vert principal */
-  color: #0c0c0c;                 /* texte blanc */
-  border: 1px solid #2e7d32;     /* contour sombre pour contraste */
-  border-radius: 10px;
-  padding: 0.65rem 1rem;
-  font-size: 0.95rem;
-  font-weight: 600;
-  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.4); /* ombre plus visible */
+/* Bouton Modifier — mode lecture */
+.edit-btn {
+  background-color: #f1f5f9;
+  color: #1e293b;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
   cursor: pointer;
-  transition: all 0.25s ease;
+  font-weight: 600;
+  transition: all 0.2s ease;
 }
 
-/* Hover / focus */
-.save-btn:hover,
-.save-btn:focus {
-  background: linear-gradient(135deg, #2e7d32 0%, #43a047 100%);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 14px rgba(46, 125, 50, 0.5);
-  outline: none;
+.edit-btn:hover {
+  background-color: #e2e8f0;
 }
+
+/* Conteneur boutons Enregistrer / Annuler */
+.edit-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* Bouton Enregistrer */
+.save-btn {
+  background-color: #43a047;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.save-btn:hover {
+  background-color: #388e3c;
+}
+
+/* Bouton Annuler */
+.cancel-btn {
+  background-color: #f1f5f9;
+  color: #374151;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cancel-btn:hover {
+  background-color: #e2e8f0;
+}
+/* ========================= */
+/* Champs désactivés */
+/* ========================= */
+
+.form-group input:disabled,
+.form-group select:disabled,
+.form-group textarea:disabled {
+  background-color: #f1f5f9;   /* gris clair propre */
+  color: #64748b;              /* texte plus doux */
+  cursor: not-allowed;
+  border: 1px solid #e2e8f0;
+  opacity: 1;                  /* éviter effet trop fade */
+}
+
+/* Optionnel : effet visuel léger */
+.form-group input:disabled:hover,
+.form-group select:disabled:hover,
+.form-group textarea:disabled:hover {
+  background-color: #f1f5f9;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #43a047;
+  box-shadow: 0 0 0 2px rgba(67, 160, 71, 0.2);
+}
+
+
+
+
+
+
+
+

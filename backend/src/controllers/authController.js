@@ -16,7 +16,7 @@ export const loginController = async (req, res) => {
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
+      sameSite: process.env.NODE_ENV === "production" ? "Strict" : "Lax", // strict en prod, lax en dev pour faciliter les tests cross-origin(strict bloque les requêtes cross-origin même avec CORS configuré)
       maxAge: 30 * 24 * 60 * 60 * 1000, // mois
     });
 
@@ -78,7 +78,7 @@ export const logoutController = async (req, res) => {
     res.clearCookie("token", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
+      sameSite: process.env.NODE_ENV === "production" ? "Strict" : "Lax",
     });
 
     res.status(200).json({
@@ -94,11 +94,15 @@ export const logoutController = async (req, res) => {
   }
 };
 export const getMe = (req, res) => {
-  // req.user contient les infos décodées du token
   res.json({
-    id: req.user.id,
-    email: req.user.email,
-    role: req.user.role,
-    isActivated: req.user.isactivated,
+    success: true,
+    user: {
+      id: req.user.id,
+      nom: req.user.nom,
+      prenom: req.user.prenom,
+      email: req.user.email,
+      role: req.user.role,
+      isActivated: req.user.isactivated,
+    },
   });
 };

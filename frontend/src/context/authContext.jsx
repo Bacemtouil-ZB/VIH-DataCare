@@ -1,14 +1,19 @@
-import  { createContext, useState , useEffect } from "react";
-import { login, register, logout , checkSession} from "../shared/services/authService.jsx";
-
+import  { createContext, useState  } from "react";
+import { login, register, logout } from "../shared/services/authService.jsx";
+import { checkSession } from "../shared/services/authService.jsx";
+import { useEffect } from "react";
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false); // true au démarrage
+  const [loading, setLoading] = useState(true); // true au démarrage
   const [error, setError] = useState(null);
 
-  useEffect(() => {
+  // Vérification de session au chargement de l'app (mais on peut aussi faire 
+  //ça dans ProtectedRoute.jsx pour éviter de faire un appel au backend à chaque 
+  //chargement de l'app)");
+
+  useEffect(() => {                               
   const verifyUser = async () => {
     try {
       const data = await checkSession();
@@ -34,7 +39,7 @@ export const AuthProvider = ({ children }) => {
 
   try {
     const data = await login(email, password); // envoie email et password séparés
-    setUser(data.user); // stocker utilisateur
+    setUser(data.user); // stocker utilisateur 
     return data;
   } catch (err) {
     const msg = err.response?.data?.message || "Erreur de connexion";
@@ -62,16 +67,16 @@ export const AuthProvider = ({ children }) => {
   };
 
   // ── DÉCONNEXION ──
-  const handleLogout = async () => {
-    try {
-      await logout(); // backend supprime le cookie
-    } catch (err) {
-      console.error("Logout error:", err);
-    }
+ const handleLogout = async () => {
+  try {
+    await logout();
+  } catch (err) {
+    console.error("Logout error:", err);
+  } finally {
     setUser(null);
     setError(null);
-  };
-
+  }
+};
   return (
     <AuthContext.Provider value={{
       user, 

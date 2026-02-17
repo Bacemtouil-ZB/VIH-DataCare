@@ -1,7 +1,15 @@
 import React from "react";
 import "./ProfilForme.css";
 
-export default function ProfilForm({ formData, onChange, onSubmit, isNew }) {
+export default function ProfilForm({
+  formData,
+  onChange,
+  onSubmit,
+  isNew,
+  isEditing,
+  setIsEditing,
+  onCancel
+}) {
   return (
     <div className="form-card">
       <form onSubmit={onSubmit} className="form-grid">
@@ -12,8 +20,22 @@ export default function ProfilForm({ formData, onChange, onSubmit, isNew }) {
             name="numero"
             value={formData.numero}
             onChange={onChange}
-            disabled={!isNew} // bloqué si patient existant
+            disabled={!isNew}
+            required
           />
+        </div>
+
+        <div className="form-group">
+          <label>Hospitalisation</label>
+          <select
+            name="hospitalisation"
+            value={formData.hospitalisation}
+            onChange={onChange}
+            disabled={!isEditing}
+          >
+            <option value="externe">Externe</option>
+            <option value="interne">Interne</option>
+          </select>
         </div>
 
         <div className="form-group">
@@ -22,6 +44,9 @@ export default function ProfilForm({ formData, onChange, onSubmit, isNew }) {
             name="name"
             value={formData.name}
             onChange={onChange}
+            pattern="[A-Za-zÀ-ÿ\s]+"
+            disabled={!isEditing}
+            required
           />
         </div>
 
@@ -31,6 +56,9 @@ export default function ProfilForm({ formData, onChange, onSubmit, isNew }) {
             name="surname"
             value={formData.surname}
             onChange={onChange}
+            pattern="[A-Za-zÀ-ÿ\s]+"
+            disabled={!isEditing}
+            required
           />
         </div>
 
@@ -41,6 +69,7 @@ export default function ProfilForm({ formData, onChange, onSubmit, isNew }) {
             name="birthdate"
             value={formData.birthdate}
             onChange={onChange}
+            disabled={!isNew}
           />
         </div>
 
@@ -50,6 +79,7 @@ export default function ProfilForm({ formData, onChange, onSubmit, isNew }) {
             name="gender"
             value={formData.gender}
             onChange={onChange}
+            disabled={!isNew}
           >
             <option value="">Sélectionner</option>
             <option value="Homme">Homme</option>
@@ -58,29 +88,14 @@ export default function ProfilForm({ formData, onChange, onSubmit, isNew }) {
         </div>
 
         <div className="form-group">
-          <label>Ville de naissance</label>
-          <input
-            name="city_of_birth"
-            value={formData.city_of_birth}
-            onChange={onChange}
-          />
-        </div>
-
-        <div className="form-group">
-          <label>Ville de résidence</label>
-          <input
-            name="city_of_residence"
-            value={formData.city_of_residence}
-            onChange={onChange}
-          />
-        </div>
-
-        <div className="form-group">
           <label>Téléphone</label>
           <input
             name="phone"
             value={formData.phone}
             onChange={onChange}
+            pattern="[0-9]{8}"
+            title="Le numéro doit contenir 8 chiffres"
+            disabled={!isEditing}
           />
         </div>
 
@@ -90,27 +105,47 @@ export default function ProfilForm({ formData, onChange, onSubmit, isNew }) {
             name="address"
             value={formData.address}
             onChange={onChange}
+            disabled={!isEditing}
           />
         </div>
 
-        <div className="form-group">
-          <label>Hospitalisation</label>
-          <select
-            name="hospitalisation"
-            value={formData.hospitalisation}
-            onChange={onChange}
-          >
-            <option value="externe">Externe</option>
-            <option value="interne">Interne</option>
-          </select>
-        </div>
+        {!isNew && (
+          <div className="form-group full-width">
+            <label>Dernière modification</label>
+            <input
+              value={`${formData.updated_by_name || "-"} - ${formData.updated_at || "-"}`}
+              disabled
+            />
+          </div>
+        )}
 
         <div className="form-group full-width">
-          <button type="submit" className="save-btn">
-            {isNew ? "Créer" : "Mettre à jour"}
-          </button>
-        </div>
+          {!isEditing ? (
+            <button
+              type="button"
+              className="edit-btn"
+              onClick={() => setIsEditing(true)}
+            >
+               Modifier
+            </button>
+          ) : (
+            <div className="edit-actions">
+              <button type="submit" className="save-btn">
+                 {isNew ? "Créer" : "Enregistrer"}
+              </button>
 
+              {!isNew && (
+                <button
+                  type="button"
+                  className="cancel-btn"
+                  onClick={onCancel}
+                >
+                   Annuler
+                </button>
+              )}
+         </div>
+  )}
+</div>
       </form>
     </div>
   );

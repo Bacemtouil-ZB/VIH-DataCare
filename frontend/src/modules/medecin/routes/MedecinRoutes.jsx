@@ -1,4 +1,5 @@
 import { Navigate } from "react-router-dom";
+import NewPatientGuard from "./NewPatientGuard.jsx";
 import ProtectedRoute from "../../../routes/ProtectedRoute";
 import DashboardLayout from "../../../shared/components/layout/DashboardLayout";
 import PatientsPage from "../pages/PatientsPage";
@@ -9,7 +10,7 @@ import ExamenLayout from "../pages/workspace/Examen_cliniques/ExamenLayout";
 import ObservationPage from "../pages/workspace/Examen_cliniques/ObservationPage";
 import HabitudesPage from "../pages/workspace/Examen_cliniques/HabitudesPage";
 import Profilpage from "../pages/workspace/Profil/ProfilPageWorkspace"
-import Social from "../pages/workspace/Social/Social";
+import Social from "../pages/workspace/Social/SocialFormPage.jsx";
 import VIH from "../pages/workspace/VIH/VIH";
 import AntecedentsLayout from "../pages/workspace/Antecedents/AntecedentLayout";
 import Historique from "../pages/workspace/Antecedents/Historique";
@@ -73,16 +74,16 @@ const medecinRoutes = [
     },
     {
       path: "social",
-      element: <Social />,
+      element: <NewPatientGuard><Social /></NewPatientGuard>,
      
     },
     {
       path: "VIH",
-      element: <VIH/>,
+      element: <NewPatientGuard><VIH /></NewPatientGuard>,
     },
     {
       path: "antecedents",
-      element: <AntecedentsLayout />,
+      element: <NewPatientGuard><AntecedentsLayout /></NewPatientGuard>,
       children: [
         { index: true, element: <Navigate to="historique" replace /> },
         { path: "historique", element: <Historique /> },
@@ -93,7 +94,7 @@ const medecinRoutes = [
     },
     {
       path: "examen-cliniques",
-      element: <ExamenLayout />,
+      element: <NewPatientGuard><ExamenLayout /></NewPatientGuard>,
       children: [
         { index: true, element: <Navigate to="signesCliniques" replace /> },
         { path: "signesCliniques", element: <SignesCliniques /> },
@@ -104,7 +105,7 @@ const medecinRoutes = [
     },
     {
       path: "biologie",
-      element: <ResultatsBiologiquesLayout />,
+      element: <NewPatientGuard><ResultatsBiologiquesLayout /></NewPatientGuard>,
       children: [
         { index: true, element: <Navigate to="standard" replace /> },
         { path: "standard", element: <Standard /> },
@@ -114,19 +115,19 @@ const medecinRoutes = [
     },
     {
       path: "prescription-examens",
-      element: <PrescriptionExamens />,
+      element: <NewPatientGuard><PrescriptionExamens /></NewPatientGuard>,
     },
     {
       path: "prescription-medicale",
-      element: <PrescreptionMedical />,
+      element: <NewPatientGuard><PrescreptionMedical /></NewPatientGuard>,
     },
     {
       path: "conclusion",
-      element: <Conclusion />,
+      element: <NewPatientGuard><Conclusion /></NewPatientGuard>,
     },
     {
       path: "suivi",
-      element: <SuiviLayout />,
+      element: <NewPatientGuard><SuiviLayout /></NewPatientGuard>,
       children: [
         { index: true, element: <Navigate to="Dashbord" replace /> },
         { path: "Dashbord", element: <Dashbord /> },

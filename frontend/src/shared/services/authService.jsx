@@ -36,7 +36,16 @@ export const logout = async () => {
 // Backend : GET /api/auth/me  (besoin du cookie token)
 // Reçoit  : { success, user: { ... } }
 export const checkSession = async () => {
-  const res = await API.get("/auth/me");
-  return res.data;
+ try {
+    const res = await API.get("/auth/me");
+    return res.data;
+  } catch (error) {
+    console.error("Erreur /auth/me:", {
+      status: error.response?.status,
+      data: error.response?.data,
+      message: error.message
+    });
+    throw error;
+  }
 };
 

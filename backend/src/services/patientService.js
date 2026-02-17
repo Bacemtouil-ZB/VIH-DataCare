@@ -1,6 +1,6 @@
 import {
   createPatient as createPatientModel,
-  //getPatientById as getPatientByIdModel,
+  getPatientById as getPatientByIdModel,
   getPatientByNumero as getPatientByNumeroModel,
   getAllPatients as getAllPatientsModel,
   updatePatient as updatePatientModel,
@@ -23,14 +23,14 @@ export const createPatient = async (patientData, userId) => {
   return patient;
 };
 
-// export const getPatientById = async (id) => {
-//   const patient = await getPatientByIdModel(id);
+export const getPatientById = async (id) => {
+  const patient = await getPatientByIdModel(id);
 
-//   if (!patient) {
-//     throw new Error("Patient non trouvé");
-//   }
-//   return patient;
-// };
+  if (!patient) {
+    throw new Error("Patient non trouvé");
+  }
+  return patient;
+};
 export const getPatientByNumero = async (numero) => {
   const patient = await getPatientByNumeroModel(numero);
 
