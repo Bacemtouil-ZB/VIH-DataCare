@@ -32,19 +32,13 @@ router.post(
   // validateCreatePatient,
   createPatientController,
 );
-
+// medecin et pharmacien 
 router.get(
   "/numero/:numero",
   protect,
-  authorizeMedecin,
   getPatientByNumeroController,
 );
-router.get(
-  "/pharmacien/numero/:numero",
-  protect,
-  authorizePharmacien,
-  getPatientByNumeroController,
-);
+
 
 // router.get("/:id", protect, authorizeMedecin, getPatientController);
 

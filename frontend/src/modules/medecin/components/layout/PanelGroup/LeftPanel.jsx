@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { getPatientByNumero } from "../../../../medecin/services/patientServices";
+import { getPatientByNumero } from "../../../services/patientServices";
 import { getThreeLastPrise } from "../../../services/ordonnancesService";
 import "./LeftPanel.css";
-
 
 export default function LeftPanel() {
   const { numero } = useParams(); 
@@ -45,7 +44,7 @@ export default function LeftPanel() {
         try {
           const prisesResponse = await getThreeLastPrise(numero);
           
-          console.log("📋 Dernières prises:", prisesResponse);
+          console.log(" Dernières prises:", prisesResponse);
 
           if (prisesResponse.success && prisesResponse.prises) {
             setDerniersPrises(prisesResponse.prises);
@@ -55,7 +54,7 @@ export default function LeftPanel() {
         }
 
       } catch (err) {
-        console.error(" Erreur chargement patient:", err);
+        console.error("Erreur chargement patient:", err);
         setError(err.message || "Erreur lors du chargement");
       } finally {
         setLoading(false);
@@ -65,10 +64,6 @@ export default function LeftPanel() {
     fetchPatientData();
   }, [numero]);
 
-  // ==========================================
-  // FONCTIONS UTILITAIRES
-  // ==========================================
-  
   const calculateAge = (dateNaissance) => {
     if (!dateNaissance) return 'N/A';
     const birth = new Date(dateNaissance);
@@ -124,10 +119,6 @@ export default function LeftPanel() {
     setImagePreview(null);
   };
 
-  // ==========================================
-  // AFFICHAGE CONDITIONNEL
-  // ==========================================
-
   if (loading) {
     return (
       <div className="patient-panel">
@@ -161,8 +152,6 @@ export default function LeftPanel() {
 
   return (
     <div className="patient-panel">
-      
-      {/* HEADER - Photo et informations principales */}
       <div className="patient-header">
         <div className="photo-upload-container">
           {imagePreview ? (
@@ -179,7 +168,7 @@ export default function LeftPanel() {
           )}
           
           <label htmlFor="photo-upload" className="upload-photo-btn">
-            📷 {imagePreview ? 'Changer' : 'Ajouter'} photo
+             {imagePreview ? 'Changer' : 'Ajouter'} photo
           </label>
           <input
             id="photo-upload"
@@ -196,21 +185,17 @@ export default function LeftPanel() {
         <p className="patient-id">Dossier: {patientData.numero || numero}</p>
       </div>
 
-      {/* INFORMATIONS DU PATIENT */}
       <div className="patient-info">
-        {/* Date de naissance */}
         <div className="info-row">
           <span>Date de naissance</span>
           <span>{formatDate(patientData.birthdate || patientData.date_naissance)}</span>
         </div>
 
-        {/* Âge */}
         <div className="info-row">
           <span>Âge</span>
           <span>{calculateAge(patientData.birthdate || patientData.date_naissance)} ans</span>
         </div>
 
-        {/* Téléphone */}
         {patientData.phone && (
           <div className="info-row">
             <span>Téléphone</span>
@@ -218,7 +203,6 @@ export default function LeftPanel() {
           </div>
         )}
 
-        {/* Hospitalisation */}
         <div className="info-row">
           <span>Hospitalisation</span>
           <span className={patientData.hospitalisation === 'Oui' ? 'badge-warning' : 'badge-neutral'}>
@@ -226,7 +210,6 @@ export default function LeftPanel() {
           </span>
         </div>
 
-        {/* Statut */}
         <div className="info-row">
           <span>Statut</span>
           <span className={getStatutBadgeClass(patientData.statut)}>
@@ -235,7 +218,6 @@ export default function LeftPanel() {
         </div>
       </div>
 
-      {/* 3 DERNIÈRES PRISES DE TRAITEMENT */}
       {derniersPrises && derniersPrises.length > 0 && (
         <div className="dernieres-prises">
           <h3 className="section-title">Dernières prises</h3>
@@ -258,13 +240,11 @@ export default function LeftPanel() {
         </div>
       )}
 
-      {/* BADGE STATUT EN BAS */}
       <div className="patient-status">
         <span className={getStatutBadgeClass(patientData.statut)}>
           {patientData.statut || 'Statut inconnu'}
         </span>
       </div>
-
     </div>
   );
 }

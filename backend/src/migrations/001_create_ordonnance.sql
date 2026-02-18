@@ -5,7 +5,7 @@ CREATE TABLE ordonnances (
   nom_traitement VARCHAR(500) NOT NULL,
   quantite_prescrite INTEGER NOT NULL CHECK (quantite_prescrite > 0),
   
-    date_prescription DATE NOT NULL DEFAULT CURRENT_DATE,
+  date_prescription DATE NOT NULL DEFAULT CURRENT_DATE,
   date_debut_traitement DATE NOT NULL,
   date_prochaine_prise DATE,
   

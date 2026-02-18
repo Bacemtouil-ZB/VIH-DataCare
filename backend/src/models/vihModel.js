@@ -140,14 +140,6 @@ export const updateVih = async (id, vihData, updatedBy) => {
   return result.rows[0];
 };
 
-export const checkVihExistsForPatient = async (patientId) => {
-  const query = `
-    SELECT COUNT(*) as count FROM vih
-    WHERE patient_id = $1;
-  `;
-  const result = await pool.query(query, [patientId]);
-  return parseInt(result.rows[0].count) > 0;
-};
 export const getVihHistoryByPatientId = async (patientId) => {
   const query = `
     SELECT 

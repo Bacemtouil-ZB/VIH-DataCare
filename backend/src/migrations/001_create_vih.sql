@@ -18,7 +18,6 @@ CREATE TABLE vih (
   
 );
 ALTER TABLE vih DROP CONSTRAINT IF EXISTS vih_patient_id_key;
-COMMIT
 -- Index pour optimiser les recherches
 CREATE INDEX idx_vih_patient_id ON vih(patient_id);
 -- Trigger pour mettre à jour updated_at automatiquement

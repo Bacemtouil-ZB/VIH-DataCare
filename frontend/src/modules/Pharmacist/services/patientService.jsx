@@ -10,7 +10,7 @@ export const getAllPatients = async () => {
 };
 export const getPatientByNumero = async (numero) => {
   try {
-    const response = await api.get(`/patients/numero/${numero}`);
+    const response = await API.get(`/patients/numero/${numero}`);
     return {
       success: true,
       patient: response.data,

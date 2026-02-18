@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import AddButton from "../../../shared/components/UI/Button/AddButton";
-import { getAllPatients } from "../services/patientServices";
+import { getAllPatients } from "../../../shared/services/patientService";
 import "./PatientsPage.css";
 
 export default function PatientsPage() {
@@ -14,7 +14,6 @@ export default function PatientsPage() {
     const fetchPatients = async () => {
       try {
         const response = await getAllPatients();
-        // selon ton controller → response.patients
         setPatients(response.patients || response || []);
       } catch (error) {
         console.error("Erreur chargement patients:", error);
@@ -56,7 +55,6 @@ export default function PatientsPage() {
             <option value="externe">Externe</option>
           </select>
 
-          {/* Nouveau patient */}
           <NavLink
             to="/medecin/patient/new/workspace"
             className="td-link"
