@@ -3,7 +3,6 @@ import {
   getVihById as getVihByIdModel,
   getVihByPatientId as getVihByPatientIdModel,
   updateVih as updateVihModel,
-  getVihHistoryByPatientId,
 
 
 } from "../models/vihModel.js";
@@ -45,8 +44,3 @@ export const updateVih = async (id, vihData, userId) => {
   const updatedVih = await updateVihModel(id, vihData, userId);
   return updatedVih;
 };
-export const getVihHistory = async (patientId) => {
-  const history = await getVihHistoryByPatientId(patientId);
-  return history;
-};
-

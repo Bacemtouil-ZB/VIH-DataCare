@@ -4,7 +4,6 @@ import {
   getVihController,
   getVihByPatientController,
   updateVihController,
-  getVihHistoryController,
 } from "../controllers/vihController.js";
 import {
   validateCreateVih,
@@ -46,12 +45,6 @@ router.get(
   protect,
   authorizeMedecin,
   getVihController
-);
-router.get(
-  "/history/:patientId",
-  protect,
-  authorizeMedecin,
-  getVihHistoryController
 );
 
 

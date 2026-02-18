@@ -3,7 +3,6 @@ import {
   getVihById as getVihByIdService,
   getVihByPatientId as getVihByPatientIdService,
   updateVih as updateVihService,
-  getVihHistory as getVihHistoryService
 } from "../services/vihService.js";
 
 export const createVihController = async (req, res) => {
@@ -91,25 +90,6 @@ export const updateVihController = async (req, res) => {
     const statusCode = error.message.includes("non trouvé") ? 404 : 400;
     
     res.status(statusCode).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
-export const getVihHistoryController = async (req, res) => {
-  try {
-    const { patientId } = req.params;
-    const history = await getVihHistoryService(parseInt(patientId));
-
-    res.status(200).json({
-      success: true,
-      history,
-      total: history.length,
-    });
-  } catch (error) {
-    console.error(" Get VIH history error:", error.message);
-    
-    res.status(400).json({
       success: false,
       message: error.message,
     });

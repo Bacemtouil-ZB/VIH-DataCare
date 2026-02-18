@@ -1,15 +1,5 @@
 import API from "../../../shared/utils/api";
 
-export const getVihHistory = async (patientId) => {
-  try {
-    const response = await API.get(`/vih/history/${patientId}`);
-    return response.data?.history || [];
-  } catch (error) {
-    if (error.response?.status === 404) return [];
-    throw error;
-  }
-};
-
 export const getVihById = async (vihId) => {
   const response = await API.get(`/vih/${vihId}`);
   return response.data?.vih;
