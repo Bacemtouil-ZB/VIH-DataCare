@@ -6,6 +6,7 @@ CREATE TABLE ordonnances (
   quantite_prescrite INTEGER NOT NULL CHECK (quantite_prescrite > 0),
   
   date_prescription DATE NOT NULL DEFAULT CURRENT_DATE,
+    date_prescription DATE NOT NULL DEFAULT CURRENT_DATE,
   date_debut_traitement DATE NOT NULL,
   date_prochaine_prise DATE,
   
@@ -22,6 +23,10 @@ CREATE TABLE ordonnances (
 );
 
 
+-- ==========================================
+-- FONCTION pour calculer la durée de perte de vue
+-- Différence entre date actuelle et date prochaine prise
+-- ==========================================
 CREATE OR REPLACE FUNCTION calculate_duree_perte_de_vue()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -47,12 +52,16 @@ BEGIN
 END;
 $$ language 'plpgsql';
 
+-- Trigger pour calculer automatiquement à chaque INSERT/UPDATE
 DROP TRIGGER IF EXISTS calculate_duree_perte_de_vue_trigger ON ordonnances;
 CREATE TRIGGER calculate_duree_perte_de_vue_trigger
     BEFORE INSERT OR UPDATE ON ordonnances
     FOR EACH ROW
     EXECUTE FUNCTION calculate_duree_de_vue();
 
+-- ==========================================
+-- TRIGGER pour mettre à jour updated_at
+-- ==========================================
 CREATE OR REPLACE FUNCTION update_ordonnances_updated_at()
 RETURNS TRIGGER AS $$
 BEGIN

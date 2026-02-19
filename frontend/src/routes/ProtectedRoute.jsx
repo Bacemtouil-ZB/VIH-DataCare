@@ -5,7 +5,7 @@ import { useAuth } from '../shared/hooks/useAuth.js';
 
 const ProtectedRoute = ({ children, allowedRoles = [] }) => {
   const { user, loading } = useAuth();
-
+  // console.log("ProtectedRoute", { user, loading }); // pour tester et voir les données est bien récupérées du contexte authContext.jsx(cors)
   // Afficher un loader pendant la vérification
   if (loading) {
     return (
@@ -23,7 +23,8 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
 
   // Rediriger vers login si pas authentifié
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" replace />; //  probleme : tu rafraîchis la page :Tout le React state est réinitialisé (y compris ton contexte authContext)
+
   }
 
   // Vérifier le rôle si spécifié

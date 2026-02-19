@@ -1,5 +1,8 @@
 .patient-panel {
   width: 280px;
+  flex: 0 0 260px;        /* largeur initiale */
+  min-width: 0;           /* permet réduction */
+  max-width: 100%;        /* évite débordement */
   background: #ffffff;
   border-radius: 16px;
   padding: 24px;
@@ -10,8 +13,9 @@
   font-family: "Segoe UI", sans-serif;
   max-height: calc(100vh - 40px);
   overflow-y: auto;
+  overflow: hidden;       /* empêche overflow interne */
+  transition: flex-basis 0.25s ease;
 }
-
 /* HEADER */
 .patient-header {
   text-align: center;

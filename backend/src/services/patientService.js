@@ -1,17 +1,17 @@
 import {
   createPatient as createPatientModel,
-  //getPatientById as getPatientByIdModel,
+  getPatientById as getPatientByIdModel,
   getPatientByNumero as getPatientByNumeroModel,
   getAllPatients as getAllPatientsModel,
   updatePatient as updatePatientModel,
-  //searchPatients as searchPatientsModel,
   checkNumeroExists,
   countPatients,
-  //updateLastVisitDate,
 } from "../models/patientModel.js";
 
 export const createPatient = async (patientData, userId) => {
-  // Vérifier si le numéro est fourni et s'il existe déjà
+  console.log("patientData reçu:", patientData);
+
+  // Vérifier numéro existant
   if (patientData.numero) {
     const exists = await checkNumeroExists(patientData.numero);
     if (exists) {
@@ -19,18 +19,31 @@ export const createPatient = async (patientData, userId) => {
     }
   }
 
+  // Validation date de naissance
+  if (patientData.birthdate) {
+    const birth = new Date(patientData.birthdate);
+    const today = new Date();
+    const minDate = new Date("1900-01-01");
+
+    if (isNaN(birth.getTime())) {
+      throw new Error("Date de naissance invalide");
+    }
+    if (birth < minDate || birth >= today) {
+      throw new Error("Date de naissance invalide");
+    }
+  }
+
   const patient = await createPatientModel(patientData, userId);
   return patient;
 };
+export const getPatientById = async (id) => {
+  const patient = await getPatientByIdModel(id);
 
-// export const getPatientById = async (id) => {
-//   const patient = await getPatientByIdModel(id);
-
-//   if (!patient) {
-//     throw new Error("Patient non trouvé");
-//   }
-//   return patient;
-// };
+  if (!patient) {
+    throw new Error("Patient non trouvé");
+  }
+  return patient;
+};
 export const getPatientByNumero = async (numero) => {
   const patient = await getPatientByNumeroModel(numero);
 
