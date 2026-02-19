@@ -2,7 +2,7 @@ import API from "../../../shared/utils/api";
 
 export const createPatient = async (patientData) => {
   try {
-    const response = await API.post("/patients/add", patientData);
+    const response = await API.post("/vih/add", patientData);
     return response.data;
   } catch (error) {
     throw error.response?.data || error.message;

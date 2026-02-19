@@ -10,7 +10,7 @@ import {
   //updateLastVisitController,
 } from "../controllers/patientController.js";
 import { validateCreatePatient } from "../middlewares/patientMiddleware.js";
-import { protect, authorizeMedecin } from "../middlewares/authMiddleware.js";
+import { protect, authorizeMedecin,authorizePharmacien } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
@@ -32,13 +32,13 @@ router.post(
   // validateCreatePatient,
   createPatientController,
 );
-
+// medecin et pharmacien 
 router.get(
   "/numero/:numero",
   protect,
-  authorizeMedecin,
   getPatientByNumeroController,
 );
+
 
 // router.get("/:id", protect, authorizeMedecin, getPatientController);
 
@@ -52,3 +52,6 @@ router.put("/update/:id", protect, authorizeMedecin, updatePatientController);
 // );
 
 export default router;
+
+
+

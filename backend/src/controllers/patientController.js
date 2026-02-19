@@ -177,3 +177,4 @@ export const updatePatientController = async (req, res) => {
 //     });
 //   }
 // };
+

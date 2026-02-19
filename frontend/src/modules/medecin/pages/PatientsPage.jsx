@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
+import AddButton from "../../../shared/components/UI/Button/AddButton";
+import { getAllPatients } from "../../../shared/services/patientService";
 import { getAllPatients } from "../services/patientServices";
 import "./PatientsPage.css";
 
@@ -13,7 +15,6 @@ export default function PatientsPage() {
     const fetchPatients = async () => {
       try {
         const response = await getAllPatients();
-        // selon ton controller → response.patients
         setPatients(response.patients || response || []);
       } catch (error) {
         console.error("Erreur chargement patients:", error);
@@ -37,6 +38,30 @@ export default function PatientsPage() {
     : [];
 
   return (
+    <div className="patients-page">
+      <div className="patients-header">
+        <h2>Mes Patients</h2>
+
+        <div className="header-actions">
+          <input
+            type="text"
+            placeholder="Rechercher par nom ou numéro..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+
+          <select value={filter} onChange={(e) => setFilter(e.target.value)}>
+            <option value="">Tous</option>
+            <option value="interne">Interne</option>
+            <option value="externe">Externe</option>
+          </select>
+
+          <NavLink
+            to="/medecin/patient/new/workspace"
+            className="td-link"
+          >
+            <AddButton />
+          </NavLink>
       <div className="patients-page">
 
         <div className="patients-toolbar">
@@ -162,6 +187,9 @@ export default function PatientsPage() {
           )}
         </div>
       </div>
+    </div>
+  );
+}
     );
 
 }

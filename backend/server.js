@@ -6,6 +6,11 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./src/routes/authRoutes.js";
 import userRoutes from "./src/routes/userRoutes.js";
 import patientRoutes from "./src/routes/patientRoutes.js";
+import ordonnanceRoute from "./src/routes/ordonnanceRoute.js";
+import patientOrdRoute from "./src/routes/PatientsOrdRoute.js";
+import vihRoute from "./src/routes/vihRoute.js";
+
+
 import socialRoutes from "./src/routes/socialRoute.js";
 import addressRoutes from "./src/routes/addressRoutes.js";
 
@@ -24,6 +29,10 @@ app.use(
 // Routes d'authentification
 app.use("/api/auth", authRoutes);
 app.use("/api", userRoutes);
+app.use("/api/patients", patientRoutes);
+app.use("/api/ordonnances", ordonnanceRoute);
+app.use("/api/patients/ordonnances", patientOrdRoute);
+app.use("/api/vih", vihRoute);
 app.use("/api/patients", patientRoutes); // patients = profil patient
 app.use("/api/social", socialRoutes);
 app.use("/api/addresses", addressRoutes);
