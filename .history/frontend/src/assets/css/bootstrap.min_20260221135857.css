@@ -1,0 +1,47 @@
+/* === Compact Professional Alert === */
+
+.app-alert-compact {
+  padding: 1.2rem !important;
+  max-width: 420px;
+  border-radius: 12px;
+}
+
+/* Title */
+.app-alert-title {
+  font-size: 1.05rem !important;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+/* Text */
+.app-alert-text {
+  font-size: 0.9rem !important;
+  color: #6c757d;
+}
+
+/* Actions container */
+.app-alert-actions {
+  display: flex !important;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.2rem;
+}
+
+/* Buttons */
+.app-alert-btn {
+  padding: 0.45rem 1.1rem !important;
+  font-size: 0.85rem;
+  border-radius: 8px;
+  min-width: 90px;
+  transition: all 0.2s ease;
+}
+
+/* Hover subtle effect */
+.app-alert-btn:hover {
+  transform: translateY(-1px);
+}
+
+/* Reduce icon size slightly */
+.swal2-icon {
+  transform: scale(0.85);
+}

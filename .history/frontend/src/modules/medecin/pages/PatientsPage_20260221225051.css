@@ -1,0 +1,139 @@
+/* ================================
+   TABLE WRAPPER SCROLLABLE
+================================ */
+
+.table-wrapper {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+
+  /* Important pour nouvelle table large */
+  overflow-x: auto;
+  overflow-y: hidden;
+
+  max-width: 100%;
+}
+
+/* Table */
+
+table {
+  width: max-content; /* permet scroll horizontal propre */
+  min-width: 100%;
+  border-collapse: collapse;
+}
+
+/* Header */
+thead {
+  background: #f8fafc;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+
+/* Header cell */
+th {
+  padding: 14px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  white-space: nowrap;
+}
+
+/* Body cell */
+td {
+  padding: 14px 18px;
+  font-size: 14px;
+  color: #0f172a;
+  border-top: 1px solid #f1f5f9;
+
+  white-space: nowrap;
+}
+
+/* Row hover */
+tbody tr:hover {
+  background: #f8fafc;
+  transition: background 0.2s ease;
+}
+
+/* ================================
+   PATIENT CELL
+================================ */
+
+.patient-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 180px;
+}
+
+/* Avatar */
+.avatar {
+  width: 36px;
+  height: 36px;
+  background: #e2e8f0;
+  border-radius: 999px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-weight: 600;
+  color: #475569;
+}
+
+/* Name */
+.name {
+  font-weight: 500;
+  color: #0f172a;
+}
+
+/* ================================
+   BADGES
+================================ */
+
+.badge {
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.badge.success {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.badge.danger {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+/* ================================
+   EMPTY STATE
+================================ */
+
+.empty {
+  text-align: center;
+  padding: 40px;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+/* ================================
+   SCROLLBAR MODERN STYLE
+================================ */
+
+.table-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+
+.table-wrapper::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 8px;
+}
+
+.table-wrapper::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}

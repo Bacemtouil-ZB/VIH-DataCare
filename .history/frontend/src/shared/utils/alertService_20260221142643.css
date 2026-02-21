@@ -1,0 +1,40 @@
+/* AlertService.css */
+
+:root {
+  --alert-primary: #043b08;
+  --alert-primary-hover: #065c0d;
+  --alert-primary-muted: rgba(4, 59, 8, 0.2);
+}
+
+
+/* Titre */
+.swal2-title {
+  color: var(--alert-primary) !important;
+}
+
+/* Icône success */
+.swal2-icon.swal2-success,
+.swal2-icon.swal2-success .swal2-success-ring {
+  border-color: var(--alert-primary-muted) !important;
+  color: var(--alert-primary) !important;
+}
+
+/* Espace entre les boutons */
+.swal2-actions {
+  gap: 0.75rem !important;
+}
+
+/* Bouton Confirmer */
+.btn-custom-confirm {
+  background-color: var(--alert-primary) !important;
+  color: #fff !important;
+  border: none !important;
+}
+
+/* Bouton Annuler */
+.btn-custom-cancel {
+  background-color: transparent !important;
+  color: var(--alert-primary) !important;
+  border: 1.5px solid var(--alert-primary) !important;
+}
+

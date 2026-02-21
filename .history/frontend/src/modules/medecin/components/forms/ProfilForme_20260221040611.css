@@ -1,0 +1,52 @@
+/* ============================= */
+/* BUTTON ALIGNMENT FIX */
+/* ============================= */
+
+.edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;   /* aligne verticalement */
+  gap: 12px;
+}
+
+/* Style commun strict */
+.edit-btn,
+.save-btn,
+.cancel-btn {
+  height: 42px;                  /* hauteur fixe identique */
+  min-width: 130px;              /* largeur minimale identique */
+  padding: 0 20px;               /* padding horizontal uniquement */
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  line-height: 1;                /* supprime décalage vertical */
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+/* ENREGISTRER */
+.save-btn {
+  background-color: #2e7d32;
+  color: #fff;
+  border: 1px solid #2e7d32;   /* même épaisseur que cancel */
+}
+
+.save-btn:hover {
+  background-color: #1b5e20;
+  border-color: #1b5e20;
+}
+
+/* ANNULER */
+.cancel-btn {
+  background-color: #ffffff;
+  color: #374151;
+  border: 1px solid #cbd5e1;   /* même border width */
+}
+
+.cancel-btn:hover {
+  background-color: #f3f4f6;
+}
