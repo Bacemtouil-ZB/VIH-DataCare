@@ -9,7 +9,10 @@ import patientRoutes from "./src/routes/patientRoutes.js";
 import ordonnanceRoute from "./src/routes/ordonnanceRoute.js";
 import patientOrdRoute from "./src/routes/PatientsOrdRoute.js";
 import vihRoute from "./src/routes/vihRoute.js";
-
+import examenCliniqueRoute from "./src/routes/examenCliniqueRoute.js";
+import signeClinique from "./src/routes/signeCliniqueRoute.js";
+import signeFonctionRoute from "./src/routes/signeFonctionRoute.js";
+import habitude from "./src/routes/habitudeDeVieRoute.js";
 
 
 dotenv.config();
@@ -31,6 +34,10 @@ app.use("/api/patients", patientRoutes);
 app.use("/api/ordonnances", ordonnanceRoute);
 app.use("/api/patients/ordonnances", patientOrdRoute);
 app.use("/api/vih", vihRoute);
+app.use("/api/examen-clinique", examenCliniqueRoute);
+app.use("/api/signesFonctionnels", signeFonctionRoute);
+app.use("/api/signesCliniques", signeClinique);
+app.use("/api/habitudes", habitude);
 
 // Route racine test
 app.get("/", (req, res) => {

@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { 
+import {
   findMedicalTreatmentByNumeroDossier,
-  updateDateProchainePrise 
+  updateDateProchainePrise,
 } from "../../services/ordonnanceService";
 import "./Ordonnancedetail.css";
-
 
 export default function Ordonnancedetail() {
   const { numero } = useParams();
@@ -15,8 +14,20 @@ export default function Ordonnancedetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
-
   const [quantiteDelivree, setQuantiteDelivree] = useState("");
+
+  const extractOrdonnances = (response) => {
+    if (response && response.success && Array.isArray(response.ordonnances)) {
+      return response.ordonnances;
+    } else if (Array.isArray(response)) {
+      return response;
+    } else if (response && response.data && Array.isArray(response.data)) {
+      return response.data;
+    } else if (response && Array.isArray(response.ordonnances)) {
+      return response.ordonnances;
+    }
+    return [];
+  };
 
   useEffect(() => {
     if (!numero) {
@@ -28,32 +39,12 @@ export default function Ordonnancedetail() {
     const fetchOrdonnances = async () => {
       setLoading(true);
       setError(null);
-
       try {
         const response = await findMedicalTreatmentByNumeroDossier(numero);
-        
-        console.log("Response from API:", response);
-        
-        // Gérer les deux formats possibles de réponse
-        let ordonnancesData = [];
-        
-        if (response.success && response.ordonnances) {
-          // Format: { success: true, ordonnances: [...] }
-          ordonnancesData = response.ordonnances;
-        } else if (Array.isArray(response)) {
-          // Format direct: [...]
-          ordonnancesData = response;
-        } else if (response.data && Array.isArray(response.data)) {
-          // Format: { data: [...] }
-          ordonnancesData = response.data;
-        }
-        
+        const ordonnancesData = extractOrdonnances(response);
         setOrdonnances(ordonnancesData);
-        if (ordonnancesData.length > 0) {
-          setSelectedOrd(ordonnancesData[0]);
-        }
+        setSelectedOrd(ordonnancesData.length > 0 ? ordonnancesData[0] : null);
       } catch (err) {
-        console.error("Erreur:", err);
         setError(err.message || "Erreur lors du chargement");
       } finally {
         setLoading(false);
@@ -63,16 +54,28 @@ export default function Ordonnancedetail() {
     fetchOrdonnances();
   }, [numero]);
 
- 
+  const formatDateForInput = (dateStr) => {
+    if (!dateStr) return "";
+    try {
+      return new Date(dateStr).toISOString().split("T")[0];
+    } catch {
+      return "";
+    }
+  };
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "-";
+    try {
+      return new Date(dateStr).toLocaleDateString("fr-FR");
+    } catch {
+      return "-";
+    }
+  };
+
   const calculateNextDate = (quantite) => {
     if (!quantite) return null;
-
-    const today = new Date();
-    const moisAjoutes = parseInt(quantite); 
-
-    const nextDate = new Date(today);
-    nextDate.setMonth(nextDate.getMonth() + moisAjoutes);
-
+    const nextDate = new Date();
+    nextDate.setMonth(nextDate.getMonth() + parseInt(quantite));
     return nextDate;
   };
 
@@ -89,46 +92,27 @@ export default function Ordonnancedetail() {
     }
 
     setSaving(true);
-
     try {
       await updateDateProchainePrise(
         selectedOrd.id,
-        nextDate.toISOString().split('T')[0]
+        nextDate.toISOString().split("T")[0]
       );
 
       alert("Date prochaine prise mise à jour avec succès !");
-      
-      // Recharger les ordonnances
+
       const response = await findMedicalTreatmentByNumeroDossier(numero);
-      
-      let ordonnancesData = [];
-      if (response.success && response.ordonnances) {
-        ordonnancesData = response.ordonnances;
-      } else if (Array.isArray(response)) {
-        ordonnancesData = response;
-      } else if (response.data && Array.isArray(response.data)) {
-        ordonnancesData = response.data;
-      }
-      
+      const ordonnancesData = extractOrdonnances(response);
+
       setOrdonnances(ordonnancesData);
       setQuantiteDelivree("");
-      
-      // Sélectionner la même ordonnance après rechargement
-      const updatedOrd = ordonnancesData.find(o => o.id === selectedOrd.id);
-      if (updatedOrd) {
-        setSelectedOrd(updatedOrd);
-      }
+
+      const updatedOrd = ordonnancesData.find((o) => o.id === selectedOrd.id);
+      if (updatedOrd) setSelectedOrd(updatedOrd);
     } catch (err) {
-      console.error("Erreur sauvegarde:", err);
       alert("Erreur lors de la sauvegarde");
     } finally {
       setSaving(false);
     }
-  };
-
-  const formatDate = (dateStr) => {
-    if (!dateStr) return "-";
-    return new Date(dateStr).toLocaleDateString("fr-FR");
   };
 
   if (loading) {
@@ -157,6 +141,7 @@ export default function Ordonnancedetail() {
       <div className="ordonnance-detail-container">
         <div className="empty-state">
           <p> Aucune ordonnance pour ce patient</p>
+          <small>Vérifiez que des ordonnances existent dans la base de données</small>
         </div>
       </div>
     );
@@ -164,6 +149,7 @@ export default function Ordonnancedetail() {
 
   return (
     <div className="ordonnance-detail-container">
+
       {/* HEADER */}
       <div className="detail-header">
         <h2 className="detail-title">Détail de l'Ordonnance</h2>
@@ -173,11 +159,13 @@ export default function Ordonnancedetail() {
       {/* SÉLECTION ORDONNANCE */}
       {ordonnances.length > 1 && (
         <div className="ordonnance-selector">
-          <label>Sélectionner une ordonnance:</label>
-          <select 
-            value={selectedOrd?.id || ""} 
+          <label>Sélectionner une ordonnance :</label>
+          <select
+            value={selectedOrd?.id || ""}
             onChange={(e) => {
-              const ord = ordonnances.find(o => o.id === parseInt(e.target.value));
+              const ord = ordonnances.find(
+                (o) => o.id === parseInt(e.target.value)
+              );
               setSelectedOrd(ord);
               setQuantiteDelivree("");
             }}
@@ -193,9 +181,9 @@ export default function Ordonnancedetail() {
       )}
 
       {/* FORMULAIRE */}
-      {selectedOrd && (
+      {selectedOrd ? (
         <div className="detail-form">
-          {/* Nom du traitement */}
+
           <div className="form-group">
             <label className="form-label">Nom du traitement</label>
             <input
@@ -206,7 +194,6 @@ export default function Ordonnancedetail() {
             />
           </div>
 
-          {/* Quantité prescrite */}
           <div className="form-group">
             <label className="form-label">Quantité prescrite</label>
             <input
@@ -217,32 +204,29 @@ export default function Ordonnancedetail() {
             />
           </div>
 
-          {/* Date début traitement */}
           <div className="form-group">
             <label className="form-label">Date début du traitement</label>
             <input
               type="date"
-              value={selectedOrd.date_debut_traitement || ""}
+              value={formatDateForInput(selectedOrd.date_debut_traitement)}
               disabled
               className="form-input disabled"
             />
           </div>
 
-          {/* Date actuelle prochaine prise - RÉDUIT */}
           <div className="form-group form-group-compact">
             <label className="form-label">Date prochaine prise actuelle</label>
             <input
               type="date"
-              value={selectedOrd.date_prochaine_prise || ""}
+              value={formatDateForInput(selectedOrd.date_prochaine_prise)}
               disabled
               className="form-input disabled"
             />
           </div>
 
-          {/* QUANTITÉ DÉLIVRÉE - ACTIVÉ - RÉDUIT */}
           <div className="form-group form-group-compact highlight">
             <label className="form-label active">
-              Quantité délivrée (mois) 
+              Quantité délivrée (mois) ⚡
             </label>
             <input
               type="number"
@@ -254,26 +238,37 @@ export default function Ordonnancedetail() {
             />
           </div>
 
-          {/* CALCUL EN TEMPS RÉEL */}
           {quantiteDelivree && (
             <div className="calculation-preview">
-              <p className="preview-label">✨ Nouvelle date prochaine prise:</p>
+              <p className="preview-label">✨ Nouvelle date prochaine prise :</p>
               <p className="preview-date">
                 {formatDate(calculateNextDate(quantiteDelivree))}
               </p>
             </div>
           )}
 
-          {/* BOUTON ENREGISTRER */}
           <div className="form-actions">
             <button
               onClick={handleSave}
               disabled={!quantiteDelivree || saving}
               className="btn-save"
             >
-              {saving ? "Enregistrement..." : " Enregistrer"}
+              {saving ? "Enregistrement..." : "Enregistrer"}
             </button>
           </div>
+        </div>
+      ) : (
+        <div
+          style={{
+            padding: "20px",
+            textAlign: "center",
+            background: "#fff3cd",
+            borderRadius: "8px",
+          }}
+        >
+          <p style={{ margin: 0, color: "#856404" }}>
+             Aucune ordonnance sélectionnée
+          </p>
         </div>
       )}
     </div>

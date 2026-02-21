@@ -11,7 +11,7 @@ import {
   countOrdonnancesByStatut,
 } from "../models/ordonnanceModel.js";
 
-import { getPatientById, getPatientByNumero } from "../models/patientModel.js";
+import {  getPatientByNumero } from "../models/patientModel.js";
 
 export const addMedicalTreatment = async (treatmentData, medecinId) => {
   // Validation quantité
@@ -35,11 +35,8 @@ export const findMedicalTreatmentByNumeroDossier = async (numeroDossier) => {
   }
 
   const ordonnances = await findByNumeroModel(numeroDossier);
-    return {
-    success: true,
-    ordonnances: ordonnances,
-    patient: patient,
-  };
+    return ordonnances;
+
 };
 
 export const getThreeLastPrise = async (numeroDossier) => {
@@ -64,7 +61,6 @@ export const getTreatmentStartDate = async (ordonnanceId) => {
   return date;
 };
 
-// ==========================================
 
 export const getNextIntakeDate = async (ordonnanceId) => {
   const date = await getNextIntakeDateModel(ordonnanceId);
@@ -73,7 +69,7 @@ export const getNextIntakeDate = async (ordonnanceId) => {
     throw new Error("Ordonnance non trouvée");
   }
 
-  return date; // Peut être null si pas de prochaine prise
+  return date; 
 };
 
 export const getOrdonnanceById = async (id) => {

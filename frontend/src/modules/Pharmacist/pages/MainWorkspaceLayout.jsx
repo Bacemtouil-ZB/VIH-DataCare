@@ -25,7 +25,7 @@ export default function MainWorkspaceLayout() {
 
       <PanelGroup direction="horizontal">
 
-        {/* LEFT PANEL */}
+        
         <Panel
           ref={leftRef}
           defaultSize={18}
@@ -36,7 +36,7 @@ export default function MainWorkspaceLayout() {
           onExpand={() => setLeftClosed(false)}
           className="panel-left"
         >
-          <LeftPanel />
+         <LeftPanel />
         </Panel>
 
         {/* LEFT HANDLE */}

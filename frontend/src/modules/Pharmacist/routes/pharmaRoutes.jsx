@@ -5,6 +5,7 @@ import ProfilPage from "../../../pages/parametres/profile";
 import Patientsordonnances from "../pages/Patientsordonnances.jsx";
 import MainWorkspaceLayout from "../pages/MainWorkspaceLayout";
 import Ordonnancedetail from "../pages/workspace/Ordonnancedetail.jsx";
+import Stock from "../pages/Stock.jsx";
 
 const pharmacienRoutes = [
   {
@@ -22,6 +23,10 @@ const pharmacienRoutes = [
       { 
         path: "ordonnances", 
         element: <Patientsordonnances /> 
+      },
+            { 
+        path: "stock", 
+        element: < Stock/> 
       },
       { 
         path: "settings", 

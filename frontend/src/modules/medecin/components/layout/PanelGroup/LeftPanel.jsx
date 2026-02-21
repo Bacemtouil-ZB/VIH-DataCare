@@ -1,21 +1,34 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { getPatientByNumero } from "../../../services/patientServices";
-import { getThreeLastPrise } from "../../../services/ordonnancesService";
+import { getPatientByNumero } from "../../../../../shared/services/patientService";
+import { getThreeLastPrise, findMedicalTreatmentByNumeroDossier } from "../../../services/ordonnancesService";
 import "./LeftPanel.css";
+
+/**
+ * ==========================================
+ * LEFT PANEL MÉDECIN - MAPPING CORRIGÉ
+ * ==========================================
+ */
 
 export default function LeftPanel() {
   const { numero } = useParams(); 
   
   const [patientData, setPatientData] = useState(null);
   const [derniersPrises, setDerniersPrises] = useState([]);
+  const [traitementEnCours, setTraitementEnCours] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
 
+  // ==========================================
+  // CHARGEMENT
+  // ==========================================
+
   useEffect(() => {
+    console.log("🔍 LeftPanel - Numéro patient:", numero);
+
     if (!numero) {
       setError("Aucun numéro de dossier fourni");
       setLoading(false);
@@ -27,34 +40,70 @@ export default function LeftPanel() {
         setLoading(true);
         setError(null);
 
-        console.log("🔍 Chargement patient:", numero);
-
-        // Récupérer les données du patient
+        // Récupérer patient
+        console.log("📡 Chargement patient...");
         const patientResponse = await getPatientByNumero(numero);
+        console.log("✅ Patient reçu:", patientResponse);
         
-        console.log("📊 Réponse patient:", patientResponse);
-
         if (patientResponse.success && patientResponse.patient) {
+          console.log("✅ Données patient:", patientResponse.patient);
           setPatientData(patientResponse.patient);
         } else {
           setError("Patient non trouvé");
         }
 
-        // Récupérer les 3 dernières prises
+        // Récupérer 3 dernières prises
         try {
+          console.log("📡 Chargement dernières prises...");
           const prisesResponse = await getThreeLastPrise(numero);
+          console.log("✅ Prises reçues:", prisesResponse);
           
-          console.log(" Dernières prises:", prisesResponse);
-
           if (prisesResponse.success && prisesResponse.prises) {
             setDerniersPrises(prisesResponse.prises);
           }
         } catch (err) {
-          console.log("Pas de prises trouvées");
+          console.log("⚠️ Pas de prises:", err.message);
+        }
+
+        // Récupérer traitement actif
+        try {
+          console.log("📡 Chargement traitements...");
+          const traitementResponse = await findMedicalTreatmentByNumeroDossier(numero);
+          console.log("✅ Traitements reçus:", traitementResponse);
+          
+          // Extraire ordonnances
+          let ordonnances = [];
+          if (Array.isArray(traitementResponse)) {
+            ordonnances = traitementResponse;
+          } else if (traitementResponse.success && traitementResponse.ordonnances) {
+            ordonnances = traitementResponse.ordonnances;
+          } else if (traitementResponse.ordonnances) {
+            ordonnances = traitementResponse.ordonnances;
+          }
+
+          if (ordonnances.length > 0) {
+            const today = new Date();
+            const actif = ordonnances.find(ord => {
+              if (ord.date_prochaine_prise) {
+                const dateProchaine = new Date(ord.date_prochaine_prise);
+                return dateProchaine >= today;
+              }
+              return false;
+            });
+            
+            if (actif) {
+              setTraitementEnCours(actif);
+              console.log("✅ Traitement actif trouvé:", actif.nom_traitement);
+            } else {
+              console.log("⚠️ Aucun traitement actif");
+            }
+          }
+        } catch (err) {
+          console.log("⚠️ Pas de traitement:", err.message);
         }
 
       } catch (err) {
-        console.error("Erreur chargement patient:", err);
+        console.error("❌ Erreur chargement:", err);
         setError(err.message || "Erreur lors du chargement");
       } finally {
         setLoading(false);
@@ -63,6 +112,10 @@ export default function LeftPanel() {
 
     fetchPatientData();
   }, [numero]);
+
+  // ==========================================
+  // UTILITAIRES - MAPPING CORRIGÉ
+  // ==========================================
 
   const calculateAge = (dateNaissance) => {
     if (!dateNaissance) return 'N/A';
@@ -86,22 +139,26 @@ export default function LeftPanel() {
     return `${prenom.charAt(0)}${nom.charAt(0)}`.toUpperCase();
   };
 
-  const getStatutBadgeClass = (statut) => {
+  const getStatutClass = (statut) => {
     switch (statut?.toLowerCase()) {
       case 'en cours de suivi':
       case 'actif':
-        return 'badge-active';
+        return 'statut-actif';
       case 'perdu de vue':
-        return 'badge-warning';
+        return 'statut-warning';
       case 'en fin de suivi':
-        return 'badge-info';
+        return 'statut-info';
       case 'décédé':
-        return 'badge-danger';
+        return 'statut-danger';
       default:
-        return 'badge-neutral';
+        return 'statut-neutral';
     }
   };
   
+  // ==========================================
+  // PHOTO
+  // ==========================================
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -119,10 +176,14 @@ export default function LeftPanel() {
     setImagePreview(null);
   };
 
+  // ==========================================
+  // ÉTATS
+  // ==========================================
+
   if (loading) {
     return (
-      <div className="patient-panel">
-        <div className="loading-container">
+      <div className="left-panel">
+        <div className="panel-loading">
           <div className="spinner"></div>
           <p>Chargement...</p>
         </div>
@@ -132,9 +193,9 @@ export default function LeftPanel() {
 
   if (error) {
     return (
-      <div className="patient-panel">
-        <div className="error-container">
-          <p className="error-message">⚠️ {error}</p>
+      <div className="left-panel">
+        <div className="panel-error">
+          <p>⚠️ {error}</p>
         </div>
       </div>
     );
@@ -142,33 +203,36 @@ export default function LeftPanel() {
 
   if (!patientData) {
     return (
-      <div className="patient-panel">
-        <div className="empty-state">
-          <p className="empty-message">Aucun patient sélectionné</p>
+      <div className="left-panel">
+        <div className="panel-empty">
+          <p>Aucun patient sélectionné</p>
         </div>
       </div>
     );
   }
 
+  // ==========================================
+  // RENDU - UTILISE LES BONS CHAMPS BDD
+  // ==========================================
+
   return (
-    <div className="patient-panel">
-      <div className="patient-header">
-        <div className="photo-upload-container">
+    <div className="left-panel">
+      {/* PHOTO */}
+      <div className="panel-header">
+        <div className="photo-container">
           {imagePreview ? (
-            <div className="patient-photo-wrapper">
-              <img src={imagePreview} alt="Patient" className="patient-photo" />
-              <button onClick={handleRemoveImage} className="remove-photo-btn" title="Supprimer la photo">
-                ✕
-              </button>
+            <div className="photo-wrapper">
+              <img src={imagePreview} alt="Patient" className="photo-img" />
+              <button onClick={handleRemoveImage} className="photo-remove">✕</button>
             </div>
           ) : (
-            <div className="patient-avatar">
+            <div className="photo-avatar">
               {getInitials(patientData.name, patientData.surname)}
             </div>
           )}
           
-          <label htmlFor="photo-upload" className="upload-photo-btn">
-             {imagePreview ? 'Changer' : 'Ajouter'} photo
+          <label htmlFor="photo-upload" className="photo-btn">
+            {imagePreview ? 'Changer' : 'Ajouter'} photo
           </label>
           <input
             id="photo-upload"
@@ -179,71 +243,99 @@ export default function LeftPanel() {
           />
         </div>
         
-        <h2 className="patient-name">
+        <h2 className="patient-fullname">
           {patientData.surname} {patientData.name}
         </h2>
-        <p className="patient-id">Dossier: {patientData.numero || numero}</p>
+        <p className="patient-numero">Dossier: {patientData.numero || numero}</p>
       </div>
 
-      <div className="patient-info">
-        <div className="info-row">
-          <span>Date de naissance</span>
-          <span>{formatDate(patientData.birthdate || patientData.date_naissance)}</span>
+      {/* INFORMATIONS */}
+      <div className="panel-info">
+        {/* Nom */}
+        <div className="info-item">
+          <span className="info-label">Nom</span>
+          <span className="info-value">{patientData.name || 'N/A'}</span>
         </div>
 
-        <div className="info-row">
-          <span>Âge</span>
-          <span>{calculateAge(patientData.birthdate || patientData.date_naissance)} ans</span>
+        {/* Prénom */}
+        <div className="info-item">
+          <span className="info-label">Prénom</span>
+          <span className="info-value">{patientData.surname || 'N/A'}</span>
         </div>
 
-        {patientData.phone && (
-          <div className="info-row">
-            <span>Téléphone</span>
-            <span>{patientData.phone}</span>
-          </div>
-        )}
+        {/* Date de naissance - MAPPING CORRIGÉ */}
+        <div className="info-item">
+          <span className="info-label">Date de naissance</span>
+          <span className="info-value">{formatDate(patientData.birthdate)}</span>
+        </div>
 
-        <div className="info-row">
-          <span>Hospitalisation</span>
-          <span className={patientData.hospitalisation === 'Oui' ? 'badge-warning' : 'badge-neutral'}>
+        {/* Âge - MAPPING CORRIGÉ */}
+        <div className="info-item">
+          <span className="info-label">Âge</span>
+          <span className="info-value">{calculateAge(patientData.birthdate)} ans</span>
+        </div>
+
+        {/* Téléphone */}
+        <div className="info-item">
+          <span className="info-label">Téléphone</span>
+          <span className="info-value">{patientData.phone || 'Non renseigné'}</span>
+        </div>
+
+        {/* Genre - MAPPING CORRIGÉ */}
+        <div className="info-item">
+          <span className="info-label">Genre</span>
+          <span className="info-value">{patientData.gender || 'Non renseigné'}</span>
+        </div>
+
+        {/* Ville de résidence - MAPPING CORRIGÉ */}
+        <div className="info-item">
+          <span className="info-label">Ville</span>
+          <span className="info-value">{patientData.city_of_residence || 'Non renseigné'}</span>
+        </div>
+
+        {/* Traitement en cours */}
+        <div className="info-item">
+          <span className="info-label">Traitement en cours</span>
+          {traitementEnCours ? (
+            <span className="info-value traitement-badge">
+              {traitementEnCours.nom_traitement}
+            </span>
+          ) : (
+            <span className="info-value secondary">Aucun</span>
+          )}
+        </div>
+
+        {/* Hospitalisation */}
+        <div className="info-item">
+          <span className="info-label">Hospitalisation</span>
+          <span className={`info-value ${patientData.hospitalisation === 'Oui' ? 'hosp-oui' : 'hosp-non'}`}>
             {patientData.hospitalisation || 'Non'}
           </span>
         </div>
-
-        <div className="info-row">
-          <span>Statut</span>
-          <span className={getStatutBadgeClass(patientData.statut)}>
-            {patientData.statut || 'Actif'}
-          </span>
-        </div>
       </div>
 
-      {derniersPrises && derniersPrises.length > 0 && (
-        <div className="dernieres-prises">
-          <h3 className="section-title">Dernières prises</h3>
+      {/* DERNIÈRES PRISES */}
+      <div className="panel-prises">
+        <h3 className="prises-title">3 Dernières prises</h3>
+        
+        {derniersPrises && derniersPrises.length > 0 ? (
           <div className="prises-list">
             {derniersPrises.map((prise, index) => (
-              <div key={prise.id || index} className="prise-item">
-                <div className="prise-header">
-                  <span className="prise-numero">#{index + 1}</span>
+              <div key={prise.id || index} className="prise-card">
+                <div className="prise-top">
+                  <span className="prise-num">Prise #{index + 1}</span>
                   <span className="prise-date">{formatDate(prise.date_prochaine_prise)}</span>
                 </div>
-                <div className="prise-traitement">
-                  {prise.nom_traitement}
-                </div>
-                <div className="prise-quantite">
-                  Quantité: {prise.quantite_prescrite}
-                </div>
+                <div className="prise-nom">{prise.nom_traitement}</div>
+                <div className="prise-qte">Quantité: {prise.quantite_prescrite}</div>
               </div>
             ))}
           </div>
-        </div>
-      )}
-
-      <div className="patient-status">
-        <span className={getStatutBadgeClass(patientData.statut)}>
-          {patientData.statut || 'Statut inconnu'}
-        </span>
+        ) : (
+          <div className="prises-empty">
+            Aucune prise enregistrée
+          </div>
+        )}
       </div>
     </div>
   );
