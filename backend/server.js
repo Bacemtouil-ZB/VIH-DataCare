@@ -7,6 +7,7 @@ import authRoutes from "./src/routes/authRoutes.js";
 import userRoutes from "./src/routes/userRoutes.js";
 import patientRoutes from "./src/routes/patientRoutes.js";
 import socialRoutes from "./src/routes/socialRoute.js";
+import vih from "./src/routes/vihRoute.js";
 
 dotenv.config();
 const app = express();
@@ -25,6 +26,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api", userRoutes);
 app.use("/api/patients", patientRoutes); // patients = profil patient
 app.use("/api/social", socialRoutes);
+app.use("/api/vih", vih);
 
 // Route racine test
 app.get("/", (req, res) => {
