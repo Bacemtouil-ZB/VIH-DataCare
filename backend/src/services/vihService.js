@@ -1,12 +1,18 @@
 import {
   createVih as createVihModel,
   getVihById as getVihByIdModel,
+<<<<<<< HEAD
   getVihByPatientId as getVihByPatientIdModel,
   updateVih as updateVihModel,
 
 
 } from "../models/vihModel.js";
 import { getPatientById } from "../models/patientModel.js";
+=======
+  getVihByNumeroDossier as getVihByNumeroDossierModel,
+  updateVih as updateVihModel,
+} from "../models/vihModel.js";
+>>>>>>> origin/feature/vih
 
 export const createVih = async (vihData, userId) => {
   const vih = await createVihModel(vihData, userId);
@@ -22,6 +28,7 @@ export const getVihById = async (id) => {
   return vih;
 };
 
+<<<<<<< HEAD
 export const getVihByPatientId = async (patientId) => {
   const patient = await getPatientById(patientId);
   if (!patient) {
@@ -32,10 +39,18 @@ export const getVihByPatientId = async (patientId) => {
     throw new Error("Aucun dossier VIH trouvé pour ce patient");
   }
 
+=======
+export const getVihByNumeroDossier = async (numero) => {
+  const vih = await getVihByNumeroDossierModel(numero);
+  if (!vih) {
+    throw new Error("Aucun dossier VIH trouvé pour ce patient");
+  }
+>>>>>>> origin/feature/vih
   return vih;
 };
 
 export const updateVih = async (id, vihData, userId) => {
+<<<<<<< HEAD
   // Vérifier que le dossier VIH existe
   const vih = await getVihByIdModel(id);
   if (!vih) {
@@ -44,3 +59,9 @@ export const updateVih = async (id, vihData, userId) => {
   const updatedVih = await updateVihModel(id, vihData, userId);
   return updatedVih;
 };
+=======
+  const updatedVih = await updateVihModel(id, vihData, userId);
+  return updatedVih;
+};
+
+>>>>>>> origin/feature/vih

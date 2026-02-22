@@ -1,5 +1,9 @@
 import pool from "../config/db.js";
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/feature/vih
 export const createVih = async (vihData, createdBy) => {
   const {
     patient_id,
@@ -27,6 +31,18 @@ export const createVih = async (vihData, createdBy) => {
 
   const values = [
     patient_id,
+<<<<<<< HEAD
+    mode_contamination,
+    type_depistage,
+    circonstance_decouverte,
+    date_derniere_negative,
+    date_contamination,
+    date_vih_positif,
+    stade_cdc,
+    debut_stade_c,
+    typage_hla_b5701,
+    profil_seroconversion,
+=======
     mode_contamination || null,
     type_depistage || null,
     circonstance_decouverte || null,
@@ -37,6 +53,7 @@ export const createVih = async (vihData, createdBy) => {
     debut_stade_c || null,
     typage_hla_b5701 || null,
     profil_seroconversion || false,
+>>>>>>> origin/feature/vih
     createdBy,
   ];
 
@@ -44,6 +61,12 @@ export const createVih = async (vihData, createdBy) => {
   return result.rows[0];
 };
 
+<<<<<<< HEAD
+/**
+ * Récupère un dossier VIH par son ID
+ */
+=======
+>>>>>>> origin/feature/vih
 export const getVihById = async (id) => {
   const query = `
     SELECT 
@@ -65,7 +88,11 @@ export const getVihById = async (id) => {
   return result.rows[0] || null;
 };
 
-export const getVihByNumeroDossier = async (numero) => {
+<<<<<<< HEAD
+export const getVihByPatientId = async (patientId) => {
+=======
+export const getVihByNumeroDossier= async (numero) => {
+>>>>>>> origin/feature/vih
   const query = `
     SELECT 
       v.*,
@@ -79,11 +106,18 @@ export const getVihByNumeroDossier = async (numero) => {
     LEFT JOIN patients p ON v.patient_id = p.id
     LEFT JOIN users u1 ON v.created_by = u1.id
     LEFT JOIN users u2 ON v.updated_by = u2.id
+<<<<<<< HEAD
+    WHERE v.patient_id = $1;
+  `;
+
+  const result = await pool.query(query, [patientId]);
+=======
     WHERE p.numero = $1
     ;
   `;
 
   const result = await pool.query(query, [numero]);
+>>>>>>> origin/feature/vih
   return result.rows[0] || null;
 };
 
@@ -107,6 +141,16 @@ export const updateVih = async (id, vihData, updatedBy) => {
       mode_contamination = COALESCE($1, mode_contamination),
       type_depistage = COALESCE($2, type_depistage),
       circonstance_decouverte = COALESCE($3, circonstance_decouverte),
+<<<<<<< HEAD
+      date_derniere_negative = COALESCE($4, date_derniere_negative),
+      date_contamination = COALESCE($5, date_contamination),
+      date_vih_positif = COALESCE($6, date_vih_positif),
+      stade_cdc = COALESCE($7, stade_cdc),
+      debut_stade_c = COALESCE($8, debut_stade_c),
+      typage_hla_b5701 = COALESCE($9, typage_hla_b5701),
+      profil_seroconversion = COALESCE($10, profil_seroconversion),
+      updated_by = $11
+=======
       date_derniere_negative = $4,
       date_contamination = $5,
       date_vih_positif = COALESCE($6, date_vih_positif),
@@ -116,11 +160,24 @@ export const updateVih = async (id, vihData, updatedBy) => {
       profil_seroconversion = COALESCE($10, profil_seroconversion),
       updated_by = $11,
       updated_at = NOW()
+>>>>>>> origin/feature/vih
     WHERE id = $12
     RETURNING *;
   `;
 
   const values = [
+<<<<<<< HEAD
+    mode_contamination,
+    type_depistage,
+    circonstance_decouverte,
+    date_derniere_negative,
+    date_contamination,
+    date_vih_positif,
+    stade_cdc,
+    debut_stade_c,
+    typage_hla_b5701,
+    profil_seroconversion,
+=======
     mode_contamination || null,
     type_depistage || null,
     circonstance_decouverte || null,
@@ -131,6 +188,7 @@ export const updateVih = async (id, vihData, updatedBy) => {
     debut_stade_c || null,
     typage_hla_b5701 || null,
     profil_seroconversion !== undefined ? profil_seroconversion : null,
+>>>>>>> origin/feature/vih
     updatedBy,
     id,
   ];
