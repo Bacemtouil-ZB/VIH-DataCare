@@ -16,9 +16,6 @@ const ExamenCliniqueWrapper = () => {
   const [loading, setLoading] = useState(true);
   const [hasExistingExam, setHasExistingExam] = useState(false);
 
-  // ==========================================
-  // CHARGEMENT
-  // ==========================================
 
   useEffect(() => {
     if (!numero) {
@@ -71,9 +68,6 @@ const ExamenCliniqueWrapper = () => {
     setShowModal(true);
   };
 
-  // ==========================================
-  // RENDU
-  // ==========================================
 
   if (loading) {
     return (
@@ -114,44 +108,7 @@ const ExamenCliniqueWrapper = () => {
         borderBottom: '2px solid #e5e7eb',
         marginBottom: '1rem'
       }}>
-        {/* BOUTON À GAUCHE */}
-        <button
-          className="btn btn-success"
-          onClick={handleOpenModal}
-          style={{
-            padding: '0.5rem 1.5rem',
-            fontWeight: '600'
-          }}
-        >
-          <i className="bi bi-plus-circle me-2"></i>
-          Nouvel examen
-        </button>
 
-        {/* INFO À DROITE */}
-        <div style={{ textAlign: 'right' }}>
-          <h4 style={{ 
-            margin: 0, 
-            fontSize: '1.25rem', 
-            fontWeight: '700',
-            color: '#2e7d52'
-          }}>
-            <i className="bi bi-clipboard2-pulse me-2"></i>
-            Examen Clinique
-          </h4>
-          <small style={{ color: '#6b7280' }}>
-            Patient: {numero}
-            {dateExamen && (
-              <>
-                {' '}• Date: {new Date(dateExamen).toLocaleDateString('fr-FR')}
-              </>
-            )}
-            {examenId && (
-              <>
-                {' '}• Examen #{examenId}
-              </>
-            )}
-          </small>
-        </div>
       </div>
 
       {/* Message si pas d'examen */}

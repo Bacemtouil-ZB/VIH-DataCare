@@ -33,7 +33,6 @@ CREATE TABLE signes_fonctionnels (
         REFERENCES examen_clinique(id) 
         ON DELETE CASCADE,
         
-    CONSTRAINT unique_signes_fonctionnels_examen UNIQUE(examen_clinique_id)
 );
 
 CREATE INDEX idx_signes_fonctionnels_examen ON signes_fonctionnels(examen_clinique_id);

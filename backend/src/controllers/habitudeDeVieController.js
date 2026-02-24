@@ -1,43 +1,87 @@
 import {
-  createHabitudeDeVie              as createService,
-  getHabitudeDeVieById             as getByIdService,
-  getHabitudeDeVieByNumeroDossier  as getByNumeroService,
-  updateHabitudeDeVie              as updateService,
+  createHabitudeDeVie as createHabitudeDeVieService,
+  getHabitudeDeVieById as getHabitudeDeVieByIdService,
+  getHabitudeDeVieByNumeroDossier as getHabitudeDeVieByNumeroDossierService,
+  updateHabitudeDeVie as updateHabitudeDeVieService,
 } from "../services/habitudeDeVieService.js";
+
 
 export const createHabitudeDeVieController = async (req, res) => {
   try {
-    const habitude = await createService(req.body);
-    res.status(201).json({ success: true, habitude });
+    const habitudeData = req.body;
+    const userId = req.user.id;
+    
+    const habitude = await createHabitudeDeVieService(habitudeData, userId);
+
+    res.status(201).json({
+      success: true,
+      message: "Habitudes de vie créées avec succès",
+      habitude,
+    });
   } catch (error) {
-    res.status(400).json({ success: false, message: error.message });
+    console.error("Create habitude error:", error.message);
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
-export const getHabitudeDeVieByIdController = async (req, res) => {
+export const getHabitudeDeVieController = async (req, res) => {
   try {
-    const habitude = await getByIdService(parseInt(req.params.id));
-    res.status(200).json({ success: true, habitude });
+    const { id } = req.params;
+    const habitude = await getHabitudeDeVieByIdService(parseInt(id));
+
+    res.status(200).json({
+      success: true,
+      habitude,
+    });
   } catch (error) {
-    res.status(404).json({ success: false, message: error.message });
+    console.error("Get habitude error:", error.message);
+    res.status(404).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
+
 
 export const getHabitudeDeVieByNumeroDossierController = async (req, res) => {
   try {
     const { numeroDossier } = req.params;
-    const habitudes = await getByNumeroService(numeroDossier);
-    res.status(200).json({ success: true, count: habitudes.length, habitudes });
+    const habitudes = await getHabitudeDeVieByNumeroDossierService(numeroDossier);
+
+    res.status(200).json({
+      success: true,
+      habitudes, 
+    });
   } catch (error) {
-    res.status(400).json({ success: false, message: error.message });
+    console.error("Get habitude by numero error:", error.message);
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
 export const updateHabitudeDeVieController = async (req, res) => {
   try {
-    const habitude = await updateService(parseInt(req.params.id), req.body);
-    res.status(200).json({ success: true, habitude });
+    const { id } = req.params;
+    const habitudeData = req.body;
+    const userId = req.user.id;
+
+    const habitude = await updateHabitudeDeVieService(parseInt(id), habitudeData, userId);
+
+    res.status(200).json({
+      success: true,
+      message: "Habitudes de vie mises à jour avec succès",
+      habitude,
+    });
   } catch (error) {
-    res.status(400).json({ success: false, message: error.message });
+    console.error("Update habitude error:", error.message);
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
   }
 };

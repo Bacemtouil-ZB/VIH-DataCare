@@ -1,118 +1,138 @@
-import React, { useState } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap';
-import { toast } from 'react-toastify';
-import { createExamenClinique } from '../../services/examenCliniqueService';
-
-/**
- * ==========================================
- * MODAL CRÉATION EXAMEN CLINIQUE - FINAL
- * Avec appel API correct
- * ==========================================
- */
+import { useState } from "react";
+import { Modal, Button, Form } from "react-bootstrap";
+import { toast } from "react-toastify";
+import { createExamenClinique } from "../../services/examenCliniqueService";
 
 const CreateExamenModal = ({ show, onHide, onExamenCreated, patientNumero }) => {
   const [dateExamen, setDateExamen] = useState(
-    new Date().toISOString().split('T')[0]
+    new Date().toISOString().split("T")[0]
   );
   const [loading, setLoading] = useState(false);
 
   const handleCreate = async () => {
     if (!dateExamen) {
-      toast.error('Veuillez sélectionner une date');
+      toast.error("Veuillez sélectionner une date");
       return;
     }
-
     if (!patientNumero) {
-      toast.error('Numéro de patient manquant');
+      toast.error("Numéro de patient manquant");
       return;
     }
 
     setLoading(true);
-
     try {
       const response = await createExamenClinique({
         patient_numero: patientNumero,
-        date_examen: dateExamen,
+        date_examen:    dateExamen,
       });
 
       if (response.success && response.examen) {
-        toast.success('Examen clinique créé avec succès !');
+        toast.success("Examen clinique créé avec succès");
         onExamenCreated(response.examen);
+        onHide();
       } else {
-        toast.error(response.message || 'Erreur lors de la création');
+        toast.error(response.message || "Erreur lors de la création");
       }
     } catch (error) {
-      console.error('Erreur création examen:', error);
-      toast.error(error.message || 'Erreur lors de la création de l\'examen');
+      toast.error(error.message || "Erreur lors de la création de l'examen");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <Modal 
-      show={show} 
-      onHide={onHide} 
+    <Modal
+      show={show}
+      onHide={onHide}
       centered
-      backdrop="static"  // Empêche la fermeture en cliquant dehors
-      keyboard={false}   // Empêche la fermeture avec Esc
+      backdrop={true}   
+      keyboard={true}  
     >
-      <Modal.Header style={{ backgroundColor: '#2e7d52', color: 'white' }}>
-        <Modal.Title>
+      <Modal.Header
+        closeButton
+        style={{ background: "#2e7d52", color: "white", borderBottom: "none" }}
+      >
+        <Modal.Title style={{ fontSize: "1rem", fontWeight: 700 }}>
           <i className="bi bi-clipboard-pulse me-2"></i>
           Nouvel Examen Clinique
         </Modal.Title>
       </Modal.Header>
 
-      <Modal.Body>
-        <div className="mb-3">
-          <div className="alert alert-info mb-3">
-            <i className="bi bi-info-circle me-2"></i>
-            <strong>Étape obligatoire :</strong> Créez d'abord un examen clinique pour pouvoir enregistrer les signes fonctionnels et cliniques.
-          </div>
-
-          <Form.Group>
-            <Form.Label className="fw-bold">
-              Date de l'examen <span className="text-danger">*</span>
-            </Form.Label>
-            <Form.Control
-              type="date"
-              value={dateExamen}
-              onChange={(e) => setDateExamen(e.target.value)}
-              max={new Date().toISOString().split('T')[0]}
-              className="form-control-lg"
-            />
-            <Form.Text className="text-muted">
-              <i className="bi bi-calendar-check me-1"></i>
-              Par défaut : date du jour
-            </Form.Text>
-          </Form.Group>
+      <Modal.Body style={{ padding: "24px 28px" }}>
+        <div
+          className="mb-4 px-3 py-2 rounded d-flex align-items-start gap-2"
+          style={{ background: "#f0f9ff", border: "1px solid #bae6fd" }}
+        >
+          <i className="bi bi-info-circle mt-1" style={{ color: "#0369a1" }}></i>
+          <small style={{ color: "#0369a1" }}>
+            Créez un examen clinique pour pouvoir enregistrer les signes fonctionnels et cliniques du patient.
+          </small>
         </div>
 
-        <div className="alert alert-light border mb-0">
-          <small>
-            <strong>Patient :</strong> <span className="badge bg-primary">{patientNumero}</span>
+        <Form.Group className="mb-3">
+          <Form.Label
+            className="fw-semibold"
+            style={{ fontSize: "0.82rem", color: "#475569", textTransform: "uppercase", letterSpacing: "0.4px" }}
+          >
+            Date de l'examen <span className="text-danger">*</span>
+          </Form.Label>
+          <Form.Control
+            type="date"
+            value={dateExamen}
+            onChange={(e) => setDateExamen(e.target.value)}
+            max={new Date().toISOString().split("T")[0]}
+            style={{ borderRadius: 8 }}
+          />
+          <Form.Text style={{ color: "#94a3b8", fontSize: "0.8rem" }}>
+            Par défaut : date du jour
+          </Form.Text>
+        </Form.Group>
+
+        <div
+          className="px-3 py-2 rounded"
+          style={{ background: "#f8fafc", border: "1px solid #e2e8f0" }}
+        >
+          <small style={{ color: "#64748b" }}>
+            Patient :{" "}
+            <span
+              className="badge"
+              style={{ background: "#dcfce7", color: "#166534", fontWeight: 600 }}
+            >
+              {patientNumero}
+            </span>
           </small>
         </div>
       </Modal.Body>
 
-      <Modal.Footer>
+      <Modal.Footer style={{ borderTop: "1px solid #f1f5f9", padding: "12px 28px" }}>
         <Button
-          style={{ backgroundColor: '#2e7d52', border: 'none' }}
+          variant="light"
+          onClick={onHide}
+          disabled={loading}
+          style={{ borderRadius: 8, border: "1px solid #e2e8f0", color: "#475569" }}
+        >
+          Annuler
+        </Button>
+        <Button
           onClick={handleCreate}
           disabled={loading}
-          size="lg"
-          className="w-100"
+          style={{
+            background:   "#2e7d52",
+            border:       "none",
+            borderRadius: 8,
+            fontWeight:   600,
+            padding:      "8px 24px",
+          }}
         >
           {loading ? (
             <>
               <span className="spinner-border spinner-border-sm me-2"></span>
-              Création en cours...
+              Création...
             </>
           ) : (
             <>
               <i className="bi bi-check-circle me-2"></i>
-              Créer l'examen et continuer
+              Créer et continuer
             </>
           )}
         </Button>

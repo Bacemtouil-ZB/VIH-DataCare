@@ -58,23 +58,20 @@ export const createAutreSigneFonctionnel = async (signesFonctionnelsId, appareil
 
 export const getSignesByPatientNumero = async (numero) => {
   const query = `
-    SELECT 
-      ec.id as examen_id,
+    SELECT
+      ec.id   AS examen_id,
       ec.date_examen,
-      p.numero as patient_numero,
-      p.name as patient_name,
-      p.surname as patient_surname,
-      u.nom as medecin_nom,
-      u.prenom as medecin_prenom,
+      p.numero AS patient_numero,
+      u.nom    AS medecin_nom,
+      u.prenom AS medecin_prenom,
       sf.*
     FROM examen_clinique ec
-    INNER JOIN patients p ON ec.patient_id = p.id
-    LEFT JOIN users u ON ec.medecin_id = u.id
-    LEFT JOIN signes_fonctionnels sf ON ec.id = sf.examen_clinique_id
+    INNER JOIN patients p              ON ec.patient_id = p.id
+    LEFT  JOIN users u                 ON ec.medecin_id = u.id
+    INNER JOIN signes_fonctionnels sf  ON ec.id = sf.examen_clinique_id
     WHERE p.numero = $1
     ORDER BY ec.date_examen DESC;
   `;
-
   const result = await pool.query(query, [numero]);
   return result.rows;
 };
@@ -193,4 +190,8 @@ export const getAppareils = async () => {
 
   const result = await pool.query(query);
   return result.rows;
+};
+export const deleteAutresSignesBySignesFonctionnelsId = async (signesFonctionnelsId) => {
+  const query = `DELETE FROM autres_signes_fonctionnels WHERE signes_fonctionnels_id = $1;`;
+  await pool.query(query, [signesFonctionnelsId]);
 };
