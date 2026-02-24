@@ -1,7 +1,6 @@
 import {
   createSignesFonctionnels as createSignesService,
-  getSignesByPatientNumero as getSignesByNumeroService,
-  getSignesByExamenId as getSignesByExamenService,
+  getSignesByNumeroDossier as getSignesByNumeroService,
   updateSignesFonctionnels as updateSignesService,
   getAppareils,
 } from "../services/signeFonctionService.js";
@@ -46,30 +45,7 @@ export const getSignesByPatientController = async (req, res) => {
   }
 };
 
-export const getSignesByExamenController = async (req, res) => {
-  try {
-    const { examenId } = req.params;
-    const signes = await getSignesByExamenService(parseInt(examenId));
 
-    if (!signes) {
-      return res.status(404).json({
-        success: false,
-        message: "Signes fonctionnels non trouvés",
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      signes,
-    });
-  } catch (error) {
-    console.error("Get signes by examen error:", error.message);
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
 
 
 export const updateSignesFonctionnelsController = async (req, res) => {

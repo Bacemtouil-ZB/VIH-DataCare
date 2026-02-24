@@ -35,7 +35,6 @@ CREATE TABLE signes_fonctionnels (
         
 );
 
-CREATE INDEX idx_signes_fonctionnels_examen ON signes_fonctionnels(examen_clinique_id);
 
 
 CREATE TABLE ref_appareil_fonctionnel (
@@ -78,23 +77,4 @@ CREATE TABLE autres_signes_fonctionnels (
         ON DELETE CASCADE
 );
 
-CREATE INDEX idx_autres_signes_fonctionnels ON autres_signes_fonctionnels(signes_fonctionnels_id);
-CREATE INDEX idx_autres_signes_appareil ON autres_signes_fonctionnels(appareil_id);
-
-
-CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
-BEGIN
-    NEW.updated_at = NOW();
-    RETURN NEW;
-END;
-$$ language 'plpgsql';
-
-CREATE TRIGGER update_examen_clinique_updated_at 
-    BEFORE UPDATE ON examen_clinique 
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
-
-CREATE TRIGGER update_signes_fonctionnels_updated_at 
-    BEFORE UPDATE ON signes_fonctionnels 
-    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 

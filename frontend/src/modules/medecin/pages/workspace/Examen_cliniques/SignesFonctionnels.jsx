@@ -1,13 +1,9 @@
 import { useState, useEffect } from "react";
 import { useOutletContext } from "react-router-dom";
 import { toast } from "react-toastify";
+import { confirmAction } from "../../../../../shared/utils/uiAlerts";
 import {
-  confirmAction,
-  alertSuccess,
-  alertError,
-} from "../../../../../shared/utils/uiAlerts";
-import {
-  getAppareils, getSignesByExamen, getSignesByPatient,
+  getAppareils, getSignesByPatient,
   createSignesFonctionnels, updateSignesFonctionnels,
 } from "../../../services/signesFonctionService";
 import {
@@ -40,8 +36,8 @@ export default function SignesFonctionnels() {
   const [saving,              setSaving]              = useState(false);
   const [showForm,            setShowForm]            = useState(false);
   const [isModifying,         setIsModifying]         = useState(false);
-  const [modifyingExamenId,   setModifyingExamenId]   = useState(null);
   const [rasChecked,          setRasChecked]          = useState(false);
+  // ✅ signesId = sf.id (id de la ligne signes_fonctionnels), pas l'examenId
   const [signesId,            setSignesId]            = useState(null);
   const [appareils,           setAppareils]           = useState([]);
   const [signes,              setSignes]              = useState(SIGNES_INIT);
@@ -51,36 +47,18 @@ export default function SignesFonctionnels() {
   const [historique,          setHistorique]          = useState([]);
   const [showHistory,         setShowHistory]         = useState(true);
 
-  useEffect(() => { if (examenId)      loadData();      }, [examenId]);
+  useEffect(() => { if (examenId)      loadAppareils();  }, [examenId]);
   useEffect(() => { if (patientNumero) loadHistorique(); }, [patientNumero]);
 
-  // ── Chargement examen courant ─────────────────────────────────────────────
-  const loadData = async () => {
+  const loadAppareils = async () => {
     try {
       setLoading(true);
-      const [ar, sr] = await Promise.all([getAppareils(), getSignesByExamen(examenId)]);
+      const ar = await getAppareils();
       if (ar?.success) setAppareils(ar.appareils || []);
-      const sd = sr?.signes;
-      if (sd?.id) {
-        setSignesId(sd.id);
-        setSignes(Object.fromEntries(SIGNES_KEYS.map((k) => [k, sd[k] || false])));
-        setRasChecked(sd.ras || false);
-        setModifyingExamenId(examenId);
-        if (sd.autres_signes) {
-          setAutresSignes(sd.autres_signes.map((as) => ({
-            id:          as.id,
-            appareil_id: as.appareil_id,
-            appareil:    as.appareil_libelle,
-            description: as.description,
-          })));
-        }
-      }
-    } catch { /* silencieux */ }
+    } catch { }
     finally { setLoading(false); }
   };
 
-  // ── Historique patient ────────────────────────────────────────────────────
-  // ✅ FIX : le backend retourne maintenant seulement les examens AVEC signes (INNER JOIN)
   const loadHistorique = async () => {
     try {
       const res = await getSignesByPatient(patientNumero);
@@ -90,17 +68,16 @@ export default function SignesFonctionnels() {
     }
   };
 
-  // ── Reset formulaire ──────────────────────────────────────────────────────
   const resetForm = () => {
     setSignes(SIGNES_INIT); setRasChecked(false); setSignesId(null);
     setAutresSignes([]); setAppareilSelectionne(""); setDescriptionSigne("");
-    setIsModifying(false); setModifyingExamenId(null);
+    setIsModifying(false);
   };
 
   const handleOpenForm = () => { resetForm(); setShowForm(true); };
   const handleCancel   = () => { setShowForm(false); resetForm(); toast.info("Opération annulée"); };
 
-  // ── Modifier depuis historique ────────────────────────────────────────────
+  // ── Modifier depuis l'historique ──────────────────────────────────────────
   const handleEdit = async (signe) => {
     const pos = getSignesPositifs(signe);
     const ok  = await confirmAction(
@@ -108,17 +85,19 @@ export default function SignesFonctionnels() {
       `Date : ${new Date(signe.date_examen).toLocaleDateString("fr-FR")}${pos.length ? " — " + pos.slice(0, 4).join(", ") : ""}`
     );
     if (!ok) return;
+
     setSignes(Object.fromEntries(SIGNES_KEYS.map((k) => [k, signe[k] || false])));
     setRasChecked(signe.ras || false);
+    // ✅ FIX : stocker l'id de la ligne signes_fonctionnels (signe.id = sf.id)
     setSignesId(signe.id);
     setIsModifying(true);
-    setModifyingExamenId(signe.examen_id || signe.examen_clinique_id);
-    // ✅ Pré-charger les autres signes existants
+    // ✅ Pré-charger les autres signes de cette ligne
     setAutresSignes(
       (signe.autres_signes || []).map((as) => ({
         id:          as.id,
         appareil_id: as.appareil_id,
-        appareil:    as.appareil_libelle,
+        // ✅ alias du model est "appareil" (pas "appareil_libelle")
+        appareil:    as.appareil,
         description: as.description,
       }))
     );
@@ -126,10 +105,7 @@ export default function SignesFonctionnels() {
     toast.info("Mode modification — modifiez puis enregistrez");
   };
 
-  const handleRAS = (checked) => {
-    setRasChecked(checked);
-    if (checked) setSignes(SIGNES_INIT);
-  };
+  const handleRAS = (checked) => { setRasChecked(checked); if (checked) setSignes(SIGNES_INIT); };
 
   const handleSigneChange = (signe, val) => {
     if (rasChecked) { toast.warning("Désactivez RAS pour modifier les signes"); return; }
@@ -139,10 +115,14 @@ export default function SignesFonctionnels() {
   const ajouterAutreSigne = () => {
     if (!appareilSelectionne)     { toast.error("Veuillez sélectionner un appareil"); return; }
     if (!descriptionSigne.trim()) { toast.error("Veuillez saisir une description"); return; }
-    const app = appareils.find((a) => a.id === parseInt(appareilSelectionne));
+    // ✅ FIX NaN : parseInt pour garantir un integer
+    const app = appareils.find((a) => a.id === parseInt(appareilSelectionne, 10));
     if (!app) { toast.error("Appareil non trouvé"); return; }
     setAutresSignes((p) => [...p, {
-      id: Date.now(), appareil_id: app.id, appareil: app.libelle, description: descriptionSigne.trim(),
+      id:          Date.now(),
+      appareil_id: parseInt(app.id, 10),
+      appareil:    app.libelle,
+      description: descriptionSigne.trim(),
     }]);
     setAppareilSelectionne(""); setDescriptionSigne("");
     toast.success("Signe ajouté");
@@ -155,40 +135,33 @@ export default function SignesFonctionnels() {
     }
   };
 
-  // ── Enregistrer ───────────────────────────────────────────────────────────
   const handleSave = async () => {
-    // ✅ Confirmation avant création ou modification avec alertService
-    const actionLabel = signesId ? "Enregistrer les modifications ?" : "Créer les signes fonctionnels ?";
-    const ok = await confirmAction(actionLabel, "Les données seront enregistrées dans le dossier patient.");
-    if (!ok) return;
-
     setSaving(true);
     try {
-      const targetId = isModifying ? modifyingExamenId : examenId;
-      const payload  = {
-        examen_clinique_id: targetId,
+      const payload = {
         signes:        { ...signes, ras: rasChecked },
-        autres_signes: autresSignes.map(({ appareil_id, description }) => ({ appareil_id, description })),
+        autres_signes: autresSignes.map(({ appareil_id, description }) => ({
+          // ✅ FIX NaN : parseInt pour garantir integer avant envoi
+          appareil_id: parseInt(appareil_id, 10),
+          description,
+        })),
       };
 
-      if (signesId) {
-        await updateSignesFonctionnels(targetId, payload);
-        // ✅ alertSuccess pour modification
-        await alertSuccess("Signes fonctionnels mis à jour avec succès");
+      if (isModifying && signesId) {
+        // ✅ FIX PUT /undefined : on passe signesId (sf.id) et non modifyingExamenId
+        await updateSignesFonctionnels(signesId, payload);
+        toast.success("Signes fonctionnels mis à jour");
       } else {
-        await createSignesFonctionnels(payload);
-        // ✅ alertSuccess pour création
-        await alertSuccess("Signes fonctionnels enregistrés avec succès");
+        await createSignesFonctionnels({ ...payload, examen_clinique_id: examenId });
+        toast.success("Signes fonctionnels enregistrés");
       }
 
       setIsModifying(false); setShowForm(false);
       await loadHistorique();
-      await loadData();
 
     } catch (e) {
-      // ✅ alertError pour les erreurs
       const msg = typeof e === "string" ? e : (e?.message || "Erreur lors de l'enregistrement");
-      await alertError(msg);
+      toast.error(msg);
     } finally {
       setSaving(false);
     }
@@ -199,7 +172,7 @@ export default function SignesFonctionnels() {
   return (
     <div style={PAGE_BG}>
 
-      <PageHeader title="Signes Fonctionnels" icon="bi-heart-pulse"
+      <PageHeader 
         showForm={showForm} onOpen={handleOpenForm} onCancel={handleCancel} />
 
       {/* HISTORIQUE */}
@@ -212,7 +185,7 @@ export default function SignesFonctionnels() {
             <table className="table table-hover table-sm mb-0">
               <thead className="table-light">
                 <tr>
-                  {["Date","Signes positifs","Autres signes","Action"].map((h) => (
+                  {["Date", "Signes positifs", "Autres signes", "Action"].map((h) => (
                     <th key={h} style={{ fontSize: "0.78rem" }}>{h}</th>
                   ))}
                 </tr>
@@ -226,7 +199,7 @@ export default function SignesFonctionnels() {
                         {s.date_examen ? new Date(s.date_examen).toLocaleDateString("fr-FR") : "N/A"}
                       </td>
 
-                      {/* Signes positifs booléens */}
+                      {/* Signes booléens positifs */}
                       <td>
                         {s.ras
                           ? <Badge bg="#dcfce7" color="#166534">RAS</Badge>
@@ -237,15 +210,18 @@ export default function SignesFonctionnels() {
                             : <small className="text-secondary">Aucun</small>}
                       </td>
 
-                      {/* ✅ Autres signes fonctionnels dans l'historique */}
-                      <td style={{ maxWidth: 220 }}>
+                      {/* ✅ Autres signes avec badge appareil + description */}
+                      <td>
                         {s.autres_signes?.length > 0
-                          ? s.autres_signes.map((as, i) => (
-                              <div key={i} className="mb-1">
-                                <Badge bg="#e0f2fe" color="#0369a1">{as.appareil_libelle}</Badge>
-                                <small className="ms-1 text-secondary">{as.description}</small>
-                              </div>
-                            ))
+                          ? <div className="d-flex flex-column gap-1">
+                              {s.autres_signes.map((as, i) => (
+                                <div key={i} className="d-flex align-items-center gap-1 flex-wrap">
+                                  {/* ✅ alias "appareil" correspond au model signeFonctionModel */}
+                                  <Badge bg="#dbeafe" color="#1d4ed8">{as.appareil}</Badge>
+                                  <small className="text-secondary">{as.description}</small>
+                                </div>
+                              ))}
+                            </div>
                           : <small className="text-secondary">Aucun</small>}
                       </td>
 

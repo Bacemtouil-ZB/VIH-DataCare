@@ -2,7 +2,6 @@ import express from "express";
 import {
   createSignesFonctionnelsController,
   getSignesByPatientController,
-  getSignesByExamenController,
   updateSignesFonctionnelsController,
   getAppareilsController,
 } from "../controllers/signeFonctinController.js";
@@ -21,17 +20,11 @@ router.get(
 
 router.get(
   "/patient/:numero",
- // protect,
-  //authorizeMedecin,
+  protect,
+  authorizeMedecin,
   getSignesByPatientController
 );
 
-router.get(
-  "/examen/:examenId",
-  protect,
-  authorizeMedecin,
-  getSignesByExamenController
-);
 
 router.post(
   "/add",

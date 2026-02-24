@@ -24,8 +24,8 @@ function calcIMC(t, p) {
 }
 
 export default function SignesCliniques() {
-const { numero } = useParams();
-  const { examenId }      = useOutletContext();
+  const { numero } = useParams();
+  const { examenId } = useOutletContext();
 
   const [signeId,      setSigneId]      = useState(null);
   const [taille,       setTaille]       = useState("");
@@ -57,7 +57,6 @@ const { numero } = useParams();
   const chargerHistorique = async () => {
     try {
       const res = await getSigneCliniqueByNumeroDossier(numero);
-      // ✅ Le backend retourne { success, signes } → res.signes
       setHistorique(Array.isArray(res?.signes) ? res.signes : []);
     } catch {
       setHistorique([]);
@@ -65,24 +64,35 @@ const { numero } = useParams();
   };
 
   const resetForm = () => {
-    setSigneId(null); setTaille(""); setPoids("");
-    setAutresSignes([]); setAppareilSel(""); setDescription("");
-    setIsModifying(false); setModifyingId(null);
+    setSigneId(null); 
+    setTaille(""); 
+    setPoids("");
+    setAutresSignes([]); 
+    setAppareilSel(""); 
+    setDescription("");
+    setIsModifying(false); 
+    setModifyingId(null);
   };
 
-const handleOpenForm = () => {
-  if (signesId) {
-    // Des signes existent déjà → on passe en modification
-    setIsModifying(true);
-    setModifyingExamenId(examenId);
-    setShowForm(true);
-    toast.info("Modification du signe fonctionnel existant");
-  } else {
-    // Aucune donnée → création
-    resetForm();
-    setShowForm(true);
-  }
-};  const handleCancel   = () => { setShowForm(false); resetForm(); toast.info("Opération annulée"); };
+  const handleOpenForm = () => {
+    if (signeId) {
+      // Des signes existent déjà → modification
+      setIsModifying(true);
+      setModifyingId(signeId);
+      setShowForm(true);
+      toast.info("Modification du signe clinique existant");
+    } else {
+      // Aucune donnée → création
+      resetForm();
+      setShowForm(true);
+    }
+  };
+
+  const handleCancel = () => { 
+    setShowForm(false); 
+    resetForm(); 
+    toast.info("Opération annulée"); 
+  };
 
   const handleEdit = async (s) => {
     const ok = await confirmAction(
@@ -90,6 +100,7 @@ const handleOpenForm = () => {
       `Date : ${new Date(s.date_examen).toLocaleDateString("fr-FR")} — Taille : ${s.taille} cm — Poids : ${s.poids} kg`
     );
     if (!ok) return;
+    
     setTaille(s.taille || "");
     setPoids(s.poids || "");
     setSigneId(s.id);
@@ -104,6 +115,7 @@ const handleOpenForm = () => {
         description: as.description,
       }))
     );
+    
     setShowForm(true);
     toast.info("Mode modification activé");
   };
@@ -111,12 +123,19 @@ const handleOpenForm = () => {
   const ajouterAutreSigne = () => {
     if (!appareilSel)        { toast.error("Veuillez sélectionner un appareil"); return; }
     if (!description.trim()) { toast.error("Veuillez saisir une description");  return; }
+    
     const app = appareils.find((a) => a.id === parseInt(appareilSel));
     if (!app) { toast.error("Appareil non trouvé"); return; }
+    
     setAutresSignes((p) => [...p, {
-      id: Date.now(), appareil_id: app.id, appareil: app.libelle, description: description.trim(),
+      id: Date.now(), 
+      appareil_id: app.id, 
+      appareil: app.libelle, 
+      description: description.trim(),
     }]);
-    setAppareilSel(""); setDescription("");
+    
+    setAppareilSel(""); 
+    setDescription("");
     toast.success("Signe ajouté");
   };
 
@@ -138,21 +157,26 @@ const handleOpenForm = () => {
         examen_clinique_id: examenId,
         taille: +taille,
         poids:  +poids,
-        autres_signes: autresSignes.map(({ appareil_id, description: d }) => ({ appareil_id, description: d })),
+        autres_signes: autresSignes.map(({ appareil_id, description: d }) => ({ 
+          appareil_id, 
+          description: d 
+        })),
       };
 
       if (isModifying && modifyingId) {
         await updateSigneClinique(modifyingId, payload);
-        toast.success("Signes cliniques mis à jour");
+        toast.success(" Signes cliniques mis à jour avec succès");
       } else {
-        await createSigneClinique(payload);
-        toast.success("Signes cliniques enregistrés");
+        const response = await createSigneClinique(payload);
+        setSigneId(response?.signe?.id || null);
+        toast.success("Signes cliniques enregistrés avec succès");
       }
 
-      setShowForm(false); resetForm();
+      setShowForm(false); 
+      resetForm();
       await chargerHistorique();
     } catch (e) {
-      toast.error(e?.response?.data?.message || e?.message || "Erreur lors de l'enregistrement");
+      toast.error(` ${e?.response?.data?.message || e?.message || "Erreur lors de l'enregistrement"}`);
     } finally {
       setLoading(false);
     }
@@ -160,11 +184,8 @@ const handleOpenForm = () => {
 
   return (
     <div style={PAGE_BG}>
+      <PageHeader showForm={showForm} onOpen={handleOpenForm} onCancel={handleCancel} />
 
-      <PageHeader
-        showForm={showForm} onOpen={handleOpenForm} onCancel={handleCancel} />
-
-      {/* HISTORIQUE */}
       <HistoriqueAccordeon
         title="Historique des signes cliniques"
         count={historique.length}
@@ -220,56 +241,28 @@ const handleOpenForm = () => {
         )}
       </HistoriqueAccordeon>
 
-      {/* FORMULAIRE */}
       {showForm && (
-        <FormulaireWrapper isModifying={isModifying}
-          labelCreate="Nouveau signe clinique"
-          labelModify="Modifier le signe clinique">
-
+        <FormulaireWrapper isModifying={isModifying} labelCreate="Nouveau signe clinique" labelModify="Modifier le signe clinique">
           <p className="text-uppercase fw-bold text-secondary mb-3" style={{ fontSize: "0.78rem", letterSpacing: "0.5px" }}>
             Mesures anthropométriques
           </p>
           <div className="d-flex gap-4 flex-wrap mb-4 pb-4 border-bottom">
             <div style={{ flex: "1 1 140px" }}>
-              <label className={LABEL_CLS} style={{ fontSize: "0.78rem" }}>
-                Taille (cm) <span className="text-danger">*</span>
-              </label>
-              <input type="number" className="form-control form-control-sm"
-                placeholder="ex: 175" min={1} max={250}
-                value={taille} onChange={(e) => setTaille(e.target.value)} />
+              <label className={LABEL_CLS} style={{ fontSize: "0.78rem" }}>Taille (cm) <span className="text-danger">*</span></label>
+              <input type="number" className="form-control form-control-sm" placeholder="ex: 175" min={1} max={250} value={taille} onChange={(e) => setTaille(e.target.value)} />
             </div>
             <div style={{ flex: "1 1 140px" }}>
-              <label className={LABEL_CLS} style={{ fontSize: "0.78rem" }}>
-                Poids (kg) <span className="text-danger">*</span>
-              </label>
-              <input type="number" className="form-control form-control-sm"
-                placeholder="ex: 70" min={1} max={300}
-                value={poids} onChange={(e) => setPoids(e.target.value)} />
+              <label className={LABEL_CLS} style={{ fontSize: "0.78rem" }}>Poids (kg) <span className="text-danger">*</span></label>
+              <input type="number" className="form-control form-control-sm" placeholder="ex: 70" min={1} max={300} value={poids} onChange={(e) => setPoids(e.target.value)} />
             </div>
             <div style={{ flex: "1 1 200px" }}>
               <label className={LABEL_CLS} style={{ fontSize: "0.78rem" }}>IMC (kg/m²)</label>
-              <div className="form-control form-control-sm d-flex align-items-center gap-2"
-                style={{ background: "#f8faf9", cursor: "default" }}>
-                {imc
-                  ? <><span style={{ fontWeight: 700, color: imc.color }}>{imc.val}</span>
-                      <small style={{ color: imc.color }}>{imc.label}</small></>
-                  : <small className="text-secondary">Saisissez taille et poids</small>}
+              <div className="form-control form-control-sm d-flex align-items-center gap-2" style={{ background: "#f8faf9", cursor: "default" }}>
+                {imc ? <><span style={{ fontWeight: 700, color: imc.color }}>{imc.val}</span><small style={{ color: imc.color }}>{imc.label}</small></> : <small className="text-secondary">Saisissez taille et poids</small>}
               </div>
             </div>
           </div>
-
-          <AutresSignesSection
-            title="Autres signes cliniques"
-            appareils={appareils}
-            autresSignes={autresSignes}
-            appareilSelectionne={appareilSel}
-            descriptionSigne={description}
-            onAppareilChange={setAppareilSel}
-            onDescriptionChange={setDescription}
-            onAjouter={ajouterAutreSigne}
-            onSupprimer={supprimerAutreSigne}
-          />
-
+          <AutresSignesSection title="Autres signes cliniques" appareils={appareils} autresSignes={autresSignes} appareilSelectionne={appareilSel} descriptionSigne={description} onAppareilChange={setAppareilSel} onDescriptionChange={setDescription} onAjouter={ajouterAutreSigne} onSupprimer={supprimerAutreSigne} />
           <BoutonEnregistrer isModifying={isModifying} loading={loading} onClick={handleEnregistrer} />
         </FormulaireWrapper>
       )}
