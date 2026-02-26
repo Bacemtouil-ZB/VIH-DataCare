@@ -1,0 +1,203 @@
+
+/* ========================= */
+/* PAGE */
+/* ========================= */
+
+.medical-page {
+  padding: 24px;
+  background: #f6f8fa;
+  min-height: 100vh;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* ========================= */
+/* CARD */
+/* ========================= */
+
+.form-card {
+  background: #ffffff;
+  padding: 28px;
+  border-radius: 14px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+  max-width: 1100px;
+  margin: auto;
+}
+
+/* ========================= */
+/* GRID FORM */
+/* ========================= */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px 28px;
+}
+
+/* Section title */
+
+.form-grid h3 {
+  grid-column: 1 / -1;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+  padding-bottom: 6px;
+  margin-top: 12px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* ========================= */
+/* FORM GROUP */
+/* ========================= */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #4b5563;
+}
+
+/* ========================= */
+/* INPUTS */
+/* ========================= */
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #ffffff;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  border-color: #2e7d32;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.1);
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+/* Disabled */
+
+.form-group input:disabled,
+.form-group textarea:disabled,
+.form-group select:disabled {
+  background: #f1f5f9;
+  cursor: not-allowed;
+}
+
+/* ========================= */
+/* CHECKBOX GRID */
+/* ========================= */
+
+.checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px 20px;
+}
+
+.checkbox-grid label {
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+/* ========================= */
+/* BUTTONS */
+/* ========================= */
+
+.edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 14px;
+}
+
+/* Base button */
+
+.edit-btn,
+.save-btn,
+.cancel-btn {
+  height: 44px;
+  min-width: 140px;
+  padding: 0 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.2s ease;
+}
+
+/* Modifier */
+
+.edit-btn {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #1e293b;
+}
+
+.edit-btn:hover {
+  background: #e2e8f0;
+}
+
+/* Save */
+
+.save-btn {
+  background: #2e7d32;
+  color: white;
+  border-color: #2e7d32;
+}
+
+.save-btn:hover {
+  background: #1b5e20;
+}
+
+/* Cancel */
+
+.cancel-btn {
+  background: white;
+  border-color: #cbd5e1;
+  color: #374151;
+}
+
+.cancel-btn:hover {
+  background: #f3f4f6;
+}
+
+/* ========================= */
+/* RESPONSIVE */
+/* ========================= */
+
+@media (max-width: 900px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-card {
+    padding: 20px;
+  }
+}

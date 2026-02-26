@@ -1,0 +1,55 @@
+/* Style général de la page */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: Arial, sans-serif;
+}
+
+main {
+  background-color: #f4f4f4;
+  min-height: 100vh; /* Toujours au moins la hauteur de l'écran */
+  display: flex;
+  justify-content: center; /* centre le workspace horizontalement */
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+/* Conteneur principal du workspace */
+main > div {
+  background-color: #ffffff;
+  width: 100%;
+  max-width: 1200px; /* largeur maximale comme Overleaf */
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column; /* si tu as header, editor, footer */
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  border-radius: 5px;
+  overflow: hidden; /* pour éviter les débordements */
+}
+
+/* Conteneur de l'outlet / zone de contenu */
+.outlet-container {
+  width: 100%;
+  flex: 1; /* prend tout l'espace disponible */
+  background: white;
+  padding: 1rem;
+  box-sizing: border-box;
+  overflow-y: auto; /* scroll si contenu dépasse */
+}
+
+/* Responsive pour petits écrans */
+@media (max-width: 768px) {
+  main {
+    padding: 0.5rem;
+  }
+
+  main > div {
+    max-width: 100%;
+    border-radius: 0; /* coins droits sur mobile */
+  }
+
+  .outlet-container {
+    padding: 0.5rem;
+  }
+}

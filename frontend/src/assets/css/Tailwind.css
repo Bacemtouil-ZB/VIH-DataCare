@@ -1,0 +1,76 @@
+/* index.css ou App.css */
+
+/* Importer Tailwind CSS */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Styles personnalisés supplémentaires */
+
+/* Animation pour les inputs */
+input:focus {
+  transform: scale(1.01);
+  transition: all 0.2s ease-in-out;
+}
+
+/* Style pour les checkboxes */
+input[type="checkbox"]:checked {
+  background-color: #7c3aed;
+  border-color: #7c3aed;
+}
+
+/* Animation du bouton */
+button {
+  transition: all 0.3s ease-in-out;
+}
+
+button:hover {
+  transform: translateY(-2px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+/* Gradient animé pour le background */
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.bg-gradient-animate {
+  background-size: 200% 200%;
+  animation: gradient 15s ease infinite;
+}
+
+/* Style pour les messages d'erreur */
+.error-message {
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* Style pour les messages de succès */
+.success-message {
+  color: #10b981;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+/* Responsive pour mobile */
+@media (max-width: 768px) {
+  .flex.max-w-4xl {
+    flex-direction: column;
+  }
+  
+  .w-5\/12, .w-7\/12 {
+    width: 100%;
+  }
+}

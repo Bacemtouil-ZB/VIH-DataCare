@@ -1,0 +1,208 @@
+/* ============================= */
+/* PAGE WRAPPER */
+/* ============================= */
+
+.medical-page {
+  background: #ffffff;
+  padding: 30px;
+  min-height: 100vh;
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* ============================= */
+/* HEADER */
+/* ============================= */
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}
+
+.page-header h2 {
+  font-size: 22px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+/* ============================= */
+/* CARD */
+/* ============================= */
+
+.form-card {
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 14px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.05);
+  max-width: 1200px;
+  margin: auto;
+}
+
+/* ============================= */
+/* GRID */
+/* ============================= */
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px 30px;
+}
+
+/* ============================= */
+/* FORM GROUP */
+/* ============================= */
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.form-group label {
+  font-size: 13px;
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #475569;
+}
+
+/* ============================= */
+/* INPUTS */
+/* ============================= */
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #d0d5dd;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: #f9fafb;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #2e7d32;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.15);
+}
+
+/* Disabled */
+.form-group input:disabled,
+.form-group select:disabled,
+.form-group textarea:disabled {
+  background-color: #f1f5f9;
+  color: #64748b;
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+/* ============================= */
+/* TEXTAREA */
+/* ============================= */
+
+.form-group textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+/* ============================= */
+/* FULL WIDTH (ACTIONS CONTAINER) */
+/* ============================= */
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+/* ============================= */
+/* BUTTONS */
+/* ============================= */
+
+.edit-actions {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+/* All buttons same size */
+.edit-btn,
+.save-btn,
+.cancel-btn {
+  height: 44px;
+  min-width: 140px;
+  padding: 0 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+  margin: 0;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+/* Modifier */
+.edit-btn {
+  background-color: #f1f5f9;
+  color: #1e293b;
+  border-color: #cbd5e1;
+}
+
+.edit-btn:hover {
+  background-color: #e2e8f0;
+}
+
+/* Enregistrer */
+.save-btn {
+  background-color: #2e7d32;
+  color: #ffffff;
+  border-color: #2e7d32;
+}
+
+.save-btn:hover {
+  background-color: #1b5e20;
+  border-color: #1b5e20;
+}
+
+/* Annuler */
+.cancel-btn {
+  background-color: #ffffff;
+  color: #374151;
+  border-color: #cbd5e1;
+}
+
+.cancel-btn:hover {
+  background-color: #f3f4f6;
+}
+
+/* ============================= */
+/* RESPONSIVE */
+/* ============================= */
+
+@media (max-width: 992px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 576px) {
+  .medical-page {
+    padding: 15px;
+  }
+
+  .form-card {
+    padding: 20px;
+  }
+}

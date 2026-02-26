@@ -1,0 +1,127 @@
+/* ============================
+   PAGE CONTAINER
+============================ */
+
+.patients-page {
+  padding: 40px;
+  background: #ffffff;
+  min-height: 100vh;
+  font-family: Inter, sans-serif;
+}
+
+/* ============================
+   TABLE WRAPPER (IMPORTANT)
+============================ */
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto; /* ← permet scroll horizontal sans casser layout */
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: white;
+}
+
+/* ============================
+   TABLE
+============================ */
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px; /* ← empêche compression colonne */
+}
+
+/* HEADER */
+
+thead {
+  background: #f8fafc;
+}
+
+th {
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  white-space: nowrap;
+}
+
+/* BODY */
+
+td {
+  padding: 14px 16px;
+  font-size: 14px;
+  border-top: 1px solid #f1f5f9;
+  white-space: nowrap;
+}
+
+/* ROW HOVER */
+
+tbody tr:hover {
+  background: #f9fafb;
+}
+
+/* ============================
+   PATIENT CELL
+============================ */
+
+.patient-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  background: #e2e8f0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  color: #475569;
+}
+
+/* ============================
+   BADGES
+============================ */
+
+.badge {
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.badge.success {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.badge.danger {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+/* ============================
+   EMPTY STATE
+============================ */
+
+.empty {
+  text-align: center;
+  padding: 40px;
+  color: #94a3b8;
+}
+
+/* ============================
+   TOOLBAR
+============================ */
+
+.patients-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+}

@@ -1,0 +1,64 @@
+/* Container */
+.account-dropdown {
+  position: relative;
+  width: 30px; /* largeur du bouton */
+  margin :0 auto; /* centrer si besoin */
+}
+
+/* Bouton icône */
+.account-button {
+  width: 100%;
+  height: 50px;
+  color: #495365;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem; /* taille fixe, pas de zoom */
+  cursor: pointer;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+/* Bouton cliqué */
+.account-button.active {
+  color: #388E3C;
+}
+
+/* Menu overlay au-dessus */
+.account-menu.overlay-top {
+  position: absolute;
+  bottom: 60px; /* position au-dessus du bouton */
+  left: 70%;
+  transform: translateX(-50%);
+  background: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+  list-style: none;
+  padding: 0.5rem 0;
+  width: 200px;
+  z-index: 1000;
+}
+
+/* Menu items */
+.account-menu.overlay-top li {
+  padding: 0.6rem 1rem;
+  font-size: 0.85rem;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.account-menu.overlay-top li:hover {
+  background: #f3f4f6;
+}
+
+/* Logout item */
+.account-menu.overlay-top li.danger {
+  color: #d32f2f;
+  font-weight: 600;
+}
+
+.account-menu.overlay-top li.danger:hover {
+  background: #fdecea;
+}

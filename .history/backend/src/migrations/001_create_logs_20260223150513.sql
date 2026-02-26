@@ -1,0 +1,17 @@
+CREATE TYPE action_enum AS ENUM (
+    'LOGIN_SUCCESS',
+    'LOGIN_FAILED',
+
+    'PATIENT_CREATE',
+    'PATIENT_UPDATE',
+    'PATIENT_VIEW',
+
+    'SOCIAL_CREATE',
+    'SOCIAL_UPDATE',
+    'SOCIAL_VIEW',
+
+    'VIH_CREATE',
+    'VIH_UPDATE',
+    'VIH_VIEW'
+);
+

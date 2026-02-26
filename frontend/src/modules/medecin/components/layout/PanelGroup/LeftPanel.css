@@ -1,0 +1,361 @@
+.patient-panel {
+  width: 280px;
+  flex: 0 0 260px;        /* largeur initiale */
+  min-width: 0;           /* permet réduction */
+  max-width: 100%;        /* évite débordement */
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  font-family: "Segoe UI", sans-serif;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  overflow: hidden;       /* empêche overflow interne */
+  transition: flex-basis 0.25s ease;
+}
+/* HEADER */
+.patient-header {
+  text-align: center;
+  border-bottom: 1px solid #f0f0f0;
+  padding-bottom: 20px;
+}
+
+/* SECTION PHOTO UPLOAD */
+.photo-upload-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.patient-avatar {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #408d47, #2f6d34);
+  color: white;
+  font-size: 28px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(64, 141, 71, 0.3);
+}
+
+.patient-photo-wrapper {
+  position: relative;
+  width: 90px;
+  height: 90px;
+}
+
+.patient-photo {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 3px solid #408d47;
+}
+
+.remove-photo-btn {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #dc3545;
+  color: white;
+  border: 2px solid white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  transition: all 0.2s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.remove-photo-btn:hover {
+  background: #c82333;
+  transform: scale(1.1);
+}
+
+.upload-photo-btn {
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #408d47, #2f6d34);
+  color: white;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  box-shadow: 0 2px 6px rgba(64, 141, 71, 0.3);
+}
+
+.upload-photo-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(64, 141, 71, 0.4);
+}
+
+.photo-input {
+  display: none;
+}
+
+.patient-name {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 5px 0;
+  color: #333;
+}
+
+.patient-id {
+  font-size: 13px;
+  color: #888;
+}
+
+/* INFO SECTION */
+.patient-info {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 14px;
+  color: #444;
+}
+
+.info-row span:first-child {
+  font-weight: 500;
+  color: #666;
+}
+
+.info-row span:last-child {
+  font-weight: 600;
+  color: #333;
+}
+
+/* BADGES */
+.badge-active {
+  background: #e6f6ec;
+  color: #2f6d34;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge-warning {
+  background: #fff3cd;
+  color: #b78103;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge-danger {
+  background: #f8d7da;
+  color: #842029;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge-info {
+  background: #d1ecf1;
+  color: #0c5460;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badge-neutral {
+  background: #e9ecef;
+  color: #495057;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* DERNIÈRES PRISES */
+.dernieres-prises {
+  margin-top: 10px;
+  padding-top: 20px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.section-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.prises-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.prise-item {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 12px;
+  border-left: 3px solid #408d47;
+  transition: all 0.2s ease;
+}
+
+.prise-item:hover {
+  background: #e9ecef;
+  transform: translateX(3px);
+}
+
+.prise-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.prise-numero {
+  background: #408d47;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 12px;
+}
+
+.prise-date {
+  font-size: 12px;
+  color: #666;
+  font-weight: 500;
+}
+
+.prise-traitement {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.prise-quantite {
+  font-size: 12px;
+  color: #666;
+}
+
+/* STATUT EN BAS */
+.patient-status {
+  margin-top: auto;
+  text-align: center;
+  padding-top: 20px;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* LOADING */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  gap: 15px;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f0f0f0;
+  border-top-color: #408d47;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-container p {
+  font-size: 14px;
+  color: #666;
+}
+
+/* ERROR */
+.error-container {
+  padding: 20px;
+  text-align: center;
+}
+
+.error-message {
+  font-size: 14px;
+  color: #dc3545;
+  background: #f8d7da;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #f5c2c7;
+}
+
+/* EMPTY STATE */
+.empty-state {
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.empty-message {
+  font-size: 14px;
+  color: #888;
+  background: #f8f9fa;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+}
+
+/* SCROLLBAR */
+.patient-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.patient-panel::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+.patient-panel::-webkit-scrollbar-thumb {
+  background: #408d47;
+  border-radius: 10px;
+}
+
+.patient-panel::-webkit-scrollbar-thumb:hover {
+  background: #2f6d34;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .patient-panel {
+    width: 100%;
+    max-height: none;
+  }
+}

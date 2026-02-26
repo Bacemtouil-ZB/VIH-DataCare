@@ -1,0 +1,67 @@
+.right-menu {
+  padding: 20px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: #ffffff;
+}
+
+/* MENU ITEM BASE */
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;                 /* space between icon and text */
+  padding: 12px 14px;
+  border-radius: 10px;
+  text-decoration: none;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: #4b5563;
+  transition: all 0.18s ease;
+  position: relative;
+}
+
+/* ICON STYLE */
+.menu-item svg {
+  width: 18px;
+  height: 18px;
+  stroke-width: 1.8;
+  flex-shrink: 0;
+  transition: 0.18s ease;
+}
+
+/* HOVER */
+.menu-item:hover {
+  background: #f3f9f4;
+  color: #2f6e3a;
+}
+
+.menu-item:hover svg {
+  color: #408d47;
+  transform: scale(1.05);
+}
+
+/* ACTIVE */
+.menu-item.active {
+  background: #eaf6ec;
+  color: #408d47;
+  font-weight: 600;
+}
+
+/* LEFT INDICATOR BAR */
+.menu-item.active::before {
+  content: "";
+  position: absolute;
+  left: -14px;
+  top: 8px;
+  bottom: 8px;
+  width: 4px;
+  background: #408d47;
+  border-radius: 6px;
+}
+
+/* Smooth transition when switching pages */
+.menu-item,
+.menu-item svg {
+  transition: all 0.2s ease;
+}

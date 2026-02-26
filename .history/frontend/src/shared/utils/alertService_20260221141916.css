@@ -1,0 +1,274 @@
+/* ============================================
+   AlertService.css — Thème personnalisé SweetAlert2
+   Couleur principale : #043b08
+   ============================================ */
+
+:root {
+  --alert-primary: #043b08;
+  --alert-primary-hover: #065c0d;
+  --alert-primary-light: rgba(4, 59, 8, 0.08);
+  --alert-primary-muted: rgba(4, 59, 8, 0.3);
+  --alert-danger: #dc3545;
+  --alert-danger-hover: #b02a37;
+  --alert-secondary: #6c757d;
+  --alert-secondary-hover: #565e64;
+}
+
+/* ============================================
+   POPUP
+   ============================================ */
+.swal2-popup.rounded-4 {
+  border-top: 4px solid var(--alert-primary) !important;
+  border-radius: 1rem !important;
+  padding: 2rem 1.5rem !important;
+  font-family: inherit;
+}
+
+/* ============================================
+   TITRE
+   ============================================ */
+.swal2-title.fw-bold {
+  color: var(--alert-primary) !important;
+  font-size: 1.35rem !important;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.25rem !important;
+}
+
+/* ============================================
+   TEXTE / HTML CONTENT
+   ============================================ */
+.swal2-html-container,
+.swal2-content {
+  color: #4a4a4a !important;
+  font-size: 0.95rem !important;
+  line-height: 1.6;
+}
+
+/* ============================================
+   ICÔNE — SUCCESS
+   ============================================ */
+.swal2-icon.swal2-success {
+  border-color: var(--alert-primary) !important;
+  color: var(--alert-primary) !important;
+}
+
+.swal2-icon.swal2-success .swal2-success-ring {
+  border-color: var(--alert-primary-muted) !important;
+}
+
+.swal2-icon.swal2-success [class^="swal2-success-line"] {
+  background-color: var(--alert-primary) !important;
+}
+
+/* ============================================
+   ICÔNE — WARNING
+   ============================================ */
+.swal2-icon.swal2-warning {
+  border-color: #e6a817 !important;
+  color: #e6a817 !important;
+}
+
+/* ============================================
+   ICÔNE — ERROR / DANGER
+   ============================================ */
+.swal2-icon.swal2-error {
+  border-color: var(--alert-danger) !important;
+  color: var(--alert-danger) !important;
+}
+
+.swal2-icon.swal2-error [class^="swal2-x-mark-line"] {
+  background-color: var(--alert-danger) !important;
+}
+
+/* ============================================
+   ICÔNE — INFO
+   ============================================ */
+.swal2-icon.swal2-info {
+  border-color: #0d6efd !important;
+  color: #0d6efd !important;
+}
+
+/* ============================================
+   ICÔNE — QUESTION
+   ============================================ */
+.swal2-icon.swal2-question {
+  border-color: var(--alert-primary) !important;
+  color: var(--alert-primary) !important;
+}
+
+/* ============================================
+   BOUTONS — Conteneur
+   ============================================ */
+.swal2-actions {
+  gap: 0.75rem !important;
+  margin-top: 1.5rem !important;
+}
+
+/* ============================================
+   BOUTON CONFIRMER (vert primaire)
+   ============================================ */
+.btn-custom-confirm {
+  background-color: var(--alert-primary) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 0.5rem !important;
+  font-weight: 600 !important;
+  font-size: 0.9rem !important;
+  padding: 0.55rem 1.5rem !important;
+  transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease !important;
+  box-shadow: 0 2px 8px var(--alert-primary-muted) !important;
+}
+
+.btn-custom-confirm:hover {
+  background-color: var(--alert-primary-hover) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 14px var(--alert-primary-muted) !important;
+}
+
+.btn-custom-confirm:active {
+  transform: translateY(0) !important;
+  box-shadow: none !important;
+}
+
+.btn-custom-confirm:focus-visible {
+  outline: 3px solid var(--alert-primary-muted) !important;
+  outline-offset: 3px !important;
+}
+
+/* ============================================
+   BOUTON CONFIRMER — variante DANGER (rouge)
+   ============================================ */
+.btn-danger.px-4 {
+  background-color: var(--alert-danger) !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 0.5rem !important;
+  font-weight: 600 !important;
+  font-size: 0.9rem !important;
+  transition: background-color 0.2s ease, transform 0.1s ease !important;
+}
+
+.btn-danger.px-4:hover {
+  background-color: var(--alert-danger-hover) !important;
+  transform: translateY(-1px) !important;
+}
+
+.btn-danger.px-4:active {
+  transform: translateY(0) !important;
+}
+
+/* ============================================
+   BOUTON ANNULER (outline vert)
+   ============================================ */
+.btn-custom-cancel,
+.btn-secondary.px-4 {
+  background-color: transparent !important;
+  color: var(--alert-primary) !important;
+  border: 1.5px solid var(--alert-primary) !important;
+  border-radius: 0.5rem !important;
+  font-weight: 500 !important;
+  font-size: 0.9rem !important;
+  padding: 0.55rem 1.5rem !important;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease !important;
+}
+
+.btn-custom-cancel:hover,
+.btn-secondary.px-4:hover {
+  background-color: var(--alert-primary-light) !important;
+  transform: translateY(-1px) !important;
+}
+
+.btn-custom-cancel:active,
+.btn-secondary.px-4:active {
+  transform: translateY(0) !important;
+}
+
+.btn-custom-cancel:focus-visible,
+.btn-secondary.px-4:focus-visible {
+  outline: 3px solid var(--alert-primary-muted) !important;
+  outline-offset: 3px !important;
+}
+
+/* ============================================
+   INPUT (si inputType utilisé)
+   ============================================ */
+.swal2-input,
+.swal2-select,
+.swal2-textarea {
+  border: 1.5px solid #ced4da !important;
+  border-radius: 0.5rem !important;
+  font-size: 0.95rem !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.swal2-input:focus,
+.swal2-select:focus,
+.swal2-textarea:focus {
+  border-color: var(--alert-primary) !important;
+  box-shadow: 0 0 0 3px var(--alert-primary-light) !important;
+  outline: none !important;
+}
+
+/* ============================================
+   VALIDATION ERROR (input)
+   ============================================ */
+.swal2-validation-message {
+  background-color: rgba(220, 53, 69, 0.08) !important;
+  color: var(--alert-danger) !important;
+  border-radius: 0.4rem !important;
+  font-size: 0.875rem !important;
+}
+
+/* ============================================
+   LOADER (progress bar)
+   ============================================ */
+.swal2-timer-progress-bar {
+  background-color: var(--alert-primary) !important;
+}
+
+/* ============================================
+   CLOSE BUTTON (si showCloseButton: true)
+   ============================================ */
+.swal2-close {
+  color: var(--alert-primary) !important;
+  opacity: 0.6;
+  transition: opacity 0.2s ease !important;
+}
+
+.swal2-close:hover {
+  opacity: 1 !important;
+  color: var(--alert-primary) !important;
+}
+
+/* ============================================
+   ANIMATIONS (si animate.css non disponible)
+   ============================================ */
+@keyframes alertFadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes alertFadeOutUp {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.97);
+  }
+}
+
+.swal2-show {
+  animation: alertFadeInDown 0.25s ease forwards !important;
+}
+
+.swal2-hide {
+  animation: alertFadeOutUp 0.2s ease forwards !important;
+}
