@@ -1,6 +1,5 @@
 import {
   createSigneClinique as createSigneCliniqueService,
-  getSigneCliniqueById as getSigneCliniqueByIdService,
   getSigneCliniqueByNumeroDossier as getSigneCliniqueByNumeroDossierService,
   updateSigneClinique as updateSigneCliniqueService,
 } from "../services/signeCliniqueService.js";
@@ -18,24 +17,6 @@ export const createSigneCliniqueController = async (req, res) => {
   } catch (error) {
     console.error("Erreur createSigneClinique:", error.message);
     res.status(400).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
-export const getSigneCliniqueByIdController = async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const signe = await getSigneCliniqueByIdService(parseInt(id));
-
-    res.status(200).json({
-      success: true,
-      signe,
-    });
-  } catch (error) {
-    console.error("Get signe clinique by id error:", error.message);
-    res.status(404).json({
       success: false,
       message: error.message,
     });

@@ -1,4 +1,4 @@
-import API from "../../../shared/utils/api";
+import API from "../../../../shared/utils/api";
 
 export const createSigneClinique = async (payload) => {
   const { data } = await API.post("/signesCliniques/add", payload);

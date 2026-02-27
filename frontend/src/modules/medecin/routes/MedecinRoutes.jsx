@@ -28,7 +28,6 @@ import Conclusion from "../pages/workspace/conclusion/Conclusion";
 import SuiviLayout from "../pages/workspace/suivi/SuiviLayout";
 import Dashbord from "../pages/workspace/suivi/Dashbord";
 import ControleTherapeutique from "../pages/workspace/suivi/controleTherapitique";
-import ExamenCliniqueWrapper from '../../medecin/pages/workspace/Examen_cliniques/ExamenCliniqueWrapper';
 
 const medecinRoutes = [
   {
@@ -94,7 +93,7 @@ const medecinRoutes = [
     },
     {
       path: "examen-cliniques",
-      element: <ExamenCliniqueWrapper />,
+      element: <ExamenLayout />,
       children: [
         { index: true, element: <Navigate to="signesCliniques" replace /> },
         { path: "signesCliniques", element: <SignesCliniques /> },

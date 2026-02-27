@@ -1,15 +1,7 @@
-import { createExamenClinique, getExamenCliniqueById, getExamensByNumeroDossier, updateExamenClinique } from "../models/examenCliniqueModel.js";
+import { createExamenClinique, getExamensByNumeroDossier, updateExamenClinique } from "../models/examenCliniqueModel.js";
 import { getPatientByNumero } from "../models/patientModel.js";
 
-/**
- * ==========================================
- * CONTROLLER EXAMEN CLINIQUE
- * ==========================================
- */
 
-/**
- * Créer un examen clinique
- */
 export const createExamenCliniqueController = async (req, res) => {
   try {
     const { patient_numero, date_examen } = req.body;
@@ -44,38 +36,7 @@ export const createExamenCliniqueController = async (req, res) => {
   }
 };
 
-/**
- * Récupérer un examen par ID
- */
-export const getExamenCliniqueController = async (req, res) => {
-  try {
-    const { id } = req.params;
 
-    const examen = await getExamenCliniqueById(id);
-
-    if (!examen) {
-      return res.status(404).json({
-        success: false,
-        message: "Examen non trouvé"
-      });
-    }
-
-    res.status(200).json({
-      success: true,
-      examen
-    });
-  } catch (error) {
-    console.error("Erreur récupération examen:", error);
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-};
-
-/**
- * Récupérer tous les examens d'un patient
- */
 export const getExamensByPatientController = async (req, res) => {
   try {
     const { numero } = req.params;
@@ -95,9 +56,6 @@ export const getExamensByPatientController = async (req, res) => {
   }
 };
 
-/**
- * Mettre à jour un examen
- */
 export const updateExamenCliniqueController = async (req, res) => {
   try {
     const { id } = req.params;

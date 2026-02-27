@@ -13,6 +13,7 @@ import examenCliniqueRoute from "./src/routes/examenCliniqueRoute.js";
 import signeClinique from "./src/routes/signeCliniqueRoute.js";
 import signeFonctionRoute from "./src/routes/signeFonctionRoute.js";
 import habitude from "./src/routes/habitudeDeVieRoute.js";
+import observations from "./src/routes/observationRoute.js";
 
 
 dotenv.config();
@@ -38,6 +39,7 @@ app.use("/api/examen-clinique", examenCliniqueRoute);
 app.use("/api/signesFonctionnels", signeFonctionRoute);
 app.use("/api/signesCliniques", signeClinique);
 app.use("/api/habitudes", habitude);
+app.use("/api/observations", observations);
 
 // Route racine test
 app.get("/", (req, res) => {

@@ -1,4 +1,4 @@
-import API from "../../../shared/utils/api";
+import API from "../../../../shared/utils/api";
 
 export const createHabitudeDeVie = async (payload) => {
   try {

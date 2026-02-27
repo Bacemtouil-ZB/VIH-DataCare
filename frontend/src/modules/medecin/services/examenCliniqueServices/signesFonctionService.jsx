@@ -1,4 +1,4 @@
-import API from "../../../shared/utils/api";
+import API from "../../../../shared/utils/api";
 
 
 export const getAppareils = async () => {
@@ -17,17 +17,6 @@ export const getSignesByPatient = async (numero) => {
     return response.data;
   } catch (error) {
     console.error("Erreur getSignesByPatient:", error);
-    throw error.response?.data || error.message;
-  }
-};
-
-
-export const getSignesByExamen = async (examenId) => {
-  try {
-    const response = await API.get(`/signesFonctionnels/examen/${examenId}`);
-    return response.data;
-  } catch (error) {
-    console.error("Erreur getSignesByExamen:", error);
     throw error.response?.data || error.message;
   }
 };
@@ -58,7 +47,6 @@ export const updateSignesFonctionnels = async (examenId, payload) => {
 export default {
   getAppareils,
   getSignesByPatient,
-  getSignesByExamen,
   createSignesFonctionnels,
   updateSignesFonctionnels,
 };

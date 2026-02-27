@@ -1,7 +1,6 @@
 import express from "express";
 import {
   createSigneCliniqueController,
-  getSigneCliniqueByIdController,
   getSigneCliniqueByNumeroDossierController,
   updateSigneCliniqueController,
 } from "../controllers/signeCliniqueController.js";
@@ -11,7 +10,6 @@ const router = express.Router();
 
 router.post(  "/add",                    protect, authorizeMedecin, createSigneCliniqueController);
 router.get(   "/patient/:numeroDossier", protect, authorizeMedecin, getSigneCliniqueByNumeroDossierController);
-router.get(   "/:id",                    protect, authorizeMedecin, getSigneCliniqueByIdController);
 router.put(   "/update/:id",             protect, authorizeMedecin, updateSigneCliniqueController);
 
 export default router;

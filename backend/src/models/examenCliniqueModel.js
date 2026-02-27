@@ -24,27 +24,6 @@ export const createExamenClinique = async (examenData, medecinId) => {
   return result.rows[0];
 };
 
-
-export const getExamenCliniqueById = async (id) => {
-  const query = `
-    SELECT 
-      ec.*,
-      p.numero as patient_numero,
-      p.name as patient_name,
-      p.surname as patient_surname,
-      u.nom as medecin_nom,
-      u.prenom as medecin_prenom
-    FROM examen_clinique ec
-    LEFT JOIN patients p ON ec.patient_id = p.id
-    LEFT JOIN users u ON ec.medecin_id = u.id
-    WHERE ec.id = $1;
-  `;
-
-  const result = await pool.query(query, [id]);
-  return result.rows[0] || null;
-};
-
-
 export const getExamensByNumeroDossier = async (numero) => {
   const query = `
     SELECT 

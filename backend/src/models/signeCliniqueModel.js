@@ -13,11 +13,6 @@ export const createSigneClinique = async (signeData) => {
   return result.rows[0];
 };
 
-export const getSigneCliniqueById = async (id) => {
-  const result = await pool.query(`SELECT * FROM signes_cliniques WHERE id = $1;`, [id]);
-  return result.rows[0] || null;
-};
-
 
 export const getSigneCliniqueByNumeroDossier = async (numeroDossier) => {
   const query = `
@@ -46,8 +41,6 @@ export const updateSigneClinique = async (id, signeData) => {
   return result.rows[0];
 };
 
-// ── autres_signes_cliniques ───────────────────────────────────────────────────
-
 export const createAutreSigneClinique = async (signesCliniqueId, appareilId, description) => {
   const query = `
     INSERT INTO autres_signes_cliniques (signes_cliniques_id, appareil_id, description)
@@ -75,7 +68,7 @@ export const getAutresSignesBySigneCliniqueId = async (signesCliniqueId) => {
   const result = await pool.query(query, [signesCliniqueId]);
   return result.rows;
 };
-// signeCliniqueModel.js
+
 
 export const deleteAutresSignesBySigneCliniqueId = async (signesCliniqueId) => {
   const query = `DELETE FROM autres_signes_cliniques WHERE signes_cliniques_id = $1;`;

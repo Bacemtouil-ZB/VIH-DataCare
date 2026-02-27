@@ -1,6 +1,5 @@
 import {
   createSigneClinique as createSigneCliniqueModel,
-  getSigneCliniqueById as getSigneCliniqueByIdModel,
   getSigneCliniqueByNumeroDossier as getSigneCliniqueByNumeroDossierModel,
   updateSigneClinique as updateSigneCliniqueModel,
   createAutreSigneClinique,           
@@ -33,12 +32,6 @@ export const createSigneClinique = async (data) => {
 
   return signe;
 };
-export const getSigneCliniqueById = async (id) => {
-  const signe = await getSigneCliniqueByIdModel(id);
-  if (!signe) throw new Error("Signe clinique non trouvé");
-  return { ...signe, autres_signes: await getAutresSignesBySigneCliniqueId(id) };
-};
-
 
 export const getSigneCliniqueByNumeroDossier = async (numeroDossier) => {
   const signes = await getSigneCliniqueByNumeroDossierModel(numeroDossier);
@@ -57,8 +50,6 @@ export const getSigneCliniqueByNumeroDossier = async (numeroDossier) => {
 
   // Recalculer l'IMC si taille ou poids mis à jour
 export const updateSigneClinique = async (id, signeData) => {
-  const existing = await getSigneCliniqueByIdModel(id);
-  if (!existing) throw new Error("Signe clinique non trouvé");
 
   // Recalculer l'IMC si besoin
   const taille = signeData.taille ?? existing.taille;

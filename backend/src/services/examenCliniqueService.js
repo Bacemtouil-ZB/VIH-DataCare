@@ -1,6 +1,5 @@
 import {
   createExamenClinique as createExamenCliniqueModel,
-  getExamenCliniqueById as getExamenCliniqueByIdModel,
   getExamensByNumeroDossier as getExamensByNumeroDossierModel,
   updateExamenClinique as updateExamenCliniqueModel,
 
@@ -9,14 +8,6 @@ import {
 export const createExamenClinique = async (examenData, medecinId) => {
 
   const examen = await createExamenCliniqueModel(examenData, medecinId);
-  return examen;
-};
-
-export const getExamenCliniqueById = async (id) => {
-  const examen = await getExamenCliniqueByIdModel(id);
-  if (!examen) {
-    throw new Error("Examen clinique non trouvé");
-  }
   return examen;
 };
 

@@ -1,7 +1,6 @@
 import express from "express";
 import {
   createExamenCliniqueController,
-  getExamenCliniqueController,
   getExamensByPatientController,
   updateExamenCliniqueController,
 
@@ -28,14 +27,6 @@ router.get(
   authorizeMedecin,
   getExamensByPatientController
 );
-
-router.get(
-  "/:id",
-  protect,
-  authorizeMedecin,
-  getExamenCliniqueController
-);
-
 
 router.put(
   "/update/:id",
