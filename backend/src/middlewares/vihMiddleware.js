@@ -35,34 +35,47 @@ const validateDateLogic = (req, res, next) => {
     date_contamination,
     date_vih_positif,
     debut_stade_c,
+    stade_cdc,
   } = req.body;
 
-  // Si date_derniere_negative existe, elle doit être avant date_vih_positif
-  if (date_derniere_negative && date_vih_positif) {
-    const dateNegative = new Date(date_derniere_negative);
-    const datePositif = new Date(date_vih_positif);
+  const today       = new Date(); today.setHours(0, 0, 0, 0);
+  const datePositif = date_vih_positif ? new Date(date_vih_positif) : null;
+  const dateNeg     = date_derniere_negative ? new Date(date_derniere_negative) : null;
+  const dateCont    = date_contamination     ? new Date(date_contamination)     : null;
+  const STADES_C    = ["C0", "C1", "C2", "C3"];
+  const dateStadeC  = (stade_cdc && STADES_C.includes(stade_cdc) && debut_stade_c)
+    ? new Date(debut_stade_c) : null;
 
-    if (dateNegative >= datePositif) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "La date du dernier test négatif doit être antérieure à la date du test VIH positif",
-      });
-    }
+  // ── Règle 1 : date_neg < date_positif ────────────────────────────────────
+  if (dateNeg && datePositif && dateNeg >= datePositif) {
+    return res.status(400).json({
+      success: false,
+      message: "La date du dernier test négatif doit être strictement antérieure à la date du test VIH positif",
+    });
   }
 
-  // Si date_contamination existe, elle doit être avant ou égale à date_vih_positif
-  if (date_contamination && date_vih_positif) {
-    const dateContam = new Date(date_contamination);
-    const datePositif = new Date(date_vih_positif);
+  // ── Règle 3 : date_contamination < date_positif (strictement) ────────────
+  if (dateCont && datePositif && dateCont >= datePositif) {
+    return res.status(400).json({
+      success: false,
+      message: "La date de contamination doit être strictement antérieure à la date du test VIH positif",
+    });
+  }
 
-    if (dateContam > datePositif) {
-      return res.status(400).json({
-        success: false,
-        message:
-          "La date de contamination ne peut pas être postérieure à la date du test VIH positif",
-      });
-    }
+  // ── Règle 1 (suite) : date_neg < date_contamination ──────────────────────
+  if (dateNeg && dateCont && dateNeg >= dateCont) {
+    return res.status(400).json({
+      success: false,
+      message: "La date du dernier test négatif doit être antérieure à la date de contamination",
+    });
+  }
+
+  // ── Règle 2 : debut_stade_c >= date_positif ───────────────────────────────
+  if (dateStadeC && datePositif && dateStadeC < datePositif) {
+    return res.status(400).json({
+      success: false,
+      message: "Le début du stade C ne peut pas survenir avant la date du test VIH positif",
+    });
   }
 
   next();
@@ -71,26 +84,31 @@ const validateDateLogic = (req, res, next) => {
 
 export const validateCreateVih = [
 
-
   body("date_derniere_negative")
+    .optional({ nullable: true, checkFalsy: true })
     .isDate()
     .withMessage("La date du dernier test négatif doit être une date valide (YYYY-MM-DD)")
-    ,
+    .custom((value) => validateDate(value, "La date du dernier test négatif")),
 
   body("date_contamination")
+    .optional({ nullable: true, checkFalsy: true })
     .isDate()
     .withMessage("La date de contamination doit être une date valide (YYYY-MM-DD)")
     .custom((value) => validateDate(value, "La date de contamination")),
 
   body("date_vih_positif")
+    .notEmpty().withMessage("La date du test VIH positif est obligatoire")
     .isDate()
     .withMessage("La date du test VIH positif doit être une date valide (YYYY-MM-DD)")
     .custom((value) => validateDate(value, "La date du test VIH positif")),
 
+  // ✅ debut_stade_c optionnel — validé seulement si présent
   body("debut_stade_c")
+    .optional({ nullable: true, checkFalsy: true })
     .isDate()
     .withMessage("La date de début du stade C doit être une date valide (YYYY-MM-DD)")
     .custom((value) => validateDate(value, "La date de début du stade C")),
+
   handleValidationErrors,
   validateDateLogic,
 ];

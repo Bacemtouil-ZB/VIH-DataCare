@@ -19,26 +19,106 @@ const formatDate = (d) => {
   return isNaN(date.getTime()) ? "" : date.toISOString().split("T")[0];
 };
 
+// ── Multi-select déroulant avec badges verts ──────────────────────────────────
+function MultiSelectContamination({ value, onChange, disabled }) {
+  const [open, setOpen] = useState(false);
+  const selected = Array.isArray(value) ? value : (value ? [value] : []);
+
+  const toggle = (option) => {
+    if (disabled) return;
+    const next = selected.includes(option)
+      ? selected.filter((v) => v !== option)
+      : [...selected, option];
+    onChange(next);
+  };
+
+  const remove = (option, e) => {
+    e.stopPropagation();
+    if (!disabled) onChange(selected.filter((v) => v !== option));
+  };
+
+  return (
+    <div style={{ position: "relative" }}>
+      {/* Boîte principale */}
+      <div
+        className={`form-control d-flex flex-wrap gap-1 align-items-center ${disabled ? "bg-light" : ""}`}
+        style={{ minHeight: 38, cursor: disabled ? "default" : "pointer", paddingRight: 32 }}
+        onClick={() => !disabled && setOpen((o) => !o)}
+      >
+        {selected.length === 0 && (
+          <span className="text-secondary" style={{ fontSize: "0.9rem" }}>-- Sélectionner --</span>
+        )}
+        {selected.map((opt) => (
+          <span key={opt} className="badge d-flex align-items-center gap-1"
+            style={{ background: "#2e7d52", color: "white", fontSize: "0.78rem", fontWeight: 600, borderRadius: 6, padding: "3px 8px" }}>
+            {opt}
+            {!disabled && (
+              <span style={{ cursor: "pointer", fontSize: "1rem", lineHeight: 1 }} onClick={(e) => remove(opt, e)}>×</span>
+            )}
+          </span>
+        ))}
+        {/* Chevron */}
+        <span style={{ position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)", color: "#6c757d", fontSize: "0.75rem", pointerEvents: "none" }}>
+          {open ? "▲" : "▼"}
+        </span>
+      </div>
+
+      {/* Dropdown */}
+      {open && (
+        <>
+          {/* Overlay fermeture */}
+          <div style={{ position: "fixed", inset: 0, zIndex: 998 }} onClick={() => setOpen(false)} />
+          <div className="border rounded shadow-sm bg-white"
+            style={{ position: "absolute", zIndex: 999, width: "100%", maxHeight: 240, overflowY: "auto", top: "calc(100% + 4px)" }}>
+            {MODES_CONTAMINATION.map((opt) => {
+              const checked = selected.includes(opt);
+              return (
+                <div key={opt}
+                  className="px-3 py-2 d-flex align-items-center gap-2"
+                  style={{ cursor: "pointer", background: checked ? "#f0fdf4" : "white", borderBottom: "1px solid #f1f5f9", fontSize: "0.9rem", transition: "background 0.1s" }}
+                  onMouseEnter={(e) => { if (!checked) e.currentTarget.style.background = "#f8fafb"; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = checked ? "#f0fdf4" : "white"; }}
+                  onClick={(e) => { e.stopPropagation(); toggle(opt); }}>
+                  <input type="checkbox" readOnly checked={checked}
+                    style={{ accentColor: "#2e7d52", width: 15, height: 15, cursor: "pointer" }} />
+                  <span style={{ color: checked ? "#166534" : "#1e293b", fontWeight: checked ? 600 : 400 }}>{opt}</span>
+                  {checked && <span className="ms-auto" style={{ color: "#16a34a", fontSize: "0.8rem" }}>✓</span>}
+                </div>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
 export default function VihForm({ initialData = null, onSubmit, isLoading = false, errors = {}, isEditMode = true, isCreateMode = false }) {
   const [formData, setFormData] = useState({
-    mode_contamination: "", type_depistage: "", circonstance_decouverte: "",
+    mode_contamination: [],
+    type_depistage: "", circonstance_decouverte: "",
     date_derniere_negative: "", date_contamination: "", date_vih_positif: "",
     stade_cdc: "", debut_stade_c: "", typage_hla_b5701: "", profil_seroconversion: false,
   });
 
   useEffect(() => {
     if (initialData) {
+      // Normalise mode_contamination : string CSV → array
+      const mc = initialData.mode_contamination;
+      const mcArray = Array.isArray(mc)
+        ? mc
+        : (mc ? mc.split(",").map((s) => s.trim()).filter(Boolean) : []);
       setFormData({
-        mode_contamination:       initialData.mode_contamination || "",
-        type_depistage:           initialData.type_depistage || "",
-        circonstance_decouverte:  initialData.circonstance_decouverte || "",
-        date_derniere_negative:   formatDate(initialData.date_derniere_negative),
-        date_contamination:       formatDate(initialData.date_contamination),
-        date_vih_positif:         formatDate(initialData.date_vih_positif),
-        stade_cdc:                initialData.stade_cdc || "",
-        debut_stade_c:            formatDate(initialData.debut_stade_c),
-        typage_hla_b5701:         initialData.typage_hla_b5701 || "",
-        profil_seroconversion:    initialData.profil_seroconversion || false,
+        mode_contamination:      mcArray,
+        type_depistage:          initialData.type_depistage || "",
+        circonstance_decouverte: initialData.circonstance_decouverte || "",
+        date_derniere_negative:  formatDate(initialData.date_derniere_negative),
+        date_contamination:      formatDate(initialData.date_contamination),
+        date_vih_positif:        formatDate(initialData.date_vih_positif),
+        stade_cdc:               initialData.stade_cdc || "",
+        debut_stade_c:           formatDate(initialData.debut_stade_c),
+        typage_hla_b5701:        initialData.typage_hla_b5701 || "",
+        profil_seroconversion:   initialData.profil_seroconversion || false,
       });
     }
   }, [initialData]);
@@ -52,24 +132,48 @@ export default function VihForm({ initialData = null, onSubmit, isLoading = fals
     });
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Sérialise mode_contamination array → string CSV pour le backend
+    onSubmit({
+      ...formData,
+      mode_contamination: Array.isArray(formData.mode_contamination)
+        ? formData.mode_contamination.join(", ")
+        : formData.mode_contamination,
+    });
+  };
+
   const isDisabled = !isEditMode && !isCreateMode;
   const isStadeC   = formData.stade_cdc.startsWith("C");
 
   return (
     <div className="bg-white border rounded">
-      <GreenHeader title="Nouvelle fiche VIH" />
-      <form onSubmit={e => { e.preventDefault(); onSubmit(formData); }} className="p-4">
+      <GreenHeader title={isCreateMode ? "Nouvelle fiche VIH" : "Fiche VIH"} />
+      <form onSubmit={handleSubmit} className="p-4">
         <div className="row g-3">
 
-          {/* Mode de contamination */}
+          {/* ✅ Mode de contamination — multi-select */}
           <div className="col-md-6">
             <FieldLabel>Mode de contamination <span className="text-danger">*</span></FieldLabel>
-            <select name="mode_contamination" className={`form-select ${errors.mode_contamination ? "is-invalid" : ""}`}
-              value={formData.mode_contamination} onChange={handleChange} disabled={isDisabled || isLoading} required>
-              <option value="">-- Sélectionner --</option>
-              {MODES_CONTAMINATION.map(m => <option key={m}>{m}</option>)}
-            </select>
-            {errors.mode_contamination && <div className="invalid-feedback">{errors.mode_contamination}</div>}
+            <MultiSelectContamination
+              value={formData.mode_contamination}
+              onChange={(val) => setFormData((prev) => ({ ...prev, mode_contamination: val }))}
+              disabled={isDisabled || isLoading}
+            />
+            {errors.mode_contamination && (
+              <div className="text-danger small mt-1">{errors.mode_contamination}</div>
+            )}
+            {/* ✅ Badges verts sous le champ */}
+            {formData.mode_contamination.length > 0 && (
+              <div className="d-flex flex-wrap gap-1 mt-2">
+                {formData.mode_contamination.map((opt) => (
+                  <span key={opt} className="badge"
+                    style={{ background: "#dcfce7", color: "#166534", fontSize: "0.78rem", fontWeight: 600, border: "1px solid #86efac", borderRadius: 6, padding: "3px 10px" }}>
+                    {opt}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Type de dépistage */}
@@ -170,11 +274,11 @@ export default function VihForm({ initialData = null, onSubmit, isLoading = fals
             </div>
           </div>
 
-          {/* Bouton */}
+          {/* Bouton submit */}
           {(isEditMode || isCreateMode) && (
             <div className="col-12 mt-2">
               <button type="submit" className="btn w-100 text-white fw-bold py-2" style={{ background: "#2e7d52" }} disabled={isLoading}>
-                {isLoading ? "Enregistrement..." : isCreateMode ? "Enregistrer la fiche VIH" : " Enregistrer les modifications"}
+                {isLoading ? "Enregistrement..." : isCreateMode ? "Enregistrer la fiche VIH" : "Enregistrer les modifications"}
               </button>
             </div>
           )}
