@@ -102,7 +102,6 @@ export const validateCreateVih = [
     .withMessage("La date du test VIH positif doit être une date valide (YYYY-MM-DD)")
     .custom((value) => validateDate(value, "La date du test VIH positif")),
 
-  // ✅ debut_stade_c optionnel — validé seulement si présent
   body("debut_stade_c")
     .optional({ nullable: true, checkFalsy: true })
     .isDate()
