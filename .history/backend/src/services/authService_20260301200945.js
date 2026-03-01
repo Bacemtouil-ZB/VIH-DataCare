@@ -1,4 +1,8 @@
 import bcrypt from "bcryptjs";
+<<<<<<< HEAD
+import { findUserByEmail, createUser } from "../models/userModel.js";
+import { generateToken } from "../utils/jwt.js";
+=======
 import crypto from "crypto";
 import {
   findUserByEmail,
@@ -15,6 +19,7 @@ import {
   sendUserCredentialsEmail,
   sendPasswordResetEmail,
 } from "./mailService.js";
+>>>>>>> feature/resetPassword
 
 export const loginUser = async (email, password) => {
   // Vérifier si l'utilisateur existe
@@ -88,6 +93,8 @@ export const registerUser = async (
     false,
   );
 
+<<<<<<< HEAD
+=======
   try {
     await sendUserCredentialsEmail({
       to: email,
@@ -100,10 +107,13 @@ export const registerUser = async (
     console.error("Erreur envoi email identifiants:", error.message);
   }
 
+>>>>>>> feature/resetPassword
   // Ne pas retourner le mot de passe
   const { password: _, ...userWithoutPassword } = user;
   return userWithoutPassword;
 };
+<<<<<<< HEAD
+=======
 
 export const requestPasswordReset = async (email) => {
   if (!email) {
@@ -116,7 +126,8 @@ export const requestPasswordReset = async (email) => {
   if (!user) {
     return {
       success: true,
-      message: "Si cet email existe, un lien de reinitialisation a ete envoye.",
+      message:
+        "Si cet email existe, un lien de reinitialisation a ete envoye.",
     };
   }
 
@@ -127,9 +138,10 @@ export const requestPasswordReset = async (email) => {
   await deletePasswordResetsByUserId(user.id);
   await createPasswordReset(user.id, tokenHash, expiresAt);
 
-  const frontendBase = (
-    process.env.FRONTEND_URL || "http://localhost:5173"
-  ).replace(/\/$/, "");
+  const frontendBase = (process.env.FRONTEND_URL || "http://localhost:5173").replace(
+    /\/$/,
+    "",
+  );
   const resetUrl = `${frontendBase}/reset-password?token=${encodeURIComponent(rawToken)}`;
 
   try {
@@ -182,3 +194,4 @@ export const resetPasswordWithToken = async (token, password) => {
     message: "Mot de passe mis a jour avec succes",
   };
 };
+>>>>>>> feature/resetPassword

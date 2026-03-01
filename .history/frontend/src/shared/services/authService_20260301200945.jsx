@@ -49,6 +49,8 @@ export const checkSession = async () => {
   }
 };
 
+<<<<<<< HEAD
+=======
 // —— FORGOT PASSWORD ——
 // Backend : POST /api/auth/forgot-password
 // Envoie  : { email }
@@ -68,3 +70,4 @@ export const resetPassword = async (token, password, confirmPassword) => {
   });
   return res.data;
 };
+>>>>>>> feature/resetPassword

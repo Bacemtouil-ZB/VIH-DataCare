@@ -14,7 +14,10 @@
     "bootstrap": "5.3",
     "bootstrap-icons": "^1.13.1",
     "lucide-react": "^0.563.0",
+<<<<<<< HEAD
     "motion": "^12.34.3",
+=======
+>>>>>>> feature/resetPassword
     "react": "18.2.0",
     "react-bootstrap": "^2.10.10",
     "react-dom": "18.2.0",

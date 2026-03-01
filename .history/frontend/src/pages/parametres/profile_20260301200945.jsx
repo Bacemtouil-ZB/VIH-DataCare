@@ -415,7 +415,11 @@ const ProfilPage = () => {
                                 <i className="bi bi-shield-lock me-2" style={{ color: '#22c55e' }}></i>
                                 Sécurité
                             </h5>
+<<<<<<< HEAD
+                            <NavLink to="/reset-password">
+=======
                             <NavLink to="/forgot-password">
+>>>>>>> feature/resetPassword
                             <div className="row g-3">
                                 <div className="col-md-6">
                                     
@@ -436,4 +440,8 @@ const ProfilPage = () => {
     );
 };
 
+<<<<<<< HEAD
 export default ProfilPage;
+=======
+export default ProfilPage;
+>>>>>>> feature/resetPassword

@@ -87,15 +87,3 @@ export const getAllDoctors = async () => {
     throw error;
   }
 };
-
-export const updateUserPasswordById = async (userId, hashedPassword) => {
-  const query = `
-    UPDATE users
-    SET password = $1, updated_at = NOW()
-    WHERE id = $2
-    RETURNING id, nom, prenom, email, role, isactivated, updated_at;
-  `;
-  const values = [hashedPassword, userId];
-  const result = await pool.query(query, values);
-  return result.rows[0] || null;
-};
