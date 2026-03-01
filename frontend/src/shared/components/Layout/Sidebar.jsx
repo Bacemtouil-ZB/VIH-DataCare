@@ -55,6 +55,12 @@ const Sidebar = () => {
       label: "Ordonnances",
       end : true,
     },
+      {
+      to: "stock",
+      icon: "bi-box-seam",
+      label: "Stock",
+      end : true,
+    },
 
   ],
 

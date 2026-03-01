@@ -2,7 +2,7 @@ import pool from "../config/db.js";
 
 export const addMedicalTreatment = async (treatmentData, medecinId) => {
   const {
-    patient_id, // ✅ Utilisé au lieu de numeroDossier
+    patient_id, 
     nom_traitement,
     quantite_prescrite,
     date_prescription,
@@ -63,7 +63,7 @@ export const getThreeLastPrise = async (numeroDossier) => {
     FROM ordonnances o
     JOIN patients p ON o.patient_id = p.id
     WHERE p.numero = $1
-      AND o.date_prochaine_prise IS NOT NULL
+    AND o.date_prochaine_prise IS NOT NULL
     ORDER BY o.date_prochaine_prise DESC
     LIMIT 3;
   `;

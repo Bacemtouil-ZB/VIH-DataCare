@@ -1,0 +1,429 @@
+/* =====================================================================
+   ExamenComponents.css
+   Contient :
+     - Classes utilitaires équivalentes à PAGE_BG, STYLES, LABEL_CLS
+     - Styles des composants JSX
+   ===================================================================== */
+
+/* ── Variables ──────────────────────────────────────────────────────── */
+:root {
+  --ec-green:       #2e7d52;
+  --ec-green-light: #f0fdf4;
+  --ec-green-border:#86efac;
+  --ec-blue:        #3e617e;
+  --ec-slate:       #e2e8f0;
+}
+
+/* =====================================================================
+   SECTION A — Équivalents de PAGE_BG / LABEL_CLS / STYLES
+   Utilisables via className dans n'importe quelle page
+   ===================================================================== */
+
+/* PAGE_BG */
+.ec-page-bg {
+  background: #f5f6fa;
+  padding: 24px;
+  min-height: 100%;
+}
+
+/* LABEL_CLS */
+.ec-label {
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #6c757d;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+/* STYLES.tdDate */
+.ec-td-date {
+  white-space: nowrap;
+  font-size: 0.875rem;
+}
+
+/* STYLES.tdMax */
+.ec-td-max {
+  font-size: 0.875rem;
+  max-width: 500px;
+}
+
+/* STYLES.thSm */
+.ec-th-sm {
+  font-size: 0.78rem;
+}
+
+/* STYLES.tdMaxMed */
+.ec-td-max-med {
+  max-width: 240px;
+}
+
+/* STYLES.flexInput */
+.ec-flex-input {
+  flex: 1 1 140px;
+}
+
+/* STYLES.flexInputL */
+.ec-flex-input-l {
+  flex: 1 1 200px;
+}
+
+/* STYLES.imcBox */
+.ec-imc-box {
+  background: #f8faf9;
+  cursor: default;
+}
+
+/* STYLES.cardSigneOn */
+.ec-card-signe-on {
+  border: 1px solid #86efac;
+  background: #f0fdf4;
+  transition: all 0.15s;
+}
+
+/* STYLES.cardSigneOff */
+.ec-card-signe-off {
+  border: 1px solid #e2e8f0;
+  background: white;
+  transition: all 0.15s;
+}
+
+/* STYLES.rasOn */
+.ec-ras-on {
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* STYLES.rasOff */
+.ec-ras-off {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* STYLES.trackOn */
+.ec-track-on {
+  width: 40px;
+  height: 22px;
+  border-radius: 11px;
+  position: relative;
+  background: #16a34a;
+  transition: background 0.2s;
+}
+
+/* STYLES.trackOff */
+.ec-track-off {
+  width: 40px;
+  height: 22px;
+  border-radius: 11px;
+  position: relative;
+  background: #cbd5e1;
+  transition: background 0.2s;
+}
+
+/* STYLES.thumbOn */
+.ec-thumb-on {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: white;
+  position: absolute;
+  top: 3px;
+  left: 21px;
+  transition: left 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* STYLES.thumbOff */
+.ec-thumb-off {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: white;
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  transition: left 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* STYLES.habCard */
+.ec-hab-card {
+  background: #fafafa;
+}
+
+/* STYLES.habLabel */
+.ec-hab-label {
+  font-size: 15px;
+}
+
+/* STYLES.btnSave */
+.ec-btn-save {
+  background: #2e7d52 !important;
+  border-radius: 9px;
+  box-shadow: 0 2px 8px rgba(46, 125, 82, 0.25);
+  border: none;
+}
+
+.ec-btn-save:hover,
+.ec-btn-save:focus {
+  background: #256643 !important;
+  box-shadow: 0 2px 8px rgba(46, 125, 82, 0.4);
+}
+
+/* =====================================================================
+   SECTION B — Styles des composants JSX
+   ===================================================================== */
+
+/* ── 1. PageHeader ─────────────────────────────────────────────────── */
+.ec-header-title {
+  font-size: 1rem;
+}
+
+.ec-header-icon {
+  color: var(--ec-green);
+}
+
+/* Bouton Ajouter — hover conserve le vert */
+.ec-btn-ajouter {
+  background: var(--ec-green) !important;
+  border-radius: 9px;
+  box-shadow: 0 2px 8px rgba(46, 125, 82, 0.25);
+  border: none;
+  color: white !important;
+}
+
+.ec-btn-ajouter:hover,
+.ec-btn-ajouter:focus {
+  background: #256643 !important;
+  color: white !important;
+  box-shadow: 0 3px 10px rgba(46, 125, 82, 0.4);
+}
+
+/* Bouton Annuler */
+.ec-btn-annuler {
+  border: 1px solid var(--ec-slate);
+  border-radius: 9px;
+}
+
+/* ── 2. HistoriqueAccordeon ────────────────────────────────────────── */
+.ec-accordeon-header {
+  background: var(--ec-blue);
+  color: white;
+  cursor: pointer;
+  user-select: none;
+}
+
+.ec-accordeon-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.ec-accordeon-count {
+  font-size: 0.8rem;
+}
+
+/* ── 2b. SectionHeader ─────────────────────────────────────────────── */
+.ec-section-header {
+  background: var(--ec-blue);
+  color: white;
+  user-select: none;
+}
+
+.ec-section-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+/* ── 4. FormulaireWrapper ──────────────────────────────────────────── */
+.ec-form-label {
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+/* Retirer les bordures colorées du tableau */
+.table {
+  border: none !important;
+}
+
+.table thead th {
+  border: none !important;
+  border-bottom: 1px solid #dee2e6 !important;
+}
+
+.table tbody td {
+  border: none !important;
+  border-bottom: 1px solid #dee2e6 !important;
+}
+
+.table-hover tbody tr:hover {
+  border: none !important;
+}
+
+/* ── 5. AutresSignesSection ────────────────────────────────────────── */
+.ec-autres-title {
+  font-size: 0.78rem;
+  letter-spacing: 0.5px;
+}
+
+.ec-flex-appareil {
+  flex: 1 1 180px;
+}
+
+.ec-flex-desc {
+  flex: 3 1 260px;
+}
+
+.ec-th-appareil {
+  font-size: 0.78rem;
+  width: 22%;
+}
+
+.ec-th-desc {
+  font-size: 0.78rem;
+}
+
+.ec-th-actions {
+  font-size: 0.78rem;
+  width: 90px;
+  text-align: center;
+}
+
+.ec-td-vmiddle {
+  vertical-align: middle;
+}
+
+.ec-td-actions {
+  vertical-align: middle;
+  text-align: center;
+}
+
+.ec-input-edit {
+  border-radius: 6px;
+  font-size: 0.875rem;
+}
+
+.ec-desc-text {
+  font-size: 0.9rem;
+  color: #1e293b;
+}
+
+/* ── 6. BoutonEnregistrer ──────────────────────────────────────────── */
+.ec-btn-enregistrer {
+  border-radius: 10px;
+  font-size: 0.95rem;
+}
+
+.ec-btn-enregistrer:disabled {
+  opacity: 0.75;
+}
+
+/* ── 7. BtnModifier ────────────────────────────────────────────────── */
+.ec-btn-modifier {
+  border: 1.5px solid var(--ec-green) !important;
+  color: var(--ec-green) !important;
+  background: white !important;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  padding: 0.375rem 0.75rem;
+  border-radius: 6px;
+}
+
+.ec-btn-modifier:hover {
+  background: var(--ec-green) !important;
+  color: white !important;
+  box-shadow: 0 2px 6px rgba(46, 125, 82, 0.25);
+  transform: translateY(-1px);
+}
+
+.ec-btn-modifier:active {
+  transform: translateY(0);
+}
+
+/* ── 8. Badge ──────────────────────────────────────────────────────── */
+.ec-badge {
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+/* ── 9. Spinner ────────────────────────────────────────────────────── */
+.ec-spinner-wrapper {
+  min-height: 300px;
+}
+
+.ec-spinner-color {
+  color: var(--ec-green);
+}
+
+/* ── 10. RasToggle ─────────────────────────────────────────────────── */
+.ec-ras-wrapper {
+  cursor: pointer;
+  user-select: none;
+}
+
+.ec-ras-label-on  { font-weight: 700; font-size: 0.9rem; color: #166534; }
+.ec-ras-label-off { font-weight: 700; font-size: 0.9rem; color: #475569; }
+
+/* ── 11. SigneCard - BOUTONS OUI/NON AVEC !IMPORTANT ─────────────────── */
+.ec-signe-label {
+  font-size: 0.72rem;
+}
+
+.ec-signe-btn {
+  border-radius: 6px !important;
+  border: none !important;
+  font-size: 0.78rem !important;
+  font-weight: 600 !important;
+}
+
+.ec-signe-btn-yes  { 
+  background: #16a34a !important; 
+  color: white !important; 
+}
+
+.ec-signe-btn-no   { 
+  background: #ef4444 !important; 
+  color: white !important; 
+}
+
+.ec-signe-btn-off  { 
+  background: #f1f5f9 !important; 
+  color: #64748b !important; 
+}
+
+.ec-signe-btn-disabled { 
+  cursor: not-allowed !important; 
+}
+
+.ec-signe-btn-enabled  { 
+  cursor: pointer !important; 
+}
+
+/* ── 12. ImcField ──────────────────────────────────────────────────── */
+.ec-imc-value {
+  font-weight: 700;
+}
+
+/* ── 13. BoutonSauvegarder ─────────────────────────────────────────── */
+.ec-btn-sauvegarder {
+  background: var(--ec-green) !important;
+  border-radius: 9px;
+  box-shadow: 0 2px 8px rgba(46, 125, 82, 0.25);
+  border: none;
+  color: white !important;
+}
+
+.ec-btn-sauvegarder:hover,
+.ec-btn-sauvegarder:focus {
+  background: #256643 !important;
+  color: white !important;
+}
+
+/* ── 14. AutresSignesHistorique ────────────────────────────────────── */
+.ec-histo-desc {
+  font-size: 0.875rem;
+  color: #1e293b;
+  line-height: 1.4;
+}

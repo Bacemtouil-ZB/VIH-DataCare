@@ -47,9 +47,9 @@ const medecinRoutes = [
   {
   path: "/medecin/patient/:numero/workspace",//for existing patient workspace
   element: (
-    <ProtectedRoute allowedRoles={["medecin"]}>
+     <ProtectedRoute allowedRoles={["medecin"]}>
       <MainWorkspaceLayout />
-    </ProtectedRoute>
+     </ProtectedRoute>
   ),
   children: [
       { index: true, element: <Navigate to="profil" replace /> },

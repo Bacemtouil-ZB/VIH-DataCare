@@ -53,8 +53,8 @@ router.post(
  * Trouver par numéro de dossier
  */
 router.get(
-  "/numero-dossier/:numeroDossier",
-  protect,
+ "/numero-dossier/:numeroDossier",
+   protect,
   findByNumeroDossierController
 );
 

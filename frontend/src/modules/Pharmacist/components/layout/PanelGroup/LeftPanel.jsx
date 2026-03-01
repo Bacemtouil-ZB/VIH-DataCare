@@ -1,24 +1,23 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { getPatientByNumeroPharmacien } from "../../../services/patientService";
+import { getPatientByNumero } from "../../../services/patientService";
 import { getThreeLastPrise } from "../../../services/ordonnanceService";
 import "./LeftPanel.css";
 
 export default function LeftPanel() {
   const { numero } = useParams();
-  
+
   const [patientData, setPatientData] = useState(null);
   const [derniersPrises, setDerniersPrises] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
 
-  // Fonction pour calculer l'âge
-  const calculateAge = (dateNaissance) => {
-    if (!dateNaissance) return 'N/A';
-    const birth = new Date(dateNaissance);
+  const calculateAge = (birthdate) => {
+    if (!birthdate) return "N/A";
+    const birth = new Date(birthdate);
     const today = new Date();
     let age = today.getFullYear() - birth.getFullYear();
     const monthDiff = today.getMonth() - birth.getMonth();
@@ -28,48 +27,44 @@ export default function LeftPanel() {
     return age;
   };
 
-  // Fonction pour formater la date
   const formatDate = (date) => {
-    if (!date) return 'N/A';
-    return new Date(date).toLocaleDateString('fr-FR');
+    if (!date) return "N/A";
+    return new Date(date).toLocaleDateString("fr-FR");
   };
 
-  // Fonction pour obtenir les initiales
-  const getInitials = (nom, prenom) => {
-    if (!nom || !prenom) return '??';
-    return `${prenom.charAt(0)}${nom.charAt(0)}`.toUpperCase();
+  const getInitials = (name, surname) => {
+    if (!name && !surname) return "??";
+    const first = surname ? surname.charAt(0) : "";
+    const second = name ? name.charAt(0) : "";
+    return `${first}${second}`.toUpperCase() || "??";
   };
 
-  // Fonction pour obtenir la classe CSS du badge statut
   const getStatutBadgeClass = (statut) => {
     switch (statut?.toLowerCase()) {
-      case 'en cours de suivi':
-        return 'badge-active';
-      case 'perdu de vue':
-        return 'badge-warning';
-      case 'en fin de suivi':
-        return 'badge-info';
-      case 'décédé':
-        return 'badge-danger';
+      case "en cours de suivi":
+        return "badge-active";
+      case "perdu de vue":
+        return "badge-warning";
+      case "en fin de suivi":
+        return "badge-info";
+      case "décédé":
+      case "decede":
+        return "badge-danger";
       default:
-        return 'badge-neutral';
+        return "badge-neutral";
     }
   };
 
-  // Gérer l'import de photo
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       setSelectedImage(file);
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result);
-      };
+      reader.onloadend = () => setImagePreview(reader.result);
       reader.readAsDataURL(file);
     }
   };
 
-  // Gérer la suppression de la photo
   const handleRemoveImage = () => {
     setSelectedImage(null);
     setImagePreview(null);
@@ -83,27 +78,22 @@ export default function LeftPanel() {
         setLoading(true);
         setError(null);
 
-        console.log("Fetching patient data for numero:", numero);
+        const patientResponse = await getPatientByNumero(numero);
 
-        // Récupérer les données du patient (route pharmacien)
-        const patientResponse = await getPatientByNumeroPharmacien(numero);
-        
-        console.log("Patient response:", patientResponse);
-        
         if (patientResponse.success && patientResponse.patient) {
-          setPatientData(patientResponse.patient);
+          const patient =
+            patientResponse.patient?.patient || patientResponse.patient;
+          setPatientData(patient);
         }
 
-        // Récupérer les 3 dernières prises
         const prisesResponse = await getThreeLastPrise(numero);
-        
-        console.log("Prises response:", prisesResponse);
-        
         if (prisesResponse) {
-          setDerniersPrises(Array.isArray(prisesResponse) ? prisesResponse : []);
+          const prises =
+            prisesResponse.prises ||
+            (Array.isArray(prisesResponse) ? prisesResponse : []);
+          setDerniersPrises(prises);
         }
       } catch (err) {
-        console.error("Erreur chargement patient:", err);
         setError(err.message || "Erreur lors du chargement");
       } finally {
         setLoading(false);
@@ -113,7 +103,6 @@ export default function LeftPanel() {
     fetchPatientData();
   }, [numero]);
 
-  // Loading state
   if (loading) {
     return (
       <div className="patient-panel">
@@ -125,7 +114,6 @@ export default function LeftPanel() {
     );
   }
 
-  // Error state
   if (error) {
     return (
       <div className="patient-panel">
@@ -136,7 +124,6 @@ export default function LeftPanel() {
     );
   }
 
-  // Si pas de données patient
   if (!patientData) {
     return (
       <div className="patient-panel">
@@ -149,14 +136,18 @@ export default function LeftPanel() {
 
   return (
     <div className="patient-panel">
-      
-      {/* HEADER - Photo et informations principales */}
+
+      {/* HEADER */}
       <div className="patient-header">
         <div className="photo-upload-container">
           {imagePreview ? (
             <div className="patient-photo-wrapper">
               <img src={imagePreview} alt="Patient" className="patient-photo" />
-              <button onClick={handleRemoveImage} className="remove-photo-btn" title="Supprimer la photo">
+              <button
+                onClick={handleRemoveImage}
+                className="remove-photo-btn"
+                title="Supprimer la photo"
+              >
                 ✕
               </button>
             </div>
@@ -165,9 +156,9 @@ export default function LeftPanel() {
               {getInitials(patientData.name, patientData.surname)}
             </div>
           )}
-          
+
           <label htmlFor="photo-upload" className="upload-photo-btn">
-            📷 {imagePreview ? 'Changer' : 'Ajouter'} photo
+            📷 {imagePreview ? "Changer" : "Ajouter"} photo
           </label>
           <input
             id="photo-upload"
@@ -177,41 +168,52 @@ export default function LeftPanel() {
             className="photo-input"
           />
         </div>
-        
+
         <h2 className="patient-name">
           {patientData.surname} {patientData.name}
         </h2>
-        <p className="patient-id">Dossier: {patientData.numero}</p>
+        <p className="patient-id">
+          Dossier: {patientData.numero || patientData.numero_dossier}
+        </p>
       </div>
 
-      {/* INFORMATIONS DU PATIENT */}
+      {/* INFORMATIONS */}
       <div className="patient-info">
         <div className="info-row">
           <span>Date de naissance</span>
-          <span>{formatDate(patientData.date_naissance)}</span>
+          <span>{formatDate(patientData.birthdate)}</span>
         </div>
 
         <div className="info-row">
           <span>Âge</span>
-          <span>{calculateAge(patientData.date_naissance)} ans</span>
+          <span>{calculateAge(patientData.birthdate)} ans</span>
         </div>
 
         <div className="info-row">
-          <span>Hospitalisation</span>
-          <span className={patientData.hospitalisation === 'Oui' ? 'badge-warning' : 'badge-neutral'}>
-            {patientData.hospitalisation || 'Non'}
-          </span>
+          <span>Genre</span>
+          <span>{patientData.gender || "N/A"}</span>
         </div>
 
+        <div className="info-row">
+          <span>Ville</span>
+          <span>
+            {patientData.city_of_residence || patientData.city_of_birth || "N/A"}
+          </span>
+        </div>
         <div className="info-row">
           <span>Statut</span>
           <span className={getStatutBadgeClass(patientData.statut)}>
-            {patientData.statut || 'N/A'}
+            {patientData.statut || "N/A"}
           </span>
+        </div>
+
+        <div className="info-row">
+          <span>Dernière visite</span>
+          <span>{formatDate(patientData.last_visit_date)}</span>
         </div>
       </div>
 
-      {/* 3 DERNIÈRES PRISES DE TRAITEMENT */}
+      {/* 3 DERNIÈRES PRISES */}
       {derniersPrises && derniersPrises.length > 0 && (
         <div className="dernieres-prises">
           <h3 className="section-title">Dernières prises</h3>
@@ -220,11 +222,11 @@ export default function LeftPanel() {
               <div key={prise.id || index} className="prise-item">
                 <div className="prise-header">
                   <span className="prise-numero">#{index + 1}</span>
-                  <span className="prise-date">{formatDate(prise.date_prochaine_prise)}</span>
+                  <span className="prise-date">
+                    {formatDate(prise.date_prochaine_prise)}
+                  </span>
                 </div>
-                <div className="prise-traitement">
-                  {prise.nom_traitement}
-                </div>
+                <div className="prise-traitement">{prise.nom_traitement}</div>
                 <div className="prise-quantite">
                   Quantité: {prise.quantite_prescrite}
                 </div>
@@ -234,13 +236,12 @@ export default function LeftPanel() {
         </div>
       )}
 
-      {/* BADGE STATUT EN BAS */}
+      {/* BADGE STATUT */}
       <div className="patient-status">
         <span className={getStatutBadgeClass(patientData.statut)}>
-          {patientData.statut || 'Statut inconnu'}
+          {patientData.statut || "Statut inconnu"}
         </span>
       </div>
-
     </div>
   );
 }
