@@ -1,0 +1,238 @@
+.medical-page {
+  padding: 20px;
+}
+
+.page-header h2 {
+  font-size: 20px;
+  margin-bottom: 20px;
+  color: #408d47;
+}
+
+.form-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  padding: 8px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.save-btn {
+  background-color: #388E3C;
+  color: #0c0c0c;
+  border: 1px solid #2e7d32;
+  border-radius: 10px;
+  padding: 0.65rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(46, 125, 50, 0.4);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.save-btn:hover,
+.save-btn:focus {
+  background: linear-gradient(135deg, #2e7d32 0%, #43a047 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(46, 125, 50, 0.5);
+  outline: none;
+}
+
+.save-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 8px rgba(46, 125, 50, 0.3);
+}
+
+/* ── GreenHeader ─────────────────────────────── */
+.vih-header {
+  padding: 8px 12px;
+  font-weight: bold;
+  color: white;
+  background: #2e7d52;
+}
+
+/* ── Submit button ───────────────────────────── */
+.btn-vih-submit {
+  width: 100%;
+  padding: 10px;
+  background: #2e7d52 !important;
+  color: white !important;
+  font-weight: bold;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.btn-vih-submit:hover {
+  background: #245f40 !important;
+}
+
+.btn-vih-submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* ── MultiSelect ─────────────────────────────── */
+.multiselect-wrapper {
+  position: relative;
+}
+
+.multiselect-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  min-height: 38px;
+  cursor: pointer;
+  padding-right: 32px;
+}
+
+.multiselect-box.bg-light {
+  cursor: default;
+}
+
+.multiselect-placeholder {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.badge-selected {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #2e7d52;
+  color: white;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 3px 8px;
+}
+
+.badge-remove {
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.multiselect-chevron {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #6c757d;
+  font-size: 0.75rem;
+  pointer-events: none;
+}
+
+.multiselect-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 998;
+}
+
+.multiselect-dropdown {
+  position: absolute;
+  z-index: 999;
+  width: 100%;
+  max-height: 240px;
+  overflow-y: auto;
+  top: calc(100% + 4px);
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background: white;
+}
+
+.multiselect-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.9rem;
+  background: white;
+  transition: background 0.1s;
+}
+
+.multiselect-option.checked {
+  background: #f0fdf4;
+}
+
+.multiselect-option:hover {
+  background: #f8fafb;
+}
+
+.multiselect-option.checked:hover {
+  background: #f0fdf4;
+}
+
+.multiselect-checkbox {
+  accent-color: #2e7d52;
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+.option-checked {
+  color: #166534;
+  font-weight: 600;
+}
+
+.option-tick {
+  color: #16a34a;
+  font-size: 0.8rem;
+}
+
+/* ── Badge light green (sous le multi-select) ─ */
+.badge-light-green {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: #dcfce7;
+  color: #166534;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: 1px solid #86efac;
+  border-radius: 6px;
+  padding: 3px 10px;
+}
+
+.badge-light-remove {
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  color: #166534;
+}
+
+.badge-light-remove:hover {
+  color: #dc2626;
+}
+
+.multiselect-count {
+  color: #1e293b;
+  font-size: 0.9rem;
+}
