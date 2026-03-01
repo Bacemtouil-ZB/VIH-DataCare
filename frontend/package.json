@@ -14,10 +14,6 @@
     "bootstrap": "5.3",
     "bootstrap-icons": "^1.13.1",
     "lucide-react": "^0.563.0",
-<<<<<<< HEAD
-    "motion": "^12.34.3",
-=======
->>>>>>> feature/resetPassword
     "react": "18.2.0",
     "react-bootstrap": "^2.10.10",
     "react-dom": "18.2.0",
@@ -25,11 +21,7 @@
     "react-resizable-panels": "^2.1.4",
     "react-router-dom": "^7.13.0",
     "react-toastify": "^11.0.5",
-<<<<<<< HEAD
-    "sweetalert2": "^11.26.18"
-=======
     "sweetalert2": "^11.26.20"
->>>>>>> feature/panel-layout-clinical
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
