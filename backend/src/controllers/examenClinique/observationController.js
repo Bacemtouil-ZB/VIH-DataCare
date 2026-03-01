@@ -2,7 +2,7 @@ import {
   createObservation,
   getObservationsByNumeroDossier,
   updateObservation,
-} from "../services/observationService.js";
+} from "../../services/examenClinique/observationService.js";
 
 export const createObservationController = async (req, res) => {
   try {

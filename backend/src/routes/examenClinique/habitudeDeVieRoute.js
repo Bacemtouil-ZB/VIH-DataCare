@@ -4,11 +4,11 @@ import {
   getHabitudeDeVieController,
   getHabitudeDeVieByNumeroDossierController,
   updateHabitudeDeVieController,
-} from "../controllers/habitudeDeVieController.js";
+} from "../../controllers/examenClinique/habitudeDeVieController.js";
 import {
   protect,
   authorizeMedecin,
-} from "../middlewares/authMiddleware.js";
+} from "../../middlewares/authMiddleware.js";
 
 const router = express.Router();
 

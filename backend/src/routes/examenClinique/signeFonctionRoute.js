@@ -4,11 +4,11 @@ import {
   getSignesByPatientController,
   updateSignesFonctionnelsController,
   getAppareilsController,
-} from "../controllers/signeFonctinController.js";
+} from "../../controllers/examenClinique/signeFonctinController.js";
 import {
   protect,
   authorizeMedecin,
-} from "../middlewares/authMiddleware.js";
+} from "../../middlewares/authMiddleware.js";
 
 const router = express.Router();
 

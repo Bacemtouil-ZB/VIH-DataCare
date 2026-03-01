@@ -5,7 +5,8 @@ import { confirmAction } from "../../../../../shared/utils/uiAlerts";
 import { createSigneClinique, updateSigneClinique, getSigneCliniqueByNumeroDossier } from "../../../services/examenCliniqueServices/signeCliniqueService";
 import { getAppareils } from "../../../services/examenCliniqueServices/signesFonctionService";
 import { calcIMC, UI_INIT, FORM_SC_INIT } from "./examenConfig";
-import { PAGE_BG, LABEL_CLS, STYLES, PageHeader, HistoriqueAccordeon, EmptyState, FormulaireWrapper, AutresSignesSection, BoutonEnregistrer, BtnModifier, Badge, ImcField } from "./ExamenComponents";
+import { PAGE_BG, LABEL_CLS, STYLES, PageHeader,
+   HistoriqueAccordeon, EmptyState, FormulaireWrapper, AutresSignesSection, BoutonEnregistrer, BtnModifier, Badge, ImcField } from "./ExamenComponents";
 
 export default function SignesCliniques() {
   const { numero }   = useParams();

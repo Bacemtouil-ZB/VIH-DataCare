@@ -3,7 +3,7 @@ import {
   getExamensByNumeroDossier as getExamensByNumeroDossierModel,
   updateExamenClinique as updateExamenCliniqueModel,
 
-} from "../models/examenCliniqueModel.js";
+} from "../../models/examenClinique/examenCliniqueModel.js";
 
 export const createExamenClinique = async (examenData, medecinId) => {
 

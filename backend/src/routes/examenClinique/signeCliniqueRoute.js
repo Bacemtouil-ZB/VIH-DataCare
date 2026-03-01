@@ -3,8 +3,8 @@ import {
   createSigneCliniqueController,
   getSigneCliniqueByNumeroDossierController,
   updateSigneCliniqueController,
-} from "../controllers/signeCliniqueController.js";
-import { protect, authorizeMedecin } from "../middlewares/authMiddleware.js";
+} from "../../controllers/examenClinique/signeCliniqueController.js";
+import { protect, authorizeMedecin } from "../../middlewares/authMiddleware.js";
 
 const router = express.Router();
 

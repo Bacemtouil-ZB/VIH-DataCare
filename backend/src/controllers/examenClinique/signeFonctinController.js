@@ -3,7 +3,7 @@ import {
   getSignesByNumeroDossier as getSignesByNumeroService,
   updateSignesFonctionnels as updateSignesService,
   getAppareils,
-} from "../services/signeFonctionService.js";
+} from "../../services/examenClinique/signeFonctionService.js";
 
 
 export const createSignesFonctionnelsController = async (req, res) => {

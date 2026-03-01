@@ -9,11 +9,11 @@ import patientRoutes from "./src/routes/patientRoutes.js";
 import ordonnanceRoute from "./src/routes/ordonnanceRoute.js";
 import patientOrdRoute from "./src/routes/PatientsOrdRoute.js";
 import vihRoute from "./src/routes/vihRoute.js";
-import examenCliniqueRoute from "./src/routes/examenCliniqueRoute.js";
-import signeClinique from "./src/routes/signeCliniqueRoute.js";
-import signeFonctionRoute from "./src/routes/signeFonctionRoute.js";
-import habitude from "./src/routes/habitudeDeVieRoute.js";
-import observations from "./src/routes/observationRoute.js";
+import examenCliniqueRoute from "./src/routes/examenClinique/examenCliniqueRoute.js";
+import signeClinique from "./src/routes/examenClinique/signeCliniqueRoute.js";
+import signeFonctionRoute from "./src/routes/examenClinique/signeFonctionRoute.js";
+import habitude from "./src/routes/examenClinique/habitudeDeVieRoute.js";
+import observations from "./src/routes/examenClinique/observationRoute.js";
 
 
 dotenv.config();

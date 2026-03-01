@@ -2,7 +2,7 @@ import {
   createSigneClinique as createSigneCliniqueService,
   getSigneCliniqueByNumeroDossier as getSigneCliniqueByNumeroDossierService,
   updateSigneClinique as updateSigneCliniqueService,
-} from "../services/signeCliniqueService.js";
+} from "../../services/examenClinique/signeCliniqueService.js";
 
 export const createSigneCliniqueController = async (req, res) => {
   try {

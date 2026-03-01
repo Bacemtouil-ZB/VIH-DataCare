@@ -4,7 +4,8 @@ import { toast } from "react-toastify";
 import { confirmAction, alertSuccess, alertError } from "../../../../../shared/utils/uiAlerts";
 import { createObservation, getObservationsByPatient, updateObservation } from "../../../services/examenCliniqueServices/observationService";
 import { UI_INIT, FORM_OBS_INIT } from "./examenConfig";
-import { PAGE_BG, LABEL_CLS, STYLES, PageHeader, HistoriqueAccordeon, EmptyState, FormulaireWrapper, BoutonEnregistrer, BtnModifier, Spinner } from "./ExamenComponents";
+import { PAGE_BG, LABEL_CLS, STYLES, PageHeader, HistoriqueAccordeon,
+   EmptyState, FormulaireWrapper, BoutonEnregistrer, BtnModifier, Spinner } from "./ExamenComponents";
 
 export default function ObservationPage() {
   const { examenId, patientNumero } = useOutletContext();
@@ -53,7 +54,7 @@ export default function ObservationPage() {
         await createObservation({ examen_clinique_id: examenId, remarque: form.remarque.trim() });
         const res = await getObservationsByPatient(patientNumero);
         setData({ historique: res?.observations || [] });
-        await alertSuccess("Observation enregistrée");
+        toast.success("Observation enregistrée");
       }
       patchUi({ showForm: false }); resetForm();
     } catch (e) { await alertError(typeof e === "string" ? e : e?.message || "Erreur"); }

@@ -6,7 +6,7 @@ import {
   getAutresSignesBySignesFonctionnelsId,
   deleteAutresSignesBySignesFonctionnelsId,
   getAppareils as getAppareilsModel,
-} from "../models/signeFonctionModel.js";
+} from "../../models/examenClinique/signeFonctionModel.js";
 
 export const createSignesFonctionnels = async (data) => {
   const { examen_clinique_id, signes, autres_signes = [] } = data;

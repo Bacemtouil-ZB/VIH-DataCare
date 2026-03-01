@@ -3,7 +3,7 @@ import {
   createObservationController,
   getObservationsByNumeroDossierController,
   updateObservationController,
-} from "../controllers/observationController.js";
+} from "../../controllers/examenClinique/observationController.js";
 
 const router = express.Router();
 

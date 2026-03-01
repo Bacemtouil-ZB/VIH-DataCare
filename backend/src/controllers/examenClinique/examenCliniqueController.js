@@ -1,5 +1,5 @@
-import { createExamenClinique, getExamensByNumeroDossier, updateExamenClinique } from "../models/examenCliniqueModel.js";
-import { getPatientByNumero } from "../models/patientModel.js";
+import { createExamenClinique, getExamensByNumeroDossier, updateExamenClinique } from "../../models/examenClinique/examenCliniqueModel.js";
+import { getPatientByNumero } from "../../models/patientModel.js";
 
 
 export const createExamenCliniqueController = async (req, res) => {

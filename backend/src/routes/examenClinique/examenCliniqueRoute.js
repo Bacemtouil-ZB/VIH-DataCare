@@ -4,12 +4,12 @@ import {
   getExamensByPatientController,
   updateExamenCliniqueController,
 
-} from "../controllers/examenCliniqueControleller.js";
+} from "../../controllers/examenClinique/examenCliniqueController.js";
 
 import {
   protect,
   authorizeMedecin
-} from "../middlewares/authMiddleware.js";
+} from "../../middlewares/authMiddleware.js";
 
 const router = express.Router();
 

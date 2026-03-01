@@ -2,7 +2,7 @@ import {
   createObservation as createObservationModel,
   getObservationsByNumeroDossier as getObservationsByNumeroModel,
   updateObservation as updateObservationModel,
-} from "../models/observationModel.js";
+} from "../../models/examenClinique/observationModel.js";
 
 export const createObservation = async (data) => {
   const { examen_clinique_id, remarque } = data;

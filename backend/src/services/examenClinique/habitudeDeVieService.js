@@ -3,17 +3,9 @@ import {
   getHabitudeDeVieById as getHabitudeDeVieByIdModel,
   getHabitudeDeVieByNumeroDossier as getHabitudeDeVieByNumeroDossierModel,
   updateHabitudeDeVie as updateHabitudeDeVieModel,
-} from "../models/habitudeDeVieModel.js";
+} from "../../models/examenClinique/habitudeDeVieModel.js";
 
-/**
- * ==========================================
- * SERVICE HABITUDES DE VIE - BACKEND
- * ==========================================
- */
 
-/**
- * Créer des habitudes de vie
- */
 export const createHabitudeDeVie = async (habitudeData, userId) => {
   const habitude = await createHabitudeDeVieModel(habitudeData, userId);
   return habitude;

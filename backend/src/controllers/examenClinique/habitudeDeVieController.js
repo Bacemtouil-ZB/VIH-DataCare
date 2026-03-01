@@ -3,7 +3,7 @@ import {
   getHabitudeDeVieById as getHabitudeDeVieByIdService,
   getHabitudeDeVieByNumeroDossier as getHabitudeDeVieByNumeroDossierService,
   updateHabitudeDeVie as updateHabitudeDeVieService,
-} from "../services/habitudeDeVieService.js";
+} from "../../services/examenClinique/habitudeDeVieService.js";
 
 
 export const createHabitudeDeVieController = async (req, res) => {

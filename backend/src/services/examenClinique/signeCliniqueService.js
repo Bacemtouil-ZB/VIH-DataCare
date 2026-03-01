@@ -6,7 +6,7 @@ import {
   getAutresSignesBySigneCliniqueId,  
     deleteAutresSignesBySigneCliniqueId,
   
-} from "../models/signeCliniqueModel.js";
+} from "../../models/examenClinique/signeCliniqueModel.js";
 
 const calculateIMC = (taille, poids) => {
   if (!taille || !poids) return null;
