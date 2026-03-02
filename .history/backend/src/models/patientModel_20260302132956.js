@@ -67,13 +67,99 @@ export const createPatient = async (client, patientData, userId) => {
 
 // --------------------- UPDATE ---------------------
 
+// export const updatePatient = async (id, patientData, updatedBy) => {
+//   const client = await pool.connect();
+
+//   try {
+//     await client.query("BEGIN"); // Début transaction
+
+//     const {
+//       numero,
+//       name,
+//       surname,
+//       birthdate,
+//       gender,
+//       birth_address_id,
+//       residence_address_id,
+//       birth_postal_code_id,
+//       residence_postal_code_id,
+//       phone,
+//       hospitalisation,
+//       last_visit_date,
+//       remarks,
+//       doctor_id,
+//     } = patientData;
+
+//     // 1️⃣ Mettre à jour les adresses si le code postal a changé
+//     if (birth_address_id && birth_postal_code_id) {
+//       await updateAddress(client, birth_address_id, birth_postal_code_id);
+//     }
+
+//     if (residence_address_id && residence_postal_code_id) {
+//       await updateAddress(
+//         client,
+//         residence_address_id,
+//         residence_postal_code_id,
+//       );
+//     }
+
+//     // 2️⃣ Mettre à jour le patient
+//     const result = await client.query(
+//       `
+//       UPDATE patients
+//       SET
+//         numero = COALESCE($1, numero),
+//         name = COALESCE($2, name),
+//         surname = COALESCE($3, surname),
+//         birthdate = COALESCE($4, birthdate),
+//         gender = COALESCE($5, gender),
+//         phone = COALESCE($6, phone),
+//         hospitalisation = COALESCE($7, hospitalisation),
+//         last_visit_date = COALESCE($8, last_visit_date),
+//         remarks = COALESCE($9, remarks),
+//         doctor_id = COALESCE($10, doctor_id),
+//         updated_by = $11,
+//         updated_at = NOW()
+//       WHERE id = $12
+//       RETURNING *;
+//       `,
+//       [
+//         numero,
+//         name,
+//         surname,
+//         birthdate,
+//         gender,
+//         phone,
+//         hospitalisation,
+//         last_visit_date || null,
+//         remarks || null,
+//         doctor_id || null,
+//         updatedBy,
+//         id,
+//       ],
+//     );
+
+//     if (result.rows.length === 0) {
+//       throw new Error("Patient non trouvé.");
+//     }
+
+//     await client.query("COMMIT"); // Tout est ok → commit
+//     return result.rows[0];
+//   } catch (err) {
+//     await client.query("ROLLBACK"); // Annule tout en cas d'erreur
+//     throw err;
+//   } finally {
+//     client.release();
+//   }
+// };
+
 export const updatePatient = async (id, patientData, updatedBy) => {
   const client = await pool.connect();
 
   try {
-    await client.query("BEGIN"); // Début transaction
+    await client.query("BEGIN");
 
-    const {
+    let {
       numero,
       name,
       surname,
@@ -90,7 +176,20 @@ export const updatePatient = async (id, patientData, updatedBy) => {
       doctor_id,
     } = patientData;
 
-    // 1️ Mettre à jour les adresses si le code postal a changé
+    // 🔹 Ajuster le numero selon hospitalisation
+    let numeroFinal = numero;
+
+    if (numeroFinal) {
+      if (hospitalisation === "externe" && !numeroFinal.startsWith("F-")) {
+        numeroFinal = `F-${numeroFinal}`;
+      }
+
+      if (hospitalisation === "interne") {
+        numeroFinal = numeroFinal.replace(/^F-/, "");
+      }
+    }
+
+    // 1️⃣ Mettre à jour les adresses
     if (birth_address_id && birth_postal_code_id) {
       await updateAddress(client, birth_address_id, birth_postal_code_id);
     }
@@ -103,7 +202,7 @@ export const updatePatient = async (id, patientData, updatedBy) => {
       );
     }
 
-    // 2️ Mettre à jour le patient
+    // 2️⃣ Mettre à jour le patient
     const result = await client.query(
       `
       UPDATE patients
@@ -124,7 +223,7 @@ export const updatePatient = async (id, patientData, updatedBy) => {
       RETURNING *;
       `,
       [
-        numero,
+        numeroFinal,
         name,
         surname,
         birthdate,
@@ -143,10 +242,10 @@ export const updatePatient = async (id, patientData, updatedBy) => {
       throw new Error("Patient non trouvé.");
     }
 
-    await client.query("COMMIT"); // Tout est ok → commit
+    await client.query("COMMIT");
     return result.rows[0];
   } catch (err) {
-    await client.query("ROLLBACK"); // Annule tout en cas d'erreur
+    await client.query("ROLLBACK");
     throw err;
   } finally {
     client.release();
@@ -264,7 +363,7 @@ export const getAllPatients = async (options = {}) => {
 export const checkNumeroExists = async (numero) => {
   const query = `SELECT COUNT(*) as count FROM patients WHERE numero = $1`;
   const result = await pool.query(query, [numero]);
-  return parseInt(result.rows[0].count, 10) > 0;
+  return parseInt(result.rows[0].count) > 0;
 };
 
 // --------------------- COUNT ---------------------

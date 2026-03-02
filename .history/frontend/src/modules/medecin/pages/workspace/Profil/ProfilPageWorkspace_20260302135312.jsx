@@ -126,7 +126,13 @@ export default function ProfilPageWorkspace() {
 
       if (isNew) {
         const response = await createPatient(formData);
-       
+       // ⚡ Mettre à jour l'ID dans le state pour pouvoir éditer ensuite
+  setFormData((prev) => ({
+    ...prev,
+    id: response.patient.id,
+  }));
+
+  console.log("Update ID after creation:", response.patient.id)
         toast.success("Patient créé avec succès");
         navigate(`/medecin/patient/${response.patient.numero}/workspace/profil`);
       } else {

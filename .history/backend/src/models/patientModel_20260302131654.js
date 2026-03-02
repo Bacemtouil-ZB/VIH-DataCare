@@ -90,7 +90,7 @@ export const updatePatient = async (id, patientData, updatedBy) => {
       doctor_id,
     } = patientData;
 
-    // 1️ Mettre à jour les adresses si le code postal a changé
+    // 1️⃣ Mettre à jour les adresses si le code postal a changé
     if (birth_address_id && birth_postal_code_id) {
       await updateAddress(client, birth_address_id, birth_postal_code_id);
     }
@@ -103,7 +103,7 @@ export const updatePatient = async (id, patientData, updatedBy) => {
       );
     }
 
-    // 2️ Mettre à jour le patient
+    // 2️⃣ Mettre à jour le patient
     const result = await client.query(
       `
       UPDATE patients
@@ -264,7 +264,7 @@ export const getAllPatients = async (options = {}) => {
 export const checkNumeroExists = async (numero) => {
   const query = `SELECT COUNT(*) as count FROM patients WHERE numero = $1`;
   const result = await pool.query(query, [numero]);
-  return parseInt(result.rows[0].count, 10) > 0;
+  return parseInt(result.rows[0].count) > 0;
 };
 
 // --------------------- COUNT ---------------------

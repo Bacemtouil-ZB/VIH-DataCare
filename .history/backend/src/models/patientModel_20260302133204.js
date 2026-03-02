@@ -264,7 +264,7 @@ export const getAllPatients = async (options = {}) => {
 export const checkNumeroExists = async (numero) => {
   const query = `SELECT COUNT(*) as count FROM patients WHERE numero = $1`;
   const result = await pool.query(query, [numero]);
-  return parseInt(result.rows[0].count, 10) > 0;
+  return parseInt(result.rows[0].count) > 0;
 };
 
 // --------------------- COUNT ---------------------

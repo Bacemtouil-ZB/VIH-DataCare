@@ -113,3 +113,19 @@ export const updatePatient = async (id, patientData, userId) => {
 
   return await updatePatientModel(id, data, userId);
 };
+// export const searchPatient = async (searchParams) => {
+//   return await searchPatientsModel(searchParams);
+// };
+
+// export const updatePatientLastVisit = async (id) => {
+//   const patient = await getPatientByIdModel(id);
+//   if (!patient) {
+//     throw new Error("Patient non trouvé");
+//   }
+
+//   return await updateLastVisitDate(id);
+// };
+
+// export const getNextPatientNumero = async () => {
+//   return await getNextPatientNumeroModel();
+// };

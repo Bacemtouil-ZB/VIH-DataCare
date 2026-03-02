@@ -126,7 +126,6 @@ export default function ProfilPageWorkspace() {
 
       if (isNew) {
         const response = await createPatient(formData);
-       
         toast.success("Patient créé avec succès");
         navigate(`/medecin/patient/${response.patient.numero}/workspace/profil`);
       } else {
