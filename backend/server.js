@@ -13,7 +13,11 @@ import vihRoute from "./src/routes/vihRoute.js";
 import socialRoutes from "./src/routes/socialRoute.js";
 import vih from "./src/routes/vihRoute.js";
 import antecedentRoutes from "./src/routes/antecedentRoutes.js";
-
+import examenCliniqueRoute from "./src/routes/examenClinique/examenCliniqueRoute.js";
+import signeClinique from "./src/routes/examenClinique/signeCliniqueRoute.js";
+import signeFonctionRoute from "./src/routes/examenClinique/signeFonctionRoute.js";
+import habitude from "./src/routes/examenClinique/habitudeDeVieRoute.js";
+import observations from "./src/routes/examenClinique/observationRoute.js";
 dotenv.config();
 const app = express();
 app.use(express.json());
@@ -38,6 +42,12 @@ app.use("/api/social", socialRoutes);
 app.use("/api/addresses", addressRoutes);
 app.use("/api/vih", vih);
 app.use("/api/antecedents", antecedentRoutes);
+app.use("/api/examen-clinique", examenCliniqueRoute);
+app.use("/api/signesFonctionnels", signeFonctionRoute);
+app.use("/api/signesCliniques", signeClinique);
+app.use("/api/habitudes", habitude);
+app.use("/api/observations", observations);
+
 
 // Route racine test
 app.get("/", (req, res) => {
