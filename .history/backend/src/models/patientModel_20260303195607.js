@@ -1,3 +1,4 @@
+import { act } from "react";
 import pool from "../config/db.js";
 import { createAddress, updateAddress } from "./addresseModel.js";
 
@@ -131,7 +132,7 @@ export const updatePatient = async (id, patientData, updatedBy) => {
         gender,
         phone,
         hospitalisation,
-        status || "actif",
+        status || null,
         remarks || null,
         doctor_id || null,
         updatedBy,

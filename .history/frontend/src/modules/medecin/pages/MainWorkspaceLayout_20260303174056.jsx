@@ -28,9 +28,9 @@ export default function MainWorkspaceLayout() {
         {/* LEFT PANEL */}
         <Panel
           ref={leftRef}
-          defaultSize={20}
+          defaultSize={18}
           minSize={0}
-          maxSize={20}
+          maxSize={18}
           collapsible
           onCollapse={() => setLeftClosed(true)}
           onExpand={() => setLeftClosed(false)}
@@ -66,7 +66,7 @@ export default function MainWorkspaceLayout() {
         {/* RIGHT PANEL */}
         <Panel
           ref={rightRef}
-          defaultSize={18}
+          defaultSize={25}
           minSize={0}
           maxSize={18}
           collapsible
