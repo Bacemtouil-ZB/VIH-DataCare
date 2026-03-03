@@ -1,4 +1,5 @@
 import React from "react";
+import "./SocialForm.css";
 
 export default function ToggleSwitch({
   id,
