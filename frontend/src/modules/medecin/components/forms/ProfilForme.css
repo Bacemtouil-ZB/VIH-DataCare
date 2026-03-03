@@ -1,4 +1,9 @@
-/* ===== Card Container ===== */
+.medical-page {
+  padding: 24px;
+  background: #f3f4f6;
+  min-height: 100vh;
+}
+
 .form-card {
   background: #ffffff;
   padding: 32px;
@@ -34,41 +39,56 @@
   color: #344054;
 }
 
-/* ===== Inputs / Select / Textarea ===== */
+/* ========================= */
+/* INPUTS */
+/* ========================= */
+
 .form-group input,
-.form-group select,
-.form-group textarea {
-  padding: 10px 14px;
-  border-radius: 8px;
-  border: 1px solid #d0d5dd;
-  font-size: 14px;
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  height: 38px;              /* hauteur réduite */
+  padding: 6px 10px;         /* padding réduit */
+  border: 1px solid #d1d5db;
+  border-radius: 6px;        /* légèrement plus petit */
+  font-size: 13px;           /* texte un peu plus petit */
+  background: #ffffff;
   transition: all 0.2s ease;
-  background-color: #f9fafb;
+  box-sizing: border-box;
 }
 
-/* Focus Effect */
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: #2563eb;
-  background-color: #ffffff;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+
+.form-group textarea {
+  min-height: 80px;          /* plus compact */
+  padding: 8px 10px;
 }
 
-/* Disabled state */
-.form-group input:disabled,
-.form-group select:disabled,
-.form-group textarea:disabled {
-  background-color: #f2f4f7;
-  color: #667085;
-  cursor: not-allowed;
+.form-group label {
+  font-size: 12px;           /* label plus petit */
+  margin-bottom: 4px;
 }
-
 /* ===== Textarea ===== */
 textarea {
   min-height: 90px;
   resize: vertical;
+}
+.form-card .form-group input,
+.form-card .form-group select {
+  height: 36px !important;
+  padding: 5px 10px !important;
+  font-size: 13px !important;
+  border-radius: 6px !important;
+}
+
+.form-card .form-group textarea {
+  min-height: 70px !important;
+  font-size: 13px !important;
+  padding: 6px 10px !important;
+}
+
+.form-card .form-group label {
+  font-size: 12px !important;
+  margin-bottom: 4px !important;
 }
 
 /* ===== Radio Group ===== */
@@ -107,17 +127,16 @@ button.cancel-btn {
   border: none;
   transition: all 0.2s ease;
 }
+/* Save / Add full width */
+
 
 /* Edit */
 button.edit-btn {
   background-color: #667085;
-  color: #000000;
-}
-
-button.edit-btn:hover {
-  background-color: #043b08;
   color: white;
 }
+
+
 
 /* Save */
 button.save-btn {
@@ -132,7 +151,7 @@ button.save-btn:hover {
 /* Cancel */
 button.cancel-btn {
   background-color: #e5e7eb;
-  color: #344054;
+  color: #ffffff;
 }
 
 button.cancel-btn:hover {

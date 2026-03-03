@@ -21,7 +21,7 @@ CREATE TABLE patients (
   hospitalisation VARCHAR(20) NOT NULL
       CHECK (hospitalisation IN ('interne', 'externe')),
 
-  last_visit_date TIMESTAMP,
+  status VARCHAR(100),
 
   remarks TEXT,
 

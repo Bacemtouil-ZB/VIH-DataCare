@@ -1,5 +1,10 @@
 import "./ProfilForme.css";
 import { toast } from "react-toastify";
+
+const FieldLabel = ({ children }) => (
+  <label className="form-label fw-bold text-uppercase text-secondary mb-1" style={{ fontSize: "0.7rem" }}>{children}</label>
+);
+
 export default function ProfilForm({
   formData,
   setFormData,
@@ -48,7 +53,7 @@ const filteredResidencePostalCodes = postalCodes.filter(
 
         {/* Numéro dossier */}
         <div className="form-group">
-          <label>Numéro dossier</label>
+          <FieldLabel>Numéro dossier</FieldLabel>
           <input
             name="numero"
             value={formData.numero || ""}
@@ -94,7 +99,7 @@ const filteredResidencePostalCodes = postalCodes.filter(
         <div className="form-group">
 
           {/* Hospitalisation */}
-          <label>Hospitalisation</label>
+          <FieldLabel>Hospitalisation</FieldLabel>
           <select
             name="hospitalisation"
             value={formData.hospitalisation || "interne"}
@@ -124,7 +129,7 @@ const filteredResidencePostalCodes = postalCodes.filter(
 
         {/* Nom */}
         <div className="form-group">
-          <label>Nom</label>
+          <FieldLabel>Nom</FieldLabel>
           <input
             name="name"
             value={formData.name || ""}
@@ -137,7 +142,7 @@ const filteredResidencePostalCodes = postalCodes.filter(
 
         {/* Prénom */}
         <div className="form-group">
-          <label>Prénom</label>
+          <FieldLabel>Prénom</FieldLabel>
           <input
             name="surname"
             value={formData.surname || ""}
@@ -150,7 +155,7 @@ const filteredResidencePostalCodes = postalCodes.filter(
 
         {/* Date naissance */}
         <div className="form-group">
-          <label>Date de naissance</label>
+          <FieldLabel>Date de naissance</FieldLabel>
           <input
             type="date"
             name="birthdate"
@@ -164,7 +169,7 @@ const filteredResidencePostalCodes = postalCodes.filter(
 
         {/* Sexe */}
         <div className="form-group">
-          <label>Sexe</label>
+          <FieldLabel>Sexe</FieldLabel>
           <div className="radio-group">
             <label>
               <input
@@ -195,7 +200,7 @@ const filteredResidencePostalCodes = postalCodes.filter(
 
         {/* Téléphone */}
         <div className="form-group">
-          <label>Téléphone</label>
+          <FieldLabel>Téléphone</FieldLabel>
           <input
             name="phone"
             value={formData.phone || ""}
@@ -208,7 +213,7 @@ const filteredResidencePostalCodes = postalCodes.filter(
 
         {/* Gouvernorat naissance */}
         <div className="form-group">
-          <label>Gouvernorat naissance</label>
+          <FieldLabel>Gouvernorat naissance</FieldLabel>
           <select
             name="birth_governorate"
             value={formData.birth_governorate || ""}
@@ -224,7 +229,7 @@ const filteredResidencePostalCodes = postalCodes.filter(
 
         {/* Code postal naissance */}
         <div className="form-group">
-          <label>Code postal naissance</label>
+          <FieldLabel>Code postal naissance</FieldLabel>
           <select
             name="birth_postal_code_id"
             value={formData.birth_postal_code_id || ""}
@@ -242,7 +247,7 @@ const filteredResidencePostalCodes = postalCodes.filter(
 
         {/* Gouvernorat résidence */}
         <div className="form-group">
-          <label>Gouvernorat résidence</label>
+          <FieldLabel>Gouvernorat résidence</FieldLabel>
           <select
             name="residence_governorate"
             value={formData.residence_governorate || ""}
@@ -259,7 +264,7 @@ const filteredResidencePostalCodes = postalCodes.filter(
 
         {/* Code postal résidence */}
         <div className="form-group">
-          <label>Code postal résidence</label>
+          <FieldLabel>Code postal résidence</FieldLabel>
           <select
             name="residence_postal_code_id"
             value={formData.residence_postal_code_id || ""}
@@ -278,7 +283,7 @@ const filteredResidencePostalCodes = postalCodes.filter(
 
         {/* Médecin */}
         <div className="form-group">
-          <label>Médecin traitant</label>
+          <FieldLabel>Médecin traitant</FieldLabel>
           <select
             name="doctor_id"
             value={formData.doctor_id || ""}
@@ -296,7 +301,7 @@ const filteredResidencePostalCodes = postalCodes.filter(
 
         {/* Remarques */}
         <div className="form-group full-width">
-          <label>Remarques</label>
+          <FieldLabel>Remarques</FieldLabel>
           <textarea
             name="remarks"
             value={formData.remarks || ""}

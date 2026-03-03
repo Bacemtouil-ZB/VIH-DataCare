@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import { getAllPatients } from "../../../shared/services/patientService";
+import { getAllPatients} from "../../../shared/services/patientService";
+import {  getAllDoctors } from "../services/patientServices";
+
 import "./PatientsPage.css";
 
 export default function PatientsPage() {
@@ -8,12 +10,16 @@ export default function PatientsPage() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("");
   const [loading, setLoading] = useState(true);
+  const [doctors, setDoctors] = useState({});
 
   useEffect(() => {
     const fetchPatients = async () => {
       try {
-        const response = await getAllPatients();
+        const [response, docs] = await Promise.all([getAllPatients(), getAllDoctors()]);
         setPatients(response.patients || response || []);
+        const map = {};
+        (docs || []).forEach(d => { map[d.id] = `Dr. ${d.nom} ${d.prenom}`; });
+        setDoctors(map);
       } catch (error) {
         console.error("Erreur chargement patients:", error);
         setPatients([]);
@@ -84,11 +90,10 @@ export default function PatientsPage() {
                 <th>Dossier</th>
                 <th>Patient</th>
                 <th>Date naissance</th>
-                <th>Médecin</th>
+                <th>Médecin Traitant</th>
                 <th>Dernière consultation</th>
                 <th>Traitement</th>
                 <th>Statut</th>
-                <th>Créé par</th>
               </tr>
             </thead>
 
@@ -133,7 +138,7 @@ export default function PatientsPage() {
 
                     {/* MEDECIN */}
                     <td>
-                      {patient.doctor_id ? `Dr #${patient.doctor_id}` : "-"}
+                      {doctors[patient.doctor_id] || "-"}
                     </td>
 
                     {/* DERNIERE CONSULTATION */}
@@ -155,14 +160,9 @@ export default function PatientsPage() {
                             : "badge success"
                         }
                       >
-                        {patient.hospitalisation === "interne"
-                          ? "Hospitalisé"
-                          : "Ambulatoire"}
+                        {patient.hospitalisation }
                       </span>
                     </td>
-
-                    {/* CREE PAR */}
-                    <td>{patient.created_by || "-"}</td>
                   </tr>
                 ))
               )}

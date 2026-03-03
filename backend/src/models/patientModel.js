@@ -14,7 +14,7 @@ export const createPatient = async (client, patientData, userId) => {
     residence_postal_code_id,
     phone,
     hospitalisation,
-    last_visit_date,
+   status,
     remarks,
     doctor_id,
   } = patientData;
@@ -38,7 +38,7 @@ export const createPatient = async (client, patientData, userId) => {
       INSERT INTO patients (
         numero, name, surname, birthdate, gender,
         birth_address_id, residence_address_id,
-        phone, hospitalisation, last_visit_date,remarks, doctor_id,
+        phone, hospitalisation, status,remarks, doctor_id,
         created_by, updated_by
       )
       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
@@ -54,7 +54,7 @@ export const createPatient = async (client, patientData, userId) => {
       residence_address_id,
       phone,
       hospitalisation,
-      last_visit_date || null,
+      status || null,
       remarks || null,
       doctor_id || null,
       userId,
@@ -85,7 +85,7 @@ export const updatePatient = async (id, patientData, updatedBy) => {
       residence_postal_code_id,
       phone,
       hospitalisation,
-      last_visit_date,
+      status,
       remarks,
       doctor_id,
     } = patientData;
@@ -115,7 +115,7 @@ export const updatePatient = async (id, patientData, updatedBy) => {
         gender = COALESCE($5, gender),
         phone = COALESCE($6, phone),
         hospitalisation = COALESCE($7, hospitalisation),
-        last_visit_date = COALESCE($8, last_visit_date),
+        status = COALESCE($8, status),
         remarks = COALESCE($9, remarks),
         doctor_id = COALESCE($10, doctor_id),
         updated_by = $11,
@@ -131,7 +131,7 @@ export const updatePatient = async (id, patientData, updatedBy) => {
         gender,
         phone,
         hospitalisation,
-        last_visit_date || null,
+        status || null,
         remarks || null,
         doctor_id || null,
         updatedBy,

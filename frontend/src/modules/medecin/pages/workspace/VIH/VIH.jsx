@@ -110,38 +110,17 @@ export default function VihPage() {
     );
   }
 
-  if (!state.patientId) {
-    return (
-      <div className="medical-page">
-        <div className="alert alert-error">Patient non trouvé (Numéro : {numero})</div>
-        <button onClick={() => navigate(-1)} className="btn-secondary">← Retour</button>
-      </div>
-    );
-  }
-
   return (
     <div className="medical-page">
       <div className="page-header">
-        <div><h2>Fiche VIH du patient</h2></div>
-        <div className="header-actions">
-          {state.vihData && !state.isEditMode && (
-            <button onClick={handleEdit} className="btn-primary">Modifier</button>
-          )}
-          {state.vihData && state.isEditMode && (
-            <button onClick={handleCancel} className="btn-secondary" disabled={state.isLoading}>Annuler</button>
-          )}
-        </div>
+        <h2>Fiche VIH du patient</h2>
       </div>
-
-      {!state.vihData && (
-        <div className="alert alert-info">
-          Aucune fiche VIH trouvée pour ce patient. Créez-en une nouvelle ci-dessous.
-        </div>
-      )}
 
       <VihForm
         initialData={state.vihData}
         onSubmit={handleSubmit}
+        onEdit={handleEdit}
+        onCancel={handleCancel}
         isLoading={state.isLoading}
         errors={state.errors}
         isEditMode={state.isEditMode}

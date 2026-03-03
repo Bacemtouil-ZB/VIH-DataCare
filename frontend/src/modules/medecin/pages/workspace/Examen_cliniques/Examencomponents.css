@@ -1,23 +1,12 @@
-/* =====================================================================
-   ExamenComponents.css
-   Contient :
-     - Classes utilitaires équivalentes à PAGE_BG, STYLES, LABEL_CLS
-     - Styles des composants JSX
-   ===================================================================== */
 
 /* ── Variables ──────────────────────────────────────────────────────── */
 :root {
   --ec-green:       #2e7d52;
   --ec-green-light: #f0fdf4;
   --ec-green-border:#86efac;
-  --ec-blue:        #3e617e;
   --ec-slate:       #e2e8f0;
 }
 
-/* =====================================================================
-   SECTION A — Équivalents de PAGE_BG / LABEL_CLS / STYLES
-   Utilisables via className dans n'importe quelle page
-   ===================================================================== */
 
 /* PAGE_BG */
 .ec-page-bg {
@@ -210,8 +199,8 @@
 
 /* ── 2. HistoriqueAccordeon ────────────────────────────────────────── */
 .ec-accordeon-header {
-  background: var(--ec-blue);
-  color: white;
+  background:white;
+  color: #6e6d6d;
   cursor: pointer;
   user-select: none;
 }
@@ -227,8 +216,8 @@
 
 /* ── 2b. SectionHeader ─────────────────────────────────────────────── */
 .ec-section-header {
-  background: var(--ec-blue);
-  color: white;
+  background: white;
+  color: #6e6d6d;
   user-select: none;
 }
 
@@ -424,6 +413,6 @@
 /* ── 14. AutresSignesHistorique ────────────────────────────────────── */
 .ec-histo-desc {
   font-size: 0.875rem;
-  color: #1e293b;
+  color: #ffffff;
   line-height: 1.4;
 }

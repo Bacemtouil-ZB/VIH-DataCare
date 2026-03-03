@@ -9,7 +9,6 @@ export const createPatient = async (patientData) => {
   }
 };
 
-
 export const getPatientByNumero = async (numero) => {
   try {
     const response = await API.get(`/patients/numero/${numero}`);

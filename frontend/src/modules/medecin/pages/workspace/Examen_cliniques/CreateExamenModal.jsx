@@ -26,8 +26,6 @@ const CreateExamenModal = ({ show, onHide, onExamenCreated, patientNumero }) => 
       });
 
       if (response.success && response.examen) {
-        // ✅ toast pour succès — rapide, non bloquant
-        toast.success("Examen clinique créé avec succès");
         onExamenCreated(response.examen);
         onHide();
       } else {

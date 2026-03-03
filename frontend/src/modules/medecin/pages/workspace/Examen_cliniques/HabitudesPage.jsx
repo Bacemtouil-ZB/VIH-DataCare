@@ -5,7 +5,7 @@ import { confirmAction } from "../../../../../shared/utils/uiAlerts";
 import { createHabitudeDeVie, getHabitudeDeVieByNumeroDossier, updateHabitudeDeVie } from "../../../services/examenCliniqueServices/habitudeDeVieService";
 import ToggleSwitch from "../../../components/buttons/Toggleswitch";
 import { HABITUDES_CHAMPS, HABITUDES_INIT } from "./examenConfig";
-import { PAGE_BG, STYLES, PageHeader, SectionHeader, BoutonSauvegarder, Spinner } from "./ExamenComponents";
+import { PAGE_BG, STYLES, PageHeader, BoutonSauvegarder, Spinner } from "./ExamenComponents";
 
 export default function HabitudesPage() {
   const { examenId, patientNumero } = useOutletContext();
@@ -68,13 +68,24 @@ export default function HabitudesPage() {
           <BoutonSauvegarder saving={ui.saving} isModifying={!!form.habitudeId} onClick={handleSave} />
         }
       />
- <SectionHeader title="Habitudes de vie" />
-      {/* Contenu */}
-      <div className="bg-white border border-top-0 rounded-bottom p-3 mb-4">
-        <div className="row g-4">
+
+      {/* Bloc blanc avec titre à l'intérieur */}
+      <div className="bg-white border rounded p-3 mb-4">
+        {/* Titre Habitudes de vie - SANS BORDURE */}
+        <h6 className="mb-3" style={{ 
+          color: "#6e6d6d", 
+          fontWeight: 700, 
+          fontSize: "0.95rem", 
+          paddingBottom: 10,
+        }}>
+          Habitudes de vie
+        </h6>
+
+        {/* Contenu avec 3 TOGGLES PAR LIGNE */}
+        <div className="row g-3">
           {HABITUDES_CHAMPS.map(({ key, label }) => (
-            <div key={key} className="col-md-6">
-              <div className="border rounded p-3 d-flex align-items-center justify-content-between"
+            <div key={key} className="col-md-4">
+              <div className="border rounded p-2 d-flex align-items-center justify-content-between"
                 style={STYLES.habCard}>
                 <span className="fw-semibold" style={STYLES.habLabel}>{label}</span>
                 <ToggleSwitch value={form[key]} onChange={(val) => patchForm({ [key]: val })} />

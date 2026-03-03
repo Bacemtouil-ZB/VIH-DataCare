@@ -2,8 +2,6 @@ import { useState } from "react";
 import "./ExamenComponents.css";
 
 // ── Exports de compatibilité ──────────────────────────────────────────────────
-// Gardés pour ne pas casser les imports dans HabitudesPage, ObservationPage, etc.
-// Les nouvelles pages peuvent utiliser directement les classes CSS équivalentes.
 export const LABEL_CLS = "text-uppercase fw-semibold text-secondary d-block mb-1";
 export const PAGE_BG   = { background: "#f5f6fa", padding: 24, minHeight: "100%" };
 export const STYLES    = {
@@ -102,10 +100,9 @@ export function EmptyState({ message }) {
 // ── 4. Wrapper formulaire ─────────────────────────────────────────────────────
 // color est calculé dynamiquement → style inline conservé
 export function FormulaireWrapper({ isModifying, labelCreate, labelModify, children }) {
-  const color = isModifying ? "#3e617e" : "#2e7d52";
   return (
     <div className="rounded overflow-hidden" style={{background: "white" }}>
-      <div className="px-4 py-3 d-flex align-items-center gap-2 text-white" style={{ background: color }}>
+<div className="px-4 py-3 d-flex align-items-center gap-2" style={{ background: "white", color: "#3C617E" }}>
         <i className={`bi ${isModifying ? "bi-pencil-square" : "bi-plus-circle"}`}></i>
         <span className="ec-form-label">{isModifying ? labelModify : labelCreate}</span>
       </div>
@@ -218,13 +215,11 @@ export function AutresSignesSection({ title = "Autres signes", appareils, autres
 // ── 6. Bouton Enregistrer pleine largeur ──────────────────────────────────────
 // background et opacity dynamiques → style inline conservé
 export function BoutonEnregistrer({ isModifying, loading, onClick }) {
-  const color = isModifying ? "#3e617e" : "#2e7d52";
   return (
-    <div className="pt-3 mt-3 border-top">
+  <div className="rounded overflow-hidden" style={{ border: "1px solid #dee2e6", background: "#2e7d52 " }}>
       <button
         className="btn w-100 fw-bold text-white ec-btn-enregistrer"
         disabled={loading}
-        style={{ background: color, opacity: loading ? 0.75 : 1 }}
         onClick={onClick}>
         {loading
           ? <><span className="spinner-border spinner-border-sm me-2"></span>Enregistrement...</>

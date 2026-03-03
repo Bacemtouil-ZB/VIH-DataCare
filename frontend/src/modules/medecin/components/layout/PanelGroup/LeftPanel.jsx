@@ -11,8 +11,6 @@ export default function LeftPanel() {
   const [derniersPrises, setDerniersPrises] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
-  const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
 
 
@@ -84,17 +82,15 @@ export default function LeftPanel() {
     return `${prenom.charAt(0)}${nom.charAt(0)}`.toUpperCase();
   };
 
-  const getStatutBadgeClass = (statut) => {
-    switch (statut?.toLowerCase()) {
+  const getStatutBadgeClass = (status) => {
+    switch (status?.toLowerCase()) {
       case 'en cours de suivi':
       case 'actif':
         return 'badge-active';
       case 'perdu de vue':
-        return 'badge-warning';
+        return 'badge-danger';
       case 'en fin de suivi':
         return 'badge-info';
-      case 'décédé':
-        return 'badge-danger';
       default:
         return 'badge-neutral';
     }
@@ -164,10 +160,7 @@ export default function LeftPanel() {
               {getInitials(patientData.name, patientData.surname)}
             </div>
           )}
-          
-          <label htmlFor="photo-upload" className="upload-photo-btn">
-             {imagePreview ? 'Changer' : 'Ajouter'} photo
-          </label>
+
           <input
             id="photo-upload"
             type="file"
@@ -203,15 +196,15 @@ export default function LeftPanel() {
 
         <div className="info-row">
           <span>Hospitalisation</span>
-          <span className={patientData.hospitalisation === 'Oui' ? 'badge-warning' : 'badge-neutral'}>
-            {patientData.hospitalisation || 'Non'}
+          <span className={patientData.hospitalisation === 'interne' ? 'badge-danger' : 'badge-active'}>
+            {patientData.hospitalisation}
           </span>
         </div>
 
         <div className="info-row">
           <span>Statut</span>
-          <span className={getStatutBadgeClass(patientData.statut)}>
-            {patientData.statut || 'Actif'}
+          <span className={getStatutBadgeClass(patientData.status)}>
+            {patientData.status || 'Actif'}
           </span>
         </div>
       </div>
@@ -238,11 +231,6 @@ export default function LeftPanel() {
         </div>
       )}
 
-      <div className="patient-status">
-        <span className={getStatutBadgeClass(patientData.statut)}>
-          {patientData.statut || 'Statut inconnu'}
-        </span>
-      </div>
     </div>
   );
 }

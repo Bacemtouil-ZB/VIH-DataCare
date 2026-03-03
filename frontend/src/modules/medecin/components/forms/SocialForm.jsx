@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./SocialForm.css";
+import ToggleSwitch from "./ToggleSwitch";
 
 export default function SocialForm({
   formData,
@@ -27,6 +28,9 @@ export default function SocialForm({
     setIsEditing(false);
     if (onCancel) onCancel();
   };
+const FieldLabel = ({ children }) => (
+  <label className="form-label fw-bold text-uppercase text-secondary mb-1" style={{ fontSize: "0.7rem" }}>{children}</label>
+);
 
   return (
     <div className="form-card">
@@ -41,7 +45,7 @@ export default function SocialForm({
         {/* Famille */}
         <h3>Famille</h3>
         <div className="form-group">
-          <label>Situation familiale</label>
+          <FieldLabel>Situation familiale</FieldLabel>
           <select
             name="situation_social"
             value={localFormData.situation_social}
@@ -57,7 +61,7 @@ export default function SocialForm({
         </div>
 
         <div className="form-group">
-          <label>Nombre d'enfants</label>
+          <FieldLabel>Nombre d'enfants</FieldLabel>
           <input
             type="number"
             name="nombre_enfants"
@@ -71,7 +75,7 @@ export default function SocialForm({
         {/* Éducation */}
         <h3>Éducation</h3>
         <div className="form-group">
-          <label>Niveau d'étude</label>
+          <FieldLabel>Niveau d'étude</FieldLabel>
           <select
             name="niveau_etude"
             value={localFormData.niveau_etude}
@@ -89,7 +93,7 @@ export default function SocialForm({
         {/* Activité  */}
         <h3>Activité & Ressources</h3>
         <div className="form-group">
-          <label>Activité professionnelle</label>
+          <FieldLabel>Activité professionnelle</FieldLabel>
           <select
             name="activite_professionnelle"
             value={localFormData.activite_professionnelle}
@@ -108,26 +112,23 @@ export default function SocialForm({
         {/* Problèmes */}
         <h3>Problèmes rencontrés</h3>
         <div className="form-group full-width">
-          <div className="checkbox-grid">
+          <div className="toggle-grid">
             {problemeOptions.map(opt => (
-              <label key={opt.value}>
-                <input
-                  type="checkbox"
-                  name="probleme"
-                  value={opt.value}
-                  checked={localFormData.probleme?.includes(opt.value) || false}
-                  onChange={(e) => handleProblemeChange(opt.value, e.target.checked)}
-                  disabled={!isEditing}
-                />
-                {opt.label}
-              </label>
+              <ToggleSwitch
+                key={opt.value}
+                id={`probleme-${opt.value}`}
+                label={opt.label}
+                checked={localFormData.probleme?.includes(opt.value) || false}
+                disabled={!isEditing}
+                onChange={(checked) => handleProblemeChange(opt.value, checked)}
+              />
             ))}
           </div>
         </div>
 
         {/* Remarques */}
         <div className="form-group full-width">
-          <label>Remarques générales</label>
+          <FieldLabel>Remarques générales</FieldLabel>
           <textarea
             name="remarque"
             value={localFormData.remarque}

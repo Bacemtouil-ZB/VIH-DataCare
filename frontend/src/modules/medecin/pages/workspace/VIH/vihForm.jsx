@@ -5,12 +5,9 @@ import {MODES_CONTAMINATION,TYPES_DEPISTAGE,CIRCONSTANCES_DECOUVERTE,STADES_CDC,
 import "./VihForm.css";
 
 const FieldLabel = ({ children }) => (
-  <label className="form-label small fw-bold text-uppercase text-secondary mb-1">{children}</label>
+  <label className="form-label fw-bold text-uppercase text-secondary mb-1" style={{ fontSize: "0.7rem" }}>{children}</label>
 );
 
-const GreenHeader = ({ title }) => (
-  <div className="vih-header">{title}</div>
-);
 
 function MultiSelectContamination({ value, onChange, disabled }) {
   const [open, setOpen] = useState(false);
@@ -64,7 +61,16 @@ function MultiSelectContamination({ value, onChange, disabled }) {
   );
 }
 
-export default function VihForm({ initialData = null, onSubmit, isLoading = false, errors = {}, isEditMode = true, isCreateMode = false }) {
+export default function VihForm({
+  initialData = null,
+  onSubmit,
+  onEdit,
+  onCancel,
+  isLoading = false,
+  errors = {},
+  isEditMode = true,
+  isCreateMode = false,
+}) {
   const [formData, setFormData] = useState(FORM_INIT);
 
   useEffect(() => {
@@ -103,7 +109,8 @@ export default function VihForm({ initialData = null, onSubmit, isLoading = fals
 
   return (
     <div className="bg-white border rounded">
-      <GreenHeader title={isCreateMode ? "Nouvelle fiche VIH" : "Fiche VIH"} />
+
+  
       <form onSubmit={handleSubmit} className="p-4">
         <div className="row g-3">
 
@@ -194,9 +201,9 @@ export default function VihForm({ initialData = null, onSubmit, isLoading = fals
 
           <div className="col-md-6">
             <FieldLabel>Typage HLA-B5701 <span className="text-danger">*</span></FieldLabel>
-            <div className="d-flex gap-4 mt-1">
+            <div className="d-flex gap-3 mt-2 vih-radio-group">
               {["Positif", "Négatif"].map(v => (
-                <div key={v} className="form-check">
+                <div key={v} className="form-check vih-radio-item">
                   <input type="radio" className="form-check-input" name="typage_hla_b5701" id={`hla_${v}`}
                     value={v} checked={formData.typage_hla_b5701 === v} onChange={handleChange} disabled={isDisabled || isLoading} />
                   <label className="form-check-label" htmlFor={`hla_${v}`}>{v}</label>
@@ -208,9 +215,9 @@ export default function VihForm({ initialData = null, onSubmit, isLoading = fals
 
           <div className="col-md-6">
             <FieldLabel>Profil de séroconversion (Fiebig I à V)</FieldLabel>
-            <div className="d-flex gap-4 mt-1">
+            <div className="d-flex gap-3 mt-2 vih-radio-group">
               {[{ label: "Oui", val: true }, { label: "Non", val: false }].map(({ label, val }) => (
-                <div key={label} className="form-check">
+                <div key={label} className="form-check vih-radio-item">
                   <input type="radio" className="form-check-input" id={`sero_${label}`}
                     checked={formData.profil_seroconversion === val}
                     onChange={() => setFormData(prev => ({ ...prev, profil_seroconversion: val }))}
@@ -221,13 +228,33 @@ export default function VihForm({ initialData = null, onSubmit, isLoading = fals
             </div>
           </div>
 
-          {(isEditMode || isCreateMode) && (
-            <div className="col-12 mt-2">
-              <button type="submit" className="btn-vih-submit" disabled={isLoading}>
-                {isLoading ? "Enregistrement..." : isCreateMode ? "Enregistrer la fiche VIH" : "Enregistrer les modifications"}
+          <div className="col-12 mt-2">
+            {!isEditMode && !isCreateMode ? (
+              <button type="button" className="edit-btn" onClick={onEdit}>
+                Modifier
               </button>
-            </div>
-          )}
+            ) : (
+              <div className="edit-actions">
+                <button type="submit" className="save-btn" disabled={isLoading}>
+                  {isLoading
+                    ? "Enregistrement..."
+                    : isCreateMode
+                      ? "Enregistrer la fiche VIH"
+                      : "Enregistrer"}
+                </button>
+                {!isCreateMode && (
+                  <button
+                    type="button"
+                    className="cancel-btn"
+                    onClick={onCancel}
+                    disabled={isLoading}
+                  >
+                    Annuler
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
 
         </div>
       </form>
