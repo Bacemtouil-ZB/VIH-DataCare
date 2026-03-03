@@ -3,7 +3,7 @@ import { useOutletContext } from "react-router-dom";
 import { toast } from "react-toastify";
 import { confirmAction } from "../../../../../shared/utils/uiAlerts";
 import { createHabitudeDeVie, getHabitudeDeVieByNumeroDossier, updateHabitudeDeVie } from "../../../services/examenCliniqueServices/habitudeDeVieService";
-import ToggleSwitch from "../../../components/buttons/Toggleswitch";
+import ToggleSwitch from "../../../components/forms/ToggleSwitch";
 import { HABITUDES_CHAMPS, HABITUDES_INIT } from "./examenConfig";
 import { PAGE_BG, STYLES, PageHeader, BoutonSauvegarder, Spinner } from "./ExamenComponents";
 
@@ -11,6 +11,7 @@ export default function HabitudesPage() {
   const { examenId, patientNumero } = useOutletContext();
   const [ui,   setUi]   = useState({ loading: true, saving: false });
   const [form, setForm] = useState({ habitudeId: null, ...HABITUDES_INIT });
+  const [lastSaved, setLastSaved] = useState({ habitudeId: null, ...HABITUDES_INIT });
 
   const patchUi   = (p) => setUi  ((s) => ({ ...s, ...p }));
   const patchForm = (p) => setForm((s) => ({ ...s, ...p }));
@@ -22,13 +23,21 @@ export default function HabitudesPage() {
       try {
         const res = await getHabitudeDeVieByNumeroDossier(patientNumero);
         const h   = res?.habitudes?.[0];
-        if (h?.id) patchForm({
-          habitudeId:        h.id,
-          tabagisme:         h.tabagisme         ?? false,
-          alcoolemie:        h.alcoolemie        ?? false,
-          toxicomanie:       h.toxicomanie       ?? false,
-          activite_physique: h.activite_physique ?? false,
-        });
+        if (h?.id) {
+          const loadedState = {
+            habitudeId:        h.id,
+            tabagisme:         h.tabagisme         ?? false,
+            alcoolemie:        h.alcoolemie        ?? false,
+            toxicomanie:       h.toxicomanie       ?? false,
+            activite_physique: h.activite_physique ?? false,
+          };
+          setForm(loadedState);
+          setLastSaved(loadedState);
+        } else {
+          const emptyState = { habitudeId: null, ...HABITUDES_INIT };
+          setForm(emptyState);
+          setLastSaved(emptyState);
+        }
       } catch { toast.error("Erreur lors du chargement"); }
       finally  { patchUi({ loading: false }); }
     })();
@@ -36,9 +45,14 @@ export default function HabitudesPage() {
 
   const handleSave = async () => {
     const action = form.habitudeId ? "Modifier les habitudes de vie ?" : "Enregistrer les habitudes de vie ?";
-    const detail = form.habitudeId ? "Les modifications seront appliquées au dossier patient." : "Les habitudes seront enregistrées dans le dossier patient.";
+    const detail = form.habitudeId ? "Les modifications seront appliquees au dossier patient." : "Les habitudes seront enregistrees dans le dossier patient.";
     const ok = await confirmAction(action, detail);
-    if (!ok) { toast.info("Opération annulée"); return; }
+    if (!ok) {
+      setForm(lastSaved);
+      toast.info("Operation annulee");
+      return;
+    }
+
     patchUi({ saving: true });
     try {
       const payload = {
@@ -47,16 +61,23 @@ export default function HabitudesPage() {
         toxicomanie:       form.toxicomanie,
         activite_physique: form.activite_physique,
       };
+
       if (form.habitudeId) {
         await updateHabitudeDeVie(form.habitudeId, payload);
-        toast.success("Habitudes mises à jour");
+        setLastSaved({ habitudeId: form.habitudeId, ...payload });
+        toast.success("Habitudes mises a jour");
       } else {
         const res = await createHabitudeDeVie({ ...payload, examen_clinique_id: examenId });
-        patchForm({ habitudeId: res?.habitude?.id ?? null });
-        toast.success("Habitudes enregistrées");
+        const createdId = res?.habitude?.id ?? null;
+        patchForm({ habitudeId: createdId });
+        setLastSaved({ habitudeId: createdId, ...payload });
+        toast.success("Habitudes enregistrees");
       }
-    } catch { toast.error("Erreur lors de l'enregistrement"); }
-    finally { patchUi({ saving: false }); }
+    } catch {
+      toast.error("Erreur lors de l'enregistrement");
+    } finally {
+      patchUi({ saving: false });
+    }
   };
 
   if (ui.loading) return <Spinner />;
@@ -85,10 +106,14 @@ export default function HabitudesPage() {
         <div className="row g-3">
           {HABITUDES_CHAMPS.map(({ key, label }) => (
             <div key={key} className="col-md-4">
-              <div className="border rounded p-2 d-flex align-items-center justify-content-between"
-                style={STYLES.habCard}>
-                <span className="fw-semibold" style={STYLES.habLabel}>{label}</span>
-                <ToggleSwitch value={form[key]} onChange={(val) => patchForm({ [key]: val })} />
+                <div className="ec-habitude-toggle" style={STYLES.habCard}>
+
+                <ToggleSwitch
+                  id={`habitude-${key}`}
+                  label={label}
+                  checked={form[key]}
+                  onChange={(val) => patchForm({ [key]: val })}
+                />
               </div>
             </div>
           ))}
@@ -98,3 +123,4 @@ export default function HabitudesPage() {
     </div>
   );
 }
+

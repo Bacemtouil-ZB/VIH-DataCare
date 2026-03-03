@@ -140,7 +140,7 @@ export function AutresSignesSection({ title = "Autres signes", appareils, autres
         </div>
         <div className="ec-flex-desc">
           <label className="ec-label ec-th-sm">
-            Description <span className="text-secondary fw-normal text-capitalize" style={{ letterSpacing: 0 }}>— Entrée pour ajouter</span>
+            Description <span className="text-danger fw-normal text-capitalize" style={{ letterSpacing: 0}}>— Entrée pour ajouter</span>
           </label>
           <input type="text" className="form-control form-control-sm"
             placeholder="Décrivez les détails et appuyez sur Entrée…"

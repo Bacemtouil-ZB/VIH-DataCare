@@ -9,7 +9,7 @@ import { PAGE_BG, LABEL_CLS, STYLES, PageHeader, HistoriqueAccordeon,
 
 export default function ObservationPage() {
   const { examenId, patientNumero } = useOutletContext();
-  const [ui,   setUi]   = useState({ ...UI_INIT });
+  const [ui,   setUi]   = useState({ ...UI_INIT ,showHistory: false });
   const [form, setForm] = useState({ ...FORM_OBS_INIT });
   const [data, setData] = useState({ historique: [] });
 
