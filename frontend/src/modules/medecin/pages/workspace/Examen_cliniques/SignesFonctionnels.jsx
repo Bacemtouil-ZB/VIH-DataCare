@@ -3,101 +3,100 @@ import { useOutletContext } from "react-router-dom";
 import { toast } from "react-toastify";
 import { confirmAction } from "../../../../../shared/utils/uiAlerts";
 import { getAppareils, getSignesByPatient, createSignesFonctionnels, updateSignesFonctionnels } from "../../../services/examenCliniqueServices/signesFonctionService";
-import { SIGNES_KEYS, SIGNES_LABELS, SIGNES_INIT, FORM_SF_INIT, UI_INIT, getSignesPositifs } from "./examenConfig";
-import { PAGE_BG, STYLES, PageHeader, HistoriqueAccordeon, HistoriqueTable, HistoriqueActions, EmptyState, FormulaireWrapper, AutresSignesSection, BoutonEnregistrer, Badge, Spinner, RasToggle, parseApiError } from "./Examencomponents";
+import { SIGNES_KEYS, SIGNES_LABELS, SIGNES_INIT, FORM_SF_INIT, getSignesPositifs } from "./examenConfig";
+import {
+formatDateFr,mapAutresSignesFromApi,buildAutreSigneItem,removeAutreSigneById,
+updateAutreSigneDescription,handleCancelForm,openFormForCreate,showDetailMode,
+} from "./examenSharedLogique";
+import {
+PAGE_CONTAINER_CLASS,PageHeader,HistoriqueAccordeon,HistoriqueTable,HistoriqueActions,EmptyState,
+FormulaireWrapper,AutresSignesSection,BoutonEnregistrer,Badge,Spinner,RasToggle,parseApiError,
+} from "./examenComponents";
 import ToggleSwitch from "../../../components/buttons/ToggleSwitch";
 
 export default function SignesFonctionnels() {
   const { examenId, patientNumero } = useOutletContext();
-  const [ui, setUi] = useState({ ...UI_INIT, showHistory: false });
-  const [form, setForm] = useState({ ...FORM_SF_INIT });
-  const [data, setData] = useState({ appareils: [], historique: [] });
+
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+
+  const [signesId, setSignesId] = useState(FORM_SF_INIT.signesId);
+  const [isModifying, setIsModifying] = useState(FORM_SF_INIT.isModifying);
+  const [rasChecked, setRasChecked] = useState(FORM_SF_INIT.rasChecked);
+  const [signes, setSignes] = useState(FORM_SF_INIT.signes);
+  const [autresSignes, setAutresSignes] = useState(FORM_SF_INIT.autresSignes);
+  const [appareilSel, setAppareilSel] = useState(FORM_SF_INIT.appareilSel);
+  const [description, setDescription] = useState(FORM_SF_INIT.description);
+
+  const [appareils, setAppareils] = useState([]);
+  const [historique, setHistorique] = useState([]);
   const [detailSigne, setDetailSigne] = useState(null);
 
-  const patchUi = (p) => setUi((s) => ({ ...s, ...p }));
-  const patchForm = (p) => setForm((s) => ({ ...s, ...p }));
-  const patchData = (p) => setData((s) => ({ ...s, ...p }));
+  const resetForm = () => {
+    setSignesId(FORM_SF_INIT.signesId);
+    setIsModifying(FORM_SF_INIT.isModifying);
+    setRasChecked(FORM_SF_INIT.rasChecked);
+    setSignes(FORM_SF_INIT.signes);
+    setAutresSignes(FORM_SF_INIT.autresSignes);
+    setAppareilSel(FORM_SF_INIT.appareilSel);
+    setDescription(FORM_SF_INIT.description);
+  };
 
   useEffect(() => {
     if (!patientNumero) return;
     (async () => {
-      patchUi({ loading: true });
+      setLoading(true);
       try {
         const [ar, hr] = await Promise.all([getAppareils(), getSignesByPatient(patientNumero)]);
-        patchData({ appareils: ar?.appareils || [], historique: hr?.signes || [] });
+        setAppareils(ar?.appareils || []);
+        setHistorique(hr?.signes || []);
       } catch {
-        patchData({ historique: [] });
+        setHistorique([]);
       } finally {
-        patchUi({ loading: false });
+        setLoading(false);
       }
     })();
   }, [patientNumero]);
 
-  const resetForm = () => setForm({ ...FORM_SF_INIT });
   const handleCancel = () => {
-    patchUi({ showForm: false });
-    resetForm();
-    toast.info("Operation annulee");
+    handleCancelForm(setShowForm, resetForm, toast);
   };
 
-  const handleEdit = async (signe) => {
-    const pos = getSignesPositifs(signe);
+  const handleEdit = async (signeRow) => {
+    const pos = getSignesPositifs(signeRow);
     const ok = await confirmAction(
       "Modifier ce signe fonctionnel ?",
-      `Date : ${new Date(signe.date_examen).toLocaleDateString("fr-FR")}${pos.length ? " - " + pos.slice(0, 4).join(", ") : ""}`
+      `Date : ${formatDateFr(signeRow.date_examen)}${pos.length ? " - " + pos.slice(0, 4).join(", ") : ""}`
     );
     if (!ok) {
       toast.info("Operation annulee");
       return;
     }
+
     setDetailSigne(null);
-    setForm({
-      signesId: signe.id,
-      isModifying: true,
-      rasChecked: signe.ras || false,
-      signes: Object.fromEntries(SIGNES_KEYS.map((k) => [k, signe[k] || false])),
-      autresSignes: (signe.autres_signes || []).map(({ id, appareil_id, appareil, description }) => ({
-        id,
-        appareil_id,
-        appareil,
-        description,
-      })),
-      appareilSel: "",
-      description: "",
-    });
-    patchUi({ showForm: true });
+    setSignesId(signeRow.id);
+    setIsModifying(true);
+    setRasChecked(signeRow.ras || false);
+    setSignes(Object.fromEntries(SIGNES_KEYS.map((k) => [k, signeRow[k] || false])));
+    setAutresSignes(mapAutresSignesFromApi(signeRow.autres_signes));
+    setAppareilSel("");
+    setDescription("");
+    setShowForm(true);
     toast.info("Mode modification active");
   };
 
-  const handleShowDetails = (signe) => {
-    patchUi({ showForm: false });
-    setDetailSigne(signe);
+  const handleShowDetails = (signeRow) => {
+    showDetailMode(setShowForm, setDetailSigne, signeRow);
   };
 
   const ajouterAutreSigne = () => {
-    if (!form.appareilSel) {
-      toast.error("Veuillez selectionner un appareil");
-      return;
-    }
-    if (!form.description.trim()) {
-      toast.error("Veuillez saisir une description");
-      return;
-    }
-    const app = data.appareils.find((a) => a.id === parseInt(form.appareilSel, 10));
-    if (!app) {
-      toast.error("Appareil non trouve");
-      return;
-    }
-    patchForm({
-      autresSignes: [...form.autresSignes, {
-        id: Date.now(),
-        appareil_id: parseInt(app.id, 10),
-        appareil: app.libelle,
-        description: form.description.trim(),
-      }],
-      appareilSel: "",
-      description: "",
-    });
+    const { error, item } = buildAutreSigneItem(appareils, appareilSel, description, true);
+    if (error) return toast.error(error);
+    setAutresSignes((prev) => [...prev, item]);
+    setAppareilSel("");
+    setDescription("");
     toast.success("Signe ajoute");
   };
 
@@ -107,69 +106,65 @@ export default function SignesFonctionnels() {
       toast.info("Operation annulee");
       return;
     }
-    patchForm({ autresSignes: form.autresSignes.filter((s) => s.id !== id) });
+    setAutresSignes((prev) => removeAutreSigneById(prev, id));
     toast.success("Signe supprime");
   };
 
   const modifierDescription = (id, nouvelleDesc) => {
-    patchForm({ autresSignes: form.autresSignes.map((s) => (s.id === id ? { ...s, description: nouvelleDesc } : s)) });
+    setAutresSignes((prev) => updateAutreSigneDescription(prev, id, nouvelleDesc));
     toast.success("Description mise a jour");
   };
 
   const handleSave = async () => {
-    patchUi({ saving: true });
+    setSaving(true);
     try {
       const payload = {
-        signes: { ...form.signes, ras: form.rasChecked },
-        autres_signes: form.autresSignes.map(({ appareil_id, description }) => ({ appareil_id: parseInt(appareil_id, 10), description })),
+        signes: { ...signes, ras: rasChecked },
+        autres_signes: autresSignes.map(({ appareil_id, description: d }) => ({ appareil_id: parseInt(appareil_id, 10), description: d })),
       };
-      if (form.isModifying && form.signesId) {
-        await updateSignesFonctionnels(form.signesId, payload);
+      if (isModifying && signesId) {
+        await updateSignesFonctionnels(signesId, payload);
         toast.success("Signes fonctionnels mis a jour");
       } else {
         await createSignesFonctionnels({ ...payload, examen_clinique_id: examenId });
         toast.success("Signes fonctionnels enregistres");
       }
-      patchUi({ showForm: false });
+      setShowForm(false);
       resetForm();
       const hr = await getSignesByPatient(patientNumero);
-      patchData({ historique: hr?.signes || [] });
+      setHistorique(hr?.signes || []);
     } catch (e) {
       toast.error(parseApiError(e));
     } finally {
-      patchUi({ saving: false });
+      setSaving(false);
     }
   };
 
-  if (ui.loading) return <Spinner />;
+  if (loading) return <Spinner />;
 
   return (
-    <div style={PAGE_BG}>
+    <div className={PAGE_CONTAINER_CLASS}>
       <PageHeader
-        showForm={ui.showForm}
-        onOpen={() => {
-          setDetailSigne(null);
-          resetForm();
-          patchUi({ showForm: true });
-        }}
+        showForm={showForm}
+        onOpen={() => openFormForCreate(setDetailSigne, resetForm, setShowForm)}
         onCancel={handleCancel}
       />
 
       <HistoriqueAccordeon
         title="Historique des signes fonctionnels"
-        count={data.historique.length}
-        open={ui.showHistory}
-        onToggle={() => patchUi({ showHistory: !ui.showHistory })}
+        count={historique.length}
+        open={showHistory}
+        onToggle={() => setShowHistory((v) => !v)}
       >
         <HistoriqueTable
           headers={["Date", "Signes positifs", "Action"]}
-          items={data.historique}
+          items={historique}
           emptyMessage="Aucun signe fonctionnel enregistre"
           renderRow={(s) => {
             const pos = getSignesPositifs(s);
             return (
               <tr key={s.id}>
-                <td style={STYLES.tdDate}>{s.date_examen ? new Date(s.date_examen).toLocaleDateString("fr-FR") : "N/A"}</td>
+                <td className="ec-td-date">{formatDateFr(s.date_examen)}</td>
                 <td>
                   {s.ras ? (
                     <Badge bg="#dcfce7" color="#166534">RAS</Badge>
@@ -179,9 +174,7 @@ export default function SignesFonctionnels() {
                     <small className="text-secondary">Aucun</small>
                   )}
                 </td>
-                <td>
-                  <HistoriqueActions onDetails={() => handleShowDetails(s)} onEdit={() => handleEdit(s)} />
-                </td>
+                <td><HistoriqueActions onDetails={() => handleShowDetails(s)} onEdit={() => handleEdit(s)} /></td>
               </tr>
             );
           }}
@@ -191,23 +184,18 @@ export default function SignesFonctionnels() {
       {detailSigne && (
         <FormulaireWrapper isModifying={false} labelCreate="Details du signe fonctionnel" labelModify="Details du signe fonctionnel">
           <div className="ec-readonly-block">
-            <p className="text-uppercase fw-bold text-secondary mb-3" style={{ fontSize: "0.78rem" }}>Signes fonctionnels</p>
+            <p className="text-uppercase fw-bold text-secondary mb-3 ec-section-title-mini">Signes fonctionnels</p>
             <div className="row g-2 mb-4 pb-4 border-bottom">
-              {SIGNES_KEYS.map((signe) => (
-                <div key={signe} className="col-6 col-md-4 col-lg-3">
+              {SIGNES_KEYS.map((signeKey) => (
+                <div key={signeKey} className="col-6 col-md-4 col-lg-3">
                   <div className="ec-sf-detail-toggle">
-                    <ToggleSwitch
-                      id={`detail-sf-${detailSigne.id || "row"}-${signe}`}
-                      label={SIGNES_LABELS[signe]}
-                      checked={!!detailSigne[signe]}
-                      disabled={true}
-                    />
+                    <ToggleSwitch id={`detail-sf-${detailSigne.id || "row"}-${signeKey}`} label={SIGNES_LABELS[signeKey]} checked={!!detailSigne[signeKey]} disabled={true} />
                   </div>
                 </div>
               ))}
             </div>
 
-            <p className="text-uppercase fw-bold text-secondary mb-3" style={STYLES.thSm}>Autres signes fonctionnels</p>
+            <p className="text-uppercase fw-bold text-secondary mb-3 ec-th-sm">Autres signes fonctionnels</p>
             {detailSigne.autres_signes?.length > 0 ? (
               <table className="table table-sm table-hover mb-4">
                 <thead className="table-light">
@@ -219,12 +207,8 @@ export default function SignesFonctionnels() {
                 <tbody>
                   {detailSigne.autres_signes.map((as, i) => (
                     <tr key={`${as.appareil || "app"}-${i}`}>
-                      <td className="ec-td-vmiddle">
-                        <Badge bg="#dbeafe" color="#1d4ed8">{as.appareil || "-"}</Badge>
-                      </td>
-                      <td className="ec-td-vmiddle">
-                        <span className="ec-desc-text">{as.description || "-"}</span>
-                      </td>
+                      <td className="ec-td-vmiddle"><Badge bg="#dbeafe" color="#1d4ed8">{as.appareil || "-"}</Badge></td>
+                      <td className="ec-td-vmiddle"><span className="ec-desc-text">{as.description || "-"}</span></td>
                     </tr>
                   ))}
                 </tbody>
@@ -240,41 +224,45 @@ export default function SignesFonctionnels() {
         </FormulaireWrapper>
       )}
 
-      {ui.showForm && (
-        <FormulaireWrapper isModifying={form.isModifying} labelCreate="Nouveau signe fonctionnel" labelModify="Modifier le signe fonctionnel">
+      {showForm && (
+        <FormulaireWrapper isModifying={isModifying} labelCreate="Nouveau signe fonctionnel" labelModify="Modifier le signe fonctionnel">
           <RasToggle
-            checked={form.rasChecked}
-            onChange={(v) => patchForm({ rasChecked: v, signes: v ? { ...SIGNES_INIT } : form.signes })}
+            checked={rasChecked}
+            onChange={(v) => {
+              setRasChecked(v);
+              if (v) setSignes({ ...SIGNES_INIT });
+            }}
           />
-          <p className="text-uppercase fw-bold text-secondary mb-3" style={{ fontSize: "0.78rem" }}>Signes fonctionnels</p>
+          <p className="text-uppercase fw-bold text-secondary mb-3 ec-section-title-mini">Signes fonctionnels</p>
           <div className="row g-2 mb-4 pb-4 border-bottom">
-            {SIGNES_KEYS.map((signe) => (
-              <div key={signe} className="col-6 col-md-4 col-lg-3">
+            {SIGNES_KEYS.map((signeKey) => (
+              <div key={signeKey} className="col-6 col-md-4 col-lg-3">
                 <div className="ec-sf-form-toggle">
                   <ToggleSwitch
-                    id={`form-sf-${signe}`}
-                    label={SIGNES_LABELS[signe]}
-                    checked={!!form.signes[signe]}
-                    disabled={form.rasChecked}
-                    onChange={(val) => patchForm({ signes: { ...form.signes, [signe]: val } })}
+                    id={`form-sf-${signeKey}`}
+                    label={SIGNES_LABELS[signeKey]}
+                    checked={!!signes[signeKey]}
+                    disabled={rasChecked}
+                    onChange={(val) => setSignes((prev) => ({ ...prev, [signeKey]: val }))}
                   />
                 </div>
               </div>
             ))}
           </div>
+
           <AutresSignesSection
             title="Autres signes fonctionnels"
-            appareils={data.appareils}
-            autresSignes={form.autresSignes}
-            appareilSelectionne={form.appareilSel}
-            descriptionSigne={form.description}
-            onAppareilChange={(v) => patchForm({ appareilSel: v })}
-            onDescriptionChange={(v) => patchForm({ description: v })}
+            appareils={appareils}
+            autresSignes={autresSignes}
+            appareilSelectionne={appareilSel}
+            descriptionSigne={description}
+            onAppareilChange={setAppareilSel}
+            onDescriptionChange={setDescription}
             onAjouter={ajouterAutreSigne}
             onSupprimer={supprimerAutreSigne}
             onModifierDescription={modifierDescription}
           />
-          <BoutonEnregistrer isModifying={form.isModifying} loading={ui.saving} onClick={handleSave} />
+          <BoutonEnregistrer isModifying={isModifying} loading={saving} onClick={handleSave} />
         </FormulaireWrapper>
       )}
     </div>

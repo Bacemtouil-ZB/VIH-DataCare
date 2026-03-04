@@ -59,3 +59,11 @@
   flex: 1;
   overflow: auto;
 }
+
+.examen-loading {
+  min-height: 400px;
+}
+
+.examen-empty-icon {
+  font-size: 3rem;
+}
