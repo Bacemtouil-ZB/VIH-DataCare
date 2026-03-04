@@ -1,0 +1,397 @@
+import "./ProfilForme.css";
+import { toast } from "react-toastify";
+
+const FieldLabel = ({ children }) => (
+  <label
+    className="form-label fw-bold text-uppercase text-secondary mb-1"
+    style={{ fontSize: "0.7rem" }}
+  >
+    {children}
+  </label>
+);
+
+/* ------------------ HELPERS ------------------ */
+const sanitizeText = (value) =>
+  typeof value === "string" ? value.replace(/[<>]/g, "") : value;
+
+const normalizeNumero = (raw) => {
+  // 1) sanitize
+  let value = sanitizeText(raw);
+
+  // 2) user shouldn't type F- manually (it is controlled by hospitalisation)
+  value = value.replace(/^F-/, "");
+
+  // 3) keep only digits + dash
+  value = value.replace(/[^0-9-]/g, "");
+
+  return value;
+};
+
+const isNumeroValid = (numero) => {
+  if (!numero) return true; // don't show error when empty
+  const cleaned = String(numero).replace(/^F-/, "");
+  return /^\d{3}-\d{4}$/.test(cleaned);
+};
+
+const validateNumeroYear = (numero) => {
+  // Expected: 001-2025 (or 0001-2025 if you allow 4 digits on left)
+  const cleaned = String(numero || "").replace(/^F-/, "");
+  const match = cleaned.match(/^(\d{3})-(\d{4})$/);
+  if (!match) return;
+
+  const year = parseInt(match[2], 10);
+  const currentYear = new Date().getFullYear();
+  if (year > currentYear) {
+    toast.error(`L'année doit être ≤ ${currentYear}`);
+  }
+};
+
+export default function ProfilForm({
+  formData,
+  setFormData,
+  onSubmit,
+  isNew,
+  isEditing,
+  setIsEditing,
+  onCancel,
+  doctors = [],
+  formDataOptions = { governorates: [], postalCodes: [] },
+}) {
+  const { governorates, postalCodes } = formDataOptions;
+
+  /* ------------------ DERIVED DATA ------------------ */
+  const filteredBirthPostalCodes = postalCodes.filter(
+    (pc) => pc.governorate === formData.birth_governorate
+  );
+
+  const filteredResidencePostalCodes = postalCodes.filter(
+    (pc) => pc.governorate === formData.residence_governorate
+  );
+
+  const canEditNumero = isNew; // numero disabled when editing an existing patient
+  const numeroHasError = formData.numero && !isNumeroValid(formData.numero);
+
+  /* ------------------ STATE UPDATERS ------------------ */
+  const updateField = (name, value) => {
+    const safeValue = sanitizeText(value);
+
+    setFormData((prev) => {
+      // Reset postal code when governorate changes
+      if (name === "birth_governorate") {
+        return {
+          ...prev,
+          birth_governorate: safeValue,
+          birth_postal_code_id: "",
+        };
+      }
+
+      if (name === "residence_governorate") {
+        return {
+          ...prev,
+          residence_governorate: safeValue,
+          residence_postal_code_id: "",
+        };
+      }
+
+      return { ...prev, [name]: safeValue };
+    });
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    updateField(name, value);
+  };
+
+  const handleNumeroChange = (e) => {
+    const value = normalizeNumero(e.target.value);
+
+    validateNumeroYear(value);
+
+    setFormData((prev) => ({ ...prev, numero: value }));
+  };
+
+  const handleHospitalisationChange = (e) => {
+    const hospitalisation = e.target.value;
+
+    setFormData((prev) => {
+      let numero = prev.numero || "";
+
+      // remove any existing F-
+      numero = numero.replace(/^F-/, "");
+
+      // add prefix when externe
+      if (hospitalisation === "externe" && numero) {
+        numero = `F-${numero}`;
+      }
+
+      return { ...prev, hospitalisation, numero };
+    });
+  };
+
+  /* ------------------ SMALL RENDER HELPERS ------------------ */
+  const renderGovernorateOptions = () =>
+    governorates.map((g) => (
+      <option key={g.id} value={g.name}>
+        {g.name}
+      </option>
+    ));
+
+  // const renderPostalOptions = (items) =>
+  //   items.map((pc) => (
+  //     <option key={pc.id} value={pc.id}>
+  //       {pc.code_postal}
+  //     </option>
+  //   ));
+const renderPostalOptions = (items) =>
+  items.map((pc) => (
+    <option key={pc.id} value={pc.id}>
+      {pc.place_name}
+      {/* optional: show both -> {pc.place_name} ({pc.code_postal}) */}
+    </option>
+  ));
+  return (
+    <div className="form-card">
+      <form onSubmit={onSubmit} className="form-grid">
+        {/* Numéro dossier */}
+        <div className="form-group">
+          <FieldLabel>Numéro dossier</FieldLabel>
+          <input
+            name="numero"
+            value={formData.numero || ""}
+            onChange={handleNumeroChange}
+            disabled={!canEditNumero}
+            required
+            placeholder="Ex: 001-2025"
+          />
+
+          {numeroHasError && (
+            <span className="error-text">Format invalide : ex. 001-2025</span>
+          )}
+        </div>
+
+        {/* Hospitalisation */}
+        <div className="form-group">
+          <FieldLabel>Hospitalisation</FieldLabel>
+          <select
+            name="hospitalisation"
+            value={formData.hospitalisation || "interne"}
+            onChange={handleHospitalisationChange}
+            disabled={!isEditing}
+            required
+          >
+            <option value="interne">Interne</option>
+            <option value="externe">Externe</option>
+          </select>
+        </div>
+
+        {/* Nom */}
+        <div className="form-group">
+          <FieldLabel>Nom</FieldLabel>
+          <input
+            name="name"
+            value={formData.name || ""}
+            onChange={handleChange}
+            pattern="[A-Za-zÀ-ÿ\s]+"
+            disabled={!isEditing}
+            required
+          />
+        </div>
+
+        {/* Prénom */}
+        <div className="form-group">
+          <FieldLabel>Prénom</FieldLabel>
+          <input
+            name="surname"
+            value={formData.surname || ""}
+            onChange={handleChange}
+            pattern="[A-Za-zÀ-ÿ\s]+"
+            disabled={!isEditing}
+            required
+          />
+        </div>
+
+        {/* Date naissance */}
+        <div className="form-group">
+          <FieldLabel>Date de naissance</FieldLabel>
+          <input
+            type="date"
+            name="birthdate"
+            value={formData.birthdate || ""}
+            onChange={handleChange}
+            max={new Date().toISOString().split("T")[0]}
+            disabled={!isEditing}
+            required
+          />
+        </div>
+
+        {/* Sexe */}
+        <div className="form-group">
+          <FieldLabel>Sexe</FieldLabel>
+          <div className="radio-group">
+            <label>
+              <input
+                type="radio"
+                name="gender"
+                value="homme"
+                checked={formData.gender === "homme"}
+                onChange={handleChange}
+                disabled={!isEditing}
+                required
+              />
+              Homme
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="gender"
+                value="femme"
+                checked={formData.gender === "femme"}
+                onChange={handleChange}
+                disabled={!isEditing}
+                required
+              />
+              Femme
+            </label>
+          </div>
+        </div>
+
+        {/* Téléphone */}
+        <div className="form-group">
+          <FieldLabel>Téléphone</FieldLabel>
+          <input
+            name="phone"
+            value={formData.phone || ""}
+            onChange={handleChange}
+            pattern="^[24597][0-9]{7}$"
+            title="Numéro tunisien invalide (ex: 20123456)"
+            disabled={!isEditing}
+          />
+        </div>
+
+        {/* Gouvernorat naissance */}
+        <div className="form-group">
+          <FieldLabel>Gouvernorat naissance</FieldLabel>
+          <select
+            name="birth_governorate"
+            value={formData.birth_governorate || ""}
+            onChange={handleChange}
+            disabled={!isEditing}
+          >
+            <option value="">Sélectionner</option>
+            {renderGovernorateOptions()}
+          </select>
+        </div>
+
+        {/* Code postal naissance */}
+        <div className="form-group">
+          <FieldLabel>Code postal naissance</FieldLabel>
+          <select
+            name="birth_postal_code_id"
+            value={formData.birth_postal_code_id || ""}
+            onChange={handleChange}
+            disabled={!isEditing || !formData.birth_governorate}
+          >
+            <option value="">
+              {formData.birth_governorate
+                ? "Sélectionner"
+                : "Choisir d'abord un gouvernorat"}
+            </option>
+            {renderPostalOptions(filteredBirthPostalCodes)}
+          </select>
+        </div>
+
+        {/* Gouvernorat résidence */}
+        <div className="form-group">
+          <FieldLabel>Gouvernorat résidence</FieldLabel>
+          <select
+            name="residence_governorate"
+            value={formData.residence_governorate || ""}
+            onChange={handleChange}
+            disabled={!isEditing}
+            required
+          >
+            <option value="">Sélectionner</option>
+            {renderGovernorateOptions()}
+          </select>
+        </div>
+
+        {/* Code postal résidence */}
+        <div className="form-group">
+          <FieldLabel>Code postal résidence</FieldLabel>
+          <select
+            name="residence_postal_code_id"
+            value={formData.residence_postal_code_id || ""}
+            onChange={handleChange}
+            disabled={!isEditing || !formData.residence_governorate}
+            required
+          >
+            <option value="">
+              {formData.residence_governorate
+                ? "Sélectionner"
+                : "Choisir d'abord un gouvernorat"}
+            </option>
+            {renderPostalOptions(filteredResidencePostalCodes)}
+          </select>
+        </div>
+
+        {/* Médecin */}
+        <div className="form-group">
+          <FieldLabel>Médecin traitant</FieldLabel>
+          <select
+            name="doctor_id"
+            value={formData.doctor_id || ""}
+            onChange={handleChange}
+            disabled={!isEditing}
+          >
+            <option value="">Sélectionner</option>
+            {doctors.map((doc) => (
+              <option key={doc.id} value={doc.id}>
+                {doc.nom} {doc.prenom}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {/* Remarques */}
+        <div className="form-group full-width">
+          <FieldLabel>Remarques</FieldLabel>
+          <textarea
+            name="remarks"
+            value={formData.remarks || ""}
+            onChange={handleChange}
+            disabled={!isEditing}
+          />
+        </div>
+
+        {/* Actions */}
+        <div className="form-group full-width">
+          {!isEditing ? (
+            <button
+              type="button"
+              className="edit-btn"
+              onClick={() => setIsEditing(true)}
+            >
+              Modifier
+            </button>
+          ) : (
+            <div className="edit-actions">
+              <button type="submit" className="save-btn">
+                {isNew ? "Créer" : "Enregistrer"}
+              </button>
+
+              {!isNew && (
+                <button
+                  type="button"
+                  className="cancel-btn"
+                  onClick={onCancel}
+                >
+                  Annuler
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+      </form>
+    </div>
+  );
+}

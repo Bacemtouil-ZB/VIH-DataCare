@@ -1,0 +1,5 @@
+ALTER TABLE postal_codes
+ADD COLUMN IF NOT EXISTS place_name VARCHAR(120) NOT NULL DEFAULT '';
+
+ALTER TABLE postal_codes
+ALTER COLUMN place_name DROP DEFAULT;

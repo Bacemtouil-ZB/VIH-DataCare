@@ -1,0 +1,99 @@
+/* Cleaned version (remove unused/redundant rules).
+   ⚠️ Note: without scanning your whole repo, I can only flag "likely unused".
+   I removed the ones that are clearly not used by your posted JSX (AntecedentsForm).
+*/
+
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap");
+
+/* ✅ Keep: good global reset for this stylesheet scope */
+* {
+  box-sizing: border-box;
+}
+
+input,
+textarea {
+  font-family: inherit;
+}
+
+/* Wrapper */
+.antecedents-wrapper {
+  min-height: 100vh;
+  background: #f3f4f6;
+  font-family: "DM Sans", "Segoe UI", sans-serif;
+}
+
+/* Header */
+.antecedents-header {
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0 28px;
+}
+
+.header-content {
+  max-width: 860px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-right {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Buttons */
+.btn-primary {
+  background: #1a7a5e;
+  color: #ffffff;
+  border: none;
+  border-radius: 7px;
+  padding: 8px 20px;
+  font-weight: 600;
+  font-size: 13.5px;
+  cursor: pointer;
+}
+
+.btn-secondary {
+  background: none;
+  border: 1px solid #e5e7eb;
+  border-radius: 7px;
+  padding: 8px 18px;
+  font-size: 13px;
+  color: #6b7280;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Container */
+.antecedents-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 28px;
+}
+
+/* ✅ Keep ONLY if you still use the footer navigation UI somewhere */
+.navigation-footer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16px;
+}
+
+.step-indicator {
+  font-size: 12px;
+  color: #9ca3af;
+  align-self: center;
+}
