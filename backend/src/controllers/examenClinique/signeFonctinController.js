@@ -4,18 +4,26 @@ import {
   updateSignesFonctionnels as updateSignesService,
   getAppareils,
 } from "../../services/examenClinique/signeFonctionService.js";
-
+import { logAction } from "../../services/auditService.js";
 
 export const createSignesFonctionnelsController = async (req, res) => {
   try {
     const data = req.body;
     const userId = req.user.id;
-
     const result = await createSignesService(data, userId);
+
+    await logAction(req, {
+      module: "SIGNES_FONCTIONNELS",
+      action: "SIGNE_FONCTIONNEL_CREATE",
+      patient_id: result.patient_id,
+      entity_id: result.id,
+      old_data: null,
+      new_data: result,
+    });
 
     res.status(201).json({
       success: true,
-      message: "Signes fonctionnels créés avec succès",
+      message: "Signes fonctionnels crees avec succes",
       data: result,
     });
   } catch (error) {
@@ -31,6 +39,16 @@ export const getSignesByPatientController = async (req, res) => {
   try {
     const { numero } = req.params;
     const signes = await getSignesByNumeroService(numero);
+    const firstSigne = Array.isArray(signes) && signes.length > 0 ? signes[0] : null;
+
+    await logAction(req, {
+      module: "SIGNES_FONCTIONNELS",
+      action: "SIGNE_FONCTIONNEL_VIEW",
+      patient_id: firstSigne?.patient_id ?? null,
+      entity_id: firstSigne?.id ?? null,
+      old_data: null,
+      new_data: null,
+    });
 
     res.status(200).json({
       success: true,
@@ -45,20 +63,26 @@ export const getSignesByPatientController = async (req, res) => {
   }
 };
 
-
-
-
 export const updateSignesFonctionnelsController = async (req, res) => {
   try {
     const { examenId } = req.params;
     const data = req.body;
     const userId = req.user.id;
 
-    const signes = await updateSignesService(parseInt(examenId), data, userId);
+    const signes = await updateSignesService(parseInt(examenId, 10), data, userId);
+
+    await logAction(req, {
+      module: "SIGNES_FONCTIONNELS",
+      action: "SIGNE_FONCTIONNEL_UPDATE",
+      patient_id: signes.patient_id,
+      entity_id: signes.id,
+      old_data: null,
+      new_data: signes,
+    });
 
     res.status(200).json({
       success: true,
-      message: "Signes fonctionnels mis à jour avec succès",
+      message: "Signes fonctionnels mis a jour avec succes",
       signes,
     });
   } catch (error) {
@@ -69,7 +93,6 @@ export const updateSignesFonctionnelsController = async (req, res) => {
     });
   }
 };
-
 
 export const getAppareilsController = async (req, res) => {
   try {

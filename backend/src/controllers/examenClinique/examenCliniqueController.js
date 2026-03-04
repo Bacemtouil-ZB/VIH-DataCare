@@ -1,57 +1,75 @@
 import { createExamenClinique, getExamensByNumeroDossier, updateExamenClinique } from "../../models/examenClinique/examenCliniqueModel.js";
 import { getPatientByNumero } from "../../models/patientModel.js";
-
+import { logAction } from "../../services/auditService.js";
 
 export const createExamenCliniqueController = async (req, res) => {
   try {
     const { patient_numero, date_examen } = req.body;
     const medecinId = req.user.id;
 
-    // Vérifier que le patient existe
     const patient = await getPatientByNumero(patient_numero);
     if (!patient) {
       return res.status(404).json({
         success: false,
-        message: "Patient non trouvé"
+        message: "Patient non trouve",
       });
     }
 
-    // Créer l'examen
-    const examen = await createExamenClinique({
-      patient_id: patient.id,
-      date_examen: date_examen || new Date(),
-    }, medecinId);
+    const examen = await createExamenClinique(
+      {
+        patient_id: patient.id,
+        date_examen: date_examen || new Date(),
+      },
+      medecinId
+    );
+
+    await logAction(req, {
+      module: "EXAMEN_CLINIQUE",
+      action: "EXAMEN_CLINIQUE_CREATE",
+      patient_id: examen.patient_id,
+      entity_id: examen.id,
+      old_data: null,
+      new_data: examen,
+    });
 
     res.status(201).json({
       success: true,
-      message: "Examen clinique créé avec succès",
-      examen
+      message: "Examen clinique cree avec succes",
+      examen,
     });
   } catch (error) {
-    console.error("Erreur création examen:", error);
+    console.error("Erreur creation examen:", error);
     res.status(500).json({
       success: false,
-      message: error.message || "Erreur lors de la création de l'examen"
+      message: error.message || "Erreur lors de la creation de l'examen",
     });
   }
 };
 
-
 export const getExamensByPatientController = async (req, res) => {
   try {
     const { numero } = req.params;
-
     const examens = await getExamensByNumeroDossier(numero);
+    const firstExamen = Array.isArray(examens) && examens.length > 0 ? examens[0] : null;
+
+    await logAction(req, {
+      module: "EXAMEN_CLINIQUE",
+      action: "EXAMEN_CLINIQUE_VIEW",
+      patient_id: firstExamen?.patient_id ?? null,
+      entity_id: firstExamen?.id ?? null,
+      old_data: null,
+      new_data: null,
+    });
 
     res.status(200).json({
       success: true,
-      examens
+      examens,
     });
   } catch (error) {
-    console.error("Erreur récupération examens:", error);
+    console.error("Erreur recuperation examens:", error);
     res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
@@ -63,16 +81,25 @@ export const updateExamenCliniqueController = async (req, res) => {
 
     const examen = await updateExamenClinique(id, { date_examen });
 
+    await logAction(req, {
+      module: "EXAMEN_CLINIQUE",
+      action: "EXAMEN_CLINIQUE_UPDATE",
+      patient_id: examen.patient_id,
+      entity_id: examen.id,
+      old_data: null,
+      new_data: examen,
+    });
+
     res.status(200).json({
       success: true,
-      message: "Examen mis à jour avec succès",
-      examen
+      message: "Examen mis a jour avec succes",
+      examen,
     });
   } catch (error) {
-    console.error("Erreur mise à jour examen:", error);
+    console.error("Erreur mise a jour examen:", error);
     res.status(500).json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };

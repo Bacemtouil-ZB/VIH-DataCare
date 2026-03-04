@@ -1,0 +1,171 @@
+:root {
+  --ec-green: #2e7d52;
+  --ec-green-light: #f0fdf4;
+  --ec-green-border: #86efac;
+  --ec-slate: #e2e8f0;
+}
+
+.ec-page-bg {
+  background: #f5f6fa;
+  padding: 24px;
+  min-height: 100%;
+}
+
+.ec-label {
+  text-transform: uppercase;
+  font-weight: 600;
+  color: #6c757d;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.ec-th-sm {
+  font-size: 0.78rem;
+}
+
+.ec-td-date {
+  white-space: nowrap;
+  font-size: 0.875rem;
+}
+
+.ec-td-max {
+  font-size: 0.875rem;
+  max-width: 500px;
+}
+
+.ec-flex-input {
+  flex: 1 1 140px;
+}
+
+.ec-flex-input-l {
+  flex: 1 1 200px;
+}
+
+.ec-section-title-mini {
+  font-size: 0.78rem;
+}
+
+.ec-observation-textarea {
+  border-radius: 8px;
+  resize: vertical;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.ec-habitudes-title {
+  color: #6e6d6d;
+  font-weight: 700;
+  font-size: 0.95rem;
+  padding-bottom: 10px;
+}
+
+.ec-habitude-toggle {
+  background: #fafafa;
+}
+
+.table {
+  border: none !important;
+}
+
+.table thead th {
+  border: none !important;
+  border-bottom: 1px solid #dee2e6 !important;
+}
+
+.table tbody td {
+  border: none !important;
+  border-bottom: 1px solid #dee2e6 !important;
+}
+
+.table-hover tbody tr:hover {
+  border: none !important;
+}
+
+.ec-readonly-block input:disabled,
+.ec-readonly-block select:disabled,
+.ec-readonly-block textarea:disabled,
+.ec-readonly-block .form-control:disabled,
+.ec-readonly-block .form-select:disabled,
+.ec-readonly-block .form-control[readonly] {
+  background: #f3f4f6 !important;
+  border-color: #d1d5db !important;
+  color: #374151 !important;
+  opacity: 0.97;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='8.6' fill='white' fill-opacity='0.96' stroke='%23ef4444' stroke-width='1.7'/%3E%3Cline x1='7.4' y1='16.6' x2='16.6' y2='7.4' stroke='%23ef4444' stroke-width='1.7' stroke-linecap='round'/%3E%3C/svg%3E") 12 12, not-allowed !important;
+}
+
+.ec-readonly-block .ec-signe-btn-disabled {
+  opacity: 0.97;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Ccircle cx='12' cy='12' r='8.6' fill='white' fill-opacity='0.96' stroke='%23ef4444' stroke-width='1.7'/%3E%3Cline x1='7.4' y1='16.6' x2='16.6' y2='7.4' stroke='%23ef4444' stroke-width='1.7' stroke-linecap='round'/%3E%3C/svg%3E") 12 12, not-allowed !important;
+}
+
+.ec-sf-detail-toggle .toggle-switch,
+.ec-sf-form-toggle .toggle-switch {
+  width: 100%;
+  min-height: 38px;
+  padding: 6px 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.ec-sf-detail-toggle .toggle-switch.is-on,
+.ec-sf-form-toggle .toggle-switch.is-on {
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+.ec-sf-detail-toggle .toggle-slider,
+.ec-sf-form-toggle .toggle-slider {
+  width: 34px;
+  height: 20px;
+}
+
+.ec-sf-detail-toggle .toggle-slider::after,
+.ec-sf-form-toggle .toggle-slider::after {
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+}
+
+.ec-sf-detail-toggle .toggle-switch.is-on .toggle-slider::after,
+.ec-sf-form-toggle .toggle-switch.is-on .toggle-slider::after {
+  transform: translateX(14px);
+}
+
+.ec-sf-detail-toggle .toggle-text,
+.ec-sf-form-toggle .toggle-text {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #475569;
+}
+
+.ec-th-appareil {
+  font-size: 0.78rem;
+  width: 22%;
+}
+
+.ec-th-desc {
+  font-size: 0.78rem;
+}
+
+.ec-th-actions {
+  font-size: 0.78rem;
+  width: 90px;
+  text-align: center;
+}
+
+.ec-td-vmiddle {
+  vertical-align: middle;
+}
+
+.ec-td-actions {
+  vertical-align: middle;
+  text-align: center;
+}
+
+.ec-desc-text {
+  font-size: 0.9rem;
+  color: #1e293b;
+}
