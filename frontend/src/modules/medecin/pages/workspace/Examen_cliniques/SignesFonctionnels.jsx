@@ -4,8 +4,8 @@ import { toast } from "react-toastify";
 import { confirmAction } from "../../../../../shared/utils/uiAlerts";
 import { getAppareils, getSignesByPatient, createSignesFonctionnels, updateSignesFonctionnels } from "../../../services/examenCliniqueServices/signesFonctionService";
 import { SIGNES_KEYS, SIGNES_LABELS, SIGNES_INIT, FORM_SF_INIT, UI_INIT, getSignesPositifs } from "./examenConfig";
-import { PAGE_BG, STYLES, PageHeader, HistoriqueAccordeon, EmptyState, FormulaireWrapper, AutresSignesSection, BoutonEnregistrer, BtnModifier, Badge, Spinner, RasToggle } from "./ExamenComponents";
-import ToggleSwitch from "../../../components/forms/ToggleSwitch";
+import { PAGE_BG, STYLES, PageHeader, HistoriqueAccordeon, HistoriqueTable, HistoriqueActions, EmptyState, FormulaireWrapper, AutresSignesSection, BoutonEnregistrer, Badge, Spinner, RasToggle, parseApiError } from "./Examencomponents";
+import ToggleSwitch from "../../../components/buttons/ToggleSwitch";
 
 export default function SignesFonctionnels() {
   const { examenId, patientNumero } = useOutletContext();
@@ -135,7 +135,7 @@ export default function SignesFonctionnels() {
       const hr = await getSignesByPatient(patientNumero);
       patchData({ historique: hr?.signes || [] });
     } catch (e) {
-      toast.error(typeof e === "string" ? e : e?.message || "Erreur");
+      toast.error(parseApiError(e));
     } finally {
       patchUi({ saving: false });
     }
@@ -161,46 +161,31 @@ export default function SignesFonctionnels() {
         open={ui.showHistory}
         onToggle={() => patchUi({ showHistory: !ui.showHistory })}
       >
-        {data.historique.length === 0 ? (
-          <EmptyState message="Aucun signe fonctionnel enregistre" />
-        ) : (
-          <div className="table-responsive">
-            <table className="table table-hover table-sm mb-0">
-              <thead className="table-light">
-                <tr>
-                  {["Date", "Signes positifs", "Action"].map((h) => (
-                    <th key={h} style={STYLES.thSm}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {data.historique.map((s) => {
-                  const pos = getSignesPositifs(s);
-                  return (
-                    <tr key={s.id}>
-                      <td style={STYLES.tdDate}>{s.date_examen ? new Date(s.date_examen).toLocaleDateString("fr-FR") : "N/A"}</td>
-                      <td>
-                        {s.ras ? (
-                          <Badge bg="#dcfce7" color="#166534">RAS</Badge>
-                        ) : pos.length > 0 ? (
-                          <div className="d-flex flex-wrap gap-1">{pos.map((n, i) => <Badge key={i} bg="#fef3c7" color="#92400e">{n}</Badge>)}</div>
-                        ) : (
-                          <small className="text-secondary">Aucun</small>
-                        )}
-                      </td>
-                      <td>
-                        <div className="d-flex gap-2">
-                          <button className="btn btn-sm btn-outline-secondary" onClick={() => handleShowDetails(s)}>Details</button>
-                          <BtnModifier onClick={() => handleEdit(s)} />
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <HistoriqueTable
+          headers={["Date", "Signes positifs", "Action"]}
+          items={data.historique}
+          emptyMessage="Aucun signe fonctionnel enregistre"
+          renderRow={(s) => {
+            const pos = getSignesPositifs(s);
+            return (
+              <tr key={s.id}>
+                <td style={STYLES.tdDate}>{s.date_examen ? new Date(s.date_examen).toLocaleDateString("fr-FR") : "N/A"}</td>
+                <td>
+                  {s.ras ? (
+                    <Badge bg="#dcfce7" color="#166534">RAS</Badge>
+                  ) : pos.length > 0 ? (
+                    <div className="d-flex flex-wrap gap-1">{pos.map((n, i) => <Badge key={i} bg="#fef3c7" color="#92400e">{n}</Badge>)}</div>
+                  ) : (
+                    <small className="text-secondary">Aucun</small>
+                  )}
+                </td>
+                <td>
+                  <HistoriqueActions onDetails={() => handleShowDetails(s)} onEdit={() => handleEdit(s)} />
+                </td>
+              </tr>
+            );
+          }}
+        />
       </HistoriqueAccordeon>
 
       {detailSigne && (

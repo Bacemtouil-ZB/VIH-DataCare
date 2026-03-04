@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./ExamenComponents.css";
+import "./Examencomponents.css";
 
 // ── Exports de compatibilité ──────────────────────────────────────────────────
 export const LABEL_CLS = "text-uppercase fw-semibold text-secondary d-block mb-1";
@@ -74,6 +74,41 @@ export function HistoriqueAccordeon({ title, count, open, onToggle, children }) 
 }
 
 // ── 2b. Barre section non-accordéon ──────────────────────────────────────────
+export function HistoriqueTable({ headers, items, renderRow, emptyMessage = "Aucune donnee" }) {
+  if (!items?.length) return <EmptyState message={emptyMessage} />;
+  return (
+    <div className="table-responsive">
+      <table className="table table-hover table-sm mb-0">
+        <thead className="table-light">
+          <tr>
+            {headers.map((h) => (
+              <th key={h} style={STYLES.thSm}>{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>{items.map((item) => renderRow(item))}</tbody>
+      </table>
+    </div>
+  );
+}
+
+export function HistoriqueActions({ onDetails, onEdit }) {
+  return (
+    <div className="d-flex gap-2">
+      {onDetails && (
+        <button className="btn btn-sm btn-outline-secondary ec-btn-details" onClick={onDetails}>
+          Details
+        </button>
+      )}
+      {onEdit && <BtnModifier onClick={onEdit} />}
+    </div>
+  );
+}
+
+export function parseApiError(error, fallback = "Erreur") {
+  return error?.response?.data?.message || error?.response?.data?.error || error?.message || fallback;
+}
+
 export function SectionHeader({ title, icon, children }) {
   return (
     <div className="mb-4 rounded overflow-hidden border">

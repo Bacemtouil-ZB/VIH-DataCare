@@ -7,16 +7,28 @@ export const createSigneClinique = async (signeData) => {
   const query = `
     INSERT INTO signes_cliniques (examen_clinique_id, poids, taille, imc)
     VALUES ($1, $2, $3, $4)
-    RETURNING *;
+    RETURNING *,
+      (SELECT ec.patient_id FROM examen_clinique ec WHERE ec.id = signes_cliniques.examen_clinique_id) AS patient_id;
   `;
   const result = await pool.query(query, [examen_clinique_id, poids || null, taille || null, imc || null]);
   return result.rows[0];
 };
 
+export const getSigneCliniqueById = async (id) => {
+  const query = `
+    SELECT sc.*, ec.date_examen, ec.patient_id
+    FROM signes_cliniques sc
+    JOIN examen_clinique ec ON sc.examen_clinique_id = ec.id
+    WHERE sc.id = $1;
+  `;
+  const result = await pool.query(query, [id]);
+  return result.rows[0] || null;
+};
+
 
 export const getSigneCliniqueByNumeroDossier = async (numeroDossier) => {
   const query = `
-    SELECT sc.*, ec.date_examen
+    SELECT sc.*, ec.date_examen, ec.patient_id
     FROM signes_cliniques sc
     JOIN examen_clinique ec ON sc.examen_clinique_id = ec.id
     JOIN patients p ON ec.patient_id = p.id
@@ -35,7 +47,8 @@ export const updateSigneClinique = async (id, signeData) => {
         taille = COALESCE($2, taille),
         imc    = COALESCE($3, imc)
     WHERE id = $4
-    RETURNING *;
+    RETURNING *,
+      (SELECT ec.patient_id FROM examen_clinique ec WHERE ec.id = signes_cliniques.examen_clinique_id) AS patient_id;
   `;
   const result = await pool.query(query, [poids || null, taille || null, imc || null, id]);
   return result.rows[0];

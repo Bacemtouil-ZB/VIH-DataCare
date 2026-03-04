@@ -6,7 +6,7 @@ import { createSigneClinique, updateSigneClinique, getSigneCliniqueByNumeroDossi
 import { getAppareils } from "../../../services/examenCliniqueServices/signesFonctionService";
 import { calcIMC, UI_INIT, FORM_SC_INIT } from "./examenConfig";
 import { PAGE_BG, LABEL_CLS, STYLES, PageHeader,
-  HistoriqueAccordeon, EmptyState, FormulaireWrapper, AutresSignesSection, BoutonEnregistrer, BtnModifier, Badge, ImcField } from "./ExamenComponents";
+  HistoriqueAccordeon, HistoriqueTable, HistoriqueActions, EmptyState, FormulaireWrapper, AutresSignesSection, BoutonEnregistrer, Badge, ImcField, parseApiError } from "./Examencomponents";
 
 export default function SignesCliniques() {
   const { numero } = useParams();
@@ -155,7 +155,7 @@ export default function SignesCliniques() {
       const hr = await getSigneCliniqueByNumeroDossier(numero);
       patchData({ historique: hr?.signes || [] });
     } catch (e) {
-      toast.error(e?.response?.data?.message || e?.message || "Erreur");
+      toast.error(parseApiError(e));
     } finally {
       patchUi({ saving: false });
     }
@@ -179,40 +179,25 @@ export default function SignesCliniques() {
         open={ui.showHistory}
         onToggle={() => patchUi({ showHistory: !ui.showHistory })}
       >
-        {data.historique.length === 0 ? (
-          <EmptyState message="Aucun signe clinique enregistre" />
-        ) : (
-          <div className="table-responsive">
-            <table className="table table-hover table-sm mb-0">
-              <thead className="table-light">
-                <tr>
-                  {["Date", "Taille (cm)", "Poids (kg)", "IMC", "Action"].map((h) => (
-                    <th key={h} style={STYLES.thSm}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {data.historique.map((s) => {
-                  const si = s.taille && s.poids ? calcIMC(+s.taille, +s.poids) : null;
-                  return (
-                    <tr key={s.id}>
-                      <td style={STYLES.tdDate}>{s.date_examen ? new Date(s.date_examen).toLocaleDateString("fr-FR") : "N/A"}</td>
-                      <td><Badge bg="#dbeafe" color="#1d4ed8">{s.taille ?? "N/A"}</Badge></td>
-                      <td><Badge bg="#dcfce7" color="#166534">{s.poids ?? "N/A"}</Badge></td>
-                      <td>{si ? <span style={{ color: si.color, fontWeight: 700 }}>{si.val} <small style={{ fontWeight: 400 }}>{si.label}</small></span> : "N/A"}</td>
-                      <td>
-                        <div className="d-flex gap-2">
-                          <button className="btn btn-sm btn-outline-secondary" onClick={() => handleShowDetails(s)}>Details</button>
-                          <BtnModifier onClick={() => handleEdit(s)} />
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <HistoriqueTable
+          headers={["Date", "Taille (cm)", "Poids (kg)", "IMC", "Action"]}
+          items={data.historique}
+          emptyMessage="Aucun signe clinique enregistre"
+          renderRow={(s) => {
+            const si = s.taille && s.poids ? calcIMC(+s.taille, +s.poids) : null;
+            return (
+              <tr key={s.id}>
+                <td style={STYLES.tdDate}>{s.date_examen ? new Date(s.date_examen).toLocaleDateString("fr-FR") : "N/A"}</td>
+                <td><Badge bg="#dbeafe" color="#1d4ed8">{s.taille ?? "N/A"}</Badge></td>
+                <td><Badge bg="#dcfce7" color="#166534">{s.poids ?? "N/A"}</Badge></td>
+                <td>{si ? <span style={{ color: si.color, fontWeight: 700 }}>{si.val} <small style={{ fontWeight: 400 }}>{si.label}</small></span> : "N/A"}</td>
+                <td>
+                  <HistoriqueActions onDetails={() => handleShowDetails(s)} onEdit={() => handleEdit(s)} />
+                </td>
+              </tr>
+            );
+          }}
+        />
       </HistoriqueAccordeon>
 
       {detailSigne && (

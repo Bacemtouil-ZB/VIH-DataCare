@@ -19,7 +19,8 @@ export const createHabitudeDeVie = async (habitudeData, createdBy) => {
       created_by
     )
     VALUES ($1, $2, $3, $4, $5, $6)
-    RETURNING *;
+    RETURNING *,
+      (SELECT ec.patient_id FROM examen_clinique ec WHERE ec.id = habitudes_vie.examen_clinique_id) AS patient_id;
   `;
 
   const values = [
@@ -35,12 +36,12 @@ export const createHabitudeDeVie = async (habitudeData, createdBy) => {
   return result.rows[0];
 };
 
-
 export const getHabitudeDeVieById = async (id) => {
   const query = `
-    SELECT 
+    SELECT
       h.*,
-      ec.date_examen
+      ec.date_examen,
+      ec.patient_id
     FROM habitudes_vie h
     LEFT JOIN examen_clinique ec ON h.examen_clinique_id = ec.id
     WHERE h.id = $1;
@@ -52,9 +53,10 @@ export const getHabitudeDeVieById = async (id) => {
 
 export const getHabitudeDeVieByNumeroDossier = async (numero) => {
   const query = `
-    SELECT 
+    SELECT
       h.*,
-      ec.date_examen
+      ec.date_examen,
+      ec.patient_id
     FROM habitudes_vie h
     LEFT JOIN examen_clinique ec ON h.examen_clinique_id = ec.id
     LEFT JOIN patients p ON ec.patient_id = p.id
@@ -63,9 +65,8 @@ export const getHabitudeDeVieByNumeroDossier = async (numero) => {
   `;
 
   const result = await pool.query(query, [numero]);
-  return result.rows; // Retourne un tableau
+  return result.rows;
 };
-
 
 export const updateHabitudeDeVie = async (id, habitudeData, updatedBy) => {
   const {
@@ -77,7 +78,7 @@ export const updateHabitudeDeVie = async (id, habitudeData, updatedBy) => {
 
   const query = `
     UPDATE habitudes_vie
-    SET 
+    SET
       tabagisme = COALESCE($1, tabagisme),
       alcoolemie = COALESCE($2, alcoolemie),
       toxicomanie = COALESCE($3, toxicomanie),
@@ -85,7 +86,8 @@ export const updateHabitudeDeVie = async (id, habitudeData, updatedBy) => {
       updated_by = $5,
       updated_at = NOW()
     WHERE id = $6
-    RETURNING *;
+    RETURNING *,
+      (SELECT ec.patient_id FROM examen_clinique ec WHERE ec.id = habitudes_vie.examen_clinique_id) AS patient_id;
   `;
 
   const values = [

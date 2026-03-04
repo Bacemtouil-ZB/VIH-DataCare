@@ -3,9 +3,9 @@ import { useOutletContext } from "react-router-dom";
 import { toast } from "react-toastify";
 import { confirmAction } from "../../../../../shared/utils/uiAlerts";
 import { createHabitudeDeVie, getHabitudeDeVieByNumeroDossier, updateHabitudeDeVie } from "../../../services/examenCliniqueServices/habitudeDeVieService";
-import ToggleSwitch from "../../../components/forms/ToggleSwitch";
+import ToggleSwitch from "../../../components/buttons/ToggleSwitch";
 import { HABITUDES_CHAMPS, HABITUDES_INIT } from "./examenConfig";
-import { PAGE_BG, STYLES, PageHeader, BoutonSauvegarder, Spinner } from "./ExamenComponents";
+import { PAGE_BG, STYLES, PageHeader, BoutonSauvegarder, Spinner } from "./Examencomponents";
 
 export default function HabitudesPage() {
   const { examenId, patientNumero } = useOutletContext();

@@ -376,6 +376,11 @@
   transform: translateY(0);
 }
 
+.ec-btn-details {
+  border-radius: 6px;
+  font-weight: 600;
+}
+
 /* ── 8. Badge ──────────────────────────────────────────────────────── */
 .ec-badge {
   font-size: 0.82rem;
