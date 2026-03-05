@@ -2,7 +2,7 @@ import pool from "../../config/db.js";
 
 
 export const createExamenClinique = async (examenData, medecinId) => {
-  const { patient_id, date_examen } = examenData;
+  const { patient_id } = examenData;
 
   const query = `
     INSERT INTO examen_clinique (
@@ -10,13 +10,12 @@ export const createExamenClinique = async (examenData, medecinId) => {
       date_examen,
       medecin_id
     )
-    VALUES ($1, $2, $3)
+    VALUES ($1, NOW(), $2)
     RETURNING *;
   `;
 
   const values = [
     patient_id,
-    date_examen || new Date(),
     medecinId
   ];
 

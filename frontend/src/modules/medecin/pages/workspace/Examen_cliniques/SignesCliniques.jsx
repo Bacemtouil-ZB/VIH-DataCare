@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { confirmAction } from "../../../../../shared/utils/uiAlerts";
 import { createSigneClinique, updateSigneClinique, getSigneCliniqueByNumeroDossier } from "../../../services/examenCliniqueServices/signeCliniqueService";
 import { getAppareils } from "../../../services/examenCliniqueServices/signesFonctionService";
+import { ActionButton } from "../../../components/buttons/ActionButton";
 import { calcIMC, FORM_SC_INIT } from "./examenConfig";
 import {
   formatDateFr,
@@ -16,9 +17,12 @@ import {
   showDetailMode,
 } from "./examenSharedLogique";
 import {
-  PAGE_CONTAINER_CLASS,LABEL_CLS,PageHeader,HistoriqueAccordeon,HistoriqueTable,HistoriqueActions,EmptyState,
-  FormulaireWrapper,AutresSignesSection,BoutonEnregistrer,Badge,ImcField,Spinner,parseApiError,
-} from "./examenComponents";
+  PageHeader,HistoriqueAccordeon,HistoriqueTable,HistoriqueActions,EmptyState,
+  FormulaireWrapper,AutresSignesSection,Badge,ImcField,Spinner,parseApiError,
+} from "./index";
+
+const PAGE_CONTAINER_CLASS = "ec-page-bg";
+const LABEL_CLS = "text-uppercase fw-semibold text-secondary d-block mb-1 ec-label";
 
 function Field({ label, value }) {
   return (
@@ -36,7 +40,7 @@ export default function SignesCliniques() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showForm, setShowForm] = useState(false);
-  const [showHistory, setShowHistory] = useState(false);
+  const [showHistory, setShowHistory] = useState(true);
 
   const [signeId, setSigneId] = useState(FORM_SC_INIT.signeId);
   const [isModifying, setIsModifying] = useState(FORM_SC_INIT.isModifying);
@@ -273,7 +277,14 @@ export default function SignesCliniques() {
             onSupprimer={supprimerAutreSigne}
             onModifierDescription={modifierDescription}
           />
-          <BoutonEnregistrer isModifying={isModifying} loading={saving} onClick={handleEnregistrer} />
+          <ActionButton
+            action="save"
+            block={true}
+            loading={saving}
+            label={isModifying ? "Enregistrer les modifications" : "Enregistrer la fiche"}
+            onClick={handleEnregistrer}
+            showIcon={false}
+          />
         </FormulaireWrapper>
       )}
     </div>

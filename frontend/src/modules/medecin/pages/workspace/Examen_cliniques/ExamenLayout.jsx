@@ -1,9 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, NavLink, Outlet } from "react-router-dom";
-import { toast } from "react-toastify";
 import { alertError } from "../../../../../shared/utils/uiAlerts";
-import CreateExamenModal from "./CreateExamenModal";
-import { getExamensByPatient } from "../../../services/examenCliniqueServices/examenCliniqueService";
+import { createExamenClinique, getExamensByPatient } from "../../../services/examenCliniqueServices/examenCliniqueService";
 import "./ExamenLayout.css";
 
 const TABS = [
@@ -19,7 +17,6 @@ export default function ExamenLayout() {
 
   const [examenId, setExamenId] = useState(null);
   const [dateExamen, setDateExamen] = useState(null);
-  const [showModal, setShowModal] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,10 +24,10 @@ export default function ExamenLayout() {
       alertError("Numero de patient manquant").then(() => navigate("/medecin/patients"));
       return;
     }
-    checkExamenExists();
-  }, [numero]);
+    initExamenClinique();
+  }, [numero, navigate]);
 
-  const checkExamenExists = async () => {
+  const initExamenClinique = async () => {
     try {
       setLoading(true);
       const response = await getExamensByPatient(numero);
@@ -39,23 +36,20 @@ export default function ExamenLayout() {
         setExamenId(dernierExamen.id);
         setDateExamen(dernierExamen.date_examen);
       } else {
-        setShowModal(true);
+        const created = await createExamenClinique({ patient_numero: numero });
+        if (!created?.success || !created?.examen?.id) {
+          throw new Error(created?.message || "Creation examen clinique impossible");
+        }
+        setExamenId(created.examen.id);
+        setDateExamen(created.examen.date_examen);
       }
-    } catch {
-      setShowModal(true);
+    } catch (error) {
+      await alertError(error?.message || "Erreur lors de l'initialisation de l'examen clinique");
+      navigate("/medecin/patients");
     } finally {
       setLoading(false);
     }
   };
-
-  const handleExamenCreated = (examen) => {
-    setExamenId(examen.id);
-    setDateExamen(examen.date_examen);
-    setShowModal(false);
-    toast.success("Examen clinique cree avec succes");
-  };
-
-  const handleHideModal = () => setShowModal(false);
 
   if (loading) {
     return (
@@ -69,27 +63,12 @@ export default function ExamenLayout() {
 
   return (
     <div className="examen-container">
-      <CreateExamenModal show={showModal} onHide={handleHideModal} onExamenCreated={handleExamenCreated} patientNumero={numero} />
-
-      {!examenId && (
-        <div className="alert alert-warning mb-3 d-flex align-items-center justify-content-between">
-          <span>
-            <i className="bi bi-exclamation-triangle me-2"></i>
-            <strong>Action requise :</strong> Aucun examen clinique actif pour ce patient.
-          </span>
-          <button className="btn btn-sm btn-warning" onClick={() => setShowModal(true)}>
-            <i className="bi bi-plus-circle me-1"></i>Creer l'examen
-          </button>
-        </div>
-      )}
-
       <div className="tabs">
         {TABS.map(({ to, label }) => (
           <NavLink
             key={to}
             to={to}
-            className={({ isActive }) => `tab-link${isActive ? " active" : ""}${!examenId ? " tab-disabled" : ""}`}
-            onClick={(e) => !examenId && e.preventDefault()}
+            className={({ isActive }) => `tab-link${isActive ? " active" : ""}`}
           >
             {label}
           </NavLink>

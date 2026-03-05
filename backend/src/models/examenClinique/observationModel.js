@@ -13,12 +13,12 @@ export const createObservation = async (examenCliniqueId, remarque) => {
 
 export const getObservationsByNumeroDossier = async (numeroDossier) => {
   const query = `
-    SELECT o.*, ec.date_examen, ec.patient_id
+    SELECT o.*, o.created_at AS date_examen, ec.patient_id
     FROM observations o
     JOIN examen_clinique ec ON o.examen_clinique_id = ec.id
     JOIN patients p ON ec.patient_id = p.id
     WHERE p.numero = $1
-    ORDER BY ec.date_examen DESC;
+    ORDER BY o.created_at DESC;
   `;
   const result = await pool.query(query, [numeroDossier]);
   return result.rows;

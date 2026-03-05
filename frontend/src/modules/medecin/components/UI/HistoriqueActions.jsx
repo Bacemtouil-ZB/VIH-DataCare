@@ -1,4 +1,4 @@
-import { BtnModifier } from "./BtnModifier";
+import { ActionButton } from "../buttons/ActionButton";
 
 const styles = `.ec-btn-details { border-radius: 6px; font-weight: 600; }`;
 
@@ -10,9 +10,8 @@ export function HistoriqueActions({ onDetails, onEdit }) {
         {onDetails && (
           <button className="btn btn-sm btn-outline-secondary ec-btn-details" onClick={onDetails}>Details</button>
         )}
-        {onEdit && <BtnModifier onClick={onEdit} />}
+        {onEdit && <ActionButton action="edit" variant="outline" onClick={onEdit} />}
       </div>
     </>
   );
 }
-

@@ -16,7 +16,7 @@ export const createSigneClinique = async (signeData) => {
 
 export const getSigneCliniqueById = async (id) => {
   const query = `
-    SELECT sc.*, ec.date_examen, ec.patient_id
+    SELECT sc.*, sc.created_at AS date_examen, ec.patient_id
     FROM signes_cliniques sc
     JOIN examen_clinique ec ON sc.examen_clinique_id = ec.id
     WHERE sc.id = $1;
@@ -28,12 +28,12 @@ export const getSigneCliniqueById = async (id) => {
 
 export const getSigneCliniqueByNumeroDossier = async (numeroDossier) => {
   const query = `
-    SELECT sc.*, ec.date_examen, ec.patient_id
+    SELECT sc.*, sc.created_at AS date_examen, ec.patient_id
     FROM signes_cliniques sc
     JOIN examen_clinique ec ON sc.examen_clinique_id = ec.id
     JOIN patients p ON ec.patient_id = p.id
     WHERE p.numero = $1
-    ORDER BY ec.date_examen DESC;
+    ORDER BY sc.created_at DESC;
   `;
   const result = await pool.query(query, [numeroDossier]);
   return result.rows;
