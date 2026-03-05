@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // import React from "react";
 
 // export default function ToggleSwitch({
@@ -106,3 +107,6 @@ export default function ToggleSwitch({
     </div>
   );
 }
+=======
+export { default } from "../buttons/ToggleSwitch";
+>>>>>>> f773eb31cec06a96005ae09fabf8b71b9e95790b

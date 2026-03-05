@@ -20,6 +20,7 @@ const MESSAGES = {
   SAVED: "Enregistré",
   NEW_VERSION_CREATED: "Nouvelle version créée",
   FIRST_CREATED: "Fiche créée",
+  NO_FILE_YET: "Aucune fiche d’antécédents créée pour le moment.",
 };
 
 const formatDate = (iso) => {
@@ -114,8 +115,7 @@ export default function AntecedentsForm() {
   }, [numero]);
 
   const loadSnapshot = useCallback(
-    async (versionNumber, options = {}) => {
-      const { keepEditing = false } = options;
+    async (versionNumber) => {
       if (!numero || !versionNumber) return;
 
       setLoading(true);
@@ -131,7 +131,7 @@ export default function AntecedentsForm() {
 
         resetDirty();
         setReadOnly(snap?.antecedent?.status === "archived");
-        setIsEditing(keepEditing);
+        setIsEditing(false);
       } catch (e) {
         notifyError(e);
       } finally {
@@ -204,12 +204,12 @@ export default function AntecedentsForm() {
       const newVersion = created?.antecedent?.version_number ?? null;
 
       await loadVersions();
-
       if (newVersion) {
         setSelectedVersion(newVersion);
-        await loadSnapshot(newVersion, { keepEditing: true });
+        await loadSnapshot(newVersion);
       }
 
+      setIsEditing(true);
       toast.success(MESSAGES.FIRST_CREATED);
     } catch (e) {
       notifyError(e);
@@ -316,35 +316,33 @@ export default function AntecedentsForm() {
       <div className="antecedents-header">
         <div className="header-content">
           <div className="header-left header-row">
-            {hasAnyVersion ? (
-              <div className="version-bar">
-                <span className="version-label">Version</span>
-                <select
-                  className="version-select"
-                  value={selectedVersion ?? ""}
-                  onChange={(e) => setSelectedVersion(Number(e.target.value))}
-                  disabled={isBusy}
-                >
-                  {versions.map((v) => (
-                    <option key={v.id} value={v.version_number}>
-                      {`v${v.version_number} — ${
-                        v.status === "active" ? "active" : "archivée"
-                      } — ${formatDate(v.created_at)}`}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            ) : null}
+            <div className="version-bar">
+              <span className="version-label">Version</span>
 
-            {hasAnyVersion && (
-              <button
-                onClick={handleNewVersion}
-                className="btn-secondary"
-                disabled={isBusy}
+              <select
+                className="version-select"
+                value={selectedVersion ?? ""}
+                onChange={(e) => setSelectedVersion(Number(e.target.value))}
+                disabled={isBusy || !hasAnyVersion}
               >
-                + Nouvelle version
-              </button>
-            )}
+                {!hasAnyVersion && <option value="">Aucune version</option>}
+                {versions.map((v) => (
+                  <option key={v.id} value={v.version_number}>
+                    {`v${v.version_number} — ${
+                      v.status === "active" ? "active" : "archivée"
+                    } — ${formatDate(v.created_at)}`}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <button
+              onClick={handleNewVersion}
+              className="btn-secondary"
+              disabled={isBusy || !hasAnyVersion}
+            >
+              + Nouvelle version
+            </button>
 
             {statusPill}
           </div>
@@ -363,7 +361,11 @@ export default function AntecedentsForm() {
                   Annuler
                 </button>
               </>
-            ) : hasAnyVersion ? (
+            ) : !hasAnyVersion ? (
+              <button onClick={handleCreateFirst} className="btn-primary" disabled={isBusy}>
+                Créer
+              </button>
+            ) : (
               <button
                 onClick={handleEdit}
                 className="btn-secondary"
@@ -371,48 +373,32 @@ export default function AntecedentsForm() {
               >
                 Modifier
               </button>
-            ) : null}
+            )}
           </div>
         </div>
       </div>
 
       {!hasAnyVersion && (
-        <div className="empty-state-card">
-          <h3 className="empty-state-title">Aucune fiche d’antécédents</h3>
-          <p className="empty-state-text">
-            Créez la première fiche pour commencer la saisie des antécédents.
-          </p>
-          <button
-            onClick={handleCreateFirst}
-            className="btn-primary"
-            disabled={isBusy}
-          >
-            {loading ? "Création..." : "Créer la fiche"}
-          </button>
-        </div>
+        <div className="empty-state-info">{MESSAGES.NO_FILE_YET}</div>
       )}
 
       <div className="antecedents-container">
-        {hasAnyVersion ? (
-          <>
-            <TabNavigation sections={SECTIONS} active={active} onChange={setActive} />
+        <TabNavigation sections={SECTIONS} active={active} onChange={setActive} />
 
-            {loading ? (
-              <div className="loading">Chargement...</div>
-            ) : (
-              <SectionRenderer
-                active={active}
-                form={form}
-                BOOL_FIELDS={BOOL_FIELDS}
-                updateSection={updateSection}
-                updateList={updateList}
-                addRow={addRow}
-                removeRow={removeRow}
-                readOnly={!canEdit}
-              />
-            )}
-          </>
-        ) : null}
+        {loading ? (
+          <div className="loading">Chargement...</div>
+        ) : (
+          <SectionRenderer
+            active={active}
+            form={form}
+            BOOL_FIELDS={BOOL_FIELDS}
+            updateSection={updateSection}
+            updateList={updateList}
+            addRow={addRow}
+            removeRow={removeRow}
+            readOnly={!canEdit}
+          />
+        )}
       </div>
     </div>
   );

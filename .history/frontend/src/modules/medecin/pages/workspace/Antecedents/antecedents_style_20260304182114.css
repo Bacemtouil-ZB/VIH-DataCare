@@ -1,0 +1,213 @@
+
+/* Page background + font */
+.antecedents-wrapper {
+  min-height: 100vh;
+  background: #f3f4f6; /* same vibe as screenshot */
+  font-family: "DM Sans", "Segoe UI", sans-serif;
+  color: #111827;
+}
+
+/* --- Remove the heavy header look; make it subtle like other pages --- */
+.antecedents-header {
+  background: transparent;
+  border-bottom: 0;
+  padding: 0;
+}
+
+/* Center content like other pages */
+.header-content {
+  max-width: 980px;          /* Social page content looks narrower */
+  margin: 0 auto;
+  padding: 18px 20px 8px;    /* gives breathing room under "Patient Workspace" */
+  height: auto;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+/* Left header cluster */
+.header-left {
+  min-width: 0;
+}
+
+/* Version bar: keep it compact */
+.version-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* "Version" label */
+.version-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #6b7280;
+}
+
+/* Dropdown: simple, like forms on Social page */
+.version-select {
+  height: 34px;
+  padding: 0 12px;
+  min-width: 220px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+
+  outline: none;
+}
+
+.version-select:focus {
+  border-color: rgba(26, 122, 94, 0.55);
+  box-shadow: 0 0 0 3px rgba(26, 122, 94, 0.12);
+}
+
+/* "+ Nouvelle version" -> minimal outline button */
+.btn-tertiary {
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 8px;
+
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+
+  font-size: 13px;
+  font-weight: 700;
+  color: #374151;
+
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease;
+}
+
+.btn-tertiary:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.btn-tertiary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Right side actions */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* Buttons match the "simple admin form" vibe */
+.btn-primary {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 8px;
+
+  background: #1a7a5e;
+  border: 1px solid #1a7a5e;
+  color: #fff;
+
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background: #166a52;
+  border-color: #166a52;
+}
+
+.btn-secondary {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 8px;
+
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  color: #374151;
+
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Pills similar to subtle status chips */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 10px;
+
+  border-radius: 999px;
+  border: 1px solid transparent;
+
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.pill-readonly {
+  color: #92400e;
+  background: #fffbeb;
+  border-color: #f59e0b;
+}
+
+.pill-dirty {
+  color: #1e3a8a;
+  background: #eef2ff;
+  border-color: #c7d2fe;
+}
+
+/* =========================================================
+   Main content sheet (the big white card like Social page)
+   ========================================================= */
+
+.antecedents-container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 0 20px 28px;
+}
+
+/* Create the same "white sheet" container */
+.antecedents-content {
+  margin-top: 10px;
+}
+
+.section-shell {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 18px;
+  box-shadow: 0 12px 24px rgba(16, 24, 40, 0.06);
+}
+
+/* Keep spacing consistent under tabs */
+.antecedents-container > :first-child {
+  margin-top: 6px;
+}
+
+/* Responsive similar to other pages */
+@media (max-width: 900px) {
+  .header-content,
+  .antecedents-container {
+    max-width: 100%;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}

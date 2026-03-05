@@ -12,16 +12,6 @@ import antecedentsService from "../../../services/antecedentsService.jsx";
 import { confirmAction } from "../../../../../shared/utils/uiAlerts.js";
 import { normalizeFromApi, sanitizeForApi, getErrorMessage } from "./helpers.js";
 
-const MESSAGES = {
-  READ_ONLY: "Version archivée : lecture seule",
-  NEED_EDIT: "Cliquez sur “Modifier” avant d’enregistrer",
-  NOTHING_TO_SAVE: "Aucune modification à enregistrer",
-  CANCELLED: "Modifications annulées",
-  SAVED: "Enregistré",
-  NEW_VERSION_CREATED: "Nouvelle version créée",
-  FIRST_CREATED: "Fiche créée",
-};
-
 const formatDate = (iso) => {
   if (!iso) return "";
   const d = new Date(iso);
@@ -69,25 +59,15 @@ export default function AntecedentsForm() {
   const [saving, setSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
+  // snapshot for Annuler
   const savedRef = useRef(initialState);
+
+  // ✅ fast dirty tracking (no JSON.stringify => no lag)
   const dirtyRef = useRef(new Set());
   const [, force] = useState(0);
-
   const dirtyCount = dirtyRef.current.size;
-  const hasDirty = dirtyCount > 0;
-  const isBusy = loading || saving;
+
   const canEdit = !readOnly && isEditing;
-  const hasAnyVersion = versions.length > 0;
-
-  const notifyError = (e) => toast.error(getErrorMessage(e));
-
-  const guardReadOnly = () => {
-    if (readOnly) {
-      toast.info(MESSAGES.READ_ONLY);
-      return true;
-    }
-    return false;
-  };
 
   const resetDirty = () => {
     dirtyRef.current = new Set();
@@ -101,28 +81,33 @@ export default function AntecedentsForm() {
     }
   };
 
+  const ensureActiveExists = useCallback(async () => {
+    const header = await antecedentsService.getActiveAntecedent(numero);
+    if (!header?.antecedent) {
+      await antecedentsService.postNewAntecedentVersion(numero);
+    }
+  }, [numero]);
+
   const loadVersions = useCallback(async () => {
     const data = await antecedentsService.getAntecedentVersions(numero);
     const list = Array.isArray(data?.versions) ? data.versions : [];
     setVersions(list);
 
     const activeHeader = list.find((v) => v.status === "active");
-    const defaultVersion =
+    const def =
       activeHeader?.version_number ?? list[0]?.version_number ?? null;
-
-    setSelectedVersion((prev) => prev ?? defaultVersion);
+    setSelectedVersion((prev) => prev ?? def);
   }, [numero]);
 
   const loadSnapshot = useCallback(
-    async (versionNumber, options = {}) => {
-      const { keepEditing = false } = options;
+    async (versionNumber) => {
       if (!numero || !versionNumber) return;
 
       setLoading(true);
       try {
         const snap = await antecedentsService.getAntecedentVersionSnapshot(
           numero,
-          versionNumber
+          versionNumber,
         );
 
         const next = buildFormFromSnapshot(snap);
@@ -131,39 +116,40 @@ export default function AntecedentsForm() {
 
         resetDirty();
         setReadOnly(snap?.antecedent?.status === "archived");
-        setIsEditing(keepEditing);
+        setIsEditing(false);
       } catch (e) {
-        notifyError(e);
+        toast.error(getErrorMessage(e));
       } finally {
         setLoading(false);
       }
     },
-    [numero]
+    [numero],
   );
 
   useEffect(() => {
     if (!numero) return;
-
     (async () => {
       try {
+        await ensureActiveExists();
         await loadVersions();
       } catch (e) {
-        notifyError(e);
+        toast.error(getErrorMessage(e));
       }
     })();
-  }, [numero, loadVersions]);
+  }, [numero, ensureActiveExists, loadVersions]);
 
   useEffect(() => {
     if (!selectedVersion) return;
     loadSnapshot(selectedVersion);
   }, [selectedVersion, loadSnapshot]);
 
+  // ✅ one helper for all updates
   const patchSection = (sectionId, producer) => {
     if (!canEdit) return;
-    setForm((currentForm) => {
-      const nextSection = producer(currentForm[sectionId]);
+    setForm((f) => {
+      const nextSection = producer(f[sectionId]);
       markDirty(sectionId);
-      return { ...currentForm, [sectionId]: nextSection };
+      return { ...f, [sectionId]: nextSection };
     });
   };
 
@@ -185,48 +171,17 @@ export default function AntecedentsForm() {
 
   const removeRow = (sectionId, index) =>
     patchSection(sectionId, (cur) =>
-      Array.isArray(cur) ? cur.filter((_, i) => i !== index) : []
+      Array.isArray(cur) ? cur.filter((_, i) => i !== index) : [],
     );
 
-  const handleCreateFirst = async () => {
-    if (!numero || isBusy) return;
-
-    const ok = await confirmAction({
-      title: "Créer la première fiche ?",
-      text: "Une nouvelle fiche d’antécédents sera créée.",
-      confirmButtonText: "Créer",
-    });
-    if (!ok) return;
-
-    setLoading(true);
-    try {
-      const created = await antecedentsService.postNewAntecedentVersion(numero);
-      const newVersion = created?.antecedent?.version_number ?? null;
-
-      await loadVersions();
-
-      if (newVersion) {
-        setSelectedVersion(newVersion);
-        await loadSnapshot(newVersion, { keepEditing: true });
-      }
-
-      toast.success(MESSAGES.FIRST_CREATED);
-    } catch (e) {
-      notifyError(e);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleEdit = async () => {
-    if (guardReadOnly()) return;
+    if (readOnly) return toast.info("Version archivée : lecture seule");
 
     const ok = await confirmAction({
       title: "Activer le mode modification ?",
       text: "Vous pourrez modifier plusieurs sections puis enregistrer en une seule fois.",
       confirmButtonText: "Modifier",
     });
-
     if (ok) setIsEditing(true);
   };
 
@@ -234,32 +189,25 @@ export default function AntecedentsForm() {
     setForm(savedRef.current);
     resetDirty();
     setIsEditing(false);
-    toast.info(MESSAGES.CANCELLED);
+    toast.info("Modifications annulées");
   };
 
   const handleSaveAll = async () => {
     if (!numero) return;
-    if (guardReadOnly()) return;
-    if (!isEditing) return toast.info(MESSAGES.NEED_EDIT);
-    if (!hasDirty) return toast.info(MESSAGES.NOTHING_TO_SAVE);
+    if (readOnly) return toast.info("Version archivée : lecture seule");
+    if (!isEditing) return toast.info("Cliquez sur “Modifier” avant d’enregistrer");
+    if (dirtyRef.current.size === 0) return toast.info("Aucune modification à enregistrer");
 
     const ok = await confirmAction({
       title: "Enregistrer toutes les sections ?",
-      text: `Vous allez enregistrer ${dirtyCount} section(s).`,
+      text: `Vous allez enregistrer ${dirtyRef.current.size} section(s).`,
       confirmButtonText: "Enregistrer",
     });
     if (!ok) return;
 
     setSaving(true);
     try {
-      let versionToUse = selectedVersion;
-
-      if (!versionToUse) {
-        const created = await antecedentsService.postNewAntecedentVersion(numero);
-        versionToUse = created?.antecedent?.version_number ?? null;
-        if (!versionToUse) throw new Error("Création de version impossible");
-        setSelectedVersion(versionToUse);
-      }
+      await ensureActiveExists();
 
       for (const sectionId of dirtyRef.current) {
         const api = apiBySection[sectionId];
@@ -267,21 +215,21 @@ export default function AntecedentsForm() {
         await api.put(numero, sanitizeForApi(sectionId, form[sectionId]));
       }
 
-      toast.success(MESSAGES.SAVED);
+      toast.success("Enregistré");
       await loadVersions();
-      await loadSnapshot(versionToUse);
+      await loadSnapshot(selectedVersion);
 
       setIsEditing(false);
       resetDirty();
     } catch (e) {
-      notifyError(e);
+      toast.error(getErrorMessage(e));
     } finally {
       setSaving(false);
     }
   };
 
   const handleNewVersion = async () => {
-    if (isBusy) return;
+    if (saving || loading) return;
 
     const ok = await confirmAction({
       title: "Nouvelle version",
@@ -293,126 +241,133 @@ export default function AntecedentsForm() {
     setLoading(true);
     try {
       const created = await antecedentsService.postNewAntecedentVersion(numero);
-      toast.success(MESSAGES.NEW_VERSION_CREATED);
+      toast.success("Nouvelle version créée");
       await loadVersions();
-
-      const newVersion = created?.antecedent?.version_number;
-      if (newVersion) setSelectedVersion(newVersion);
+      const newV = created?.antecedent?.version_number;
+      if (newV) setSelectedVersion(newV);
     } catch (e) {
-      notifyError(e);
+      toast.error(getErrorMessage(e));
     } finally {
       setLoading(false);
     }
   };
 
-  const statusPill = readOnly ? (
-    <span className="pill pill-readonly">Lecture seule</span>
-  ) : hasDirty ? (
-    <span className="pill pill-dirty">{dirtyCount} modifiée(s)</span>
-  ) : null;
-
   return (
     <div className="antecedents-wrapper">
       <div className="antecedents-header">
         <div className="header-content">
-          <div className="header-left header-row">
-            {hasAnyVersion ? (
-              <div className="version-bar">
-                <span className="version-label">Version</span>
-                <select
-                  className="version-select"
-                  value={selectedVersion ?? ""}
-                  onChange={(e) => setSelectedVersion(Number(e.target.value))}
-                  disabled={isBusy}
-                >
-                  {versions.map((v) => (
-                    <option key={v.id} value={v.version_number}>
-                      {`v${v.version_number} — ${
-                        v.status === "active" ? "active" : "archivée"
-                      } — ${formatDate(v.created_at)}`}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            ) : null}
-
-            {hasAnyVersion && (
-              <button
-                onClick={handleNewVersion}
-                className="btn-secondary"
-                disabled={isBusy}
+          <div
+            className="header-left"
+            style={{ display: "flex", gap: 10, alignItems: "center" }}
+          >
+            <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+              <span style={{ fontSize: 13, color: "#6b7280" }}>Version</span>
+              <select
+                value={selectedVersion ?? ""}
+                onChange={(e) => setSelectedVersion(Number(e.target.value))}
+                disabled={loading || saving}
+                style={{
+                  padding: "6px 8px",
+                  borderRadius: 6,
+                  border: "1px solid #e5e7eb",
+                  background: "#fff",
+                }}
               >
-                + Nouvelle version
-              </button>
-            )}
+                {versions.map((v) => (
+                  <option key={v.id} value={v.version_number}>
+                    {`v${v.version_number} — ${
+                      v.status === "active" ? "active" : "archivée"
+                    } — ${formatDate(v.created_at)}`}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-            {statusPill}
+            <button
+              onClick={handleNewVersion}
+              className="btn-secondary"
+              disabled={loading || saving}
+            >
+              + Nouvelle version
+            </button>
+
+            {readOnly ? (
+              <span
+                style={{
+                  fontSize: 12.5,
+                  color: "#92400e",
+                  background: "#fffbeb",
+                  border: "1px solid #f59e0b",
+                  padding: "4px 8px",
+                  borderRadius: 999,
+                }}
+              >
+                Lecture seule
+              </span>
+            ) : dirtyCount > 0 ? (
+              <span
+                style={{
+                  fontSize: 12.5,
+                  color: "#1f2937",
+                  background: "#eef2ff",
+                  border: "1px solid #c7d2fe",
+                  padding: "4px 8px",
+                  borderRadius: 999,
+                }}
+              >
+                {dirtyCount} modifiée(s)
+              </span>
+            ) : null}
           </div>
 
-          <div className="header-right">
-            {isEditing ? (
+          <div className="header-right" style={{ display: "flex", gap: 10 }}>
+            {!isEditing ? (
+              <button
+                onClick={handleEdit}
+                className="btn-secondary"
+                disabled={loading || saving || readOnly}
+              >
+                Modifier
+              </button>
+            ) : (
               <>
                 <button
                   onClick={handleSaveAll}
                   className="btn-primary"
-                  disabled={isBusy || readOnly}
+                  disabled={saving || loading || readOnly}
                 >
                   {saving ? "Enregistrement..." : "Enregistrer"}
                 </button>
-                <button onClick={handleCancel} className="btn-secondary" disabled={isBusy}>
+                <button
+                  onClick={handleCancel}
+                  className="btn-secondary"
+                  disabled={saving || loading}
+                >
                   Annuler
                 </button>
               </>
-            ) : hasAnyVersion ? (
-              <button
-                onClick={handleEdit}
-                className="btn-secondary"
-                disabled={isBusy || readOnly}
-              >
-                Modifier
-              </button>
-            ) : null}
+            )}
           </div>
         </div>
       </div>
 
-      {!hasAnyVersion && (
-        <div className="empty-state-card">
-          <h3 className="empty-state-title">Aucune fiche d’antécédents</h3>
-          <p className="empty-state-text">
-            Créez la première fiche pour commencer la saisie des antécédents.
-          </p>
-          <button
-            onClick={handleCreateFirst}
-            className="btn-primary"
-            disabled={isBusy}
-          >
-            {loading ? "Création..." : "Créer la fiche"}
-          </button>
-        </div>
-      )}
-
       <div className="antecedents-container">
-        {hasAnyVersion ? (
-          <>
-            <TabNavigation sections={SECTIONS} active={active} onChange={setActive} />
+        <TabNavigation sections={SECTIONS} active={active} onChange={setActive} />
 
-            {loading ? (
-              <div className="loading">Chargement...</div>
-            ) : (
-              <SectionRenderer
-                active={active}
-                form={form}
-                BOOL_FIELDS={BOOL_FIELDS}
-                updateSection={updateSection}
-                updateList={updateList}
-                addRow={addRow}
-                removeRow={removeRow}
-                readOnly={!canEdit}
-              />
-            )}
-          </>
-        ) : null}
+        {loading ? (
+          <div className="loading">Chargement...</div>
+        ) : (
+          <SectionRenderer
+            active={active}
+            form={form}
+            BOOL_FIELDS={BOOL_FIELDS}
+            updateSection={updateSection}
+            updateList={updateList}
+            addRow={addRow}
+            removeRow={removeRow}
+            readOnly={!canEdit}
+          />
+        )}
       </div>
     </div>
   );

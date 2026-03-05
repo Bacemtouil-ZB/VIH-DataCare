@@ -1,0 +1,136 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap");
+
+:root {
+  --a-bg: #f3f4f6;
+  --a-card: #ffffff;
+  --a-text: #111827;
+  --a-muted: #6b7280;
+  --a-border: #e5e7eb;
+  --a-primary: #1a7a5e;
+  --a-primary-600: #166a52;
+  --a-ring: rgba(26, 122, 94, 0.18);
+  --a-radius: 12px;
+}
+
+* { box-sizing: border-box; }
+button, input, textarea, select { font-family: inherit; }
+
+.aPage {
+  min-height: 100vh;
+  background: var(--a-bg);
+  font-family: "DM Sans", "Segoe UI", sans-serif;
+  color: var(--a-text);
+}
+
+.aContainer {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 22px 20px 28px;
+}
+
+.aHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 14px;
+}
+
+.aTitle {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--a-primary);
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.aSubtitle {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--a-muted);
+}
+
+.aActions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.aCard {
+  background: var(--a-card);
+  border: 1px solid var(--a-border);
+  border-radius: var(--a-radius);
+  padding: 18px;
+  box-shadow: 0 12px 24px rgba(16, 24, 40, 0.06);
+}
+
+.aEmpty {
+  padding: 4px 0;
+}
+
+.aEmptyTitle {
+  font-size: 14px;
+  font-weight: 800;
+  color: #374151;
+}
+
+.aEmptyText {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--a-muted);
+}
+
+.aBtn {
+  height: 36px;
+  border-radius: 10px;
+  padding: 0 14px;
+  border: 1px solid var(--a-border);
+  background: #fff;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 140ms ease, border-color 140ms ease, box-shadow 140ms ease;
+}
+
+.aBtn:hover { background: #f9fafb; border-color: #d1d5db; }
+
+.aBtnPrimary {
+  background: var(--a-primary);
+  border-color: var(--a-primary);
+  color: #fff;
+}
+
+.aBtnPrimary:hover {
+  background: var(--a-primary-600);
+  border-color: var(--a-primary-600);
+}
+
+.aBtn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--a-ring);
+}
+
+.aBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.aToolbar {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.aHint {
+  font-size: 12.5px;
+  color: var(--a-muted);
+}
+
+@media (max-width: 720px) {
+  .aHeader { flex-direction: column; }
+  .aActions { width: 100%; justify-content: flex-end; }
+}
