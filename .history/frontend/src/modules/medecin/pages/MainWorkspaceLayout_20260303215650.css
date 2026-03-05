@@ -1,0 +1,118 @@
+/* =========================
+   RESIZE HANDLE
+   ========================= */
+.resize-handle {
+  position: relative;
+  width: 8px;
+  min-width: 8px;
+  background: #dedeeb;
+  border-left: 1px solid #eef2f7;
+  border-right: 1px solid #eef2f7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+
+.resize-handle::after {
+  content: "";
+  width: 2px;
+  height: 42px;
+  background: #043b08;
+  border-radius: 2px;
+  opacity: 0.8;
+  transition: all 0.15s ease;
+}
+
+.resize-handle:hover {
+  background: #eef2ff;
+}
+
+.resize-handle:hover::after {
+  background: #909192;
+  height: 60px;
+  opacity: 1;
+}
+
+.resize-handle:active::after {
+  background: #408d47;
+  height: 70px;
+}
+
+/* wider grab zone */
+.resize-handle::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  cursor: col-resize;
+}
+
+/* collapsed mode */
+.resize-handle.collapsed {
+  width: 14px;
+  background: #f1f5f9;
+  border-left: 1px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+}
+
+.resize-handle.collapsed:hover {
+  background: #e2e8f0;
+}
+
+.handle-arrow {
+  font-size: 16px;
+  color: #b7d7c0;
+  pointer-events: none;
+}
+
+/* =========================
+   WORKSPACE LAYOUT
+   ========================= */
+.workspace-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* prevents body scroll */
+  font-family: "Segoe UI", sans-serif;
+}
+
+/* IMPORTANT: the panel group must fill remaining height under Header */
+.workspace-container > .react-resizable-panels__panel-group {
+  flex: 1;
+  min-height: 0; /* critical for overflow to work */
+  overflow: hidden;
+}
+
+/* Make panels shrink correctly */
+.panel-main,
+.panel-left,
+.panel-right {
+  min-height: 0; /* critical */
+  overflow: hidden; /* panels themselves shouldn't scroll unless you want them to */
+}
+
+/* main panel content scrolls */
+.main-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Scrollbar */
+.main-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.main-content::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 20px;
+}
+
+.main-content::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}

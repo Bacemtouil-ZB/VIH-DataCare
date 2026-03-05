@@ -1,0 +1,96 @@
+/* --- Smooth section transitions (helps avoid "crash" feeling) --- */
+.antecedents-content {
+  position: relative;
+  margin-top: 14px;
+}
+
+.section-shell {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+}
+
+/* Fade/slide animation */
+.section-animate {
+  animation: sectionFadeIn 140ms ease-out;
+}
+
+@keyframes sectionFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Skeleton / soft loading (instead of hard "Chargement..." block) */
+.soft-loading {
+  opacity: 0.55;
+  pointer-events: none;
+  filter: grayscale(0.1);
+}
+
+/* --- Minimal version controls --- */
+.version-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.version-label {
+  font-size: 12px;
+  color: #6b7280;
+  font-weight: 600;
+}
+
+.version-select {
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  font-size: 13px;
+  color: #111827;
+}
+
+.pill {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid transparent;
+}
+
+.pill-readonly {
+  color: #92400e;
+  background: #fffbeb;
+  border-color: #f59e0b;
+}
+
+.pill-dirty {
+  color: #1f2937;
+  background: #eef2ff;
+  border-color: #c7d2fe;
+}
+
+/* Make "+ Nouvelle version" more subtle */
+.btn-tertiary {
+  background: transparent;
+  border: 1px dashed #e5e7eb;
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 13px;
+  color: #374151;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-tertiary:hover {
+  border-color: #d1d5db;
+  background: #f9fafb;
+}

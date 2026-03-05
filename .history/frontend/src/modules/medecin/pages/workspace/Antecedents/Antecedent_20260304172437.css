@@ -1,0 +1,178 @@
+/* =========================
+   Layout & Section
+========================= */
+
+.antecedents-content {
+  margin-top: 14px;
+  position: relative;
+}
+
+.section-shell {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+  animation: fadeIn 140ms ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.soft-loading {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* =========================
+   Sticky Header
+========================= */
+
+.antecedents-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.header-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 10px 24px;
+  min-height: 56px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.header-left,
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-right { flex-shrink: 0; }
+
+/* =========================
+   Version Controls
+========================= */
+
+.version-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.version-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.version-select {
+  height: 34px;
+  min-width: 220px;
+  max-width: 480px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  color: #111827;
+  outline: none;
+  transition: 0.15s ease;
+}
+
+.version-select:hover { border-color: #d1d5db; }
+
+.version-select:focus {
+  border-color: #1a7a5e;
+  box-shadow: 0 0 0 3px rgba(26, 122, 94, 0.15);
+}
+
+.version-select:disabled {
+  opacity: 0.6;
+  background: #f9fafb;
+  cursor: not-allowed;
+}
+
+/* =========================
+   Buttons
+========================= */
+
+.btn-tertiary,
+.header-right .btn-primary,
+.header-right .btn-secondary {
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.btn-tertiary {
+  background: transparent;
+  border: 1px dashed #d1d5db;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.btn-tertiary:hover {
+  background: #f9fafb;
+  border-color: #cbd5e1;
+}
+
+/* =========================
+   Status Pills
+========================= */
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.pill-readonly {
+  color: #92400e;
+  background: #fffbeb;
+  border: 1px solid #f59e0b;
+}
+
+.pill-dirty {
+  color: #1e3a8a;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+}
+
+/* =========================
+   Responsive
+========================= */
+
+@media (max-width: 900px) {
+  .header-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-right {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .version-select {
+    width: 100%;
+  }
+}
