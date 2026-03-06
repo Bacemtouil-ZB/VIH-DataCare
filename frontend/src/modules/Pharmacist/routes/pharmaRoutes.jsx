@@ -26,6 +26,10 @@ const pharmacienRoutes = [
         path: "stock", 
         element: <Stock /> 
       },
+      {
+        path: "stock/:numero",
+        element: <Stock />,
+      },
       { 
         path: "settings", 
         element: <ProfilPage /> 

@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useParams } from "react-router-dom";
 import {
   ActionButton,
   Badge,
@@ -9,6 +10,13 @@ import {
   Input,
   SearchBar,
 } from "../../../../../shared/components/layouts";
+import {
+  getStockItems,
+  createStockItem as createStockItemApi,
+  updateStockQuantity as updateStockQuantityApi,
+  deleteStockItem as deleteStockItemApi,
+  getStockContextByNumero,
+} from "../../../services/stockService.jsx";
 import "./Stock.css";
 
 const MEDICATION_CATALOG = [
@@ -24,15 +32,16 @@ const MEDICATION_CATALOG = [
   { code: "EFV", composition: "Efavirenz (EFV)" },
 ];
 
-const buildStockItem = (medication, quantity = 0) => ({
-  id: medication.code,
-  code: medication.code,
-  composition: medication.composition,
-  quantity: Number(quantity),
-  updatedAt: null,
+const toUiStockItem = (row) => ({
+  id: row?.id,
+  code: String(row?.code || "").toUpperCase(),
+  composition: row?.composition || "",
+  quantity: Number(row?.quantite ?? row?.quantity ?? 0),
+  updatedAt: row?.updated_at || row?.updatedAt || null,
 });
 
 export default function Stock() {
+  const { numero } = useParams();
   const [search, setSearch] = useState("");
   const [stockItems, setStockItems] = useState([]);
   const [selectedCodeToAdd, setSelectedCodeToAdd] = useState("");
@@ -40,6 +49,57 @@ export default function Stock() {
   const [editingId, setEditingId] = useState(null);
   const [editingQuantity, setEditingQuantity] = useState("");
   const [showHistory, setShowHistory] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [patientContext, setPatientContext] = useState(null);
+
+  const refreshStock = async () => {
+    const rows = await getStockItems();
+    setStockItems(Array.isArray(rows) ? rows.map(toUiStockItem) : []);
+  };
+
+  useEffect(() => {
+    let alive = true;
+
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const [rows, context] = await Promise.all([
+          getStockItems(),
+          numero ? getStockContextByNumero(numero) : Promise.resolve(null),
+        ]);
+
+        if (!alive) return;
+
+        setStockItems(Array.isArray(rows) ? rows.map(toUiStockItem) : []);
+
+        if (numero && context?.patient) {
+          const patient = context.patient?.patient || context.patient;
+          setPatientContext({
+            numero: patient?.numero || numero,
+            name: `${patient?.surname || ""} ${patient?.name || ""}`.trim(),
+          });
+        } else if (numero) {
+          setPatientContext({ numero, name: "" });
+        } else {
+          setPatientContext(null);
+        }
+      } catch (err) {
+        if (!alive) return;
+        setError(err?.message || err?.error || "Erreur lors du chargement du stock.");
+      } finally {
+        if (alive) setLoading(false);
+      }
+    };
+
+    loadData();
+    return () => {
+      alive = false;
+    };
+  }, [numero]);
 
   const filteredItems = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -60,7 +120,7 @@ export default function Stock() {
   const totalQuantity = stockItems.reduce((sum, item) => sum + item.quantity, 0);
   const lowStockCount = stockItems.filter((item) => item.quantity <= 5).length;
 
-  const handleAddMedication = () => {
+  const handleAddMedication = async () => {
     if (!selectedCodeToAdd) {
       alert("Selectionne un composant a ajouter.");
       return;
@@ -75,20 +135,38 @@ export default function Stock() {
     const medication = MEDICATION_CATALOG.find((m) => m.code === selectedCodeToAdd);
     if (!medication) return;
 
-    setStockItems((prev) => [
-      ...prev,
-      { ...buildStockItem(medication, q), updatedAt: new Date().toISOString() },
-    ]);
-    setSelectedCodeToAdd("");
-    setQuantityToAdd("");
+    try {
+      setSaving(true);
+      await createStockItemApi({
+        code: selectedCodeToAdd,
+        composition: medication.composition,
+        quantite: q,
+      });
+      await refreshStock();
+      setSelectedCodeToAdd("");
+      setQuantityToAdd("");
+    } catch (err) {
+      alert(err?.message || err?.error || "Erreur lors de l'ajout au stock.");
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const handleDeleteMedication = (id) => {
+  const handleDeleteMedication = async (id) => {
     if (!window.confirm("Supprimer ce medicament du stock ?")) return;
-    setStockItems((prev) => prev.filter((item) => item.id !== id));
-    if (editingId === id) {
-      setEditingId(null);
-      setEditingQuantity("");
+
+    try {
+      setSaving(true);
+      await deleteStockItemApi(id);
+      await refreshStock();
+      if (editingId === id) {
+        setEditingId(null);
+        setEditingQuantity("");
+      }
+    } catch (err) {
+      alert(err?.message || err?.error || "Erreur lors de la suppression.");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -102,18 +180,22 @@ export default function Stock() {
     setEditingQuantity("");
   };
 
-  const saveQuantity = (item) => {
+  const saveQuantity = async (item) => {
     const q = Number(editingQuantity);
     if (!Number.isInteger(q) || q < 0) {
       alert("La quantite doit etre un entier positif.");
       return;
     }
-    setStockItems((prev) =>
-      prev.map((row) =>
-        row.id === item.id ? { ...row, quantity: q, updatedAt: new Date().toISOString() } : row
-      )
-    );
-    cancelEditQuantity();
+    try {
+      setSaving(true);
+      await updateStockQuantityApi(item.id, q);
+      await refreshStock();
+      cancelEditQuantity();
+    } catch (err) {
+      alert(err?.message || err?.error || "Erreur lors de la mise a jour de la quantite.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const formatDateTime = (iso) => {
@@ -126,6 +208,12 @@ export default function Stock() {
       <div className="ph-stock-header">
         <div className="ph-stock-title">
           <h2>Gestion du stock de medicaments</h2>
+          {patientContext?.numero ? (
+            <p className="ph-stock-subtitle">
+              Dossier: <strong>{patientContext.numero}</strong>
+              {patientContext.name ? ` - ${patientContext.name}` : ""}
+            </p>
+          ) : null}
         </div>
         <SearchBar
           value={search}
@@ -140,6 +228,8 @@ export default function Stock() {
         <DashboardStatCard label="Quantite totale" value={totalQuantity} tone="success" />
         <DashboardStatCard label="Stock faible (0-5)" value={lowStockCount} tone="warning" />
       </div>
+
+      {error ? <p className="ph-stock-error">{error}</p> : null}
 
       <div className="ph-stock-toolbar">
         <div className="ph-stock-add-card">
@@ -176,7 +266,7 @@ export default function Stock() {
                 action="add"
                 label="Ajouter au stock"
                 onClick={handleAddMedication}
-                disabled={!availableForAdd.length}
+                disabled={!availableForAdd.length || saving || loading}
                 size="sm"
                 showIcon={false}
               />
@@ -230,15 +320,17 @@ export default function Stock() {
                       <>
                         <ActionButton
                           action="save"
-                          label="Enregistrer"
+                          label={saving ? "Enregistrement..." : "Enregistrer"}
                           onClick={() => saveQuantity(item)}
                           size="sm"
                           showIcon={false}
+                          disabled={saving}
                         />
                         <button
                           type="button"
                           className="ph-btn ph-btn-muted"
                           onClick={cancelEditQuantity}
+                          disabled={saving}
                         >
                           Annuler
                         </button>
@@ -257,6 +349,7 @@ export default function Stock() {
                           type="button"
                           className="ph-btn ph-btn-danger"
                           onClick={() => handleDeleteMedication(item.id)}
+                          disabled={saving}
                         >
                           Supprimer
                         </button>
