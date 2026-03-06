@@ -35,5 +35,14 @@ export const validateNumeroYear = (numero) => {
     toast.error(`L'année doit être ≤ ${currentYear}`);
   }
 };
-export const filterPostalCodesByGovernorate = (postalCodes, governorate) =>
-  (postalCodes || []).filter((pc) => pc.governorate === governorate);
+const normalizeGov = (value) =>
+  String(value || "")
+    .trim()
+    .toLowerCase();
+
+export const filterPostalCodesByGovernorate = (postalCodes, governorate) => {
+  const wanted = normalizeGov(governorate);
+  return (postalCodes || []).filter(
+    (pc) => normalizeGov(pc.governorate) === wanted
+  );
+};

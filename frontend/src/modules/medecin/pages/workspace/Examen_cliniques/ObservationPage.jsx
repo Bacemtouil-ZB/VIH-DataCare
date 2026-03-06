@@ -19,7 +19,10 @@ export default function ObservationPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showForm, setShowForm] = useState(false);
-  const [showHistory, setShowHistory] = useState(false);
+  const [showHistory, setShowHistory] = useState(true);
+  useEffect(() => {
+    setShowHistory(true);
+  }, []);
 
   const [observationId, setObservationId] = useState(null);
   const [isModifying, setIsModifying] = useState(false);

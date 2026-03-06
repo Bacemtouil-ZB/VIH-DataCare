@@ -1,17 +1,1 @@
-import { ActionButton } from "../buttons/ActionButton";
-
-const styles = `.ec-btn-details { border-radius: 6px; font-weight: 600; }`;
-
-export function HistoriqueActions({ onDetails, onEdit }) {
-  return (
-    <>
-      <style>{styles}</style>
-      <div className="d-flex gap-2">
-        {onDetails && (
-          <button className="btn btn-sm btn-outline-secondary ec-btn-details" onClick={onDetails}>Details</button>
-        )}
-        {onEdit && <ActionButton action="edit" variant="outline" onClick={onEdit} />}
-      </div>
-    </>
-  );
-}
+export { default as HistoriqueActions } from "../../../../shared/components/layouts/HistoriqueActions";

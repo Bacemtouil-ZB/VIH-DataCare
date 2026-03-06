@@ -1,13 +1,5 @@
 import API from "../../../shared/utils/api";
 
-/**
- * ==========================================
- * SERVICE VIH - FRONTEND CORRIGÉ
- * Gestion des données VIH du patient
- * ==========================================
- */
-
-
 export const createVih = async (payload) => {
   try {
     const response = await API.post("/vih/add", payload);
@@ -18,10 +10,9 @@ export const createVih = async (payload) => {
   }
 };
 
-
 export const getVihById = async (id) => {
   try {
-    const response = await API.get(`/vih/${id}`);  // utiliser id dans get pas numero
+    const response = await API.get(`/vih/${id}`);
     return response.data;
   } catch (error) {
     console.error("Erreur getVihById:", error);
@@ -29,23 +20,28 @@ export const getVihById = async (id) => {
   }
 };
 
-
-export const getVihByNumeroDossier = async (numeroDossier) => {
+export const getPatientByNumero = async (numero) => {
   try {
-    // Le backend utilise p.numero dans la requête SQL
-    // La route est: /vih/patient/:numero
-    const response = await API.get(`/vih/patient/${numeroDossier}`);
+    const response = await API.get(`/patients/numero/${numero}`);
     return response.data;
   } catch (error) {
-    console.error("Erreur getVihByNumeroDossier:", error);
-    // Si pas de dossier VIH trouvé, retourner null au lieu de throw
-    if (error.response?.status === 404) {
-      return { success: false, vih: null };
-    }
+    console.error("Erreur getPatientByNumero:", error);
     throw error.response?.data || error.message;
   }
 };
 
+export const getVihByNumero = async (numero) => {
+  try {
+    const response = await API.get(`/vih/patient/${numero}`);
+    return response.data;
+  } catch (error) {
+    if (error.response?.status === 404) {
+      return { success: false, vih: null };
+    }
+    console.error("Erreur getVihByNumero:", error);
+    throw error.response?.data || error.message;
+  }
+};
 
 export const updateVih = async (id, payload) => {
   try {
@@ -60,6 +56,7 @@ export const updateVih = async (id, payload) => {
 export default {
   createVih,
   getVihById,
-  getVihByNumeroDossier,
+  getPatientByNumero,
+  getVihByNumero,
   updateVih,
 };

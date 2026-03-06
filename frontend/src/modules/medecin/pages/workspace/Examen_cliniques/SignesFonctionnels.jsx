@@ -23,7 +23,7 @@ export default function SignesFonctionnels() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showForm, setShowForm] = useState(false);
-  const [showHistory, setShowHistory] = useState(false);
+  const [showHistory, setShowHistory] = useState(true);
 
   const [signesId, setSignesId] = useState(FORM_SF_INIT.signesId);
   const [isModifying, setIsModifying] = useState(FORM_SF_INIT.isModifying);

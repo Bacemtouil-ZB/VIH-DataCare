@@ -5,6 +5,7 @@ import { confirmAction } from "../../../../../shared/utils/uiAlerts";
 import { createSigneClinique, updateSigneClinique, getSigneCliniqueByNumeroDossier } from "../../../services/examenCliniqueServices/signeCliniqueService";
 import { getAppareils } from "../../../services/examenCliniqueServices/signesFonctionService";
 import { ActionButton } from "../../../components/buttons/ActionButton";
+import FieldLabel from "../../../components/UI/FieldLabel";
 import { calcIMC, FORM_SC_INIT } from "./examenConfig";
 import {
   formatDateFr,
@@ -22,12 +23,11 @@ import {
 } from "./index";
 
 const PAGE_CONTAINER_CLASS = "ec-page-bg";
-const LABEL_CLS = "text-uppercase fw-semibold text-secondary d-block mb-1 ec-label";
 
 function Field({ label, value }) {
   return (
     <div className="ec-flex-input">
-      <label className={`${LABEL_CLS} ec-th-sm`}>{label}</label>
+      <FieldLabel>{label}</FieldLabel>
       <input type="number" className="form-control form-control-sm" value={value ?? ""} disabled readOnly />
     </div>
   );
@@ -41,6 +41,9 @@ export default function SignesCliniques() {
   const [saving, setSaving] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [showHistory, setShowHistory] = useState(true);
+  useEffect(() => {
+    setShowHistory(true);
+  }, []);
 
   const [signeId, setSigneId] = useState(FORM_SC_INIT.signeId);
   const [isModifying, setIsModifying] = useState(FORM_SC_INIT.isModifying);
@@ -213,7 +216,7 @@ export default function SignesCliniques() {
               <Field label="Taille (cm)" value={detailSigne.taille} />
               <Field label="Poids (kg)" value={detailSigne.poids} />
               <div className="ec-flex-input-l">
-                <label className={`${LABEL_CLS} ec-th-sm`}>IMC (kg/m2)</label>
+                <FieldLabel>IMC (kg/m2)</FieldLabel>
                 <ImcField imc={detailSigne.taille && detailSigne.poids ? calcIMC(+detailSigne.taille, +detailSigne.poids) : null} />
               </div>
             </div>
@@ -252,15 +255,15 @@ export default function SignesCliniques() {
           <p className="text-uppercase fw-bold text-secondary mb-3 ec-th-sm">Mesures anthropometriques</p>
           <div className="d-flex gap-4 flex-wrap mb-4 pb-4 border-bottom">
             <div className="ec-flex-input">
-              <label className={`${LABEL_CLS} ec-th-sm`}>Taille (cm) <span className="text-danger">*</span></label>
+              <FieldLabel required>Taille (cm)</FieldLabel>
               <input type="number" className="form-control form-control-sm" placeholder="ex: 175" min={1} max={250} value={taille} onChange={(e) => setTaille(e.target.value)} />
             </div>
             <div className="ec-flex-input">
-              <label className={`${LABEL_CLS} ec-th-sm`}>Poids (kg) <span className="text-danger">*</span></label>
+              <FieldLabel required>Poids (kg)</FieldLabel>
               <input type="number" className="form-control form-control-sm" placeholder="ex: 70" min={1} max={300} value={poids} onChange={(e) => setPoids(e.target.value)} />
             </div>
             <div className="ec-flex-input-l">
-              <label className={`${LABEL_CLS} ec-th-sm`}>IMC (kg/m2)</label>
+              <FieldLabel>IMC (kg/m2)</FieldLabel>
               <ImcField imc={imc} />
             </div>
           </div>

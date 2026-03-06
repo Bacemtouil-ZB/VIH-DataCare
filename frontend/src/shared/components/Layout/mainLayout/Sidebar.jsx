@@ -1,8 +1,8 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import './Sidebar.css';
-import AccountButton from '../UI/Button/AccountButton.jsx';
-import { useAuth } from '../../hooks/useAuth.js';
+import AccountButton from '../../UI/Button/AccountButton.jsx';
+import { useAuth } from '../../../hooks/useAuth.js';
 
 const Sidebar = () => {
   const { user } = useAuth();
@@ -29,6 +29,12 @@ const Sidebar = () => {
         label: 'Dashboard',
         end : true,   
       },
+      {
+        to: 'settings',
+        icon: 'bi-person-gear',
+        label: 'Gestion profil',
+        end: true,
+      },
  
     ],
     
@@ -45,6 +51,12 @@ const Sidebar = () => {
       label: "Dashboard",
       end : true,
     },
+    {
+      to: "settings",
+      icon: "bi-person-gear",
+      label: "Gestion profil",
+      end: true,
+    },
   ],
 
   pharmacien: [
@@ -54,6 +66,18 @@ const Sidebar = () => {
       icon: "bi-people-fill",
       label: "Ordonnances",
       end : true,
+    },
+    {
+      to: "stock",
+      icon: "bi-box-seam",
+      label: "Stock",
+      end : true,
+    },
+    {
+      to: "settings",
+      icon: "bi-person-gear",
+      label: "Gestion profil",
+      end: true,
     },
 
   ],
@@ -76,6 +100,12 @@ const Sidebar = () => {
       icon: "bi-speedometer2",
       label: "Dashboard",
       end : true,
+    },
+    {
+      to: "settings",
+      icon: "bi-person-gear",
+      label: "Gestion profil",
+      end: true,
     },
   ],
   };

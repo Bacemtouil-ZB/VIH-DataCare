@@ -1,4 +1,4 @@
-ALTER TABLE postal_codes
+﻿ALTER TABLE postal_codes
 ADD COLUMN IF NOT EXISTS place_name VARCHAR(120) NOT NULL DEFAULT '';
 
 ALTER TABLE postal_codes
@@ -14,19 +14,46 @@ ADD CONSTRAINT postal_codes_governorate_place_unique UNIQUE (governorate_id, pla
 ALTER TABLE addresses
 ADD COLUMN IF NOT EXISTS exact_address TEXT;
 
-source : "https://github.com/Mehdi1chouk/Tunisia_Governorates/blob/master/state-municipality.json"
+-- Seed idempotent des gouvernorats (necessaire avant l'import des codes postaux)
+INSERT INTO governorates (name) VALUES
+('ARIANA'),
+('BEJA'),
+('BEN AROUS'),
+('BIZERTE'),
+('GABES'),
+('GAFSA'),
+('JENDOUBA'),
+('KAIROUAN'),
+('KASSERINE'),
+('KEBILI'),
+('KEF'),
+('MAHDIA'),
+('MANOUBA'),
+('MEDENINE'),
+('MONASTIR'),
+('NABEUL'),
+('SFAX'),
+('SIDI BOUZID'),
+('SILIANA'),
+('SOUSSE'),
+('TATAOUINE'),
+('TOZEUR'),
+('TUNIS'),
+('ZAGHOUAN')
+ON CONFLICT (name) DO NOTHING;
 
-//insertion de données à partir du json de codes postaux de la tunisie
+-- Source: https://github.com/Mehdi1chouk/Tunisia_Governorates/blob/master/state-municipality.json
+-- Insertion de donnees a partir du JSON des codes postaux de la Tunisie
 WITH raw AS (
   SELECT $$[
   {
     "Name": "ARIANA",
-    "NameAr": "أريانة",
+    "NameAr": "Ø£Ø±ÙŠØ§Ù†Ø©",
     "Value": "ARIANA",
     "Delegations": [
       {
         "Name": "ARIANA VILLE",
-        "NameAr": "أريانة المدينة",
+        "NameAr": "Ø£Ø±ÙŠØ§Ù†Ø© Ø§Ù„Ù…Ø¯ÙŠÙ†Ø©",
         "Value": "ARIANA VILLE",
         "PostalCode": "2058",
         "Latitude": 36.866474,
@@ -34,7 +61,7 @@ WITH raw AS (
       },
       {
         "Name": "SIDI THABET",
-        "NameAr": "سيدي ثابت",
+        "NameAr": "Ø³ÙŠØ¯ÙŠ Ø«Ø§Ø¨Øª",
         "Value": "SIDI THABET",
         "PostalCode": "2020",
         "Latitude": 36.898614,
@@ -42,7 +69,7 @@ WITH raw AS (
       },
       {
         "Name": "LA SOUKRA",
-        "NameAr": "سكرة",
+        "NameAr": "Ø³ÙƒØ±Ø©",
         "Value": "LA SOUKRA",
         "PostalCode": "2036",
         "Latitude": 36.883618,
@@ -50,7 +77,7 @@ WITH raw AS (
       },
       {
         "Name": "KALAAT LANDLOUS",
-        "NameAr": "قلعة الأندلس",
+        "NameAr": "Ù‚Ù„Ø¹Ø© Ø§Ù„Ø£Ù†Ø¯Ù„Ø³",
         "Value": "KALAAT LANDLOUS",
         "PostalCode": "2061",
         "Latitude": 37.066667,
@@ -58,7 +85,7 @@ WITH raw AS (
       },
       {
         "Name": "RAOUED",
-        "NameAr": "رواد",
+        "NameAr": "Ø±ÙˆØ§Ø¯",
         "Value": "RAOUED",
         "PostalCode": "2083",
         "Latitude": 36.931944,
@@ -66,7 +93,7 @@ WITH raw AS (
       },
       {
         "Name": "MNIHLA",
-        "NameAr": "المنيهلة",
+        "NameAr": "Ø§Ù„Ù…Ù†ÙŠÙ‡Ù„Ø©",
         "Value": "MNIHLA",
         "PostalCode": "2094",
         "Latitude": 36.866331,
@@ -74,7 +101,7 @@ WITH raw AS (
       },
       {
         "Name": "ETTADHAMEN",
-        "NameAr": "التضامن",
+        "NameAr": "Ø§Ù„ØªØ¶Ø§Ù…Ù†",
         "Value": "ETTADHAMEN",
         "PostalCode": "2041",
         "Latitude": 36.839821,
@@ -84,12 +111,12 @@ WITH raw AS (
   },
   {
     "Name": "BEJA",
-    "NameAr": "باجة",
+    "NameAr": "Ø¨Ø§Ø¬Ø©",
     "Value": "BEJA",
     "Delegations": [
       {
         "Name": "TESTOUR",
-        "NameAr": "تستور",
+        "NameAr": "ØªØ³ØªÙˆØ±",
         "Value": "TESTOUR",
         "PostalCode": "9014",
         "Latitude": 36.552305,
@@ -97,7 +124,7 @@ WITH raw AS (
       },
       {
         "Name": "TEBOURSOUK",
-        "NameAr": "تبرسق",
+        "NameAr": "ØªØ¨Ø±Ø³Ù‚",
         "Value": "TEBOURSOUK",
         "PostalCode": "9032",
         "Latitude": 36.458038,
@@ -105,7 +132,7 @@ WITH raw AS (
       },
       {
         "Name": "BEJA NORD",
-        "NameAr": "باجة الشمالية",
+        "NameAr": "Ø¨Ø§Ø¬Ø© Ø§Ù„Ø´Ù…Ø§Ù„ÙŠØ©",
         "Value": "BEJA NORD",
         "PostalCode": "9000",
         "Latitude": 36.728826,
@@ -113,7 +140,7 @@ WITH raw AS (
       },
       {
         "Name": "MEJEZ EL BAB",
-        "NameAr": "مجاز الباب",
+        "NameAr": "Ù…Ø¬Ø§Ø² Ø§Ù„Ø¨Ø§Ø¨",
         "Value": "MEJEZ EL BAB",
         "PostalCode": "9034",
         "Latitude": 36.649444,
@@ -121,7 +148,7 @@ WITH raw AS (
       },
       {
         "Name": "NEFZA",
-        "NameAr": "نفزة",
+        "NameAr": "Ù†ÙØ²Ø©",
         "Value": "NEFZA",
         "PostalCode": "9010",
         "Latitude": 37.074444,
@@ -129,7 +156,7 @@ WITH raw AS (
       },
       {
         "Name": "BEJA SUD",
-        "NameAr": "باجة الجنوبية",
+        "NameAr": "Ø¨Ø§Ø¬Ø© Ø§Ù„Ø¬Ù†ÙˆØ¨ÙŠØ©",
         "Value": "BEJA SUD",
         "PostalCode": "9021",
         "Latitude": 36.728826,
@@ -137,7 +164,7 @@ WITH raw AS (
       },
       {
         "Name": "THIBAR",
-        "NameAr": "تيبار",
+        "NameAr": "ØªÙŠØ¨Ø§Ø±",
         "Value": "THIBAR",
         "PostalCode": "9022",
         "Latitude": 36.611944,
@@ -145,7 +172,7 @@ WITH raw AS (
       },
       {
         "Name": "AMDOUN",
-        "NameAr": "عمدون",
+        "NameAr": "Ø¹Ù…Ø¯ÙˆÙ†",
         "Value": "AMDOUN",
         "PostalCode": "9030",
         "Latitude": 36.839167,
@@ -153,7 +180,7 @@ WITH raw AS (
       },
       {
         "Name": "GOUBELLAT",
-        "NameAr": "قبلاط",
+        "NameAr": "Ù‚Ø¨Ù„Ø§Ø·",
         "Value": "GOUBELLAT",
         "PostalCode": "9080",
         "Latitude": 36.534167,
@@ -163,12 +190,12 @@ WITH raw AS (
   },
   {
     "Name": "BEN AROUS",
-    "NameAr": "بن عروس",
+    "NameAr": "Ø¨Ù† Ø¹Ø±ÙˆØ³",
     "Value": "BEN_AROUS",
     "Delegations": [
       {
         "Name": "FOUCHANA",
-        "NameAr": "فوشانة",
+        "NameAr": "ÙÙˆØ´Ø§Ù†Ø©",
         "Value": "FOUCHANA",
         "PostalCode": "2082",
         "Latitude": 36.703889,
@@ -176,7 +203,7 @@ WITH raw AS (
       },
       {
         "Name": "HAMMAM LIF",
-        "NameAr": "حمام الأنف",
+        "NameAr": "Ø­Ù…Ø§Ù… Ø§Ù„Ø£Ù†Ù",
         "Value": "HAMMAM LIF",
         "PostalCode": "2050",
         "Latitude": 36.727778,
@@ -184,7 +211,7 @@ WITH raw AS (
       },
       {
         "Name": "EL MOUROUJ",
-        "NameAr": "المروج",
+        "NameAr": "Ø§Ù„Ù…Ø±ÙˆØ¬",
         "Value": "EL MOUROUJ",
         "PostalCode": "2074",
         "Latitude": 36.739889,
@@ -192,7 +219,7 @@ WITH raw AS (
       },
       {
         "Name": "BOU MHEL EL BASSATINE",
-        "NameAr": "بومهل البساتين",
+        "NameAr": "Ø¨ÙˆÙ…Ù‡Ù„ Ø§Ù„Ø¨Ø³Ø§ØªÙŠÙ†",
         "Value": "BOU MHEL EL BASSATINE",
         "PostalCode": "2097",
         "Latitude": 36.729444,
@@ -200,7 +227,7 @@ WITH raw AS (
       },
       {
         "Name": "RADES",
-        "NameAr": "رادس",
+        "NameAr": "Ø±Ø§Ø¯Ø³",
         "Value": "RADES",
         "PostalCode": "2098",
         "Latitude": 36.766667,
@@ -208,7 +235,7 @@ WITH raw AS (
       },
       {
         "Name": "MOHAMADIA",
-        "NameAr": "المحمدية",
+        "NameAr": "Ø§Ù„Ù…Ø­Ù…Ø¯ÙŠØ©",
         "Value": "MOHAMADIA",
         "PostalCode": "1145",
         "Latitude": 36.689444,
@@ -216,7 +243,7 @@ WITH raw AS (
       },
       {
         "Name": "MEGRINE",
-        "NameAr": "مقرين",
+        "NameAr": "Ù…Ù‚Ø±ÙŠÙ†",
         "Value": "MEGRINE",
         "PostalCode": "2033",
         "Latitude": 36.781111,
@@ -224,7 +251,7 @@ WITH raw AS (
       },
       {
         "Name": "NOUVELLE MEDINA",
-        "NameAr": "المدينة الجديدة",
+        "NameAr": "Ø§Ù„Ù…Ø¯ÙŠÙ†Ø© Ø§Ù„Ø¬Ø¯ÙŠØ¯Ø©",
         "Value": "NOUVELLE MEDINA",
         "PostalCode": "2063",
         "Latitude": 36.753889,
@@ -232,7 +259,7 @@ WITH raw AS (
       },
       {
         "Name": "HAMMAM CHATT",
-        "NameAr": "حمام الشط",
+        "NameAr": "Ø­Ù…Ø§Ù… Ø§Ù„Ø´Ø·",
         "Value": "HAMMAM CHATT",
         "PostalCode": "1164",
         "Latitude": 36.700000,
@@ -240,7 +267,7 @@ WITH raw AS (
       },
       {
         "Name": "MORNAG",
-        "NameAr": "مرناق",
+        "NameAr": "Ù…Ø±Ù†Ø§Ù‚",
         "Value": "MORNAG",
         "PostalCode": "2064",
         "Latitude": 36.633333,
@@ -248,7 +275,7 @@ WITH raw AS (
       },
       {
         "Name": "EZZAHRA",
-        "NameAr": "الزهراء",
+        "NameAr": "Ø§Ù„Ø²Ù‡Ø±Ø§Ø¡",
         "Value": "EZZAHRA",
         "PostalCode": "2034",
         "Latitude": 36.743333,
@@ -256,7 +283,7 @@ WITH raw AS (
       },
       {
         "Name": "BEN AROUS",
-        "NameAr": "بن عروس",
+        "NameAr": "Ø¨Ù† Ø¹Ø±ÙˆØ³",
         "Value": "BEN AROUS",
         "PostalCode": "2043",
         "Latitude": 36.748333,
@@ -266,12 +293,12 @@ WITH raw AS (
   },
   {
     "Name": "BIZERTE",
-    "NameAr": "بنزرت",
+    "NameAr": "Ø¨Ù†Ø²Ø±Øª",
     "Value": "BIZERTE",
     "Delegations": [
       {
         "Name": "MENZEL JEMIL",
-        "NameAr": "منزل جميل",
+        "NameAr": "Ù…Ù†Ø²Ù„ Ø¬Ù…ÙŠÙ„",
         "Value": "MENZEL JEMIL",
         "PostalCode": "7035",
         "Latitude": 37.233333,
@@ -279,7 +306,7 @@ WITH raw AS (
       },
       {
         "Name": "BIZERTE SUD",
-        "NameAr": "بنزرت الجنوبية",
+        "NameAr": "Ø¨Ù†Ø²Ø±Øª Ø§Ù„Ø¬Ù†ÙˆØ¨ÙŠØ©",
         "Value": "BIZERTE SUD",
         "PostalCode": "7071",
         "Latitude": 37.274444,
@@ -287,7 +314,7 @@ WITH raw AS (
       },
       {
         "Name": "SEJNANE",
-        "NameAr": "سجنان",
+        "NameAr": "Ø³Ø¬Ù†Ø§Ù†",
         "Value": "SEJNANE",
         "PostalCode": "7010",
         "Latitude": 37.153889,
@@ -295,7 +322,7 @@ WITH raw AS (
       },
       {
         "Name": "GHAR EL MELH",
-        "NameAr": "غار الملح",
+        "NameAr": "ØºØ§Ø± Ø§Ù„Ù…Ù„Ø­",
         "Value": "GHAR EL MELH",
         "PostalCode": "7024",
         "Latitude": 37.166667,
@@ -303,7 +330,7 @@ WITH raw AS (
       },
       {
         "Name": "MENZEL BOURGUIBA",
-        "NameAr": "منزل بورقيبة",
+        "NameAr": "Ù…Ù†Ø²Ù„ Ø¨ÙˆØ±Ù‚ÙŠØ¨Ø©",
         "Value": "MENZEL BOURGUIBA",
         "PostalCode": "7072",
         "Latitude": 37.150000,
@@ -311,7 +338,7 @@ WITH raw AS (
       },
       {
         "Name": "RAS JEBEL",
-        "NameAr": "رأس الجبل",
+        "NameAr": "Ø±Ø£Ø³ Ø§Ù„Ø¬Ø¨Ù„",
         "Value": "RAS JEBEL",
         "PostalCode": "7025",
         "Latitude": 37.214722,
@@ -319,7 +346,7 @@ WITH raw AS (
       },
       {
         "Name": "GHEZALA",
-        "NameAr": "غزالة",
+        "NameAr": "ØºØ²Ø§Ù„Ø©",
         "Value": "GHEZALA",
         "PostalCode": "7040",
         "Latitude": 37.116667,
@@ -327,7 +354,7 @@ WITH raw AS (
       },
       {
         "Name": "JOUMINE",
-        "NameAr": "جومين",
+        "NameAr": "Ø¬ÙˆÙ…ÙŠÙ†",
         "Value": "JOUMINE",
         "PostalCode": "7012",
         "Latitude": 36.950000,
@@ -335,7 +362,7 @@ WITH raw AS (
       },
       {
         "Name": "UTIQUE",
-        "NameAr": "أوتيك",
+        "NameAr": "Ø£ÙˆØªÙŠÙƒ",
         "Value": "UTIQUE",
         "PostalCode": "7013",
         "Latitude": 37.052500,
@@ -343,7 +370,7 @@ WITH raw AS (
       },
       {
         "Name": "BIZERTE NORD",
-        "NameAr": "بنزرت الشمالية",
+        "NameAr": "Ø¨Ù†Ø²Ø±Øª Ø§Ù„Ø´Ù…Ø§Ù„ÙŠØ©",
         "Value": "BIZERTE NORD",
         "PostalCode": "7029",
         "Latitude": 37.274444,
@@ -351,7 +378,7 @@ WITH raw AS (
       },
       {
         "Name": "EL ALIA",
-        "NameAr": "العالية",
+        "NameAr": "Ø§Ù„Ø¹Ø§Ù„ÙŠØ©",
         "Value": "EL ALIA",
         "PostalCode": "7081",
         "Latitude": 37.169167,
@@ -359,7 +386,7 @@ WITH raw AS (
       },
       {
         "Name": "MATEUR",
-        "NameAr": "ماطر",
+        "NameAr": "Ù…Ø§Ø·Ø±",
         "Value": "MATEUR",
         "PostalCode": "7030",
         "Latitude": 37.040278,
@@ -367,7 +394,7 @@ WITH raw AS (
       },
       {
         "Name": "JARZOUNA",
-        "NameAr": "جرزونة",
+        "NameAr": "Ø¬Ø±Ø²ÙˆÙ†Ø©",
         "Value": "JARZOUNA",
         "PostalCode": "7021",
         "Latitude": 37.258889,
@@ -375,7 +402,7 @@ WITH raw AS (
       },
       {
         "Name": "TINJA",
-        "NameAr": "تينجة",
+        "NameAr": "ØªÙŠÙ†Ø¬Ø©",
         "Value": "TINJA",
         "PostalCode": "7032",
         "Latitude": 37.161667,
@@ -385,12 +412,12 @@ WITH raw AS (
   },
   {
     "Name": "GABES",
-    "NameAr": "قابس",
+    "NameAr": "Ù‚Ø§Ø¨Ø³",
     "Value": "GABES",
     "Delegations": [
       {
         "Name": "GABES SUD",
-        "NameAr": "قابس الجنوبية",
+        "NameAr": "Ù‚Ø§Ø¨Ø³ Ø§Ù„Ø¬Ù†ÙˆØ¨ÙŠØ©",
         "Value": "GABES SUD",
         "PostalCode": "6012",
         "Latitude": 33.881453,
@@ -398,7 +425,7 @@ WITH raw AS (
       },
       {
         "Name": "MATMATA",
-        "NameAr": "مطماطة",
+        "NameAr": "Ù…Ø·Ù…Ø§Ø·Ø©",
         "Value": "MATMATA",
         "PostalCode": "6034",
         "Latitude": 33.542778,
@@ -406,7 +433,7 @@ WITH raw AS (
       },
       {
         "Name": "MARETH",
-        "NameAr": "مارث",
+        "NameAr": "Ù…Ø§Ø±Ø«",
         "Value": "MARETH",
         "PostalCode": "6080",
         "Latitude": 33.627778,
@@ -414,7 +441,7 @@ WITH raw AS (
       },
       {
         "Name": "EL HAMMA",
-        "NameAr": "الحامة",
+        "NameAr": "Ø§Ù„Ø­Ø§Ù…Ø©",
         "Value": "EL HAMMA",
         "PostalCode": "6013",
         "Latitude": 33.888889,
@@ -422,7 +449,7 @@ WITH raw AS (
       },
       {
         "Name": "NOUVELLE MATMATA",
-        "NameAr": "مطماطة الجديدة",
+        "NameAr": "Ù…Ø·Ù…Ø§Ø·Ø© Ø§Ù„Ø¬Ø¯ÙŠØ¯Ø©",
         "Value": "NOUVELLE MATMATA",
         "PostalCode": "6044",
         "Latitude": 33.702222,
@@ -430,7 +457,7 @@ WITH raw AS (
       },
       {
         "Name": "GABES MEDINA",
-        "NameAr": "قابس المدينة",
+        "NameAr": "Ù‚Ø§Ø¨Ø³ Ø§Ù„Ù…Ø¯ÙŠÙ†Ø©",
         "Value": "GABES MEDINA",
         "PostalCode": "6040",
         "Latitude": 33.886300,
@@ -438,7 +465,7 @@ WITH raw AS (
       },
       {
         "Name": "GABES OUEST",
-        "NameAr": "قابس الغربية",
+        "NameAr": "Ù‚Ø§Ø¨Ø³ Ø§Ù„ØºØ±Ø¨ÙŠØ©",
         "Value": "GABES OUEST",
         "PostalCode": "6041",
         "Latitude": 33.881453,
@@ -446,7 +473,7 @@ WITH raw AS (
       },
       {
         "Name": "EL METOUIA",
-        "NameAr": "المطوية",
+        "NameAr": "Ø§Ù„Ù…Ø·ÙˆÙŠØ©",
         "Value": "EL METOUIA",
         "PostalCode": "6052",
         "Latitude": 33.961111,
@@ -454,7 +481,7 @@ WITH raw AS (
       },
       {
         "Name": "GHANNOUCHE",
-        "NameAr": "غنوش",
+        "NameAr": "ØºÙ†ÙˆØ´",
         "Value": "GHANNOUCHE",
         "PostalCode": "6021",
         "Latitude": 33.933333,
@@ -462,7 +489,7 @@ WITH raw AS (
       },
       {
         "Name": "MENZEL HABIB",
-        "NameAr": "منزل الحبيب",
+        "NameAr": "Ù…Ù†Ø²Ù„ Ø§Ù„Ø­Ø¨ÙŠØ¨",
         "Value": "MENZEL HABIB",
         "PostalCode": "6030",
         "Latitude": 34.125833,
@@ -472,12 +499,12 @@ WITH raw AS (
   },
   {
     "Name": "GAFSA",
-    "NameAr": "قفصة",
+    "NameAr": "Ù‚ÙØµØ©",
     "Value": "GAFSA",
     "Delegations": [
       {
         "Name": "BELKHIR",
-        "NameAr": "بلخير",
+        "NameAr": "Ø¨Ù„Ø®ÙŠØ±",
         "Value": "BELKHIR",
         "PostalCode": "2135",
         "Latitude": 34.466667,
@@ -485,7 +512,7 @@ WITH raw AS (
       },
       {
         "Name": "GAFSA NORD",
-        "NameAr": "قفصة الشمالية",
+        "NameAr": "Ù‚ÙØµØ© Ø§Ù„Ø´Ù…Ø§Ù„ÙŠØ©",
         "Value": "GAFSA NORD",
         "PostalCode": "2196",
         "Latitude": 34.425000,
@@ -493,7 +520,7 @@ WITH raw AS (
       },
       {
         "Name": "SNED",
-        "NameAr": "السند",
+        "NameAr": "Ø§Ù„Ø³Ù†Ø¯",
         "Value": "SNED",
         "PostalCode": "2116",
         "Latitude": 34.472222,
@@ -501,7 +528,7 @@ WITH raw AS (
       },
       {
         "Name": "REDEYEF",
-        "NameAr": "الرديف",
+        "NameAr": "Ø§Ù„Ø±Ø¯ÙŠÙ",
         "Value": "REDEYEF",
         "PostalCode": "2140",
         "Latitude": 34.383333,
@@ -509,7 +536,7 @@ WITH raw AS (
       },
       {
         "Name": "GAFSA SUD",
-        "NameAr": "قفصة الجنوبية",
+        "NameAr": "Ù‚ÙØµØ© Ø§Ù„Ø¬Ù†ÙˆØ¨ÙŠØ©",
         "Value": "GAFSA SUD",
         "PostalCode": "2100",
         "Latitude": 34.425000,
@@ -517,7 +544,7 @@ WITH raw AS (
       },
       {
         "Name": "EL GUETTAR",
-        "NameAr": "القطار",
+        "NameAr": "Ø§Ù„Ù‚Ø·Ø§Ø±",
         "Value": "EL GUETTAR",
         "PostalCode": "2145",
         "Latitude": 34.328333,
@@ -525,7 +552,7 @@ WITH raw AS (
       },
       {
         "Name": "EL KSAR",
-        "NameAr": "القصر",
+        "NameAr": "Ø§Ù„Ù‚ØµØ±",
         "Value": "EL KSAR",
         "PostalCode": "2151",
         "Latitude": 34.400000,
@@ -533,7 +560,7 @@ WITH raw AS (
       },
       {
         "Name": "MOULARES",
-        "NameAr": "أم العرائس",
+        "NameAr": "Ø£Ù… Ø§Ù„Ø¹Ø±Ø§Ø¦Ø³",
         "Value": "MOULARES",
         "PostalCode": "2161",
         "Latitude": 34.494444,
@@ -541,7 +568,7 @@ WITH raw AS (
       },
       {
         "Name": "EL MDHILLA",
-        "NameAr": "المظيلة",
+        "NameAr": "Ø§Ù„Ù…Ø¸ÙŠÙ„Ø©",
         "Value": "EL MDHILLA",
         "PostalCode": "2170",
         "Latitude": 34.323333,
@@ -549,7 +576,7 @@ WITH raw AS (
       },
       {
         "Name": "METLAOUI",
-        "NameAr": "المتلوي",
+        "NameAr": "Ø§Ù„Ù…ØªÙ„ÙˆÙŠ",
         "Value": "METLAOUI",
         "PostalCode": "2130",
         "Latitude": 34.325833,
@@ -557,7 +584,7 @@ WITH raw AS (
       },
       {
         "Name": "SIDI AICH",
-        "NameAr": "سيدي عيش",
+        "NameAr": "Ø³ÙŠØ¯ÙŠ Ø¹ÙŠØ´",
         "Value": "SIDI AICH",
         "PostalCode": "2131",
         "Latitude": 34.600000,
@@ -567,12 +594,12 @@ WITH raw AS (
   },
   {
     "Name": "JENDOUBA",
-    "NameAr": "جندوبة",
+    "NameAr": "Ø¬Ù†Ø¯ÙˆØ¨Ø©",
     "Value": "JENDOUBA",
     "Delegations": [
       {
         "Name": "BALTA BOU AOUENE",
-        "NameAr": "بلطة بوعوان",
+        "NameAr": "Ø¨Ù„Ø·Ø© Ø¨ÙˆØ¹ÙˆØ§Ù†",
         "Value": "BALTA BOU AOUENE",
         "PostalCode": "8116",
         "Latitude": 36.450000,
@@ -580,7 +607,7 @@ WITH raw AS (
       },
       {
         "Name": "FERNANA",
-        "NameAr": "فرنانة",
+        "NameAr": "ÙØ±Ù†Ø§Ù†Ø©",
         "Value": "FERNANA",
         "PostalCode": "8142",
         "Latitude": 36.652500,
@@ -588,7 +615,7 @@ WITH raw AS (
       },
       {
         "Name": "JENDOUBA NORD",
-        "NameAr": "جندوبة الشمالية",
+        "NameAr": "Ø¬Ù†Ø¯ÙˆØ¨Ø© Ø§Ù„Ø´Ù…Ø§Ù„ÙŠØ©",
         "Value": "JENDOUBA NORD",
         "PostalCode": "8189",
         "Latitude": 36.501000,
@@ -596,7 +623,7 @@ WITH raw AS (
       },
       {
         "Name": "AIN DRAHAM",
-        "NameAr": "عين دراهم",
+        "NameAr": "Ø¹ÙŠÙ† Ø¯Ø±Ø§Ù‡Ù…",
         "Value": "AIN DRAHAM",
         "PostalCode": "8121",
         "Latitude": 36.777500,
@@ -604,7 +631,7 @@ WITH raw AS (
       },
       {
         "Name": "TABARKA",
-        "NameAr": "طبرقة",
+        "NameAr": "Ø·Ø¨Ø±Ù‚Ø©",
         "Value": "TABARKA",
         "PostalCode": "8192",
         "Latitude": 36.954444,
@@ -612,7 +639,7 @@ WITH raw AS (
       },
       {
         "Name": "JENDOUBA",
-        "NameAr": "جندوبة",
+        "NameAr": "Ø¬Ù†Ø¯ÙˆØ¨Ø©",
         "Value": "JENDOUBA",
         "PostalCode": "8122",
         "Latitude": 36.501000,
@@ -620,7 +647,7 @@ WITH raw AS (
       },
       {
         "Name": "BOU SALEM",
-        "NameAr": "بوسالم",
+        "NameAr": "Ø¨ÙˆØ³Ø§Ù„Ù…",
         "Value": "BOU SALEM",
         "PostalCode": "8143",
         "Latitude": 36.611667,
@@ -628,7 +655,7 @@ WITH raw AS (
       },
       {
         "Name": "OUED MLIZ",
-        "NameAr": "وادي مليز",
+        "NameAr": "ÙˆØ§Ø¯ÙŠ Ù…Ù„ÙŠØ²",
         "Value": "OUED MLIZ",
         "PostalCode": "8193",
         "Latitude": 36.466667,
@@ -636,7 +663,7 @@ WITH raw AS (
       },
       {
         "Name": "GHARDIMAOU",
-        "NameAr": "غار الدماء",
+        "NameAr": "ØºØ§Ø± Ø§Ù„Ø¯Ù…Ø§Ø¡",
         "Value": "GHARDIMAOU",
         "PostalCode": "8160",
         "Latitude": 36.479444,
@@ -646,12 +673,12 @@ WITH raw AS (
   },
   {
     "Name": "KAIROUAN",
-    "NameAr": "القيروان",
+    "NameAr": "Ø§Ù„Ù‚ÙŠØ±ÙˆØ§Ù†",
     "Value": "KAIROUAN",
     "Delegations": [
       {
         "Name": "CHEBIKA",
-        "NameAr": "الشبيكة",
+        "NameAr": "Ø§Ù„Ø´Ø¨ÙŠÙƒØ©",
         "Value": "CHEBIKA",
         "PostalCode": "3121",
         "Latitude": 35.683333,
@@ -659,7 +686,7 @@ WITH raw AS (
       },
       {
         "Name": "EL ALA",
-        "NameAr": "العلا",
+        "NameAr": "Ø§Ù„Ø¹Ù„Ø§",
         "Value": "EL ALA",
         "PostalCode": "3154",
         "Latitude": 35.608333,
@@ -667,7 +694,7 @@ WITH raw AS (
       },
       {
         "Name": "OUESLATIA",
-        "NameAr": "الوسلاتية",
+        "NameAr": "Ø§Ù„ÙˆØ³Ù„Ø§ØªÙŠØ©",
         "Value": "OUESLATIA",
         "PostalCode": "3124",
         "Latitude": 35.850000,
@@ -675,7 +702,7 @@ WITH raw AS (
       },
       {
         "Name": "HAJEB EL AYOUN",
-        "NameAr": "حاجب العيون",
+        "NameAr": "Ø­Ø§Ø¬Ø¨ Ø§Ù„Ø¹ÙŠÙˆÙ†",
         "Value": "HAJEB EL AYOUN",
         "PostalCode": "3160",
         "Latitude": 35.383333,
@@ -683,7 +710,7 @@ WITH raw AS (
       },
       {
         "Name": "SBIKHA",
-        "NameAr": "السبيخة",
+        "NameAr": "Ø§Ù„Ø³Ø¨ÙŠØ®Ø©",
         "Value": "SBIKHA",
         "PostalCode": "3125",
         "Latitude": 35.933333,
@@ -691,7 +718,7 @@ WITH raw AS (
       },
       {
         "Name": "BOU HAJLA",
-        "NameAr": "بوحجلة",
+        "NameAr": "Ø¨ÙˆØ­Ø¬Ù„Ø©",
         "Value": "BOU HAJLA",
         "PostalCode": "3126",
         "Latitude": 35.250000,
@@ -699,7 +726,7 @@ WITH raw AS (
       },
       {
         "Name": "KAIROUAN NORD",
-        "NameAr": "القيروان الشمالية",
+        "NameAr": "Ø§Ù„Ù‚ÙŠØ±ÙˆØ§Ù† Ø§Ù„Ø´Ù…Ø§Ù„ÙŠØ©",
         "Value": "KAIROUAN NORD",
         "PostalCode": "3129",
         "Latitude": 35.678056,
@@ -707,7 +734,7 @@ WITH raw AS (
       },
       {
         "Name": "HAFFOUZ",
-        "NameAr": "حفوز",
+        "NameAr": "Ø­ÙÙˆØ²",
         "Value": "HAFFOUZ",
         "PostalCode": "3130",
         "Latitude": 35.633333,
@@ -715,7 +742,7 @@ WITH raw AS (
       },
       {
         "Name": "KAIROUAN SUD",
-        "NameAr": "القيروان الجنوبية",
+        "NameAr": "Ø§Ù„Ù‚ÙŠØ±ÙˆØ§Ù† Ø§Ù„Ø¬Ù†ÙˆØ¨ÙŠØ©",
         "Value": "KAIROUAN SUD",
         "PostalCode": "3131",
         "Latitude": 35.678056,
@@ -723,7 +750,7 @@ WITH raw AS (
       },
       {
         "Name": "NASRALLAH",
-        "NameAr": "نصر الله",
+        "NameAr": "Ù†ØµØ± Ø§Ù„Ù„Ù‡",
         "Value": "NASRALLAH",
         "PostalCode": "3170",
         "Latitude": 35.050000,
@@ -731,7 +758,7 @@ WITH raw AS (
       },
       {
         "Name": "CHERARDA",
-        "NameAr": "الشراردة",
+        "NameAr": "Ø§Ù„Ø´Ø±Ø§Ø±Ø¯Ø©",
         "Value": "CHERARDA",
         "PostalCode": "3145",
         "Latitude": 35.452222,
@@ -741,12 +768,12 @@ WITH raw AS (
   },
   {
     "Name": "KASSERINE",
-    "NameAr": "القصرين",
+    "NameAr": "Ø§Ù„Ù‚ØµØ±ÙŠÙ†",
     "Value": "KASSERINE",
     "Delegations": [
       {
         "Name": "SBEITLA",
-        "NameAr": "سبيطلة",
+        "NameAr": "Ø³Ø¨ÙŠØ·Ù„Ø©",
         "Value": "SBEITLA",
         "PostalCode": "1250",
         "Latitude": 35.233333,
@@ -754,7 +781,7 @@ WITH raw AS (
       },
       {
         "Name": "FOUSSANA",
-        "NameAr": "فوسانة",
+        "NameAr": "ÙÙˆØ³Ø§Ù†Ø©",
         "Value": "FOUSSANA",
         "PostalCode": "1220",
         "Latitude": 35.100000,
@@ -762,7 +789,7 @@ WITH raw AS (
       },
       {
         "Name": "KASSERINE NORD",
-        "NameAr": "القصرين الشمالية",
+        "NameAr": "Ø§Ù„Ù‚ØµØ±ÙŠÙ† Ø§Ù„Ø´Ù…Ø§Ù„ÙŠØ©",
         "Value": "KASSERINE NORD",
         "PostalCode": "1253",
         "Latitude": 35.167600,
@@ -770,7 +797,7 @@ WITH raw AS (
       },
       {
         "Name": "HAIDRA",
-        "NameAr": "حيدرة",
+        "NameAr": "Ø­ÙŠØ¯Ø±Ø©",
         "Value": "HAIDRA",
         "PostalCode": "1221",
         "Latitude": 35.562500,
@@ -778,7 +805,7 @@ WITH raw AS (
       },
       {
         "Name": "THALA",
-        "NameAr": "تالة",
+        "NameAr": "ØªØ§Ù„Ø©",
         "Value": "THALA",
         "PostalCode": "1210",
         "Latitude": 35.575000,
@@ -786,7 +813,7 @@ WITH raw AS (
       },
       {
         "Name": "SBIBA",
-        "NameAr": "سبيبة",
+        "NameAr": "Ø³Ø¨ÙŠØ¨Ø©",
         "Value": "SBIBA",
         "PostalCode": "1270",
         "Latitude": 35.550000,
@@ -794,7 +821,7 @@ WITH raw AS (
       },
       {
         "Name": "FERIANA",
-        "NameAr": "فريانة",
+        "NameAr": "ÙØ±ÙŠØ§Ù†Ø©",
         "Value": "FERIANA",
         "PostalCode": "1240",
         "Latitude": 34.950000,
@@ -802,7 +829,7 @@ WITH raw AS (
       },
       {
         "Name": "MEJEL BEL ABBES",
-        "NameAr": "ماجل بلعباس",
+        "NameAr": "Ù…Ø§Ø¬Ù„ Ø¨Ù„Ø¹Ø¨Ø§Ø³",
         "Value": "MEJEL BEL ABBES",
         "PostalCode": "1226",
         "Latitude": 34.800000,
@@ -810,7 +837,7 @@ WITH raw AS (
       },
       {
         "Name": "KASSERINE SUD",
-        "NameAr": "القصرين الجنوبية",
+        "NameAr": "Ø§Ù„Ù‚ØµØ±ÙŠÙ† Ø§Ù„Ø¬Ù†ÙˆØ¨ÙŠØ©",
         "Value": "KASSERINE SUD",
         "PostalCode": "1233",
         "Latitude": 35.167600,
@@ -818,7 +845,7 @@ WITH raw AS (
       },
       {
         "Name": "EL AYOUN",
-        "NameAr": "العيون",
+        "NameAr": "Ø§Ù„Ø¹ÙŠÙˆÙ†",
         "Value": "EL AYOUN",
         "PostalCode": "1234",
         "Latitude": 35.383333,
@@ -826,7 +853,7 @@ WITH raw AS (
       },
       {
         "Name": "EZZOUHOUR  (KASSERINE)",
-        "NameAr": "الزهور (القصرين)",
+        "NameAr": "Ø§Ù„Ø²Ù‡ÙˆØ± (Ø§Ù„Ù‚ØµØ±ÙŠÙ†)",
         "Value": "EZZOUHOUR  (KASSERINE)",
         "PostalCode": "1279",
         "Latitude": 35.183300,
@@ -834,7 +861,7 @@ WITH raw AS (
       },
       {
         "Name": "JEDILIANE",
-        "NameAr": "جدليان",
+        "NameAr": "Ø¬Ø¯Ù„ÙŠØ§Ù†",
         "Value": "JEDILIANE",
         "PostalCode": "1280",
         "Latitude": 35.616667,
@@ -842,7 +869,7 @@ WITH raw AS (
       },
       {
         "Name": "HASSI EL FRID",
-        "NameAr": "حاسي الفريد",
+        "NameAr": "Ø­Ø§Ø³ÙŠ Ø§Ù„ÙØ±ÙŠØ¯",
         "Value": "HASSI EL FRID",
         "PostalCode": "1241",
         "Latitude": 34.933333,
@@ -852,12 +879,12 @@ WITH raw AS (
   },
   {
     "Name": "KEBILI",
-    "NameAr": "قبلي",
+    "NameAr": "Ù‚Ø¨Ù„ÙŠ",
     "Value": "KEBILI",
     "Delegations": [
       {
         "Name": "SOUK EL AHAD",
-        "NameAr": "سوق الأحد",
+        "NameAr": "Ø³ÙˆÙ‚ Ø§Ù„Ø£Ø­Ø¯",
         "Value": "SOUK EL AHAD",
         "PostalCode": "4223",
         "Latitude": 33.700000,
@@ -865,7 +892,7 @@ WITH raw AS (
       },
       {
         "Name": "KEBILI SUD",
-        "NameAr": "قبلي الجنوبية",
+        "NameAr": "Ù‚Ø¨Ù„ÙŠ Ø§Ù„Ø¬Ù†ÙˆØ¨ÙŠØ©",
         "Value": "KEBILI SUD",
         "PostalCode": "4224",
         "Latitude": 33.705111,
@@ -873,7 +900,7 @@ WITH raw AS (
       },
       {
         "Name": "KEBILI NORD",
-        "NameAr": "قبلي الشمالية",
+        "NameAr": "Ù‚Ø¨Ù„ÙŠ Ø§Ù„Ø´Ù…Ø§Ù„ÙŠØ©",
         "Value": "KEBILI NORD",
         "PostalCode": "4232",
         "Latitude": 33.705111,
@@ -881,7 +908,7 @@ WITH raw AS (
       },
       {
         "Name": "DOUZ",
-        "NameAr": "دوز",
+        "NameAr": "Ø¯ÙˆØ²",
         "Value": "DOUZ",
         "PostalCode": "4234",
         "Latitude": 33.458889,
@@ -889,7 +916,7 @@ WITH raw AS (
       },
       {
         "Name": "EL FAOUAR",
-        "NameAr": "الفوار",
+        "NameAr": "Ø§Ù„ÙÙˆØ§Ø±",
         "Value": "EL FAOUAR",
         "PostalCode": "4264",
         "Latitude": 33.350000,
@@ -899,12 +926,12 @@ WITH raw AS (
   },
   {
     "Name": "KEF",
-    "NameAr": "الكاف",
+    "NameAr": "Ø§Ù„ÙƒØ§Ù",
     "Value": "KEF",
     "Delegations": [
       {
         "Name": "TAJEROUINE",
-        "NameAr": "تاجروين",
+        "NameAr": "ØªØ§Ø¬Ø±ÙˆÙŠÙ†",
         "Value": "TAJEROUINE",
         "PostalCode": "7150",
         "Latitude": 35.883333,
@@ -912,7 +939,7 @@ WITH raw AS (
       },
       {
         "Name": "DAHMANI",
-        "NameAr": "الدهماني",
+        "NameAr": "Ø§Ù„Ø¯Ù‡Ù…Ø§Ù†ÙŠ",
         "Value": "DAHMANI",
         "PostalCode": "7170",
         "Latitude": 35.950000,
@@ -920,7 +947,7 @@ WITH raw AS (
       },
       {
         "Name": "LE KEF EST",
-        "NameAr": "الكاف الشرقية",
+        "NameAr": "Ø§Ù„ÙƒØ§Ù Ø§Ù„Ø´Ø±Ù‚ÙŠØ©",
         "Value": "LE KEF EST",
         "PostalCode": "7100",
         "Latitude": 36.180278,
@@ -928,7 +955,7 @@ WITH raw AS (
       },
       {
         "Name": "SAKIET SIDI YOUSSEF",
-        "NameAr": "ساقية سيدي يوسف",
+        "NameAr": "Ø³Ø§Ù‚ÙŠØ© Ø³ÙŠØ¯ÙŠ ÙŠÙˆØ³Ù",
         "Value": "SAKIET SIDI YOUSSEF",
         "PostalCode": "7120",
         "Latitude": 36.350000,
@@ -936,7 +963,7 @@ WITH raw AS (
       },
       {
         "Name": "LE SERS",
-        "NameAr": "السرس",
+        "NameAr": "Ø§Ù„Ø³Ø±Ø³",
         "Value": "LE SERS",
         "PostalCode": "7180",
         "Latitude": 36.083333,
@@ -944,7 +971,7 @@ WITH raw AS (
       },
       {
         "Name": "NEBEUR",
-        "NameAr": "نبر",
+        "NameAr": "Ù†Ø¨Ø±",
         "Value": "NEBEUR",
         "PostalCode": "7110",
         "Latitude": 36.366667,
@@ -952,7 +979,7 @@ WITH raw AS (
       },
       {
         "Name": "TOUIREF",
-        "NameAr": "الطويرف",
+        "NameAr": "Ø§Ù„Ø·ÙˆÙŠØ±Ù",
         "Value": "TOUIREF",
         "PostalCode": "7112",
         "Latitude": 36.283333,
@@ -960,7 +987,7 @@ WITH raw AS (
       },
       {
         "Name": "EL KSOUR",
-        "NameAr": "القصور",
+        "NameAr": "Ø§Ù„Ù‚ØµÙˆØ±",
         "Value": "EL KSOUR",
         "PostalCode": "7160",
         "Latitude": 35.800000,
@@ -968,7 +995,7 @@ WITH raw AS (
       },
       {
         "Name": "KALAA EL KHASBA",
-        "NameAr": "القلعة الخصباء",
+        "NameAr": "Ø§Ù„Ù‚Ù„Ø¹Ø© Ø§Ù„Ø®ØµØ¨Ø§Ø¡",
         "Value": "KALAA EL KHASBA",
         "PostalCode": "7123",
         "Latitude": 35.633333,
@@ -976,7 +1003,7 @@ WITH raw AS (
       },
       {
         "Name": "KALAAT SINANE",
-        "NameAr": "قلعة سنان",
+        "NameAr": "Ù‚Ù„Ø¹Ø© Ø³Ù†Ø§Ù†",
         "Value": "KALAAT SINANE",
         "PostalCode": "7130",
         "Latitude": 35.950000,
@@ -984,7 +1011,7 @@ WITH raw AS (
       },
       {
         "Name": "JERISSA",
-        "NameAr": "الجريصة",
+        "NameAr": "Ø§Ù„Ø¬Ø±ÙŠØµØ©",
         "Value": "JERISSA",
         "PostalCode": "7114",
         "Latitude": 35.866667,
@@ -992,7 +1019,7 @@ WITH raw AS (
       },
       {
         "Name": "LE KEF OUEST",
-        "NameAr": "الكاف الغربية",
+        "NameAr": "Ø§Ù„ÙƒØ§Ù Ø§Ù„ØºØ±Ø¨ÙŠØ©",
         "Value": "LE KEF OUEST",
         "PostalCode": "7117",
         "Latitude": 36.180278,
@@ -1002,12 +1029,12 @@ WITH raw AS (
   },
   {
     "Name": "MAHDIA",
-    "NameAr": "المهدية",
+    "NameAr": "Ø§Ù„Ù…Ù‡Ø¯ÙŠØ©",
     "Value": "MAHDIA",
     "Delegations": [
       {
         "Name": "MAHDIA",
-        "NameAr": "المهدية",
+        "NameAr": "Ø§Ù„Ù…Ù‡Ø¯ÙŠØ©",
         "Value": "MAHDIA",
         "PostalCode": "5111",
         "Latitude": 35.504722,
@@ -1015,7 +1042,7 @@ WITH raw AS (
       },
       {
         "Name": "CHORBANE",
-        "NameAr": "شربان",
+        "NameAr": "Ø´Ø±Ø¨Ø§Ù†",
         "Value": "CHORBANE",
         "PostalCode": "5130",
         "Latitude": 35.266667,
@@ -1023,7 +1050,7 @@ WITH raw AS (
       },
       {
         "Name": "EL JEM",
-        "NameAr": "الجم",
+        "NameAr": "Ø§Ù„Ø¬Ù…",
         "Value": "EL JEM",
         "PostalCode": "5160",
         "Latitude": 35.296389,
@@ -1031,7 +1058,7 @@ WITH raw AS (
       },
       {
         "Name": "LA CHEBBA",
-        "NameAr": "الشابة",
+        "NameAr": "Ø§Ù„Ø´Ø§Ø¨Ø©",
         "Value": "LA CHEBBA",
         "PostalCode": "5170",
         "Latitude": 35.233333,
@@ -1039,7 +1066,7 @@ WITH raw AS (
       },
       {
         "Name": "BOU MERDES",
-        "NameAr": "بومرداس",
+        "NameAr": "Ø¨ÙˆÙ…Ø±Ø¯Ø§Ø³",
         "Value": "BOU MERDES",
         "PostalCode": "5112",
         "Latitude": 35.550000,
@@ -1047,7 +1074,7 @@ WITH raw AS (
       },
       {
         "Name": "KSOUR ESSAF",
-        "NameAr": "قصور الساف",
+        "NameAr": "Ù‚ØµÙˆØ± Ø§Ù„Ø³Ø§Ù",
         "Value": "KSOUR ESSAF",
         "PostalCode": "5180",
         "Latitude": 35.426667,
@@ -1055,7 +1082,7 @@ WITH raw AS (
       },
       {
         "Name": "SIDI ALOUENE",
-        "NameAr": "سيدي علوان",
+        "NameAr": "Ø³ÙŠØ¯ÙŠ Ø¹Ù„ÙˆØ§Ù†",
         "Value": "SIDI ALOUENE",
         "PostalCode": "5132",
         "Latitude": 35.350000,
@@ -1063,7 +1090,7 @@ WITH raw AS (
       },
       {
         "Name": "HBIRA",
-        "NameAr": "هبيرة",
+        "NameAr": "Ù‡Ø¨ÙŠØ±Ø©",
         "Value": "HBIRA",
         "PostalCode": "5113",
         "Latitude": 35.116667,
@@ -1071,7 +1098,7 @@ WITH raw AS (
       },
       {
         "Name": "MELLOULECH",
-        "NameAr": "ملولش",
+        "NameAr": "Ù…Ù„ÙˆÙ„Ø´",
         "Value": "MELLOULECH",
         "PostalCode": "5114",
         "Latitude": 35.316667,
@@ -1079,7 +1106,7 @@ WITH raw AS (
       },
       {
         "Name": "SOUASSI",
-        "NameAr": "السواسي",
+        "NameAr": "Ø§Ù„Ø³ÙˆØ§Ø³ÙŠ",
         "Value": "SOUASSI",
         "PostalCode": "5134",
         "Latitude": 35.350000,
@@ -1087,7 +1114,7 @@ WITH raw AS (
       },
       {
         "Name": "OULED CHAMAKH",
-        "NameAr": "أولاد الشامخ",
+        "NameAr": "Ø£ÙˆÙ„Ø§Ø¯ Ø§Ù„Ø´Ø§Ù…Ø®",
         "Value": "OULED CHAMAKH",
         "PostalCode": "5120",
         "Latitude": 35.400000,
@@ -1097,12 +1124,12 @@ WITH raw AS (
   },
   {
     "Name": "MANNOUBA",
-    "NameAr": "منوبة",
+    "NameAr": "Ù…Ù†ÙˆØ¨Ø©",
     "Value": "MANNOUBA",
     "Delegations": [
       {
         "Name": "TEBOURBA",
-        "NameAr": "طبربة",
+        "NameAr": "Ø·Ø¨Ø±Ø¨Ø©",
         "Value": "TEBOURBA",
         "PostalCode": "1144",
         "Latitude": 36.829167,
@@ -1110,7 +1137,7 @@ WITH raw AS (
       },
       {
         "Name": "JEDAIDA",
-        "NameAr": "الجديدة",
+        "NameAr": "Ø§Ù„Ø¬Ø¯ÙŠØ¯Ø©",
         "Value": "JEDAIDA",
         "PostalCode": "1124",
         "Latitude": 36.808333,
@@ -1118,7 +1145,7 @@ WITH raw AS (
       },
       {
         "Name": "MORNAGUIA",
-        "NameAr": "المرناقية",
+        "NameAr": "Ø§Ù„Ù…Ø±Ù†Ø§Ù‚ÙŠØ©",
         "Value": "MORNAGUIA",
         "PostalCode": "1110",
         "Latitude": 36.766667,
@@ -1126,7 +1153,7 @@ WITH raw AS (
       },
       {
         "Name": "BORJ EL AMRI",
-        "NameAr": "برج العامري",
+        "NameAr": "Ø¨Ø±Ø¬ Ø§Ù„Ø¹Ø§Ù…Ø±ÙŠ",
         "Value": "BORJ EL AMRI",
         "PostalCode": "1113",
         "Latitude": 36.750000,
@@ -1134,7 +1161,7 @@ WITH raw AS (
       },
       {
         "Name": "EL BATTAN",
-        "NameAr": "البطان",
+        "NameAr": "Ø§Ù„Ø¨Ø·Ø§Ù†",
         "Value": "EL BATTAN",
         "PostalCode": "1114",
         "Latitude": 36.800000,
@@ -1142,7 +1169,7 @@ WITH raw AS (
       },
       {
         "Name": "OUED ELLIL",
-        "NameAr": "وادي الليل",
+        "NameAr": "ÙˆØ§Ø¯ÙŠ Ø§Ù„Ù„ÙŠÙ„",
         "Value": "OUED ELLIL",
         "PostalCode": "2021",
         "Latitude": 36.833333,
@@ -1150,7 +1177,7 @@ WITH raw AS (
       },
       {
         "Name": "DOUAR HICHER",
-        "NameAr": "دوار هيشر",
+        "NameAr": "Ø¯ÙˆØ§Ø± Ù‡ÙŠØ´Ø±",
         "Value": "DOUAR HICHER",
         "PostalCode": "2086",
         "Latitude": 36.835000,
@@ -1158,7 +1185,7 @@ WITH raw AS (
       },
       {
         "Name": "MANNOUBA",
-        "NameAr": "منوبة",
+        "NameAr": "Ù…Ù†ÙˆØ¨Ø©",
         "Value": "MANNOUBA",
         "PostalCode": "2010",
         "Latitude": 36.813500,
@@ -1168,12 +1195,12 @@ WITH raw AS (
   },
   {
     "Name": "MEDENINE",
-    "NameAr": "مدنين",
+    "NameAr": "Ù…Ø¯Ù†ÙŠÙ†",
     "Value": "MEDENINE",
     "Delegations": [
       {
         "Name": "HOUMET ESSOUK",
-        "NameAr": "حومة السوق",
+        "NameAr": "Ø­ÙˆÙ…Ø© Ø§Ù„Ø³ÙˆÙ‚",
         "Value": "HOUMET ESSOUK",
         "PostalCode": "4180",
         "Latitude": 33.875000,
@@ -1181,7 +1208,7 @@ WITH raw AS (
       },
       {
         "Name": "BENI KHEDACHE",
-        "NameAr": "بني خداش",
+        "NameAr": "Ø¨Ù†ÙŠ Ø®Ø¯Ø§Ø´",
         "Value": "BENI KHEDACHE",
         "PostalCode": "4110",
         "Latitude": 33.250000,
@@ -1189,7 +1216,7 @@ WITH raw AS (
       },
       {
         "Name": "AJIM",
-        "NameAr": "أجيم",
+        "NameAr": "Ø£Ø¬ÙŠÙ…",
         "Value": "AJIM",
         "PostalCode": "4150",
         "Latitude": 33.720556,
@@ -1197,7 +1224,7 @@ WITH raw AS (
       },
       {
         "Name": "BEN GUERDANE",
-        "NameAr": "بنقردان",
+        "NameAr": "Ø¨Ù†Ù‚Ø±Ø¯Ø§Ù†",
         "Value": "BEN GUERDANE",
         "PostalCode": "4153",
         "Latitude": 33.133333,
@@ -1205,7 +1232,7 @@ WITH raw AS (
       },
       {
         "Name": "ZARZIS",
-        "NameAr": "جرجيس",
+        "NameAr": "Ø¬Ø±Ø¬ÙŠØ³",
         "Value": "ZARZIS",
         "PostalCode": "4154",
         "Latitude": 33.503889,
@@ -1213,7 +1240,7 @@ WITH raw AS (
       },
       {
         "Name": "MEDENINE NORD",
-        "NameAr": "مدنين الشمالية",
+        "NameAr": "Ù…Ø¯Ù†ÙŠÙ† Ø§Ù„Ø´Ù…Ø§Ù„ÙŠØ©",
         "Value": "MEDENINE NORD",
         "PostalCode": "4111",
         "Latitude": 33.355000,
@@ -1221,7 +1248,7 @@ WITH raw AS (
       },
       {
         "Name": "MIDOUN",
-        "NameAr": "ميدون",
+        "NameAr": "Ù…ÙŠØ¯ÙˆÙ†",
         "Value": "MIDOUN",
         "PostalCode": "4113",
         "Latitude": 33.804722,
@@ -1229,7 +1256,7 @@ WITH raw AS (
       },
       {
         "Name": "SIDI MAKHLOUF",
-        "NameAr": "سيدي مخلوف",
+        "NameAr": "Ø³ÙŠØ¯ÙŠ Ù…Ø®Ù„ÙˆÙ",
         "Value": "SIDI MAKHLOUF",
         "PostalCode": "4181",
         "Latitude": 33.566667,
@@ -1237,7 +1264,7 @@ WITH raw AS (
       },
       {
         "Name": "MEDENINE SUD",
-        "NameAr": "مدنين الجنوبية",
+        "NameAr": "Ù…Ø¯Ù†ÙŠÙ† Ø§Ù„Ø¬Ù†ÙˆØ¨ÙŠØ©",
         "Value": "MEDENINE SUD",
         "PostalCode": "4127",
         "Latitude": 33.355000,
@@ -1247,12 +1274,12 @@ WITH raw AS (
   },
   {
     "Name": "MONASTIR",
-    "NameAr": "المنستير",
+    "NameAr": "Ø§Ù„Ù…Ù†Ø³ØªÙŠØ±",
     "Value": "MONASTIR",
     "Delegations": [
       {
         "Name": "MONASTIR",
-        "NameAr": "المنستير",
+        "NameAr": "Ø§Ù„Ù…Ù†Ø³ØªÙŠØ±",
         "Value": "MONASTIR",
         "PostalCode": "5060",
         "Latitude": 35.764298,
@@ -1260,7 +1287,7 @@ WITH raw AS (
       },
       {
         "Name": "SAHLINE",
-        "NameAr": "الساحلين",
+        "NameAr": "Ø§Ù„Ø³Ø§Ø­Ù„ÙŠÙ†",
         "Value": "SAHLINE",
         "PostalCode": "5012",
         "Latitude": 35.750000,
@@ -1268,7 +1295,7 @@ WITH raw AS (
       },
       {
         "Name": "KSIBET EL MEDIOUNI",
-        "NameAr": "قصيبة المديوني",
+        "NameAr": "Ù‚ØµÙŠØ¨Ø© Ø§Ù„Ù…Ø¯ÙŠÙˆÙ†ÙŠ",
         "Value": "KSIBET EL MEDIOUNI",
         "PostalCode": "5031",
         "Latitude": 35.666667,
@@ -1276,7 +1303,7 @@ WITH raw AS (
       },
       {
         "Name": "JEMMAL",
-        "NameAr": "جمال",
+        "NameAr": "Ø¬Ù…Ø§Ù„",
         "Value": "JEMMAL",
         "PostalCode": "5013",
         "Latitude": 35.625000,
@@ -1284,7 +1311,7 @@ WITH raw AS (
       },
       {
         "Name": "BENI HASSEN",
-        "NameAr": "بني حسان",
+        "NameAr": "Ø¨Ù†ÙŠ Ø­Ø³Ø§Ù†",
         "Value": "BENI HASSEN",
         "PostalCode": "5014",
         "Latitude": 35.566667,
@@ -1292,7 +1319,7 @@ WITH raw AS (
       },
       {
         "Name": "SAYADA LAMTA BOU HAJAR",
-        "NameAr": "صيادة لمطة بوحجر",
+        "NameAr": "ØµÙŠØ§Ø¯Ø© Ù„Ù…Ø·Ø© Ø¨ÙˆØ­Ø¬Ø±",
         "Value": "SAYADA LAMTA BOU HAJAR",
         "PostalCode": "5015",
         "Latitude": 35.666667,
@@ -1300,7 +1327,7 @@ WITH raw AS (
       },
       {
         "Name": "TEBOULBA",
-        "NameAr": "طبلبة",
+        "NameAr": "Ø·Ø¨Ù„Ø¨Ø©",
         "Value": "TEBOULBA",
         "PostalCode": "5066",
         "Latitude": 35.640556,
@@ -1308,7 +1335,7 @@ WITH raw AS (
       },
       {
         "Name": "KSAR HELAL",
-        "NameAr": "قصر هلال",
+        "NameAr": "Ù‚ØµØ± Ù‡Ù„Ø§Ù„",
         "Value": "KSAR HELAL",
         "PostalCode": "5016",
         "Latitude": 35.644167,
@@ -1316,7 +1343,7 @@ WITH raw AS (
       },
       {
         "Name": "BEMBLA",
-        "NameAr": "بنبلة",
+        "NameAr": "Ø¨Ù†Ø¨Ù„Ø©",
         "Value": "BEMBLA",
         "PostalCode": "5032",
         "Latitude": 35.700000,
@@ -1324,7 +1351,7 @@ WITH raw AS (
       },
       {
         "Name": "ZERAMDINE",
-        "NameAr": "زرمدين",
+        "NameAr": "Ø²Ø±Ù…Ø¯ÙŠÙ†",
         "Value": "ZERAMDINE",
         "PostalCode": "5033",
         "Latitude": 35.583333,
@@ -1332,7 +1359,7 @@ WITH raw AS (
       },
       {
         "Name": "MOKNINE",
-        "NameAr": "المكنين",
+        "NameAr": "Ø§Ù„Ù…ÙƒÙ†ÙŠÙ†",
         "Value": "MOKNINE",
         "PostalCode": "5034",
         "Latitude": 35.630556,
@@ -1340,7 +1367,7 @@ WITH raw AS (
       },
       {
         "Name": "OUERDANINE",
-        "NameAr": "الوردانين",
+        "NameAr": "Ø§Ù„ÙˆØ±Ø¯Ø§Ù†ÙŠÙ†",
         "Value": "OUERDANINE",
         "PostalCode": "5041",
         "Latitude": 35.783333,
@@ -1348,7 +1375,7 @@ WITH raw AS (
       },
       {
         "Name": "BEKALTA",
-        "NameAr": "البقالطة",
+        "NameAr": "Ø§Ù„Ø¨Ù‚Ø§Ù„Ø·Ø©",
         "Value": "BEKALTA",
         "PostalCode": "5090",
         "Latitude": 35.616667,
@@ -1358,12 +1385,12 @@ WITH raw AS (
   },
   {
     "Name": "NABEUL",
-    "NameAr": "نابل",
+    "NameAr": "Ù†Ø§Ø¨Ù„",
     "Value": "NABEUL",
     "Delegations": [
       {
         "Name": "BENI KHIAR",
-        "NameAr": "بني خيار",
+        "NameAr": "Ø¨Ù†ÙŠ Ø®ÙŠØ§Ø±",
         "Value": "BENI KHIAR",
         "PostalCode": "8023",
         "Latitude": 36.466667,
@@ -1371,7 +1398,7 @@ WITH raw AS (
       },
       {
         "Name": "TAKELSA",
-        "NameAr": "تاكلسة",
+        "NameAr": "ØªØ§ÙƒÙ„Ø³Ø©",
         "Value": "TAKELSA",
         "PostalCode": "8031",
         "Latitude": 36.783333,
@@ -1379,7 +1406,7 @@ WITH raw AS (
       },
       {
         "Name": "EL MIDA",
-        "NameAr": "الميدة",
+        "NameAr": "Ø§Ù„Ù…ÙŠØ¯Ø©",
         "Value": "EL MIDA",
         "PostalCode": "8044",
         "Latitude": 36.733333,
@@ -1387,7 +1414,7 @@ WITH raw AS (
       },
       {
         "Name": "MENZEL BOUZELFA",
-        "NameAr": "منزل بوزلفة",
+        "NameAr": "Ù…Ù†Ø²Ù„ Ø¨ÙˆØ²Ù„ÙØ©",
         "Value": "MENZEL BOUZELFA",
         "PostalCode": "8010",
         "Latitude": 36.683333,
@@ -1395,7 +1422,7 @@ WITH raw AS (
       },
       {
         "Name": "KELIBIA",
-        "NameAr": "قليبية",
+        "NameAr": "Ù‚Ù„ÙŠØ¨ÙŠØ©",
         "Value": "KELIBIA",
         "PostalCode": "8090",
         "Latitude": 36.846111,
@@ -1403,7 +1430,7 @@ WITH raw AS (
       },
       {
         "Name": "HAMMAMET",
-        "NameAr": "الحمامات",
+        "NameAr": "Ø§Ù„Ø­Ù…Ø§Ù…Ø§Øª",
         "Value": "HAMMAMET",
         "PostalCode": "8032",
         "Latitude": 36.400000,
@@ -1411,7 +1438,7 @@ WITH raw AS (
       },
       {
         "Name": "BOU ARGOUB",
-        "NameAr": "بوعرقوب",
+        "NameAr": "Ø¨ÙˆØ¹Ø±Ù‚ÙˆØ¨",
         "Value": "BOU ARGOUB",
         "PostalCode": "8061",
         "Latitude": 36.550000,
@@ -1419,7 +1446,7 @@ WITH raw AS (
       },
       {
         "Name": "KORBA",
-        "NameAr": "قربة",
+        "NameAr": "Ù‚Ø±Ø¨Ø©",
         "Value": "KORBA",
         "PostalCode": "8033",
         "Latitude": 36.575278,
@@ -1427,7 +1454,7 @@ WITH raw AS (
       },
       {
         "Name": "MENZEL TEMIME",
-        "NameAr": "منزل تميم",
+        "NameAr": "Ù…Ù†Ø²Ù„ ØªÙ…ÙŠÙ…",
         "Value": "MENZEL TEMIME",
         "PostalCode": "8034",
         "Latitude": 36.783333,
@@ -1435,7 +1462,7 @@ WITH raw AS (
       },
       {
         "Name": "NABEUL",
-        "NameAr": "نابل",
+        "NameAr": "Ù†Ø§Ø¨Ù„",
         "Value": "NABEUL",
         "PostalCode": "8062",
         "Latitude": 36.456065,
@@ -1443,7 +1470,7 @@ WITH raw AS (
       },
       {
         "Name": "EL HAOUARIA",
-        "NameAr": "الهوارية",
+        "NameAr": "Ø§Ù„Ù‡ÙˆØ§Ø±ÙŠØ©",
         "Value": "EL HAOUARIA",
         "PostalCode": "8036",
         "Latitude": 37.050000,
@@ -1451,7 +1478,7 @@ WITH raw AS (
       },
       {
         "Name": "HAMMAM EL GHEZAZ",
-        "NameAr": "حمام الأغزاز",
+        "NameAr": "Ø­Ù…Ø§Ù… Ø§Ù„Ø£ØºØ²Ø§Ø²",
         "Value": "HAMMAM EL GHEZAZ",
         "PostalCode": "8025",
         "Latitude": 36.966667,
@@ -1459,7 +1486,7 @@ WITH raw AS (
       },
       {
         "Name": "SOLIMAN",
-        "NameAr": "سليمان",
+        "NameAr": "Ø³Ù„ÙŠÙ…Ø§Ù†",
         "Value": "SOLIMAN",
         "PostalCode": "8063",
         "Latitude": 36.700000,
@@ -1467,7 +1494,7 @@ WITH raw AS (
       },
       {
         "Name": "GROMBALIA",
-        "NameAr": "قرمبالية",
+        "NameAr": "Ù‚Ø±Ù…Ø¨Ø§Ù„ÙŠØ©",
         "Value": "GROMBALIA",
         "PostalCode": "8092",
         "Latitude": 36.600000,
@@ -1475,7 +1502,7 @@ WITH raw AS (
       },
       {
         "Name": "DAR CHAABANE ELFEHRI",
-        "NameAr": "دار شعبان الفهري",
+        "NameAr": "Ø¯Ø§Ø± Ø´Ø¹Ø¨Ø§Ù† Ø§Ù„ÙÙ‡Ø±ÙŠ",
         "Value": "DAR CHAABANE ELFEHRI",
         "PostalCode": "8011",
         "Latitude": 36.473333,
@@ -1483,7 +1510,7 @@ WITH raw AS (
       },
       {
         "Name": "BENI KHALLED",
-        "NameAr": "بني خلاد",
+        "NameAr": "Ø¨Ù†ÙŠ Ø®Ù„Ø§Ø¯",
         "Value": "BENI KHALLED",
         "PostalCode": "8099",
         "Latitude": 36.650000,
@@ -1493,12 +1520,12 @@ WITH raw AS (
   },
   {
     "Name": "SFAX",
-    "NameAr": "صفاقس",
+    "NameAr": "ØµÙØ§Ù‚Ø³",
     "Value": "SFAX",
     "Delegations": [
       {
         "Name": "AGAREB",
-        "NameAr": "عقارب",
+        "NameAr": "Ø¹Ù‚Ø§Ø±Ø¨",
         "Value": "AGAREB",
         "PostalCode": "3030",
         "Latitude": 34.733333,
@@ -1506,7 +1533,7 @@ WITH raw AS (
       },
       {
         "Name": "EL HENCHA",
-        "NameAr": "الحنشة",
+        "NameAr": "Ø§Ù„Ø­Ù†Ø´Ø©",
         "Value": "EL HENCHA",
         "PostalCode": "3043",
         "Latitude": 35.233333,
@@ -1514,7 +1541,7 @@ WITH raw AS (
       },
       {
         "Name": "SFAX EST",
-        "NameAr": "صفاقس الشرقية",
+        "NameAr": "ØµÙØ§Ù‚Ø³ Ø§Ù„Ø´Ø±Ù‚ÙŠØ©",
         "Value": "SFAX EST",
         "PostalCode": "3064",
         "Latitude": 34.740000,
@@ -1522,7 +1549,7 @@ WITH raw AS (
       },
       {
         "Name": "SFAX SUD",
-        "NameAr": "صفاقس الجنوبية",
+        "NameAr": "ØµÙØ§Ù‚Ø³ Ø§Ù„Ø¬Ù†ÙˆØ¨ÙŠØ©",
         "Value": "SFAX SUD",
         "PostalCode": "3083",
         "Latitude": 34.740000,
@@ -1530,7 +1557,7 @@ WITH raw AS (
       },
       {
         "Name": "MAHRAS",
-        "NameAr": "المحرس",
+        "NameAr": "Ø§Ù„Ù…Ø­Ø±Ø³",
         "Value": "MAHRAS",
         "PostalCode": "3044",
         "Latitude": 34.527778,
@@ -1538,7 +1565,7 @@ WITH raw AS (
       },
       {
         "Name": "SFAX VILLE",
-        "NameAr": "صفاقس المدينة",
+        "NameAr": "ØµÙØ§Ù‚Ø³ Ø§Ù„Ù…Ø¯ÙŠÙ†Ø©",
         "Value": "SFAX VILLE",
         "PostalCode": "3065",
         "Latitude": 34.737500,
@@ -1546,7 +1573,7 @@ WITH raw AS (
       },
       {
         "Name": "EL AMRA",
-        "NameAr": "العامرة",
+        "NameAr": "Ø§Ù„Ø¹Ø§Ù…Ø±Ø©",
         "Value": "EL AMRA",
         "PostalCode": "3066",
         "Latitude": 34.900000,
@@ -1554,7 +1581,7 @@ WITH raw AS (
       },
       {
         "Name": "BIR ALI BEN KHELIFA",
-        "NameAr": "بئر علي بن خليفة",
+        "NameAr": "Ø¨Ø¦Ø± Ø¹Ù„ÙŠ Ø¨Ù† Ø®Ù„ÙŠÙØ©",
         "Value": "BIR ALI BEN KHELIFA",
         "PostalCode": "3085",
         "Latitude": 34.833333,
@@ -1562,7 +1589,7 @@ WITH raw AS (
       },
       {
         "Name": "KERKENAH",
-        "NameAr": "قرقنة",
+        "NameAr": "Ù‚Ø±Ù‚Ù†Ø©",
         "Value": "KERKENAH",
         "PostalCode": "3045",
         "Latitude": 34.720833,
@@ -1570,7 +1597,7 @@ WITH raw AS (
       },
       {
         "Name": "SAKIET EDDAIER",
-        "NameAr": "ساقية الداير",
+        "NameAr": "Ø³Ø§Ù‚ÙŠØ© Ø§Ù„Ø¯Ø§ÙŠØ±",
         "Value": "SAKIET EDDAIER",
         "PostalCode": "3011",
         "Latitude": 34.816667,
@@ -1578,7 +1605,7 @@ WITH raw AS (
       },
       {
         "Name": "JEBENIANA",
-        "NameAr": "جبنيانة",
+        "NameAr": "Ø¬Ø¨Ù†ÙŠØ§Ù†Ø©",
         "Value": "JEBENIANA",
         "PostalCode": "3086",
         "Latitude": 35.033333,
@@ -1586,7 +1613,7 @@ WITH raw AS (
       },
       {
         "Name": "SAKIET EZZIT",
-        "NameAr": "ساقية الزيت",
+        "NameAr": "Ø³Ø§Ù‚ÙŠØ© Ø§Ù„Ø²ÙŠØª",
         "Value": "SAKIET EZZIT",
         "PostalCode": "3091",
         "Latitude": 34.794444,
@@ -1594,7 +1621,7 @@ WITH raw AS (
       },
       {
         "Name": "MENZEL CHAKER",
-        "NameAr": "منزل شاكر",
+        "NameAr": "Ù…Ù†Ø²Ù„ Ø´Ø§ÙƒØ±",
         "Value": "MENZEL CHAKER",
         "PostalCode": "3092",
         "Latitude": 34.966667,
@@ -1602,7 +1629,7 @@ WITH raw AS (
       },
       {
         "Name": "ESSKHIRA",
-        "NameAr": "الصخيرة",
+        "NameAr": "Ø§Ù„ØµØ®ÙŠØ±Ø©",
         "Value": "ESSKHIRA",
         "PostalCode": "3050",
         "Latitude": 34.291667,
@@ -1610,7 +1637,7 @@ WITH raw AS (
       },
       {
         "Name": "GHRAIBA",
-        "NameAr": "الغريبة",
+        "NameAr": "Ø§Ù„ØºØ±ÙŠØ¨Ø©",
         "Value": "GHRAIBA",
         "PostalCode": "3034",
         "Latitude": 34.550000,
@@ -1620,12 +1647,12 @@ WITH raw AS (
   },
   {
     "Name": "SIDI BOUZID",
-    "NameAr": "سيدي بوزيد",
+    "NameAr": "Ø³ÙŠØ¯ÙŠ Ø¨ÙˆØ²ÙŠØ¯",
     "Value": "SIDI_BOUZID",
     "Delegations": [
       {
         "Name": "MENZEL BOUZAIENE",
-        "NameAr": "منزل بوزيان",
+        "NameAr": "Ù…Ù†Ø²Ù„ Ø¨ÙˆØ²ÙŠØ§Ù†",
         "Value": "MENZEL BOUZAIENE",
         "PostalCode": "9114",
         "Latitude": 34.783333,
@@ -1633,7 +1660,7 @@ WITH raw AS (
       },
       {
         "Name": "SIDI BOUZID OUEST",
-        "NameAr": "سيدي بوزيد الغربية",
+        "NameAr": "Ø³ÙŠØ¯ÙŠ Ø¨ÙˆØ²ÙŠØ¯ Ø§Ù„ØºØ±Ø¨ÙŠØ©",
         "Value": "SIDI BOUZID OUEST",
         "PostalCode": "9131",
         "Latitude": 35.037222,
@@ -1641,7 +1668,7 @@ WITH raw AS (
       },
       {
         "Name": "BEN OUN",
-        "NameAr": "بن عون",
+        "NameAr": "Ø¨Ù† Ø¹ÙˆÙ†",
         "Value": "BEN OUN",
         "PostalCode": "9169",
         "Latitude": 34.866667,
@@ -1649,7 +1676,7 @@ WITH raw AS (
       },
       {
         "Name": "SIDI BOUZID EST",
-        "NameAr": "سيدي بوزيد الشرقية",
+        "NameAr": "Ø³ÙŠØ¯ÙŠ Ø¨ÙˆØ²ÙŠØ¯ Ø§Ù„Ø´Ø±Ù‚ÙŠØ©",
         "Value": "SIDI BOUZID EST",
         "PostalCode": "9100",
         "Latitude": 35.037222,
@@ -1657,7 +1684,7 @@ WITH raw AS (
       },
       {
         "Name": "OULED HAFFOUZ",
-        "NameAr": "أولاد حفوز",
+        "NameAr": "Ø£ÙˆÙ„Ø§Ø¯ Ø­ÙÙˆØ²",
         "Value": "OULED HAFFOUZ",
         "PostalCode": "9180",
         "Latitude": 35.183333,
@@ -1665,7 +1692,7 @@ WITH raw AS (
       },
       {
         "Name": "REGUEB",
-        "NameAr": "الرقاب",
+        "NameAr": "Ø§Ù„Ø±Ù‚Ø§Ø¨",
         "Value": "REGUEB",
         "PostalCode": "9115",
         "Latitude": 34.850000,
@@ -1673,7 +1700,7 @@ WITH raw AS (
       },
       {
         "Name": "MAKNASSY",
-        "NameAr": "المكناسي",
+        "NameAr": "Ø§Ù„Ù…ÙƒÙ†Ø§Ø³ÙŠ",
         "Value": "MAKNASSY",
         "PostalCode": "9140",
         "Latitude": 34.600000,
@@ -1681,7 +1708,7 @@ WITH raw AS (
       },
       {
         "Name": "JILMA",
-        "NameAr": "جلمة",
+        "NameAr": "Ø¬Ù„Ù…Ø©",
         "Value": "JILMA",
         "PostalCode": "9110",
         "Latitude": 35.283333,
@@ -1689,7 +1716,7 @@ WITH raw AS (
       },
       {
         "Name": "SOUK JEDID",
-        "NameAr": "السوق الجديد",
+        "NameAr": "Ø§Ù„Ø³ÙˆÙ‚ Ø§Ù„Ø¬Ø¯ÙŠØ¯",
         "Value": "SOUK JEDID",
         "PostalCode": "9121",
         "Latitude": 35.100000,
@@ -1697,7 +1724,7 @@ WITH raw AS (
       },
       {
         "Name": "MEZZOUNA",
-        "NameAr": "المزونة",
+        "NameAr": "Ø§Ù„Ù…Ø²ÙˆÙ†Ø©",
         "Value": "MEZZOUNA",
         "PostalCode": "9150",
         "Latitude": 34.516667,
@@ -1705,7 +1732,7 @@ WITH raw AS (
       },
       {
         "Name": "BIR EL HAFFEY",
-        "NameAr": "بئر الحفي",
+        "NameAr": "Ø¨Ø¦Ø± Ø§Ù„Ø­ÙÙŠ",
         "Value": "BIR EL HAFFEY",
         "PostalCode": "9113",
         "Latitude": 34.933333,
@@ -1713,7 +1740,7 @@ WITH raw AS (
       },
       {
         "Name": "CEBBALA",
-        "NameAr": "السبالة",
+        "NameAr": "Ø§Ù„Ø³Ø¨Ø§Ù„Ø©",
         "Value": "CEBBALA",
         "PostalCode": "9122",
         "Latitude": 35.133333,
@@ -1723,12 +1750,12 @@ WITH raw AS (
   },
   {
     "Name": "SILIANA",
-    "NameAr": "سليانة",
+    "NameAr": "Ø³Ù„ÙŠØ§Ù†Ø©",
     "Value": "SILIANA",
     "Delegations": [
       {
         "Name": "MAKTHAR",
-        "NameAr": "مكثر",
+        "NameAr": "Ù…ÙƒØ«Ø±",
         "Value": "MAKTHAR",
         "PostalCode": "6140",
         "Latitude": 35.850000,
@@ -1736,7 +1763,7 @@ WITH raw AS (
       },
       {
         "Name": "BOU ARADA",
-        "NameAr": "بوعرادة",
+        "NameAr": "Ø¨ÙˆØ¹Ø±Ø§Ø¯Ø©",
         "Value": "BOU ARADA",
         "PostalCode": "6180",
         "Latitude": 36.350000,
@@ -1744,7 +1771,7 @@ WITH raw AS (
       },
       {
         "Name": "SIDI BOU ROUIS",
-        "NameAr": "سيدي بورويس",
+        "NameAr": "Ø³ÙŠØ¯ÙŠ Ø¨ÙˆØ±ÙˆÙŠØ³",
         "Value": "SIDI BOU ROUIS",
         "PostalCode": "6113",
         "Latitude": 36.116667,
@@ -1752,7 +1779,7 @@ WITH raw AS (
       },
       {
         "Name": "KESRA",
-        "NameAr": "كسرى",
+        "NameAr": "ÙƒØ³Ø±Ù‰",
         "Value": "KESRA",
         "PostalCode": "6114",
         "Latitude": 35.816667,
@@ -1760,7 +1787,7 @@ WITH raw AS (
       },
       {
         "Name": "BARGOU",
-        "NameAr": "برقو",
+        "NameAr": "Ø¨Ø±Ù‚Ùˆ",
         "Value": "BARGOU",
         "PostalCode": "6115",
         "Latitude": 36.083333,
@@ -1768,7 +1795,7 @@ WITH raw AS (
       },
       {
         "Name": "EL AROUSSA",
-        "NameAr": "العروسة",
+        "NameAr": "Ø§Ù„Ø¹Ø±ÙˆØ³Ø©",
         "Value": "EL AROUSSA",
         "PostalCode": "6116",
         "Latitude": 36.350000,
@@ -1776,7 +1803,7 @@ WITH raw AS (
       },
       {
         "Name": "LE KRIB",
-        "NameAr": "الكريب",
+        "NameAr": "Ø§Ù„ÙƒØ±ÙŠØ¨",
         "Value": "LE KRIB",
         "PostalCode": "6120",
         "Latitude": 36.283333,
@@ -1784,7 +1811,7 @@ WITH raw AS (
       },
       {
         "Name": "SILIANA NORD",
-        "NameAr": "سليانة الشمالية",
+        "NameAr": "Ø³Ù„ÙŠØ§Ù†Ø© Ø§Ù„Ø´Ù…Ø§Ù„ÙŠØ©",
         "Value": "SILIANA NORD",
         "PostalCode": "6100",
         "Latitude": 36.084890,
@@ -1792,7 +1819,7 @@ WITH raw AS (
       },
       {
         "Name": "SILIANA SUD",
-        "NameAr": "سليانة الجنوبية",
+        "NameAr": "Ø³Ù„ÙŠØ§Ù†Ø© Ø§Ù„Ø¬Ù†ÙˆØ¨ÙŠØ©",
         "Value": "SILIANA SUD",
         "PostalCode": "6143",
         "Latitude": 36.084890,
@@ -1800,7 +1827,7 @@ WITH raw AS (
       },
       {
         "Name": "ROHIA",
-        "NameAr": "الروحية",
+        "NameAr": "Ø§Ù„Ø±ÙˆØ­ÙŠØ©",
         "Value": "ROHIA",
         "PostalCode": "6150",
         "Latitude": 35.650000,
@@ -1808,7 +1835,7 @@ WITH raw AS (
       },
       {
         "Name": "GAAFOUR",
-        "NameAr": "قعفور",
+        "NameAr": "Ù‚Ø¹ÙÙˆØ±",
         "Value": "GAAFOUR",
         "PostalCode": "6121",
         "Latitude": 36.283333,
@@ -1818,12 +1845,12 @@ WITH raw AS (
   },
   {
     "Name": "SOUSSE",
-    "NameAr": "سوسة",
+    "NameAr": "Ø³ÙˆØ³Ø©",
     "Value": "SOUSSE",
     "Delegations": [
       {
         "Name": "SIDI EL HENI",
-        "NameAr": "سيدي الهاني",
+        "NameAr": "Ø³ÙŠØ¯ÙŠ Ø§Ù„Ù‡Ø§Ù†ÙŠ",
         "Value": "SIDI EL HENI",
         "PostalCode": "4026",
         "Latitude": 35.666667,
@@ -1831,7 +1858,7 @@ WITH raw AS (
       },
       {
         "Name": "SOUSSE JAOUHARA",
-        "NameAr": "سوسة جوهرة",
+        "NameAr": "Ø³ÙˆØ³Ø© Ø¬ÙˆÙ‡Ø±Ø©",
         "Value": "SOUSSE JAOUHARA",
         "PostalCode": "4054",
         "Latitude": 35.825354,
@@ -1839,7 +1866,7 @@ WITH raw AS (
       },
       {
         "Name": "BOU FICHA",
-        "NameAr": "بوفيشة",
+        "NameAr": "Ø¨ÙˆÙÙŠØ´Ø©",
         "Value": "BOU FICHA",
         "PostalCode": "4010",
         "Latitude": 36.266667,
@@ -1847,7 +1874,7 @@ WITH raw AS (
       },
       {
         "Name": "SOUSSE VILLE",
-        "NameAr": "سوسة المدينة",
+        "NameAr": "Ø³ÙˆØ³Ø© Ø§Ù„Ù…Ø¯ÙŠÙ†Ø©",
         "Value": "SOUSSE VILLE",
         "PostalCode": "4059",
         "Latitude": 35.828828,
@@ -1855,7 +1882,7 @@ WITH raw AS (
       },
       {
         "Name": "ENFIDHA",
-        "NameAr": "النفيضة",
+        "NameAr": "Ø§Ù„Ù†ÙÙŠØ¶Ø©",
         "Value": "ENFIDHA",
         "PostalCode": "4030",
         "Latitude": 36.133333,
@@ -1863,7 +1890,7 @@ WITH raw AS (
       },
       {
         "Name": "KALAA EL KEBIRA",
-        "NameAr": "القلعة الكبرى",
+        "NameAr": "Ø§Ù„Ù‚Ù„Ø¹Ø© Ø§Ù„ÙƒØ¨Ø±Ù‰",
         "Value": "KALAA EL KEBIRA",
         "PostalCode": "4060",
         "Latitude": 35.866667,
@@ -1871,7 +1898,7 @@ WITH raw AS (
       },
       {
         "Name": "HAMMAM SOUSSE",
-        "NameAr": "حمام سوسة",
+        "NameAr": "Ø­Ù…Ø§Ù… Ø³ÙˆØ³Ø©",
         "Value": "HAMMAM SOUSSE",
         "PostalCode": "4011",
         "Latitude": 35.861111,
@@ -1879,7 +1906,7 @@ WITH raw AS (
       },
       {
         "Name": "HERGLA",
-        "NameAr": "هرقلة",
+        "NameAr": "Ù‡Ø±Ù‚Ù„Ø©",
         "Value": "HERGLA",
         "PostalCode": "4012",
         "Latitude": 36.033333,
@@ -1887,7 +1914,7 @@ WITH raw AS (
       },
       {
         "Name": "MSAKEN",
-        "NameAr": "مساكن",
+        "NameAr": "Ù…Ø³Ø§ÙƒÙ†",
         "Value": "MSAKEN",
         "PostalCode": "4013",
         "Latitude": 35.729444,
@@ -1895,7 +1922,7 @@ WITH raw AS (
       },
       {
         "Name": "SOUSSE RIADH",
-        "NameAr": "سوسة الرياض",
+        "NameAr": "Ø³ÙˆØ³Ø© Ø§Ù„Ø±ÙŠØ§Ø¶",
         "Value": "SOUSSE RIADH",
         "PostalCode": "4081",
         "Latitude": 35.809444,
@@ -1903,7 +1930,7 @@ WITH raw AS (
       },
       {
         "Name": "KONDAR",
-        "NameAr": "كندار",
+        "NameAr": "ÙƒÙ†Ø¯Ø§Ø±",
         "Value": "KONDAR",
         "PostalCode": "4020",
         "Latitude": 35.933333,
@@ -1911,7 +1938,7 @@ WITH raw AS (
       },
       {
         "Name": "SIDI BOU ALI",
-        "NameAr": "سيدي بوعلي",
+        "NameAr": "Ø³ÙŠØ¯ÙŠ Ø¨ÙˆØ¹Ù„ÙŠ",
         "Value": "SIDI BOU ALI",
         "PostalCode": "4040",
         "Latitude": 35.966667,
@@ -1919,7 +1946,7 @@ WITH raw AS (
       },
       {
         "Name": "KALAA ESSGHIRA",
-        "NameAr": "القلعة الصغرى",
+        "NameAr": "Ø§Ù„Ù‚Ù„Ø¹Ø© Ø§Ù„ØµØºØ±Ù‰",
         "Value": "KALAA ESSGHIRA",
         "PostalCode": "4021",
         "Latitude": 35.833333,
@@ -1927,7 +1954,7 @@ WITH raw AS (
       },
       {
         "Name": "AKOUDA",
-        "NameAr": "أكودة",
+        "NameAr": "Ø£ÙƒÙˆØ¯Ø©",
         "Value": "AKOUDA",
         "PostalCode": "4022",
         "Latitude": 35.871111,
@@ -1937,12 +1964,12 @@ WITH raw AS (
   },
   {
     "Name": "TATAOUINE",
-    "NameAr": "تطاوين",
+    "NameAr": "ØªØ·Ø§ÙˆÙŠÙ†",
     "Value": "TATAOUINE",
     "Delegations": [
       {
         "Name": "TATAOUINE SUD",
-        "NameAr": "تطاوين الجنوبية",
+        "NameAr": "ØªØ·Ø§ÙˆÙŠÙ† Ø§Ù„Ø¬Ù†ÙˆØ¨ÙŠØ©",
         "Value": "TATAOUINE SUD",
         "PostalCode": "3200",
         "Latitude": 32.929722,
@@ -1950,7 +1977,7 @@ WITH raw AS (
       },
       {
         "Name": "SMAR",
-        "NameAr": "الصمار",
+        "NameAr": "Ø§Ù„ØµÙ…Ø§Ø±",
         "Value": "SMAR",
         "PostalCode": "3223",
         "Latitude": 33.116667,
@@ -1958,7 +1985,7 @@ WITH raw AS (
       },
       {
         "Name": "BIR LAHMAR",
-        "NameAr": "بئر الأحمر",
+        "NameAr": "Ø¨Ø¦Ø± Ø§Ù„Ø£Ø­Ù…Ø±",
         "Value": "BIR LAHMAR",
         "PostalCode": "3212",
         "Latitude": 33.200000,
@@ -1966,7 +1993,7 @@ WITH raw AS (
       },
       {
         "Name": "GHOMRASSEN",
-        "NameAr": "غمراسن",
+        "NameAr": "ØºÙ…Ø±Ø§Ø³Ù†",
         "Value": "GHOMRASSEN",
         "PostalCode": "3224",
         "Latitude": 33.050000,
@@ -1974,7 +2001,7 @@ WITH raw AS (
       },
       {
         "Name": "TATAOUINE NORD",
-        "NameAr": "تطاوين الشمالية",
+        "NameAr": "ØªØ·Ø§ÙˆÙŠÙ† Ø§Ù„Ø´Ù…Ø§Ù„ÙŠØ©",
         "Value": "TATAOUINE NORD",
         "PostalCode": "3233",
         "Latitude": 32.929722,
@@ -1982,7 +2009,7 @@ WITH raw AS (
       },
       {
         "Name": "REMADA",
-        "NameAr": "رمادة",
+        "NameAr": "Ø±Ù…Ø§Ø¯Ø©",
         "Value": "REMADA",
         "PostalCode": "3240",
         "Latitude": 32.300000,
@@ -1990,7 +2017,7 @@ WITH raw AS (
       },
       {
         "Name": "DHEHIBA",
-        "NameAr": "الذهيبة",
+        "NameAr": "Ø§Ù„Ø°Ù‡ÙŠØ¨Ø©",
         "Value": "DHEHIBA",
         "PostalCode": "3253",
         "Latitude": 32.000000,
@@ -2000,12 +2027,12 @@ WITH raw AS (
   },
   {
     "Name": "TOZEUR",
-    "NameAr": "توزر",
+    "NameAr": "ØªÙˆØ²Ø±",
     "Value": "TOZEUR",
     "Delegations": [
       {
         "Name": "DEGUECHE",
-        "NameAr": "دقاش",
+        "NameAr": "Ø¯Ù‚Ø§Ø´",
         "Value": "DEGUECHE",
         "PostalCode": "2261",
         "Latitude": 33.966667,
@@ -2013,7 +2040,7 @@ WITH raw AS (
       },
       {
         "Name": "TOZEUR",
-        "NameAr": "توزر",
+        "NameAr": "ØªÙˆØ²Ø±",
         "Value": "TOZEUR",
         "PostalCode": "2200",
         "Latitude": 33.919722,
@@ -2021,7 +2048,7 @@ WITH raw AS (
       },
       {
         "Name": "TAMEGHZA",
-        "NameAr": "تمغزة",
+        "NameAr": "ØªÙ…ØºØ²Ø©",
         "Value": "TAMEGHZA",
         "PostalCode": "2211",
         "Latitude": 34.383333,
@@ -2029,7 +2056,7 @@ WITH raw AS (
       },
       {
         "Name": "HEZOUA",
-        "NameAr": "حزوة",
+        "NameAr": "Ø­Ø²ÙˆØ©",
         "Value": "HEZOUA",
         "PostalCode": "2223",
         "Latitude": 33.750000,
@@ -2037,7 +2064,7 @@ WITH raw AS (
       },
       {
         "Name": "NEFTA",
-        "NameAr": "نفطة",
+        "NameAr": "Ù†ÙØ·Ø©",
         "Value": "NEFTA",
         "PostalCode": "2240",
         "Latitude": 33.873056,
@@ -2047,12 +2074,12 @@ WITH raw AS (
   },
   {
     "Name": "TUNIS",
-    "NameAr": "تونس",
+    "NameAr": "ØªÙˆÙ†Ø³",
     "Value": "TUNIS",
     "Delegations": [
       {
         "Name": "JEBEL JELLOUD",
-        "NameAr": "جبل الجلود",
+        "NameAr": "Ø¬Ø¨Ù„ Ø§Ù„Ø¬Ù„ÙˆØ¯",
         "Value": "JEBEL JELLOUD",
         "PostalCode": "1046",
         "Latitude": 36.775000,
@@ -2060,7 +2087,7 @@ WITH raw AS (
       },
       {
         "Name": "CARTHAGE",
-        "NameAr": "قرطاج",
+        "NameAr": "Ù‚Ø±Ø·Ø§Ø¬",
         "Value": "CARTHAGE",
         "PostalCode": "2016",
         "Latitude": 36.853611,
@@ -2068,7 +2095,7 @@ WITH raw AS (
       },
       {
         "Name": "LA MARSA",
-        "NameAr": "المرسى",
+        "NameAr": "Ø§Ù„Ù…Ø±Ø³Ù‰",
         "Value": "LA MARSA",
         "PostalCode": "2076",
         "Latitude": 36.877600,
@@ -2076,7 +2103,7 @@ WITH raw AS (
       },
       {
         "Name": "BAB BHAR",
-        "NameAr": "باب بحر",
+        "NameAr": "Ø¨Ø§Ø¨ Ø¨Ø­Ø±",
         "Value": "BAB BHAR",
         "PostalCode": "1000",
         "Latitude": 36.798333,
@@ -2084,7 +2111,7 @@ WITH raw AS (
       },
       {
         "Name": "LA GOULETTE",
-        "NameAr": "حلق الوادي",
+        "NameAr": "Ø­Ù„Ù‚ Ø§Ù„ÙˆØ§Ø¯ÙŠ",
         "Value": "LA GOULETTE",
         "PostalCode": "2060",
         "Latitude": 36.818889,
@@ -2092,7 +2119,7 @@ WITH raw AS (
       },
       {
         "Name": "LE BARDO",
-        "NameAr": "باردو",
+        "NameAr": "Ø¨Ø§Ø±Ø¯Ùˆ",
         "Value": "LE BARDO",
         "PostalCode": "2017",
         "Latitude": 36.809278,
@@ -2100,7 +2127,7 @@ WITH raw AS (
       },
       {
         "Name": "LA MEDINA",
-        "NameAr": "تونس المدينة",
+        "NameAr": "ØªÙˆÙ†Ø³ Ø§Ù„Ù…Ø¯ÙŠÙ†Ø©",
         "Value": "LA MEDINA",
         "PostalCode": "1000",
         "Latitude": 36.800000,
@@ -2108,7 +2135,7 @@ WITH raw AS (
       },
       {
         "Name": "EL MENZAH",
-        "NameAr": "المنزه",
+        "NameAr": "Ø§Ù„Ù…Ù†Ø²Ù‡",
         "Value": "EL MENZAH",
         "PostalCode": "2092",
         "Latitude": 36.845194,
@@ -2116,7 +2143,7 @@ WITH raw AS (
       },
       {
         "Name": "EL OMRANE SUPERIEUR",
-        "NameAr": "العمران الأعلى",
+        "NameAr": "Ø§Ù„Ø¹Ù…Ø±Ø§Ù† Ø§Ù„Ø£Ø¹Ù„Ù‰",
         "Value": "EL OMRANE SUPERIEUR",
         "PostalCode": "1064",
         "Latitude": 36.822500,
@@ -2124,7 +2151,7 @@ WITH raw AS (
       },
       {
         "Name": "CITE EL KHADRA",
-        "NameAr": "حي الخضراء",
+        "NameAr": "Ø­ÙŠ Ø§Ù„Ø®Ø¶Ø±Ø§Ø¡",
         "Value": "CITE EL KHADRA",
         "PostalCode": "1002",
         "Latitude": 36.834300,
@@ -2132,7 +2159,7 @@ WITH raw AS (
       },
       {
         "Name": "EL HRAIRIA",
-        "NameAr": "الحرايرية",
+        "NameAr": "Ø§Ù„Ø­Ø±Ø§ÙŠØ±ÙŠØ©",
         "Value": "EL HRAIRIA",
         "PostalCode": "2051",
         "Latitude": 36.775278,
@@ -2140,7 +2167,7 @@ WITH raw AS (
       },
       {
         "Name": "EL KABBARIA",
-        "NameAr": "الكبارية",
+        "NameAr": "Ø§Ù„ÙƒØ¨Ø§Ø±ÙŠØ©",
         "Value": "EL KABBARIA",
         "PostalCode": "1074",
         "Latitude": 36.766667,
@@ -2148,7 +2175,7 @@ WITH raw AS (
       },
       {
         "Name": "BAB SOUIKA",
-        "NameAr": "باب سويقة",
+        "NameAr": "Ø¨Ø§Ø¨ Ø³ÙˆÙŠÙ‚Ø©",
         "Value": "BAB SOUIKA",
         "PostalCode": "1075",
         "Latitude": 36.807500,
@@ -2156,7 +2183,7 @@ WITH raw AS (
       },
       {
         "Name": "EL OMRANE",
-        "NameAr": "العمران",
+        "NameAr": "Ø§Ù„Ø¹Ù…Ø±Ø§Ù†",
         "Value": "EL OMRANE",
         "PostalCode": "1005",
         "Latitude": 36.820000,
@@ -2164,7 +2191,7 @@ WITH raw AS (
       },
       {
         "Name": "EZZOUHOUR  (TUNIS)",
-        "NameAr": "الزهور (تونس)",
+        "NameAr": "Ø§Ù„Ø²Ù‡ÙˆØ± (ØªÙˆÙ†Ø³)",
         "Value": "EZZOUHOUR  (TUNIS)",
         "PostalCode": "2052",
         "Latitude": 36.788500,
@@ -2172,7 +2199,7 @@ WITH raw AS (
       },
       {
         "Name": "SIDI EL BECHIR",
-        "NameAr": "سيدي البشير",
+        "NameAr": "Ø³ÙŠØ¯ÙŠ Ø§Ù„Ø¨Ø´ÙŠØ±",
         "Value": "SIDI EL BECHIR",
         "PostalCode": "1089",
         "Latitude": 36.783333,
@@ -2180,7 +2207,7 @@ WITH raw AS (
       },
       {
         "Name": "SIDI HASSINE",
-        "NameAr": "سيدي حسين",
+        "NameAr": "Ø³ÙŠØ¯ÙŠ Ø­Ø³ÙŠÙ†",
         "Value": "SIDI HASSINE",
         "PostalCode": "1095",
         "Latitude": 36.794444,
@@ -2188,7 +2215,7 @@ WITH raw AS (
       },
       {
         "Name": "EL KRAM",
-        "NameAr": "الكرم",
+        "NameAr": "Ø§Ù„ÙƒØ±Ù…",
         "Value": "EL KRAM",
         "PostalCode": "2089",
         "Latitude": 36.833333,
@@ -2196,7 +2223,7 @@ WITH raw AS (
       },
       {
         "Name": "ESSIJOUMI",
-        "NameAr": "السيجومي",
+        "NameAr": "Ø§Ù„Ø³ÙŠØ¬ÙˆÙ…ÙŠ",
         "Value": "ESSIJOUMI",
         "PostalCode": "2072",
         "Latitude": 36.783333,
@@ -2204,7 +2231,7 @@ WITH raw AS (
       },
       {
         "Name": "ETTAHRIR",
-        "NameAr": "التحرير",
+        "NameAr": "Ø§Ù„ØªØ­Ø±ÙŠØ±",
         "Value": "ETTAHRIR",
         "PostalCode": "2042",
         "Latitude": 36.826111,
@@ -2212,7 +2239,7 @@ WITH raw AS (
       },
       {
         "Name": "EL OUERDIA",
-        "NameAr": "الوردية",
+        "NameAr": "Ø§Ù„ÙˆØ±Ø¯ÙŠØ©",
         "Value": "EL OUERDIA",
         "PostalCode": "1009",
         "Latitude": 36.772500,
@@ -2222,12 +2249,12 @@ WITH raw AS (
   },
   {
     "Name": "ZAGHOUAN",
-    "NameAr": "زغوان",
+    "NameAr": "Ø²ØºÙˆØ§Ù†",
     "Value": "ZAGHOUAN",
     "Delegations": [
       {
         "Name": "ZAGHOUAN",
-        "NameAr": "زغوان",
+        "NameAr": "Ø²ØºÙˆØ§Ù†",
         "Value": "ZAGHOUAN",
         "PostalCode": "1100",
         "Latitude": 36.400000,
@@ -2235,7 +2262,7 @@ WITH raw AS (
       },
       {
         "Name": "ENNADHOUR",
-        "NameAr": "الناظور",
+        "NameAr": "Ø§Ù„Ù†Ø§Ø¸ÙˆØ±",
         "Value": "ENNADHOUR",
         "PostalCode": "1160",
         "Latitude": 36.216667,
@@ -2243,7 +2270,7 @@ WITH raw AS (
       },
       {
         "Name": "EL FAHS",
-        "NameAr": "الفحص",
+        "NameAr": "Ø§Ù„ÙØ­Øµ",
         "Value": "EL FAHS",
         "PostalCode": "1140",
         "Latitude": 36.376111,
@@ -2251,7 +2278,7 @@ WITH raw AS (
       },
       {
         "Name": "BIR MCHERGA",
-        "NameAr": "بئر مشارقة",
+        "NameAr": "Ø¨Ø¦Ø± Ù…Ø´Ø§Ø±Ù‚Ø©",
         "Value": "BIR MCHERGA",
         "PostalCode": "1111",
         "Latitude": 36.516667,
@@ -2259,7 +2286,7 @@ WITH raw AS (
       },
       {
         "Name": "HAMMAM ZRIBA",
-        "NameAr": "حمام الزريبة",
+        "NameAr": "Ø­Ù…Ø§Ù… Ø§Ù„Ø²Ø±ÙŠØ¨Ø©",
         "Value": "HAMMAM ZRIBA",
         "PostalCode": "1112",
         "Latitude": 36.300000,
@@ -2267,7 +2294,7 @@ WITH raw AS (
       },
       {
         "Name": "SAOUEF",
-        "NameAr": "صواف",
+        "NameAr": "ØµÙˆØ§Ù",
         "Value": "SAOUEF",
         "PostalCode": "1115",
         "Latitude": 36.266667,

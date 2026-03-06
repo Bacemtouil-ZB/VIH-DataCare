@@ -1,10 +1,9 @@
-import { Navigate } from "react-router-dom";
+﻿import { Navigate } from "react-router-dom";
 import ProtectedRoute from "../../../routes/ProtectedRoute";
-import DashboardLayout from "../../../shared/components/layout/DashboardLayout";
+import DashboardLayout from "../../../shared/components/Layout/DashboardLayout";
 import ProfilPage from "../../../pages/parametres/profile";
-import Patientsordonnances from "../pages/Patientsordonnances.jsx";
-import MainWorkspaceLayout from "../pages/MainWorkspaceLayout";
-import Ordonnancedetail from "../pages/workspace/Ordonnancedetail.jsx";
+import Patientsordonnances from "../pages/workspace/ordonnance/Patientsordonnances.jsx";
+import Stock from "../pages/workspace/stock/Stock.jsx";
 
 const pharmacienRoutes = [
   {
@@ -24,26 +23,16 @@ const pharmacienRoutes = [
         element: <Patientsordonnances /> 
       },
       { 
+        path: "stock", 
+        element: <Stock /> 
+      },
+      { 
         path: "settings", 
         element: <ProfilPage /> 
       },
     ],
   },
 
-  {
-    path: "/pharmacien/workspace/:numero",
-    element: (
-      <ProtectedRoute allowedRoles={["pharmacien"]}>
-        <MainWorkspaceLayout />
-      </ProtectedRoute>
-    ),
-    children: [
-      {
-        index: true,
-        element: <Ordonnancedetail />
-      }
-    ],
-  },
 ];
 
 export default pharmacienRoutes;

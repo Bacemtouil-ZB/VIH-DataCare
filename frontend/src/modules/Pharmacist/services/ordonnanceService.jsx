@@ -1,24 +1,42 @@
 import API from "../../../shared/utils/api";
 
+const normalizeOrdonnances = (payload) => {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.ordonnances)) return payload.ordonnances;
+  if (Array.isArray(payload?.ordonnances?.ordonnances)) return payload.ordonnances.ordonnances;
+  if (Array.isArray(payload?.data)) return payload.data;
+  return [];
+};
+
+const normalizePrises = (payload) => {
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.prises)) return payload.prises;
+  if (Array.isArray(payload?.prises?.prises)) return payload.prises.prises;
+  return [];
+};
+
 export const findMedicalTreatmentByNumeroDossier = async (numeroDossier) => {
   try {
     const response = await API.get(`/ordonnances/numero-dossier/${numeroDossier}`);
-    return response.data;
+    const payload = response.data;
+    return {
+      success: true,
+      ordonnances: normalizeOrdonnances(payload),
+      patient: payload?.patient || payload?.ordonnances?.patient || null,
+    };
   } catch (error) {
     throw error.response?.data || error.message;
   }
 };
-
 
 export const getThreeLastPrise = async (numeroDossier) => {
   try {
     const response = await API.get(`/ordonnances/patient/${numeroDossier}/last-three`);
-    return response.data;
+    return normalizePrises(response.data);
   } catch (error) {
     throw error.response?.data || error.message;
   }
 };
-
 
 export const getOrdonnanceById = async (id) => {
   try {
@@ -28,7 +46,6 @@ export const getOrdonnanceById = async (id) => {
     throw error.response?.data || error.message;
   }
 };
-
 
 export const updateDateProchainePrise = async (id, dateProchainePrise) => {
   try {

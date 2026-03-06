@@ -3,10 +3,8 @@ import {MODES_CONTAMINATION,TYPES_DEPISTAGE,CIRCONSTANCES_DECOUVERTE,STADES_CDC,
   serializeModesContamination,
 } from "./vihConfig";
 import "./VihForm.css";
+import FieldLabel from "../../../components/UI/FieldLabel";
 
-const FieldLabel = ({ children }) => (
-  <label className="form-label fw-bold text-uppercase text-secondary mb-1" style={{ fontSize: "0.7rem" }}>{children}</label>
-);
 
 
 function MultiSelectContamination({ value, onChange, disabled }) {
@@ -85,7 +83,7 @@ export default function VihForm({
         stade_cdc:               initialData.stade_cdc || "",
         debut_stade_c:           formatDate(initialData.debut_stade_c),
         typage_hla_b5701:        initialData.typage_hla_b5701 || "",
-        profil_seroconversion:   initialData.profil_seroconversion || false,
+        profil_seroconversion:   initialData.profil_seroconversion ,
       });
     }
   }, [initialData]);

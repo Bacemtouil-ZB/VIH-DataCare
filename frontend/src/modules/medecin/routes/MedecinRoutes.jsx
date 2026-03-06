@@ -1,7 +1,7 @@
-import { Navigate } from "react-router-dom";
+﻿import { Navigate } from "react-router-dom";
 import NewPatientGuard from "./NewPatientGuard.jsx";
 import ProtectedRoute from "../../../routes/ProtectedRoute";
-import DashboardLayout from "../../../shared/components/layout/DashboardLayout";
+import DashboardLayout from "../../../shared/components/Layout/DashboardLayout";
 import PatientsPage from "../pages/PatientsPage";
 import DashboardMed from "../pages/DashboardMed";
 import ProfilPage from "../../../pages/parametres/profile";
@@ -25,6 +25,7 @@ import Conclusion from "../pages/workspace/conclusion/Conclusion";
 import SuiviLayout from "../pages/workspace/suivi/SuiviLayout";
 import Dashbord from "../pages/workspace/suivi/Dashbord";
 import ControleTherapeutique from "../pages/workspace/suivi/controleTherapitique";
+import RendezVous from "../pages/workspace/Rendez_vous/RendezVous.jsx";
 
 const medecinRoutes = [
   {
@@ -100,6 +101,10 @@ const medecinRoutes = [
     {
       path: "prescription-medicale",
       element: <NewPatientGuard><PrescreptionMedical /></NewPatientGuard>,
+    },
+        {
+      path: "rendez-vous",
+      element: <NewPatientGuard><RendezVous /></NewPatientGuard>,
     },
     {
       path: "conclusion",

@@ -1,5 +1,8 @@
 import API from "../../../shared/utils/api";
 
+const normalizePatient = (payload) =>
+  payload?.patient?.patient || payload?.patient || payload || null;
+
 export const getAllPatients = async () => {
   try {
     const response = await API.get("/patients/getAllPatients");
@@ -8,37 +11,27 @@ export const getAllPatients = async () => {
     throw error.response?.data || error.message;
   }
 };
+
 export const getPatientByNumero = async (numero) => {
   try {
     const response = await API.get(`/patients/numero/${numero}`);
     return {
       success: true,
-      patient: response.data,
+      patient: normalizePatient(response.data),
     };
   } catch (error) {
-    console.error("Erreur lors de la récupération du patient:", error);
-    throw new Error(
-      error.response?.data?.message || "Erreur lors de la récupération du patient"
-    );
+    console.error("Erreur lors de la recuperation du patient:", error);
+    throw error.response?.data || error.message;
   }
 };
+
+// Conserve l'API existante cote composants, mais utilise la meme route backend.
 export const getPatientByNumeroPharmacien = async (numero) => {
-  try {
-    const response = await API.get(`/patients/pharmacien/numero/${numero}`);
-    return {
-      success: true,
-      patient: response.data,
-    };
-  } catch (error) {
-    console.error("Erreur lors de la récupération du patient:", error);
-    throw new Error(
-      error.response?.data?.message || "Erreur lors de la récupération du patient"
-    );
-  }
+  return getPatientByNumero(numero);
 };
 
 export default {
   getAllPatients,
   getPatientByNumeroPharmacien,
-  getPatientByNumero
+  getPatientByNumero,
 };

@@ -20,7 +20,7 @@ export const FORM_INIT = {
   stade_cdc: "",
   debut_stade_c: "",
   typage_hla_b5701: "",
-  profil_seroconversion: false,
+  profil_seroconversion: null,
 };
 
 // ── Options des champs ────────────────────────────────────────────────
