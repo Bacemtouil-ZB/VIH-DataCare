@@ -8,3 +8,6 @@ export { default as Input } from "./Input";
 export { default as HistoriqueAccordeon } from "./HistoriqueAccordeon";
 export { default as HistoriqueTable } from "./HistoriqueTable";
 export { default as HistoriqueActions } from "./HistoriqueActions";
+export { PageHeader } from "./PageHeader";
+export { FormulaireWrapper } from "./FormulaireWrapper";
+export { Spinner } from "./Spinner";

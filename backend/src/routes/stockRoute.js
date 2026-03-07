@@ -12,11 +12,11 @@ const router = express.Router();
 
 router.use(protect, authorizePharmacien);
 
-router.get("/", listStockItemsController);
-router.get("/context/:numero", getStockContextByNumeroController);
-router.post("/", createStockItemController);
-router.patch("/:id/quantity", updateStockQuantityController);
-router.delete("/:id", deleteStockItemController);
+router.get("/", protect, authorizePharmacien , listStockItemsController);
+router.get("/:numero", protect, authorizePharmacien , getStockContextByNumeroController);
+router.post("/add", protect, authorizePharmacien , createStockItemController);
+router.patch("/:id/quantity", protect, authorizePharmacien , updateStockQuantityController);
+router.delete("/:id", protect, authorizePharmacien , deleteStockItemController);
 
 export default router;
 

@@ -8,7 +8,7 @@ import { SIGNES_KEYS, SIGNES_LABELS, SIGNES_INIT, FORM_SF_INIT, getSignesPositif
 import {
 formatDateFr,mapAutresSignesFromApi,buildAutreSigneItem,removeAutreSigneById,
 updateAutreSigneDescription,handleCancelForm,openFormForCreate,showDetailMode,
-} from "./examenSharedLogique";
+} from "./logiqueTableHistory";
 import {
 PageHeader,HistoriqueAccordeon,HistoriqueTable,HistoriqueActions,EmptyState,
 FormulaireWrapper,AutresSignesSection,Badge,Spinner,RasToggle,parseApiError,

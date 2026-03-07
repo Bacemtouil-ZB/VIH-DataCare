@@ -11,3 +11,15 @@ CREATE TABLE IF NOT EXISTS stock_medicaments (
 
 CREATE INDEX IF NOT EXISTS idx_stock_medicaments_code ON stock_medicaments(code);
 
+INSERT INTO stock (code, composition)
+VALUES
+  ('TDF', 'Tenofovir (TDF)'),
+  ('3TC', 'Lamivudine (3TC)'),
+  ('DTG', 'Dolutegravir (DTG)'),
+  ('ABC', 'Abacavir (ABC)'),
+  ('AZT', 'Zidovudine (AZT)'),
+  ('ATV', 'Atazanavir (ATV)'),
+  ('RTV', 'Ritonavir (RTV)'),
+  ('DRV', 'Darunavir (DRV)'),
+  ('FTC', 'Emtricitabine (FTC)'),
+  ('EFV', 'Efavirenz (EFV)');

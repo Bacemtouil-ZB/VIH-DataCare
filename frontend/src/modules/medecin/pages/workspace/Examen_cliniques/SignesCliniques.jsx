@@ -16,7 +16,7 @@ import {
   handleCancelForm,
   openFormForCreate,
   showDetailMode,
-} from "./examenSharedLogique";
+} from "./logiqueTableHistory";
 import {
   PageHeader,HistoriqueAccordeon,HistoriqueTable,HistoriqueActions,EmptyState,
   FormulaireWrapper,AutresSignesSection,Badge,ImcField,Spinner,parseApiError,

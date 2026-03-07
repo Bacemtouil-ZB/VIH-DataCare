@@ -10,6 +10,7 @@ import {
 } from "../../../../../shared/components/layouts";
 import { getPatientsWithOrdonnances } from "../../../services/Patientordonnanceservice";
 import { updateDateProchainePrise } from "../../../services/ordonnanceService";
+import { formatDateFr } from "../../../../../shared/utils/logiqueTableHistory";
 import "./Patientsordonnances.css";
 
 export default function Patientsordonnances() {
@@ -53,11 +54,6 @@ export default function Patientsordonnances() {
       p.nom_traitement?.toLowerCase().includes(q)
     );
   }, [patients, search]);
-
-  const formatDate = (date) => {
-    if (!date) return "-";
-    return new Date(date).toLocaleDateString("fr-FR");
-  };
 
   const getStatutBadge = (statutCalcule, ecartJours) => {
     const statuts = {
@@ -146,7 +142,10 @@ export default function Patientsordonnances() {
       </div>
     );
   }
-
+const validateItem = (item) => {
+  // Logique de validation de l'élément
+  console.log("Item validé:", item);
+};
   return (
     <div className="ordonnances-page-container">
       <div className="ordonnances-header">
@@ -184,7 +183,7 @@ export default function Patientsordonnances() {
               <td className="td-date">
                 {p.date_prochaine_prise ? (
                   <span className={p.ecart_jours > 0 ? "date-retard" : "date-future"}>
-                    {formatDate(p.date_prochaine_prise)}
+                    {formatDateFr(p.date_prochaine_prise, "-")}
                   </span>
                 ) : (
                   "-"
@@ -193,8 +192,10 @@ export default function Patientsordonnances() {
               <td className="td-quantite">{p.quantite_prescrite || "-"}</td>
               <td className="td-statut">{getStatutBadge(p.statut_calcule, p.ecart_jours)}</td>
               <td className="td-action">
-                <HistoriqueActions onDetails={() => setDetailItem(p)} onEdit={() => openValidation(p)} />
-              </td>
+<HistoriqueActions
+  onDetails={() => setDetailItem(p)}
+  onValidate={() => validateItem(p)} // Passer la fonction validateItem
+/>              </td>
             </tr>
           )}
         />
@@ -208,8 +209,8 @@ export default function Patientsordonnances() {
               <div><strong>Dossier:</strong> {detailItem.numero_dossier || "-"}</div>
               <div><strong>Patient:</strong> {detailItem.patient_surname || "-"} {detailItem.patient_name || "-"}</div>
               <div><strong>Traitement:</strong> {detailItem.nom_traitement || "-"}</div>
-              <div><strong>Date debut:</strong> {formatDate(detailItem.date_debut_traitement)}</div>
-              <div><strong>Prochaine prise:</strong> {formatDate(detailItem.date_prochaine_prise)}</div>
+              <div><strong>Date debut:</strong> {formatDateFr(detailItem.date_debut_traitement, "-")}</div>
+              <div><strong>Prochaine prise:</strong> {formatDateFr(detailItem.date_prochaine_prise, "-")}</div>
               <div><strong>Quantite prescrite:</strong> {detailItem.quantite_prescrite || "-"}</div>
               <div><strong>Statut:</strong> {detailItem.statut_calcule || "-"}</div>
             </div>
@@ -241,7 +242,7 @@ export default function Patientsordonnances() {
 
             {quantiteDelivree && (
               <p className="ord-preview">
-                Nouvelle date prochaine prise: <strong>{formatDate(calculateNextDate(quantiteDelivree))}</strong>
+                Nouvelle date prochaine prise: <strong>{formatDateFr(calculateNextDate(quantiteDelivree), "-")}</strong>
               </p>
             )}
 

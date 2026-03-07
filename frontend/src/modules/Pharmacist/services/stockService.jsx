@@ -5,7 +5,7 @@ const normalizeItems = (payload) => {
   if (Array.isArray(payload?.items)) return payload.items;
   return [];
 };
-
+//getAll
 export const getStockItems = async () => {
   try {
     const response = await API.get("/stock");
@@ -17,7 +17,7 @@ export const getStockItems = async () => {
 
 export const createStockItem = async (payload) => {
   try {
-    const response = await API.post("/stock", payload);
+    const response = await API.post("/stock/add", payload);
     return response.data?.item || response.data;
   } catch (error) {
     throw error.response?.data || error.message;
@@ -42,9 +42,9 @@ export const deleteStockItem = async (id) => {
   }
 };
 
-export const getStockContextByNumero = async (numero) => {
+export const getStockByNumero = async (numero) => {
   try {
-    const response = await API.get(`/stock/context/${numero}`);
+    const response = await API.get(`/stock/${numero}`);
     return {
       patient: response.data?.patient || null,
       ordonnances: Array.isArray(response.data?.ordonnances) ? response.data.ordonnances : [],
@@ -59,6 +59,6 @@ export default {
   createStockItem,
   updateStockQuantity,
   deleteStockItem,
-  getStockContextByNumero,
+  getStockByNumero,
 };
 

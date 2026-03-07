@@ -32,12 +32,16 @@ const styles = `
 function defaultLabel(action) {
   if (action === "edit") return "Modifier";
   if (action === "add") return "Ajouter";
+  if (action === "validate") return "Valider";
+  
   return "Enregistrer";
 }
 
 function actionIcon(action) {
   if (action === "edit") return "bi bi-pencil";
   if (action === "add") return "bi bi-plus-lg";
+  if (action === "validate") return "bi bi-check-circle";  // Icône pour "Valider"
+
   return "bi bi-check-lg";
 }
 

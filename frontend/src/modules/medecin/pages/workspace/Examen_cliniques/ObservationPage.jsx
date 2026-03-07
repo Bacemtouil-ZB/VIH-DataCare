@@ -8,7 +8,7 @@ import {
 PageHeader,HistoriqueAccordeon,HistoriqueTable,
 HistoriqueActions,FormulaireWrapper,Spinner,parseApiError,
 } from "./index";
-import { formatDateFr, handleCancelForm, openFormForCreate, showDetailMode } from "./examenSharedLogique";
+import { formatDateFr, handleCancelForm, openFormForCreate, showDetailMode } from "./logiqueTableHistory";
 
 const PAGE_CONTAINER_CLASS = "ec-page-bg";
 const LABEL_CLS = "text-uppercase fw-semibold text-secondary d-block mb-1 ec-label";

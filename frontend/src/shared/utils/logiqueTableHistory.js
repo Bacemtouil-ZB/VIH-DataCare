@@ -1,6 +1,28 @@
-export function formatDateFr(dateValue) {
-  if (!dateValue) return "N/A";
+export function formatDateFr(dateValue, fallback = "N/A") {
+  if (!dateValue) return fallback;
   return new Date(dateValue).toLocaleDateString("fr-FR");
+}
+
+export function formatDateTimeFr(dateValue, fallback = "-") {
+  if (!dateValue) return fallback;
+  return new Date(dateValue).toLocaleString("fr-FR");
+}
+
+export function handleCancelForm(setShowForm, resetForm, toastApi, message = "Operation annulee") {
+  setShowForm(false);
+  resetForm();
+  toastApi.info(message);
+}
+
+export function openFormForCreate(setDetailItem, resetForm, setShowForm) {
+  setDetailItem(null);
+  resetForm();
+  setShowForm(true);
+}
+
+export function showDetailMode(setShowForm, setDetailItem, item) {
+  setShowForm(false);
+  setDetailItem(item);
 }
 
 export function mapAutresSignesFromApi(list) {
@@ -39,19 +61,3 @@ export function updateAutreSigneDescription(list, id, nouvelleDesc) {
   return list.map((s) => (s.id === id ? { ...s, description: nouvelleDesc } : s));
 }
 
-export function handleCancelForm(setShowForm, resetForm, toastApi, message = "Operation annulee") {
-  setShowForm(false);
-  resetForm();
-  toastApi.info(message);
-}
-
-export function openFormForCreate(setDetailItem, resetForm, setShowForm) {
-  setDetailItem(null);
-  resetForm();
-  setShowForm(true);
-}
-
-export function showDetailMode(setShowForm, setDetailItem, item) {
-  setShowForm(false);
-  setDetailItem(item);
-}

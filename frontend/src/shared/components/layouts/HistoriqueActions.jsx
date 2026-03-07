@@ -2,7 +2,7 @@ import ActionButton from "./ActionButton";
 
 const styles = `.ec-btn-details { border-radius: 6px; font-weight: 600; }`;
 
-export default function HistoriqueActions({ onDetails, onEdit }) {
+export default function HistoriqueActions({ onDetails, onEdit, onValidate }) {
   return (
     <>
       <style>{styles}</style>
@@ -11,6 +11,7 @@ export default function HistoriqueActions({ onDetails, onEdit }) {
           <button className="btn btn-sm btn-outline-secondary ec-btn-details" onClick={onDetails}>Details</button>
         )}
         {onEdit && <ActionButton action="edit" variant="outline" onClick={onEdit} />}
+        {onValidate && <ActionButton action="validate" variant="outline" onClick={onValidate} />}
       </div>
     </>
   );

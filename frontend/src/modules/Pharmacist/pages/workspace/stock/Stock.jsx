@@ -15,10 +15,11 @@ import {
   createStockItem as createStockItemApi,
   updateStockQuantity as updateStockQuantityApi,
   deleteStockItem as deleteStockItemApi,
-  getStockContextByNumero,
+  getStockByNumero,
 } from "../../../services/stockService.jsx";
+import { formatDateTimeFr } from "../../../../../shared/utils/logiqueTableHistory";
 import "./Stock.css";
-
+// a xtraire dans la base 
 const MEDICATION_CATALOG = [
   { code: "TDF", composition: "Tenofovir (TDF)" },
   { code: "3TC", composition: "Lamivudine (3TC)" },
@@ -69,7 +70,7 @@ export default function Stock() {
 
         const [rows, context] = await Promise.all([
           getStockItems(),
-          numero ? getStockContextByNumero(numero) : Promise.resolve(null),
+          numero ? getStockByNumero(numero) : Promise.resolve(null),
         ]);
 
         if (!alive) return;
@@ -198,11 +199,6 @@ export default function Stock() {
     }
   };
 
-  const formatDateTime = (iso) => {
-    if (!iso) return "-";
-    return new Date(iso).toLocaleString("fr-FR");
-  };
-
   return (
     <div className="ph-stock-page">
       <div className="ph-stock-header">
@@ -313,7 +309,7 @@ export default function Stock() {
                     </Badge>
                   )}
                 </td>
-                <td>{formatDateTime(item.updatedAt)}</td>
+                <td>{formatDateTimeFr(item.updatedAt, "-")}</td>
                 <td>
                   <div className="ph-actions">
                     {isEditing ? (
