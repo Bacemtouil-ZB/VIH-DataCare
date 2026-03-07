@@ -1,0 +1,374 @@
+/* ── Panel container ───────────────────────────────────────────────── */
+/* Fixed for resizable panels:
+   - removed fixed flex-basis (270px) so it can adapt to Panel size
+   - added min-width: 0 so content can shrink
+   - added container queries for compact mode
+*/
+.patient-panel {
+  width: 100%;
+  min-width: 0;
+  background: #ffffff;
+  border-right: 1px solid #f0f2f5;
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  font-family: "Segoe UI", sans-serif;
+  max-height: calc(100vh - 40px);
+  overflow: auto;
+
+  /* enable container queries based on panel width */
+  container-type: inline-size;
+}
+
+/* ── Header ────────────────────────────────────────────────────────── */
+.patient-header {
+  text-align: center;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f2f5;
+  margin-bottom: 16px;
+}
+
+/* ── Photo ─────────────────────────────────────────────────────────── */
+.photo-upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.patient-avatar {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: #2e7d52;
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.patient-photo-wrapper {
+  width: 76px;
+  height: 76px;
+}
+
+.patient-photo {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e2e8f0;
+}
+
+/* NOTE: removed .remove-photo-btn, .upload-photo-btn, .photo-input styles
+   because web upload was removed in the updated LeftPanel logic.
+   Keeping unused CSS increases maintenance; performance impact is small,
+   but cleaning it is still good practice. */
+
+/* ── Nom / dossier ─────────────────────────────────────────────────── */
+.patient-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 4px 0 2px;
+
+  /* prevent overflow when panel is narrow */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.patient-id {
+  font-size: 12px;
+  color: #94a3b8;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Info rows ─────────────────────────────────────────────────────── */
+.patient-info {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+  min-width: 0;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 0;
+  border-bottom: 1px solid #f8fafc;
+  min-width: 0;
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-row span:first-child {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: #94a3b8;
+  font-weight: 600;
+
+  flex: 0 0 auto;
+}
+
+.info-row span:last-child {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #1e293b;
+
+  /* allow long values (like statuses) to not break layout */
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  text-align: right;
+}
+
+/* ── Badges ────────────────────────────────────────────────────────── */
+.badge-active,
+.badge-danger,
+.badge-info,
+.badge-neutral {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+}
+
+.badge-active {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.badge-danger {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.badge-info {
+  background: #eff6ff;
+  color: #1e40af;
+  border: 1px solid #bfdbfe;
+}
+
+.badge-neutral {
+  background: #f8fafc;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+/* ── Dernières prises ──────────────────────────────────────────────── */
+.dernieres-prises {
+  border-top: 1px solid #f0f2f5;
+  padding-top: 14px;
+}
+
+.section-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #94a3b8;
+  margin-bottom: 10px;
+}
+
+.prises-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.prise-item {
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 10px 12px;
+  border-left: 3px solid #2e7d52;
+  min-width: 0;
+}
+
+.prise-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  min-width: 0;
+}
+
+.prise-numero {
+  background: #2e7d52;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+  flex: 0 0 auto;
+}
+
+.prise-date {
+  font-size: 11px;
+  color: #94a3b8;
+  font-weight: 500;
+
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.prise-traitement {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 3px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.prise-quantite {
+  font-size: 11px;
+  color: #64748b;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* NOTE: removed .patient-status (was display:none and not needed) */
+
+/* ── Loading ───────────────────────────────────────────────────────── */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  gap: 12px;
+}
+
+.spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #f0f2f5;
+  border-top-color: #2e7d52;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loading-container p {
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+/* ── Error / Empty ─────────────────────────────────────────────────── */
+.error-container,
+.empty-state {
+  padding: 24px 16px;
+  text-align: center;
+}
+
+.error-message {
+  font-size: 13px;
+  color: #dc2626;
+  background: #fef2f2;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #fecaca;
+}
+
+.empty-message {
+  font-size: 13px;
+  color: #94a3b8;
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 8px;
+  border: 1px solid #f0f2f5;
+}
+
+/* ── Scrollbar ─────────────────────────────────────────────────────── */
+.patient-panel::-webkit-scrollbar {
+  width: 4px;
+}
+
+.patient-panel::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.patient-panel::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 4px;
+}
+
+.patient-panel::-webkit-scrollbar-thumb:hover {
+  background: #cbd5e1;
+}
+
+/* ── Compact mode (panel is narrow) ────────────────────────────────── */
+@container (max-width: 260px) {
+  .patient-panel {
+    padding: 12px 10px;
+  }
+
+  .patient-avatar,
+  .patient-photo-wrapper {
+    width: 64px;
+    height: 64px;
+  }
+
+  .patient-name {
+    font-size: 14px;
+  }
+
+  .info-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .info-row span:last-child {
+    text-align: left;
+    width: 100%;
+    max-width: 100%;
+  }
+}
+
+/* Very narrow: hide last prises (optional, keeps panel usable) */
+@container (max-width: 210px) {
+  .dernieres-prises {
+    display: none;
+  }
+}
+
+/* ── Responsive (mobile layout) ────────────────────────────────────── */
+@media (max-width: 768px) {
+  .patient-panel {
+    width: 100%;
+    max-height: none;
+    border-right: none;
+    border-bottom: 1px solid #f0f2f5;
+  }
+}

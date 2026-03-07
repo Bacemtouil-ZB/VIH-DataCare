@@ -1,0 +1,127 @@
+.admin-users {
+  padding: 30px;
+  background: #f7f8fb;
+  min-height: 100vh;
+}
+
+.admin-users__header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 25px;
+}
+
+.admin-users__header h2 {
+  font-weight: 600;
+}
+
+.admin-users__header p {
+  color: #6b7280;
+}
+
+.admin-users__stats {
+  display: flex;
+  gap: 12px;
+}
+
+.stat {
+  background: white;
+  padding: 12px 18px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+.stat span {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.stat strong {
+  font-size: 18px;
+}
+
+.stat-success strong {
+  color: #16a34a;
+}
+
+.stat-muted strong {
+  color: #6b7280;
+}
+
+.admin-toolbar {
+  margin-bottom: 18px;
+}
+
+.search {
+  max-width: 320px;
+}
+
+.table-container {
+  background: white;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  overflow: hidden;
+}
+
+.admin-table thead {
+  background: #f3f4f6;
+}
+
+.admin-table th {
+  font-size: 13px;
+}
+
+.admin-table tbody tr:hover {
+  background: #f9fafb;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.empty {
+  text-align: center;
+  padding: 30px;
+  color: #6b7280;
+}
+
+.admin-loading {
+  display: flex;
+  justify-content: center;
+  padding: 60px;
+}
+
+.role {
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 6px;
+}
+
+.role-admin {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.role-medecin {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.role-pharmacien {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.role-analyste {
+  background: #ede9fe;
+  color: #6b21a8;
+}
+
+.admin-alert {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 10px;
+  margin-bottom: 16px;
+  border-radius: 6px;
+}

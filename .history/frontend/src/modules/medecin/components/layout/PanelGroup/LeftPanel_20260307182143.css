@@ -1,0 +1,311 @@
+/* Merged + fixed for resizable left panel:
+   - content aligned to the left (not centered)
+   - text truncation so narrow panels stay usable
+   - min-width:0 + container queries for compact mode
+   - removed :root vars (avoid global pollution); scoped to .patient-panel
+*/
+
+.patient-panel {
+  /* local variables (scoped) */
+  --green: #408d47;
+  --border: #f0f2f5;
+  --text-primary: #1e293b;
+  --text-muted: #94a3b8;
+  --text-sub: #64748b;
+
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  background: #ffffff;
+  border-right: 1px solid var(--border);
+  padding: 18px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  font-family: "Segoe UI", sans-serif;
+  overflow: auto;
+
+  /* enable container queries based on actual panel width */
+  container-type: inline-size;
+}
+
+/* ── HEADER ─────────────────────────────────────────────────────── */
+.patient-header {
+  text-align: left; /* ✅ merged to left */
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.photo-upload-container {
+  display: flex;
+  justify-content: flex-start; /* ✅ left */
+  margin-bottom: 10px;
+}
+
+.patient-avatar,
+.patient-photo {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+
+.patient-avatar {
+  background: var(--green);
+  color: #fff;
+  font-size: 22px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+}
+
+.patient-photo {
+  object-fit: cover;
+  border: 2px solid #e2e8f0;
+}
+
+.patient-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 6px 0 2px;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.patient-id {
+  font-size: 11px;
+  color: var(--text-muted);
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── INFO SECTION ──────────────────────────────────────────────── */
+.patient-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.info-row {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* ✅ left */
+  padding: 10px 12px;
+  background: #f9fbfc;
+  border-radius: 10px;
+  transition: background 0.18s ease;
+  min-width: 0;
+}
+
+.info-row:hover {
+  background: #f3f9f4;
+}
+
+.info-row span:first-child {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.info-row span:last-child {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+  max-width: 100%;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── BADGES ─────────────────────────────────────────────────────── */
+.badge-active,
+.badge-danger,
+.badge-info,
+.badge-neutral {
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 600;
+  max-width: 100%;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.badge-active {
+  background: #eaf6ec;
+  color: var(--green);
+}
+
+.badge-danger {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.badge-info {
+  background: #eff6ff;
+  color: #1e40af;
+}
+
+.badge-neutral {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+/* ── LAST MEDICATIONS ───────────────────────────────────────────── */
+.dernieres-prises {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  min-width: 0;
+}
+
+.section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 10px;
+}
+
+.prises-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.prise-item {
+  background: #f9fbfc;
+  border-radius: 10px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--green);
+  transition: background 0.18s ease;
+  min-width: 0;
+}
+
+.prise-item:hover {
+  background: #f3f9f4;
+}
+
+.prise-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 4px;
+  min-width: 0;
+}
+
+.prise-numero {
+  background: var(--green);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 10px;
+  flex: 0 0 auto;
+}
+
+.prise-date {
+  font-size: 11px;
+  color: var(--text-muted);
+  min-width: 0;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.prise-traitement,
+.prise-quantite {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.prise-traitement {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.prise-quantite {
+  font-size: 11px;
+  color: var(--text-sub);
+}
+
+/* ── STATES ─────────────────────────────────────────────────────── */
+.loading-container,
+.error-container,
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* ✅ left */
+  justify-content: center;
+  padding: 30px 12px;
+  text-align: left;
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--border);
+  border-top-color: var(--green);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-bottom: 10px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── SCROLLBAR ─────────────────────────────────────────────────── */
+.patient-panel::-webkit-scrollbar {
+  width: 3px;
+}
+
+.patient-panel::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 4px;
+}
+
+/* ── COMPACT MODE (panel is narrow) ─────────────────────────────── */
+@container (max-width: 240px) {
+  .patient-panel {
+    padding: 12px 10px;
+    gap: 12px;
+  }
+
+  .patient-avatar,
+  .patient-photo {
+    width: 56px;
+    height: 56px;
+  }
+
+  .patient-name {
+    font-size: 14px;
+  }
+
+  .info-row {
+    padding: 8px 10px;
+  }
+}
+
+@container (max-width: 205px) {
+  .dernieres-prises {
+    display: none;
+  }
+}

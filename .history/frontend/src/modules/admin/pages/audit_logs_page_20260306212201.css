@@ -1,0 +1,384 @@
+:root {
+  --bg: #f6f8fc;
+  --card: #ffffff;
+  --line: #e6ecf4;
+  --text: #0f172a;
+  --muted: #64748b;
+  --primary: #2563eb;
+  --primary2: #1d4ed8;
+  --dangerBg: #fee2e2;
+  --dangerText: #991b1b;
+  --okBg: #e2e8f0;
+  --okText: #334155;
+}
+
+.audit {
+  padding: 16px;
+  background: var(--bg);
+  min-height: 100%;
+}
+
+.audit__header {
+  max-width: 1200px;
+  margin: 0 auto 10px;
+}
+
+.audit__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--text);
+}
+
+.audit__subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.auditContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.audit__card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.audit__card--table {
+  padding: 0;
+  overflow: hidden;
+}
+
+.audit__row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+.audit__filters {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr 1fr 1fr;
+  gap: 10px;
+  align-items: end;
+}
+
+@media (max-width: 980px) {
+  .audit__filters {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.audit__field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.audit__field--grow {
+  flex: 1 1 360px;
+  min-width: 260px;
+}
+
+.audit__label {
+  font-size: 12px;
+  font-weight: 800;
+  color: #475569;
+}
+
+.audit__input {
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  padding: 0 10px;
+  outline: none;
+  background: #fff;
+}
+
+.audit__input:focus {
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+.audit__btn {
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--text);
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.audit__btn--primary {
+  background: var(--primary);
+  border-color: var(--primary2);
+  color: #fff;
+}
+
+.audit__btn--sm {
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 9px;
+  font-size: 12px;
+}
+
+.audit__btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.audit__patient {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #bbf7d0;
+  background: #f0fdf4;
+  color: #14532d;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.audit__patientTitle {
+  font-weight: 900;
+}
+
+.audit__muted {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.audit__strong {
+  font-weight: 900;
+  color: var(--text);
+}
+
+.auditSpacer {
+  height: 10px;
+}
+
+/* Table */
+.auditTable {
+  max-height: calc(100vh - 380px); /* table scrollable + pager always visible */
+  overflow: auto;
+}
+
+.auditTable table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.auditTable thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #f8fafc;
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+  font-weight: 900;
+  color: #334155;
+  text-align: left;
+  padding: 10px 12px;
+  white-space: nowrap;
+}
+
+.audit__cell {
+  padding: 10px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  white-space: nowrap;
+  vertical-align: top;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.audit__cell--right {
+  text-align: right;
+}
+
+.auditTag {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 900;
+  border: 1px solid transparent;
+}
+
+.auditTag--danger {
+  background: var(--dangerBg);
+  color: var(--dangerText);
+  border-color: #fecaca;
+}
+
+.auditTag--ok {
+  background: var(--okBg);
+  color: var(--okText);
+  border-color: #cbd5e1;
+}
+
+/* Pager: ALWAYS visible at bottom of table card */
+.auditPager {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  background: #fff;
+  border-top: 1px solid var(--line);
+  padding: 10px 12px;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.auditPager__actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Modal */
+.auditModal__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 9999;
+}
+
+.auditModal {
+  width: min(980px, 100%);
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  box-shadow: 0 14px 40px rgba(2, 6, 23, 0.3);
+  overflow: hidden;
+}
+
+.auditModal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 12px;
+  background: #f8fafc;
+  border-bottom: 1px solid var(--line);
+}
+
+.auditModal__title {
+  font-weight: 900;
+  color: var(--text);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.auditModal__close {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: #fff;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  color: var(--text);
+}
+
+.auditModal__close:hover {
+  background: #f1f5f9;
+}
+
+.auditModal__body {
+  padding: 12px;
+}
+
+.auditModal__meta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 12px;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 900px) {
+  .auditModal__meta {
+    grid-template-columns: 1fr;
+  }
+}
+
+.auditModal__k {
+  display: inline-block;
+  min-width: 90px;
+  font-size: 12px;
+  font-weight: 900;
+  color: #475569;
+  margin-right: 8px;
+}
+
+.auditModal__v {
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 700;
+}
+
+.auditModal__jsonActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.auditModal__jsonGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+@media (max-width: 900px) {
+  .auditModal__jsonGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.auditModal__section {
+  font-weight: 900;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+
+.auditModal__pre {
+  background: #0b1220;
+  color: #e5e7eb;
+  border-radius: 12px;
+  padding: 12px;
+  max-height: 360px;
+  overflow: auto;
+  font-size: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+}
+
+.auditModal__footer {
+  padding: 10px 12px;
+  border-top: 1px solid var(--line);
+  background: #fff;
+  display: flex;
+  justify-content: flex-end;
+}
