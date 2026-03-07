@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../shared/hooks/useAuth.js';
 import { toast } from "react-toastify";
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { handleLogin, user, error, setError, loading } = useAuth();
 
   const [formData, setFormData] = useState({ email: '', password: '', rememberMe: false });
@@ -24,6 +25,13 @@ const Login = () => {
     toast.error(error);
     setError(null);
   }, [error, setError]);
+
+  useEffect(() => {
+    const stateMessage = location.state?.message;
+    if (!stateMessage) return;
+    toast.success(stateMessage);
+    navigate(location.pathname, { replace: true, state: {} });
+  }, [location.pathname, location.state, navigate]);
 
   const handleChange = ({ target: { name, value, type, checked } }) =>
     setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));

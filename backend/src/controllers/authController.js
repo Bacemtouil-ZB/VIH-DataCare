@@ -1,4 +1,9 @@
-import { loginUser, registerUser } from "../services/authService.js";
+import {
+  loginUser,
+  registerUser,
+  requestPasswordReset,
+  resetPasswordWithToken,
+} from "../services/authService.js";
 import { logAction } from "../services/auditService.js";
 
 // Login controller
@@ -12,15 +17,14 @@ export const loginController = async (req, res) => {
 
   try {
     const { user, token } = await loginUser(email, password);
-    // Set HTTP-only cookie
+
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "Strict" : "Lax", // strict en prod, lax en dev pour faciliter les tests cross-origin(strict bloque les requêtes cross-origin même avec CORS configuré)
-      maxAge: 30 * 24 * 60 * 60 * 1000, // mois
+      sameSite: process.env.NODE_ENV === "production" ? "Strict" : "Lax",
+      maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
-    //Login réussi
     await logAction(req, {
       module: "AUTH",
       action: "LOGIN_SUCCESS",
@@ -31,10 +35,9 @@ export const loginController = async (req, res) => {
       new_data: { email: user.email },
     });
 
-    // Retourner aussi role et isActivated
     res.status(200).json({
       success: true,
-      message: "Connexion réussie",
+      message: "Connexion reussie",
       user: {
         id: user.id,
         nom: user.nom,
@@ -45,7 +48,6 @@ export const loginController = async (req, res) => {
       },
     });
   } catch (error) {
-    // 🔹 Login échoué
     await logAction(req, {
       module: "AUTH",
       action: "LOGIN_FAILED",
@@ -53,26 +55,25 @@ export const loginController = async (req, res) => {
       user_role: null,
       entity_id: null,
       old_data: null,
-      new_data: { email }, // tentative de login
+      new_data: { email },
     });
+
     console.error("Login error:", error.message);
     res.status(401).json({ message: error.message });
   }
 };
 
-/**
- * Contrôleur pour l'inscription
- */
+// Register controller
 export const registerController = async (req, res) => {
   const { nom, prenom, email, password, role } = req.body;
 
   try {
-    const user = await registerUser(nom, prenom, email, password);
+    const user = await registerUser(nom, prenom, email, password, role);
 
     res.status(201).json({
       success: true,
       message:
-        "Utilisateur créé avec succès. Votre compte doit être activé par un administrateur avant de pouvoir vous connecter.",
+        "Utilisateur cree avec succes. Votre compte doit etre active par un administrateur avant de pouvoir vous connecter.",
       user: {
         id: user.id,
         nom: user.nom,
@@ -83,19 +84,59 @@ export const registerController = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error(" Register error:", error.message);
+    console.error("Register error:", error.message);
     res.status(400).json({
       success: false,
       message: error.message,
     });
   }
 };
-/**
- * Contrôleur pour la déconnexion
- */
+
+// Forgot password controller
+export const forgotPasswordController = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    await requestPasswordReset(email);
+    res.status(200).json({
+      success: true,
+      message: "Si cet email existe, un lien de reinitialisation a ete envoye.",
+    });
+  } catch (error) {
+    console.error("Forgot password error:", error.message);
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// Reset password controller
+export const resetPasswordController = async (req, res) => {
+  const { token, password, confirmPassword } = req.body;
+
+  if (confirmPassword && password !== confirmPassword) {
+    return res.status(400).json({
+      success: false,
+      message: "Les mots de passe ne correspondent pas",
+    });
+  }
+
+  try {
+    const result = await resetPasswordWithToken(token, password);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("Reset password error:", error.message);
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// Logout controller
 export const logoutController = async (req, res) => {
   try {
-    // Supprimer le cookie
     res.clearCookie("token", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -104,16 +145,17 @@ export const logoutController = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Déconnexion réussie",
+      message: "Deconnexion reussie",
     });
   } catch (error) {
     console.error("Logout error:", error.message);
     res.status(500).json({
       success: false,
-      message: "Erreur lors de la déconnexion",
+      message: "Erreur lors de la deconnexion",
     });
   }
 };
+
 export const getMe = (req, res) => {
   res.json({
     success: true,

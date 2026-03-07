@@ -49,3 +49,22 @@ export const checkSession = async () => {
   }
 };
 
+// —— FORGOT PASSWORD ——
+// Backend : POST /api/auth/forgot-password
+// Envoie  : { email }
+export const forgotPassword = async (email) => {
+  const res = await API.post("/auth/forgot-password", { email });
+  return res.data;
+};
+
+// —— RESET PASSWORD ——
+// Backend : POST /api/auth/reset-password
+// Envoie  : { token, password, confirmPassword }
+export const resetPassword = async (token, password, confirmPassword) => {
+  const res = await API.post("/auth/reset-password", {
+    token,
+    password,
+    confirmPassword,
+  });
+  return res.data;
+};
