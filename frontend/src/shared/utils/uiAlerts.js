@@ -31,13 +31,25 @@ export const confirmEdit = async (
   return result.isConfirmed;
 };
 
-export const confirmDelete = async () =>
-  confirmAction({
-    title: "Supprimer cet élément ?",
-    message: "Cette action est irréversible.",
-    confirmText: "Supprimer",
+export const confirmDelete = async (
+  title = "Supprimer cet élément ?",
+  message = "", 
+) => {
+  const result = await Alert.fire({
+    title,
+    html: message ? `<p>${message}</p>` : "", 
     icon: "warning",
+    showCancelButton: true,
+    confirmButtonText: "Supprimer",
+    cancelButtonText: "Annuler",
+    customClass: {
+      confirmButton: "btn-custom-delete",
+      cancelButton: "btn-custom-cancel",
+    },
   });
+  return result.isConfirmed;
+};
+
 
 export const alertSuccess = (message = "Opération réussie") =>
   Alert.fire({

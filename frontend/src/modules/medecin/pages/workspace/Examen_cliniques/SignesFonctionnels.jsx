@@ -3,16 +3,19 @@ import { useOutletContext } from "react-router-dom";
 import { toast } from "react-toastify";
 import { confirmAction } from "../../../../../shared/utils/uiAlerts";
 import { getAppareils, getSignesByPatient, createSignesFonctionnels, updateSignesFonctionnels } from "../../../services/examenCliniqueServices/signesFonctionService";
+import { ActionButton } from "../../../components/buttons/ActionButton";
 import { SIGNES_KEYS, SIGNES_LABELS, SIGNES_INIT, FORM_SF_INIT, getSignesPositifs } from "./examenConfig";
 import {
 formatDateFr,mapAutresSignesFromApi,buildAutreSigneItem,removeAutreSigneById,
 updateAutreSigneDescription,handleCancelForm,openFormForCreate,showDetailMode,
-} from "./examenSharedLogique";
+} from "./logiqueTableHistory";
 import {
-PAGE_CONTAINER_CLASS,PageHeader,HistoriqueAccordeon,HistoriqueTable,HistoriqueActions,EmptyState,
-FormulaireWrapper,AutresSignesSection,BoutonEnregistrer,Badge,Spinner,RasToggle,parseApiError,
-} from "./examenComponents";
+PageHeader,HistoriqueAccordeon,HistoriqueTable,HistoriqueActions,EmptyState,
+FormulaireWrapper,AutresSignesSection,Badge,Spinner,RasToggle,parseApiError,
+} from "./index";
 import ToggleSwitch from "../../../components/buttons/ToggleSwitch";
+
+const PAGE_CONTAINER_CLASS = "ec-page-bg";
 
 export default function SignesFonctionnels() {
   const { examenId, patientNumero } = useOutletContext();
@@ -20,7 +23,7 @@ export default function SignesFonctionnels() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showForm, setShowForm] = useState(false);
-  const [showHistory, setShowHistory] = useState(false);
+  const [showHistory, setShowHistory] = useState(true);
 
   const [signesId, setSignesId] = useState(FORM_SF_INIT.signesId);
   const [isModifying, setIsModifying] = useState(FORM_SF_INIT.isModifying);
@@ -262,7 +265,15 @@ export default function SignesFonctionnels() {
             onSupprimer={supprimerAutreSigne}
             onModifierDescription={modifierDescription}
           />
-          <BoutonEnregistrer isModifying={isModifying} loading={saving} onClick={handleSave} />
+          <ActionButton
+            action="save"
+            block={true}
+            loading={saving}
+            label={isModifying ? "Enregistrer les modifications" : "Enregistrer la fiche"}
+            onClick={handleSave}
+            showIcon={false}
+            height="40px"
+          />
         </FormulaireWrapper>
       )}
     </div>

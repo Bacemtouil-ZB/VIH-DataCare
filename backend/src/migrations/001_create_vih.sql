@@ -1,7 +1,6 @@
 CREATE TABLE vih (
     id SERIAL PRIMARY KEY,
     patient_id INTEGER NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
-  id SERIAL PRIMARY KEY,
   patient_id INTEGER NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
     mode_contamination VARCHAR(500) ,
     type_depistage VARCHAR(20),

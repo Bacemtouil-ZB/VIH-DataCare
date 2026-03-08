@@ -43,19 +43,25 @@ export default function RightPanel() {
         <span>Examen clinique</span>
       </NavLink>
 
-      <NavLink to="biologie" className="menu-item">
-        <FlaskConical size={18} />
-        <span>Résultats biologiques</span>
-      </NavLink>
-
       <NavLink to="prescription-examens" className="menu-item">
         <ClipboardList size={18} />
         <span>Prescription d'examens</span>
       </NavLink>
 
+      <NavLink to="biologie" className="menu-item">
+        <FlaskConical size={18} />
+        <span>Résultats biologiques</span>
+      </NavLink>
+
+
       <NavLink to="prescription-medicale" className="menu-item">
         <Pill size={18} />
         <span>Prescription médicale</span>
+      </NavLink>
+
+      <NavLink to="rendez-vous" className="menu-item">
+        <ClipboardList size={18} />
+        <span>Rendez-Vous</span>
       </NavLink>
 
       <NavLink to="conclusion" className="menu-item">

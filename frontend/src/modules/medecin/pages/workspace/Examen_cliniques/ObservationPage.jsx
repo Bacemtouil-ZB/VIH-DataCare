@@ -3,11 +3,15 @@ import { useOutletContext } from "react-router-dom";
 import { toast } from "react-toastify";
 import { confirmAction, alertError } from "../../../../../shared/utils/uiAlerts";
 import { createObservation, getObservationsByPatient, updateObservation } from "../../../services/examenCliniqueServices/observationService";
+import { ActionButton } from "../../../components/buttons/ActionButton";
 import {
-PAGE_CONTAINER_CLASS,LABEL_CLS,PageHeader,HistoriqueAccordeon,HistoriqueTable,
-HistoriqueActions,FormulaireWrapper,BoutonEnregistrer,Spinner,parseApiError,
-} from "./examenComponents";
-import { formatDateFr, handleCancelForm, openFormForCreate, showDetailMode } from "./examenSharedLogique";
+PageHeader,HistoriqueAccordeon,HistoriqueTable,
+HistoriqueActions,FormulaireWrapper,Spinner,parseApiError,
+} from "./index";
+import { formatDateFr, handleCancelForm, openFormForCreate, showDetailMode } from "./logiqueTableHistory";
+
+const PAGE_CONTAINER_CLASS = "ec-page-bg";
+const LABEL_CLS = "text-uppercase fw-semibold text-secondary d-block mb-1 ec-label";
 
 export default function ObservationPage() {
   const { examenId, patientNumero } = useOutletContext();
@@ -15,7 +19,10 @@ export default function ObservationPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showForm, setShowForm] = useState(false);
-  const [showHistory, setShowHistory] = useState(false);
+  const [showHistory, setShowHistory] = useState(true);
+  useEffect(() => {
+    setShowHistory(true);
+  }, []);
 
   const [observationId, setObservationId] = useState(null);
   const [isModifying, setIsModifying] = useState(false);
@@ -159,7 +166,15 @@ export default function ObservationPage() {
               <small className="text-secondary">{remarque.length} caractere{remarque.length !== 1 ? "s" : ""}</small>
             </div>
           </div>
-          <BoutonEnregistrer isModifying={isModifying} loading={saving} onClick={handleSave} />
+          <ActionButton
+            action="save"
+            block={true}
+            loading={saving}
+            label={isModifying ? "Enregistrer les modifications" : "Enregistrer la fiche"}
+            onClick={handleSave}
+            showIcon={false}
+            height="40px"
+          />
         </FormulaireWrapper>
       )}
     </div>

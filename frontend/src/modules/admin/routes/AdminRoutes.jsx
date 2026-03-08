@@ -1,11 +1,11 @@
-import React from "react";
+﻿import React from "react";
 import { Navigate } from "react-router-dom";
 import UsersPage from "../pages/usersPages/UsersPage";
 import AuditLogsPage from "../pages/auditLogsPage/AuditLogsPage";
 import AdminDashboard from "../pages/AdminDashboard";
 
 import ProtectedRoute from "../../../routes/ProtectedRoute";
-import DashboardLayout from "../../../shared/components/layout/DashboardLayout";
+import DashboardLayout from "../../../shared/components/Layout/DashboardLayout";
 import ProfilPage from "../../../pages/parametres/profile";
 
 const adminRoutes = [

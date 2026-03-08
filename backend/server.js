@@ -19,6 +19,8 @@ import signeFonctionRoute from "./src/routes/examenClinique/signeFonctionRoute.j
 import habitude from "./src/routes/examenClinique/habitudeDeVieRoute.js";
 import observations from "./src/routes/examenClinique/observationRoute.js";
 import auditRoutes from "./src/routes/auditRoutes.js";
+import rendezvousRouter from "./src/routes/rendezVousRoute.js";
+import stockRoute from "./src/routes/stockRoute.js";
 dotenv.config();
 const app = express();
 app.use(express.json());
@@ -48,6 +50,9 @@ app.use("/api/signesFonctionnels", signeFonctionRoute);
 app.use("/api/signesCliniques", signeClinique);
 app.use("/api/habitudes", habitude);
 app.use("/api/observations", observations);
+app.use("/api/audit", auditRoutes);
+app.use("/api/rendezvous", rendezvousRouter);
+app.use("/api/stock", stockRoute);
 app.use("/api/audit", auditRoutes);
 
 // Route racine test

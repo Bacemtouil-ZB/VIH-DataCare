@@ -28,17 +28,62 @@
   gap: 0.75rem !important;
 }
 
-/* Bouton Confirmer */
+/* Bouton Confirmer (vert - pour les autres alertes) */
 .btn-custom-confirm {
   background-color: var(--alert-primary) !important;
   color: #fff !important;
   border: none !important;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-weight: 600;
+  transition: all 0.2s;
 }
 
-/* Bouton Annuler */
+.btn-custom-confirm:hover {
+  background-color: var(--alert-primary-hover) !important;
+}
+
+/* ✅ Bouton Supprimer (rouge) */
+.btn-custom-delete {
+  background-color: #dc2626 !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: 6px;
+  padding: 8px 16px;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(220, 38, 38, 0.25);
+  transition: all 0.2s;
+}
+
+.btn-custom-delete:hover {
+  background-color: #b91c1c !important;
+  color: #fff !important;
+  box-shadow: 0 4px 10px rgba(220, 38, 38, 0.35);
+}
+
+/* ✅ Bouton Annuler (gris) */
 .btn-custom-cancel {
-  background-color: transparent !important;
-  color: var(--alert-primary) !important;
-  border: 1.5px solid var(--alert-primary) !important;
+  background-color: #f3f4f6 !important;
+  color: #6b7280 !important;
+  border: 1px solid #d1d5db !important;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  transition: all 0.2s;
 }
 
+.btn-custom-cancel:hover {
+  background-color: #e5e7eb !important;
+  color: #4b5563 !important;
+  border-color: #9ca3af !important;
+}
+
+/* ✅ Icône warning pour suppression (rouge) */
+.swal2-icon.swal2-warning {
+  border-color: #fca5a5 !important;
+  color: #dc2626 !important;
+}
+
+.swal2-icon.swal2-warning [class^='swal2-icon-content'] {
+  color: #dc2626 !important;
+}

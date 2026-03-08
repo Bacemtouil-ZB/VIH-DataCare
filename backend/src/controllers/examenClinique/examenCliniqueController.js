@@ -4,7 +4,7 @@ import { logAction } from "../../services/auditService.js";
 
 export const createExamenCliniqueController = async (req, res) => {
   try {
-    const { patient_numero, date_examen } = req.body;
+    const { patient_numero } = req.body;
     const medecinId = req.user.id;
 
     const patient = await getPatientByNumero(patient_numero);
@@ -18,7 +18,6 @@ export const createExamenCliniqueController = async (req, res) => {
     const examen = await createExamenClinique(
       {
         patient_id: patient.id,
-        date_examen: date_examen || new Date(),
       },
       medecinId
     );

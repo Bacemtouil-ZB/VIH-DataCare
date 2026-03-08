@@ -3,9 +3,12 @@ import { useOutletContext } from "react-router-dom";
 import { toast } from "react-toastify";
 import { confirmAction } from "../../../../../shared/utils/uiAlerts";
 import { createHabitudeDeVie, getHabitudeDeVieByNumeroDossier, updateHabitudeDeVie } from "../../../services/examenCliniqueServices/habitudeDeVieService";
+import { ActionButton } from "../../../components/buttons/ActionButton";
 import ToggleSwitch from "../../../components/buttons/ToggleSwitch";
 import { HABITUDES_CHAMPS, HABITUDES_INIT } from "./examenConfig";
-import { PAGE_CONTAINER_CLASS, PageHeader, BoutonSauvegarder, Spinner } from "./examenComponents";
+import { PageHeader, Spinner } from "./index";
+
+const PAGE_CONTAINER_CLASS = "ec-page-bg";
 
 export default function HabitudesPage() {
   const { examenId, patientNumero } = useOutletContext();
@@ -129,7 +132,15 @@ export default function HabitudesPage() {
 
   return (
     <div className={PAGE_CONTAINER_CLASS}>
-      <PageHeader actionButton={<BoutonSauvegarder saving={saving} isModifying={!!habitudeId} onClick={handleSave} />} />
+      <PageHeader
+        actionButton={
+          <ActionButton
+            action={habitudeId ? "edit" : "save"}
+            loading={saving}
+            onClick={handleSave}
+          />
+        }
+      />
 
       <div className="bg-white border rounded p-3 mb-4">
         <h6 className="mb-3 ec-habitudes-title">Habitudes de vie</h6>

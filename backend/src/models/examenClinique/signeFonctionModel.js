@@ -43,12 +43,12 @@ export const createSignesFonctionnels = async (examenCliniqueId, signesData) => 
 
 export const getSignesFonctionnelsByNumeroDossier = async (numeroDossier) => {
   const query = `
-    SELECT sf.*, ec.date_examen, ec.patient_id
+    SELECT sf.*, sf.created_at AS date_examen, ec.patient_id
     FROM signes_fonctionnels sf
     JOIN examen_clinique ec ON sf.examen_clinique_id = ec.id
     JOIN patients p ON ec.patient_id = p.id
     WHERE p.numero = $1
-    ORDER BY ec.date_examen DESC;
+    ORDER BY sf.created_at DESC;
   `;
   const result = await pool.query(query, [numeroDossier]);
   return result.rows;

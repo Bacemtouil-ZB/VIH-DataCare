@@ -1,0 +1,32 @@
+import {
+  createRendezvous as createRendezvousModel,
+  getRendezvousByNumeroDossier as getRendezvousByNumeroDossierModel,
+  getRendezvousById as getRendezvousByIdModel,
+  updateRendezvous as updateRendezvousModel,
+} from "../models/rendezVousModel.js";
+
+// rendezvousService.js
+export const createRendezvous = async (data) => {
+  const { numero_dossier, date, heure, type, statut, commentaire } = data;
+  if (!numero_dossier || !date || !heure || !type || !statut)
+    throw new Error("Les champs numero_dossier, date, heure, type et statut sont obligatoires");
+  return await createRendezvousModel({ numero_dossier, date, heure, type, statut, commentaire });
+};
+
+export const getRendezvousByNumeroDossier = async (numeroDossier) => {
+  const rendezvous = await getRendezvousByNumeroDossierModel(numeroDossier);
+  if (!rendezvous.length) return [];
+  return rendezvous;
+};
+
+export const getRendezvousById = async (id) => {
+  const rdv = await getRendezvousByIdModel(id);
+  if (!rdv) throw new Error("Rendez-vous non trouvé");
+  return rdv;
+};
+
+export const updateRendezvous = async (id, data) => {
+  const existing = await getRendezvousByIdModel(id);
+  if (!existing) throw new Error("Rendez-vous non trouvé");
+  return await updateRendezvousModel(id, data);
+};

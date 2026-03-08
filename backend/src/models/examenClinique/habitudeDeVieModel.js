@@ -40,7 +40,7 @@ export const getHabitudeDeVieById = async (id) => {
   const query = `
     SELECT
       h.*,
-      ec.date_examen,
+      h.created_at AS date_examen,
       ec.patient_id
     FROM habitudes_vie h
     LEFT JOIN examen_clinique ec ON h.examen_clinique_id = ec.id
@@ -55,13 +55,13 @@ export const getHabitudeDeVieByNumeroDossier = async (numero) => {
   const query = `
     SELECT
       h.*,
-      ec.date_examen,
+      h.created_at AS date_examen,
       ec.patient_id
     FROM habitudes_vie h
     LEFT JOIN examen_clinique ec ON h.examen_clinique_id = ec.id
     LEFT JOIN patients p ON ec.patient_id = p.id
     WHERE p.numero = $1
-    ORDER BY ec.date_examen DESC;
+    ORDER BY h.created_at DESC;
   `;
 
   const result = await pool.query(query, [numero]);
@@ -87,6 +87,7 @@ export const updateHabitudeDeVie = async (id, habitudeData, updatedBy) => {
       updated_at = NOW()
     WHERE id = $6
     RETURNING *,
+    
       (SELECT ec.patient_id FROM examen_clinique ec WHERE ec.id = habitudes_vie.examen_clinique_id) AS patient_id;
   `;
 
