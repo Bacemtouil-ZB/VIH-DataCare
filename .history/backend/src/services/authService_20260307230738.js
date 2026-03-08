@@ -116,7 +116,8 @@ export const requestPasswordReset = async (email) => {
   if (!user) {
     return {
       success: true,
-      message: "Si cet email existe, un lien de reinitialisation a ete envoye.",
+      message:
+        "Si cet email existe, un lien de reinitialisation a ete envoye.",
     };
   }
 
@@ -127,9 +128,10 @@ export const requestPasswordReset = async (email) => {
   await deletePasswordResetsByUserId(user.id);
   await createPasswordReset(user.id, tokenHash, expiresAt);
 
-  const frontendBase = (
-    process.env.FRONTEND_URL || "http://localhost:5173"
-  ).replace(/\/$/, "");
+  const frontendBase = (process.env.FRONTEND_URL || "http://localhost:5173").replace(
+    /\/$/,
+    "",
+  );
   const resetUrl = `${frontendBase}/reset-password?token=${encodeURIComponent(rawToken)}`;
 
   try {

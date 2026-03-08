@@ -1,0 +1,209 @@
+﻿/* Sidebar principale  */
+
+.sidebar-custom {
+  position: relative;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  /* Vert plus foncÃ© et apaisant */
+  background: linear-gradient(180deg,  #c8e6c9 50%, #f1f8e9 100%,#408d47 0%,) !important;
+  border-right: 2px solid #e5e5e5;
+  transition: all 0.3s ease;
+  z-index: 1000;
+  overflow-y: auto;
+  box-shadow: inset 0 -1px 0 rgba(169, 174, 184, 0.12);
+}
+
+/* En-tÃªte de la sidebar */
+.sidebar-custom .sidebar-header {
+  display: flex;
+  justify-content: space-between; /* Aligne Ã  gauche et Ã  droite */
+  align-items: center; 
+  background: linear-gradient(135deg, #ffff );
+  box-shadow: inset 0 -1px 0 rgba(123, 126, 131, 0.12);
+  padding: 10px 20px;
+} 
+.sidebar-header-content {
+  line-height: 1.1;
+}
+
+.sidebar-heart-icon {
+  font-size: 1.6rem;   /* smaller icon */
+  margin: 0;
+}
+
+.sidebar-title {
+  margin: 2px 0 0 0;   /* â¬…ï¸ tight spacing */
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.sidebar-subtitle {
+  margin: 0;
+  font-size: 0.75rem;
+  letter-spacing: 0.3px;
+  display: block;
+}
+
+/* Conteneur pour le nom du docteur et l'heure */
+.header-right-content {
+  display: flex;
+  align-items: center;
+}
+
+/* Nom du docteur */
+.user-greeting {
+  margin-right: 15px; /* Ajoute de l'espace entre le nom et l'horloge */
+  font-size: 1.1rem;
+  color: #ffffff; /* Vous pouvez ajuster la couleur */
+}
+
+/* Horloge */
+.time-badge {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  color: #151414; 
+}
+
+.time-badge i {
+  margin-right: 5px; /* Espace entre l'icÃ´ne de l'horloge et l'heure */
+}
+
+
+/* IcÃ´ne CÅ“ur */
+.heart-icon-container {
+  display: inline-block;
+  animation: heartBeat 2.5s ease-in-out infinite;
+  align-items: center;
+}
+
+.heart-icon-container i {
+  font-size: 3.5rem;
+  color: #1B5E20;
+  filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.15));
+}
+
+@keyframes heartBeat {
+  0%, 100% {
+    transform: scale(1);
+  }
+  10%, 30% {
+    transform: scale(1.08);
+  }
+  20%, 40% {
+    transform: scale(1);
+  }
+}
+/* Section de navigation */
+.sidebar-custom .nav-link {
+  color: #495365 !important;          /* gris pro */
+  background-color: transparent;
+  border-radius: 10px;
+  padding: 0.65rem 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.25s ease;
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 14px;    
+}
+
+.sidebar-custom .nav-link:hover {
+  background-color: #e8f5e9 !important; /* vert trÃ¨s clair */
+  color: #1B5E20 !important;
+  transform: translateX(4px);
+}
+.sidebar-custom .nav-link i {
+  font-size: 1.05rem;
+  color: inherit;
+  transition: transform 0.25s ease;
+}
+.sidebar-custom .nav-link.active {
+  background-color: #c8e6c9 !important; /* vert clair */
+  color: #2E7D32 !important;            /* vert foncÃ© */
+  font-weight: 600;
+
+}
+
+.sidebar-custom .nav-link:hover i {
+  transform: scale(1.1);
+}
+
+
+/* Section Footer */
+/* Footer sidebar */
+.sidebar-footer-section {
+  position: relative;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 1rem 0.75rem;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  background-color: #ffffff;
+  border-top: 1px solid #e2e8f0;
+  box-sizing: border-box;
+}
+
+/* AccountButton fixe */
+.account-dropdown {
+  width: 100%;
+  margin: 0;
+  padding-left: 0;
+}
+/* Desktop */
+@media (min-width: 992px) {
+  .sidebar-custom {
+    position: fixed;
+    width: 250px;      /* largeur fixe sur grand Ã©cran */
+    height: 100vh;
+  }
+}
+
+/* Mobile / tablette */
+@media (max-width: 991px) {
+  .sidebar-custom {
+    position: relative;   /* prend sa place dans le flux */
+    width: 100%;          /* occupe tout l'espace */
+    height: auto;         /* sâ€™adapte au contenu */
+  }
+}
+
+<<<<<<< HEAD:frontend/src/shared/components/Layout/Sidebar.css
+
+
+
+
+=======
+.account-logout-btn {
+  width: 100%;
+  border: 1px solid #dc3545;
+  color: #dc3545;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.account-logout-btn:hover {
+  background: #fef2f2;
+  border-color: #b91c1c;
+  color: #b91c1c;
+}
+
+.account-logout-btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.18);
+}
+
+.account-logout-btn i {
+  font-size: 1rem;
+}
+>>>>>>> bd27ab67db3d1f03c70e6deefacad212074c0b9c:frontend/src/shared/components/Layout/mainLayout/Sidebar.css
