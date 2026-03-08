@@ -1,14 +1,15 @@
-const inputStyle = {
-  width: "100%",
-  padding: "8px 10px",
-  borderRadius: 6,
-  border: "1px solid #e5e7eb",
-  fontSize: 13.5,
-  color: "#111827",
+import React from "react";
+import { Form } from "react-bootstrap";
+
+const customInputStyle = {
   background: "#fafafa",
-  outline: "none",
-  boxSizing: "border-box",
+  fontSize: "13.5px",
+  color: "#111827",
+  borderRadius: "6px",
+  borderColor: "#e5e7eb",
+  padding: "8px 10px",
   transition: "border-color .15s",
+  boxSizing: "border-box",
 };
 
 export default function Input({
@@ -25,7 +26,7 @@ export default function Input({
   id,
 }) {
   return (
-    <input
+    <Form.Control
       id={id}
       name={name}
       type={type}
@@ -36,17 +37,17 @@ export default function Input({
       onChange={onChange}
       placeholder={placeholder}
       disabled={disabled}
-      className={className}
+      className={`${className} custom-input`} // Ajout d'une classe personnalisée
       style={{
-        ...inputStyle,
-        background: disabled ? "#f3f4f6" : inputStyle.background,
+        ...customInputStyle,
+        background: disabled ? "#f3f4f6" : customInputStyle.background,
         cursor: disabled ? "not-allowed" : "text",
         opacity: disabled ? 0.9 : 1,
       }}
       onFocus={(e) => {
-        if (!disabled) e.target.style.borderColor = "#1a7a5e";
+        if (!disabled) e.target.style.borderColor = "#1a7a5e"; // Changement de couleur du border au focus
       }}
-      onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")}
+      onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")} // Couleur par défaut au blur
     />
   );
 }

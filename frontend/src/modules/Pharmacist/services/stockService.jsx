@@ -42,23 +42,12 @@ export const deleteStockItem = async (id) => {
   }
 };
 
-export const getStockByNumero = async (numero) => {
-  try {
-    const response = await API.get(`/stock/${numero}`);
-    return {
-      patient: response.data?.patient || null,
-      ordonnances: Array.isArray(response.data?.ordonnances) ? response.data.ordonnances : [],
-    };
-  } catch (error) {
-    throw error.response?.data || error.message;
-  }
-};
+
 
 export default {
   getStockItems,
   createStockItem,
   updateStockQuantity,
   deleteStockItem,
-  getStockByNumero,
 };
 

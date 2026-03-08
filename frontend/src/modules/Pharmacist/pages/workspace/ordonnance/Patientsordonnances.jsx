@@ -73,6 +73,7 @@ export default function Patientsordonnances() {
       </div>
     );
   };
+  
 
   const calculateNextDate = (quantite) => {
     const months = parseInt(quantite, 10);

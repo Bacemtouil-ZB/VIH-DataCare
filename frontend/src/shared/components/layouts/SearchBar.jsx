@@ -1,6 +1,5 @@
-import FieldLabel from "./FieldLabel";
-import "./layouts.css";
-
+import React from "react";
+import { Form } from "react-bootstrap";
 export default function SearchBar({
   value,
   onChange,
@@ -8,16 +7,17 @@ export default function SearchBar({
   label = "",
   inputClassName = "",
   wrapperClassName = "",
+  type = "text",          
 }) {
   return (
-    <div className={`sh-searchbar ${wrapperClassName}`.trim()}>
-      {label ? <FieldLabel>{label}</FieldLabel> : null}
-      <input
-        type="text"
+    <div className={`mb-3 ${wrapperClassName}`}>
+      {label && <Form.Label>{label}</Form.Label>}
+      <Form.Control
+        type={type}        
         value={value}
         onChange={onChange}
         placeholder={placeholder}
-        className={`form-control sh-searchbar-input ${inputClassName}`.trim()}
+        className={`sh-searchbar-input ${inputClassName}`}
       />
     </div>
   );

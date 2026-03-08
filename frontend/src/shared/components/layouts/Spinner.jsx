@@ -1,12 +1,16 @@
-const styles = `.ec-spinner-wrapper { min-height: 300px; } .ec-spinner-color { color: var(--ec-green, #2e7d52); }`;
+import React from "react";
+import { Spinner as BootstrapSpinner } from "react-bootstrap"; // Importer le Spinner de Bootstrap
 
 export function Spinner() {
   return (
-    <>
-      <style>{styles}</style>
-      <div className="d-flex justify-content-center align-items-center ec-spinner-wrapper">
-        <div className="spinner-border ec-spinner-color"></div>
-      </div>
-    </>
+    <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "300px" }}>
+      <BootstrapSpinner
+        animation="border"
+        role="status"
+        variant="success"  // Couleur verte de Bootstrap pour le spinner (vous pouvez personnaliser si nécessaire)
+      >
+        <span className="visually-hidden">Chargement...</span> {/* Accessibilité */}
+      </BootstrapSpinner>
+    </div>
   );
 }

@@ -1,15 +1,18 @@
+import React from "react";
+import { Form } from "react-bootstrap";
+
 export default function FieldLabel({ children, required = false, className = "" }) {
   return (
-    <label
-      className={`form-label fw-bold text-uppercase text-secondary mb-1 ${className}`.trim()}
+    <Form.Label
+      className={`fw-bold text-uppercase text-secondary mb-1 ${className}`}
       style={{ fontSize: "0.7rem" }}
     >
       {children}
-      {required ? (
+      {required && (
         <span style={{ color: "#dc3545", fontWeight: 800 }}>
           {" "}*
         </span>
-      ) : null}
-    </label>
+      )}
+    </Form.Label>
   );
 }

@@ -10,16 +10,6 @@ export const listStockItems = async () => {
   return result.rows;
 };
 
-export const findStockItemByCode = async (code) => {
-  const query = `
-    SELECT id, code, composition, quantite, created_at, updated_at
-    FROM stock_medicaments
-    WHERE code = $1;
-  `;
-  const result = await pool.query(query, [code]);
-  return result.rows[0] || null;
-};
-
 export const findStockItemById = async (id) => {
   const query = `
     SELECT id, code, composition, quantite, created_at, updated_at

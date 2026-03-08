@@ -1,13 +1,10 @@
 import {
   listStockItems as listStockItemsModel,
-  findStockItemByCode,
   findStockItemById,
   createStockItem as createStockItemModel,
   updateStockQuantity as updateStockQuantityModel,
   deleteStockItem as deleteStockItemModel,
 } from "../models/stockModel.js";
-import { getPatientByNumero } from "../models/patientModel.js";
-import { findMedicalTreatmentByNumeroDossier } from "../models/ordonnanceModel.js";
 
 const normalizeCode = (value) => String(value || "").trim().toUpperCase();
 
@@ -30,11 +27,6 @@ export const createStockItem = async (payload, userId) => {
 
   if (!code) throw new Error("Le code du médicament est requis");
   if (!composition) throw new Error("La composition du médicament est requise");
-
-  const existing = await findStockItemByCode(code);
-  if (existing) {
-    throw new Error(`Le médicament ${code} existe déjà en stock`);
-  }
 
   return createStockItemModel({ code, composition, quantite, userId });
 };
@@ -68,17 +60,10 @@ export const deleteStockItem = async (id) => {
   return deleteStockItemModel(stockId);
 };
 
-// Utilisé quand la page reçoit /stock/:numero
-export const getStockContextByNumero = async (numero) => {
-  const patient = await getPatientByNumero(numero);
-  if (!patient) {
-    throw new Error(`Patient ${numero} non trouvé`);
+export const getStockItemById = async (id) => {
+  const item = await findStockItemById(id);
+  if (!item) {
+    throw new Error("Article de stock introuvable");
   }
-
-  const ordonnances = await findMedicalTreatmentByNumeroDossier(numero);
-  return {
-    patient,
-    ordonnances: Array.isArray(ordonnances) ? ordonnances : [],
-  };
+  return item;
 };
-

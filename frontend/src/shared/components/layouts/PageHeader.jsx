@@ -16,14 +16,16 @@ export function PageHeader({ title, icon, showForm, onOpen, onCancel, actionButt
           {title}
         </h6>
         {actionButton ?? (
-          !showForm ? (
-            <button className="btn btn-sm fw-semibold d-flex align-items-center gap-2 ec-btn-ajouter" onClick={onOpen}>
-              <i className="bi bi-plus-lg"></i>Ajouter
-            </button>
-          ) : (
-            <button className="btn btn-sm fw-semibold text-secondary d-flex align-items-center gap-2 ec-btn-annuler" onClick={onCancel}>
-              <i className="bi bi-x-lg"></i>Annuler
-            </button>
+          onOpen && (
+            !showForm ? (
+              <button className="btn btn-sm fw-semibold d-flex align-items-center gap-2 ec-btn-ajouter" onClick={onOpen}>
+                <i className="bi bi-plus-lg"></i>Ajouter
+              </button>
+            ) : (
+              <button className="btn btn-sm fw-semibold text-secondary d-flex align-items-center gap-2 ec-btn-annuler" onClick={onCancel}>
+                <i className="bi bi-x-lg"></i>Annuler
+              </button>
+            )
           )
         )}
       </div>

@@ -3,35 +3,24 @@ import { useParams } from "react-router-dom";
 import {
   ActionButton,
   Badge,
-  DashboardStatCard,
   FieldLabel,
   HistoriqueAccordeon,
   HistoriqueTable,
   Input,
   SearchBar,
+  HistoriqueActions
 } from "../../../../../shared/components/layouts";
 import {
   getStockItems,
   createStockItem as createStockItemApi,
   updateStockQuantity as updateStockQuantityApi,
   deleteStockItem as deleteStockItemApi,
-  getStockByNumero,
 } from "../../../services/stockService.jsx";
 import { formatDateTimeFr } from "../../../../../shared/utils/logiqueTableHistory";
+import StockAlert from "../../../../../shared/components/layouts/statistique/Stockalert.jsx"; 
 import "./Stock.css";
-// a xtraire dans la base 
-const MEDICATION_CATALOG = [
-  { code: "TDF", composition: "Tenofovir (TDF)" },
-  { code: "3TC", composition: "Lamivudine (3TC)" },
-  { code: "DTG", composition: "Dolutegravir (DTG)" },
-  { code: "ABC", composition: "Abacavir (ABC)" },
-  { code: "AZT", composition: "Zidovudine (AZT)" },
-  { code: "ATV", composition: "Atazanavir (ATV)" },
-  { code: "RTV", composition: "Ritonavir (RTV)" },
-  { code: "DRV", composition: "Darunavir (DRV)" },
-  { code: "FTC", composition: "Emtricitabine (FTC)" },
-  { code: "EFV", composition: "Efavirenz (EFV)" },
-];
+import { toast } from "react-toastify";
+import { confirmDelete } from "../../../../../shared/utils/uiAlerts";
 
 const toUiStockItem = (row) => ({
   id: row?.id,
@@ -43,9 +32,13 @@ const toUiStockItem = (row) => ({
 
 export default function Stock() {
   const { numero } = useParams();
+
+  // États
   const [search, setSearch] = useState("");
   const [stockItems, setStockItems] = useState([]);
-  const [selectedCodeToAdd, setSelectedCodeToAdd] = useState("");
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [medicamentCode, setMedicamentCode] = useState("");
+  const [medicamentComposition, setMedicamentComposition] = useState("");
   const [quantityToAdd, setQuantityToAdd] = useState("");
   const [editingId, setEditingId] = useState(null);
   const [editingQuantity, setEditingQuantity] = useState("");
@@ -53,7 +46,6 @@ export default function Stock() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [patientContext, setPatientContext] = useState(null);
 
   const refreshStock = async () => {
     const rows = await getStockItems();
@@ -70,24 +62,11 @@ export default function Stock() {
 
         const [rows, context] = await Promise.all([
           getStockItems(),
-          numero ? getStockByNumero(numero) : Promise.resolve(null),
         ]);
 
         if (!alive) return;
 
         setStockItems(Array.isArray(rows) ? rows.map(toUiStockItem) : []);
-
-        if (numero && context?.patient) {
-          const patient = context.patient?.patient || context.patient;
-          setPatientContext({
-            numero: patient?.numero || numero,
-            name: `${patient?.surname || ""} ${patient?.name || ""}`.trim(),
-          });
-        } else if (numero) {
-          setPatientContext({ numero, name: "" });
-        } else {
-          setPatientContext(null);
-        }
       } catch (err) {
         if (!alive) return;
         setError(err?.message || err?.error || "Erreur lors du chargement du stock.");
@@ -112,60 +91,87 @@ export default function Stock() {
     );
   }, [stockItems, search]);
 
-  const availableForAdd = useMemo(() => {
-    const existingCodes = new Set(stockItems.map((item) => item.code));
-    return MEDICATION_CATALOG.filter((med) => !existingCodes.has(med.code));
-  }, [stockItems]);
-
-  const totalMedicationTypes = stockItems.length;
-  const totalQuantity = stockItems.reduce((sum, item) => sum + item.quantity, 0);
-  const lowStockCount = stockItems.filter((item) => item.quantity <= 5).length;
-
   const handleAddMedication = async () => {
-    if (!selectedCodeToAdd) {
-      alert("Selectionne un composant a ajouter.");
+    if (!medicamentCode.trim()) {
+      toast.error("Veuillez saisir un code de médicament.");
+      return;
+    }
+
+    if (!medicamentComposition.trim()) {
+      toast.error("Veuillez saisir la composition du médicament.");
       return;
     }
 
     const q = Number(quantityToAdd);
     if (!Number.isInteger(q) || q < 0) {
-      alert("La quantite doit etre un entier positif.");
+      toast.error("La quantité doit être un entier positif.");
       return;
     }
 
-    const medication = MEDICATION_CATALOG.find((m) => m.code === selectedCodeToAdd);
-    if (!medication) return;
-
     try {
       setSaving(true);
-      await createStockItemApi({
-        code: selectedCodeToAdd,
-        composition: medication.composition,
+
+      const payload = {
+        code: medicamentCode.trim().toUpperCase(),
+        composition: medicamentComposition.trim(),
         quantite: q,
-      });
+      };
+      await createStockItemApi(payload);
+
       await refreshStock();
-      setSelectedCodeToAdd("");
+
+      setMedicamentCode("");
+      setMedicamentComposition("");
       setQuantityToAdd("");
+      setShowAddForm(false);
+
+      toast.success("Médicament ajouté avec succès");
     } catch (err) {
-      alert(err?.message || err?.error || "Erreur lors de l'ajout au stock.");
+      console.error(" Détails erreur:", {
+        response: err?.response?.data,
+        message: err?.message,
+        status: err?.response?.status
+      });
+      
+      const errorMessage = err?.response?.data?.message 
+        || err?.response?.data?.error 
+        || err?.message 
+        || "Erreur lors de l'ajout au stock.";
+      
+      console.error(errorMessage);
     } finally {
       setSaving(false);
     }
   };
 
   const handleDeleteMedication = async (id) => {
-    if (!window.confirm("Supprimer ce medicament du stock ?")) return;
+    const confirmed = await confirmDelete(
+      "Supprimer ce médicament ?",
+      "Etes-vous sûr de vouloir supprimer ce médicament du stock ? "
+    );
+
+    if (!confirmed) {
+      toast.info("Suppression annulée");
+      return;
+    }
 
     try {
       setSaving(true);
       await deleteStockItemApi(id);
       await refreshStock();
+      toast.success("Médicament supprimé avec succès");
+
       if (editingId === id) {
         setEditingId(null);
         setEditingQuantity("");
       }
     } catch (err) {
-      alert(err?.message || err?.error || "Erreur lors de la suppression.");
+      const errorMessage = err?.response?.data?.message 
+        || err?.response?.data?.error 
+        || err?.message 
+        || "Erreur lors de la suppression.";
+      
+      toast.error(errorMessage);
     } finally {
       setSaving(false);
     }
@@ -184,16 +190,25 @@ export default function Stock() {
   const saveQuantity = async (item) => {
     const q = Number(editingQuantity);
     if (!Number.isInteger(q) || q < 0) {
-      alert("La quantite doit etre un entier positif.");
+      toast.error("La quantité doit être un entier positif.");
       return;
     }
+
     try {
-      setSaving(true);
+      setSaving(true);      
       await updateStockQuantityApi(item.id, q);
       await refreshStock();
       cancelEditQuantity();
+      toast.success("Quantité mise à jour avec succès");
     } catch (err) {
-      alert(err?.message || err?.error || "Erreur lors de la mise a jour de la quantite.");
+      console.error(" Erreur mise à jour:", err);
+      
+      const errorMessage = err?.response?.data?.message 
+        || err?.response?.data?.error 
+        || err?.message 
+        || "Erreur lors de la mise à jour de la quantité.";
+      
+      toast.error(errorMessage);
     } finally {
       setSaving(false);
     }
@@ -201,16 +216,97 @@ export default function Stock() {
 
   return (
     <div className="ph-stock-page">
+      {/* Header avec bouton au même niveau */}
       <div className="ph-stock-header">
-        <div className="ph-stock-title">
-          <h2>Gestion du stock de medicaments</h2>
-          {patientContext?.numero ? (
-            <p className="ph-stock-subtitle">
-              Dossier: <strong>{patientContext.numero}</strong>
-              {patientContext.name ? ` - ${patientContext.name}` : ""}
-            </p>
-          ) : null}
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <div className="ph-stock-title">
+            <h2>Gestion du stock de médicaments</h2>
+          </div>
+          <ActionButton
+            action="add"
+            label={showAddForm ? "Masquer" : "Ajouter au stock"}
+            onClick={() => setShowAddForm((v) => !v)}
+            disabled={loading}
+            size="md"
+            showIcon={true}
+          />
         </div>
+      </div>
+
+      {error ? <p className="ph-stock-error">{error}</p> : null}
+
+      {/* Formulaire collapsible */}
+      {showAddForm && (
+        <div className="ph-stock-add-card">
+          <div className="ph-stock-add-grid">
+            <div className="ph-med-field">
+              <FieldLabel required>Code médicament</FieldLabel>
+              <Input
+                type="text"
+                className="form-control"
+                value={medicamentCode}
+                onChange={(e) => setMedicamentCode(e.target.value)}
+                placeholder="Ex: TDF, 3TC, DTG..."
+                disabled={saving}
+              />
+            </div>
+
+            <div className="ph-comp-field">
+              <FieldLabel required>Composition</FieldLabel>
+              <Input
+                type="text"
+                className="form-control"
+                value={medicamentComposition}
+                onChange={(e) => setMedicamentComposition(e.target.value)}
+                placeholder="Ex: Tenofovir (TDF)"
+                disabled={saving}
+              />
+            </div>
+
+            <div className="ph-qty-field">
+              <FieldLabel required>Quantité initiale</FieldLabel>
+              <Input
+                type="number"
+                min="0"
+                className="form-control ph-add-qty-input"
+                value={quantityToAdd}
+                onChange={(e) => setQuantityToAdd(e.target.value)}
+                placeholder="Ex: 100"
+                disabled={saving}
+              />
+            </div>
+
+            <div className="ph-stock-add-actions">
+              <ActionButton
+                action="save"
+                label={saving ? "Enregistrement..." : "Enregistrer"}
+                onClick={handleAddMedication}
+                disabled={saving || loading}
+                size="sm"
+                showIcon={false}
+              />
+                <ActionButton
+                  action="annuler"
+                  label="Annuler"
+                  onClick={() => {
+                    setShowAddForm(false);
+                    setMedicamentCode("");
+                    setMedicamentComposition("");
+                    setQuantityToAdd("");
+                    toast.info("Opération annulée");
+
+                  }}
+                  size="sm"
+                  showIcon={false}
+                  disabled={saving}
+                />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* SearchBar */}
+      <div className="ph-stock-search-wrapper">
         <SearchBar
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -219,70 +315,19 @@ export default function Stock() {
         />
       </div>
 
-      <div className="ph-stock-kpis">
-        <DashboardStatCard label="Medicaments en stock" value={totalMedicationTypes} tone="success" />
-        <DashboardStatCard label="Quantite totale" value={totalQuantity} tone="success" />
-        <DashboardStatCard label="Stock faible (0-5)" value={lowStockCount} tone="warning" />
-      </div>
-
-      {error ? <p className="ph-stock-error">{error}</p> : null}
-
-      <div className="ph-stock-toolbar">
-        <div className="ph-stock-add-card">
-          <div className="ph-stock-add-grid">
-            <div className="ph-med-field">
-              <FieldLabel required>Medicament</FieldLabel>
-              <select
-                className="form-select"
-                value={selectedCodeToAdd}
-                onChange={(e) => setSelectedCodeToAdd(e.target.value)}
-              >
-                <option value="">-- Selectionner --</option>
-                {availableForAdd.map((med) => (
-                  <option key={med.code} value={med.code}>
-                    {med.code} - {med.composition}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="ph-qty-field">
-              <FieldLabel required>Quantite initiale</FieldLabel>
-              <Input
-                type="number"
-                min="0"
-                className="form-control ph-add-qty-input"
-                value={quantityToAdd}
-                onChange={(e) => setQuantityToAdd(e.target.value)}
-                placeholder="Ex: 100"
-              />
-            </div>
-            <div className="ph-stock-add-actions">
-              <ActionButton
-                action="add"
-                label="Ajouter au stock"
-                onClick={handleAddMedication}
-                disabled={!availableForAdd.length || saving || loading}
-                size="sm"
-                showIcon={false}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
+      {/* Tableau avec colonne ALERTE */}
       <HistoriqueAccordeon
-        title="Stock des medicaments"
+        title="Stock des médicaments"
         count={filteredItems.length}
-        showCount={false}
+        showCount={true}
         open={showHistory}
         onToggle={() => setShowHistory((v) => !v)}
         contentClassName="stock-acc-body"
       >
         <HistoriqueTable
-          headers={["Code", "Medicament", "Quantite", "Derniere maj", "Action"]}
+          headers={["Code", "Médicament", "Quantité", "Dernière maj", "Alerte", "Action"]}
           items={filteredItems}
-          emptyMessage="Aucun medicament en stock pour le moment."
+          emptyMessage="Aucun médicament en stock pour le moment."
           renderRow={(item) => {
             const isEditing = editingId === item.id;
             return (
@@ -301,15 +346,15 @@ export default function Stock() {
                       onChange={(e) => setEditingQuantity(e.target.value)}
                     />
                   ) : (
-                    <Badge
-                      bg={item.quantity <= 5 ? "#fee2e2" : "#dcfce7"}
-                      color={item.quantity <= 5 ? "#991b1b" : "#166534"}
-                    >
+                    <label>
                       {item.quantity}
-                    </Badge>
+                    </label>
                   )}
                 </td>
                 <td>{formatDateTimeFr(item.updatedAt, "-")}</td>
+                <td>
+                  <StockAlert quantity={item.quantity} />
+                </td>
                 <td>
                   <div className="ph-actions">
                     {isEditing ? (
@@ -322,34 +367,22 @@ export default function Stock() {
                           showIcon={false}
                           disabled={saving}
                         />
-                        <button
-                          type="button"
-                          className="ph-btn ph-btn-muted"
-                          onClick={cancelEditQuantity}
-                          disabled={saving}
-                        >
-                          Annuler
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <ActionButton
-                          action="edit"
-                          label="Modifier quantite"
-                          onClick={() => beginEditQuantity(item)}
-                          variant="outline"
+                          <ActionButton
+                          action="annuler"
+                          label="Annuler"
+                          onClick={() => {cancelEditQuantity();
+                          toast.info("Opération annulée");}}
                           size="sm"
                           showIcon={false}
-                        />
-                        <button
-                          type="button"
-                          className="ph-btn ph-btn-danger"
-                          onClick={() => handleDeleteMedication(item.id)}
                           disabled={saving}
-                        >
-                          Supprimer
-                        </button>
+                        />
+                        
                       </>
+                    ) : (
+                      <HistoriqueActions
+                        onEdit={() => beginEditQuantity(item)}
+                        onDelete={() => handleDeleteMedication(item.id)}
+                      />
                     )}
                   </div>
                 </td>

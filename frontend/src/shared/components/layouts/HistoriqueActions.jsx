@@ -2,7 +2,7 @@ import ActionButton from "./ActionButton";
 
 const styles = `.ec-btn-details { border-radius: 6px; font-weight: 600; }`;
 
-export default function HistoriqueActions({ onDetails, onEdit, onValidate }) {
+export default function HistoriqueActions({ onDetails, onEdit, onValidate ,onDelete, onCancel }) {
   return (
     <>
       <style>{styles}</style>
@@ -12,6 +12,8 @@ export default function HistoriqueActions({ onDetails, onEdit, onValidate }) {
         )}
         {onEdit && <ActionButton action="edit" variant="outline" onClick={onEdit} />}
         {onValidate && <ActionButton action="validate" variant="outline" onClick={onValidate} />}
+        {onDelete && <ActionButton action="delete" variant="outline" onClick={onDelete} />} 
+        {onCancel && <ActionButton action="annuler" variant="outline" onClick={onCancel} />}
       </div>
     </>
   );

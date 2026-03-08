@@ -1,6 +1,5 @@
 export { default as FieldLabel } from "./FieldLabel";
 export { default as SearchBar } from "./SearchBar";
-export { default as DashboardStatCard } from "./DashboardStatCard";
 export { default as Badge } from "./Badge";
 export { default as EmptyState } from "./EmptyState";
 export { default as ActionButton } from "./ActionButton";
