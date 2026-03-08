@@ -287,6 +287,7 @@ export default function SignesCliniques() {
             label={isModifying ? "Enregistrer les modifications" : "Enregistrer la fiche"}
             onClick={handleEnregistrer}
             showIcon={false}
+            height="40px"
           />
         </FormulaireWrapper>
       )}
