@@ -9,9 +9,9 @@ import { protect, authorizePharmacien } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-router.use(protect, authorizePharmacien);
 
-router.get("/", protect, authorizePharmacien , listStockItemsController);
+router.get("/", protect, listStockItemsController);
+
 router.post("/add", protect, authorizePharmacien , createStockItemController);
 router.patch("/:id/quantity", protect, authorizePharmacien , updateStockQuantityController);
 router.delete("/:id", protect, authorizePharmacien , deleteStockItemController);
