@@ -1,55 +1,38 @@
-﻿import React, { useState, useEffect } from "react";
+﻿import React from "react";
 import "./SocialForm.css";
 import ToggleSwitch from "../../../components/buttons/ToggleSwitch.jsx";
 import { confirmAction } from "../../../../../shared/utils/uiAlerts.js";
-import { toast } from "react-toastify";
 import { ActionButton, FieldLabel, Input } from "../../../../../shared/components/layouts";
 
 export default function SocialForm({
   formData,
+  isEditing,
+  setIsEditing,
   handleChange,
+  ficheExists,
   handleProblemeChange,
   handleSubmit,
+  handleCancel,
   problemeOptions,
   niveauEtudeOptions,
   activiteOptions,
   situationSocialOptions,
-  isNew,       // pour savoir si c'est une nouvelle fiche
-  onCancel,    // callback optionnel pour annuler
 }) {
-  const [isEditing, setIsEditing] = useState(isNew || false);
-  const [localFormData, setLocalFormData] = useState(formData);
-
-  // Synchroniser les données si formData change depuis le parent
-  useEffect(() => {
-    setLocalFormData(formData);
-  }, [formData]);
-
-  // Annuler la modification : réinitialiser les données et bloquer l'édition
-  const handleCancel = () => {
-    setLocalFormData(formData);  // revenir aux données initiales
-    setIsEditing(false);
-    if (onCancel) onCancel();
-  };
-
-
   return (
     <div className="form-card">
       <form
         onSubmit={(e) => {
-          handleSubmit(e, localFormData);
-          setIsEditing(false); // bloquer l'édition après enregistrement
+          handleSubmit(e);
         }}
         className="form-grid"
       >
-
         {/* Famille */}
         <h3>Famille</h3>
         <div className="form-group">
           <FieldLabel required>Situation familiale</FieldLabel>
           <select
             name="situation_social"
-            value={localFormData.situation_social}
+            value={formData.situation_social}
             onChange={handleChange}
             disabled={!isEditing}
             required
@@ -66,7 +49,7 @@ export default function SocialForm({
           <Input
             type="number"
             name="nombre_enfants"
-            value={localFormData.nombre_enfants}
+            value={formData.nombre_enfants}
             onChange={handleChange}
             min="0"
             disabled={!isEditing}
@@ -79,7 +62,7 @@ export default function SocialForm({
           <FieldLabel required>Niveau d'étude</FieldLabel>
           <select
             name="niveau_etude"
-            value={localFormData.niveau_etude}
+            value={formData.niveau_etude}
             onChange={handleChange}
             disabled={!isEditing}
             required
@@ -91,13 +74,13 @@ export default function SocialForm({
           </select>
         </div>
 
-        {/* Activité  */}
+        {/* Activité */}
         <h3>Activité & Ressources</h3>
         <div className="form-group">
           <FieldLabel required>Activité professionnelle</FieldLabel>
           <select
             name="activite_professionnelle"
-            value={localFormData.activite_professionnelle}
+            value={formData.activite_professionnelle}
             onChange={handleChange}
             disabled={!isEditing}
             required
@@ -109,7 +92,6 @@ export default function SocialForm({
           </select>
         </div>
 
-
         {/* Problèmes */}
         <h3>Problèmes rencontrés</h3>
         <div className="form-group full-width">
@@ -119,7 +101,7 @@ export default function SocialForm({
                 key={opt.value}
                 id={`probleme-${opt.value}`}
                 label={opt.label}
-                checked={localFormData.probleme?.includes(opt.value) || false}
+                checked={formData.probleme?.includes(opt.value) || false}
                 disabled={!isEditing}
                 onChange={(checked) => handleProblemeChange(opt.value, checked)}
               />
@@ -134,7 +116,7 @@ export default function SocialForm({
             as="textarea"
             rows={3}
             name="remarque"
-            value={localFormData.remarque}
+            value={formData.remarque}
             onChange={handleChange}
             disabled={!isEditing}
             placeholder="Informations complémentaires max 500 caractères"
@@ -162,19 +144,18 @@ export default function SocialForm({
               <ActionButton
                 type="submit"
                 action="save"
-                label={isNew ? "Créer" : "Enregistrer"}
+                label={!ficheExists ? "Créer" : "Enregistrer"}
                 showIcon={false}
               />
-              <ActionButton
-                type="button"
-                action="annuler"
-                label="Annuler"
-                onClick={() => {
-                  handleCancel();
-                  toast.info("Modifications annulées");
-                }}
-                showIcon={false}
-              />
+              {ficheExists && (
+                <ActionButton
+                  type="button"
+                  action="annuler"
+                  label="Annuler"
+                  onClick={handleCancel}
+                  showIcon={false}
+                />
+              )}
             </div>
           )}
         </div>

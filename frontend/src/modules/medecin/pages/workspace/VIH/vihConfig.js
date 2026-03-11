@@ -1,5 +1,4 @@
-
-// ── État initial ──────────────────────────────────────────────────────
+﻿// État initial
 export const STATE_INIT = {
   patientId: null,
   vihData: null,
@@ -9,7 +8,7 @@ export const STATE_INIT = {
   isEditMode: false,
 };
 
-// ── État initial du formulaire ───────────────────────────────────────
+// État initial du formulaire
 export const FORM_INIT = {
   mode_contamination: [],
   type_depistage: "",
@@ -23,7 +22,7 @@ export const FORM_INIT = {
   profil_seroconversion: null,
 };
 
-// ── Options des champs ────────────────────────────────────────────────
+// Options des champs
 export const MODES_CONTAMINATION = [
   "A.E.S",
   "Homosexuel",
@@ -35,13 +34,13 @@ export const MODES_CONTAMINATION = [
   "Transfusion",
   "Hémophilie",
   "Inconnu",
-  "Autre"
+  "Autre",
 ];
 
 export const TYPES_DEPISTAGE = [
   "Trod",
   "Elisa",
-  "Autres"
+  "Autres",
 ];
 
 export const CIRCONSTANCES_DECOUVERTE = [
@@ -49,36 +48,36 @@ export const CIRCONSTANCES_DECOUVERTE = [
   "Proposition à l'initiative du patient",
   "Proposition du médecin",
   "Demande du patient",
-  "Autres circonstances"
+  "Autres circonstances",
 ];
 
 export const STADES_CDC = [
   "A0", "A1", "A2", "A3",
   "B0", "B1", "B2", "B3",
-  "C0", "C1", "C2", "C3"
+  "C0", "C1", "C2", "C3",
 ];
 
 export const TYPAGE_HLA_OPTIONS = [
   "Positif",
-  "Négatif"
+  "Négatif",
 ];
 
 export const PROFIL_SEROCONVERSION_OPTIONS = [
   { label: "Oui", value: true },
-  { label: "Non", value: false }
+  { label: "Non", value: false },
 ];
 
-// ── Champs obligatoires ───────────────────────────────────────────────
+// Champs obligatoires
 export const REQUIRED_FIELDS = [
-  { key: 'mode_contamination', label: 'Le mode de contamination' },
-  { key: 'type_depistage', label: 'Le type de dépistage' },
-  { key: 'circonstance_decouverte', label: 'La circonstance de découverte' },
-  { key: 'date_vih_positif', label: 'La date du test VIH positif' },
-  { key: 'stade_cdc', label: 'Le stade CDC' },
-  { key: 'typage_hla_b5701', label: 'Le typage HLA-B5701' },
+  { key: "mode_contamination", label: "Le mode de contamination" },
+  { key: "type_depistage", label: "Le type de dépistage" },
+  { key: "circonstance_decouverte", label: "La circonstance de découverte" },
+  { key: "date_vih_positif", label: "La date du test VIH positif" },
+  { key: "stade_cdc", label: "Le stade CDC" },
+  { key: "typage_hla_b5701", label: "Le typage HLA-B5701" },
 ];
 
-// ── Utilitaires ───────────────────────────────────────────────────────
+// Utilitaires
 export const formatDate = (d) => {
   if (!d) return "";
   const date = new Date(d);

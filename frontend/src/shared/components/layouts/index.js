@@ -1,6 +1,7 @@
 export { default as FieldLabel } from "./form/FieldLabel";
 export { default as SearchBar } from "./form/SearchBar";
 export { default as Input } from "./form/Input";
+export { default as RadioGroup } from "./form/RadioGroup";
 export { FormulaireWrapper } from "./form/FormulaireWrapper";
 
 export { default as ActionButton } from "./ui/ActionButton";

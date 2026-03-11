@@ -1,111 +1,39 @@
 ﻿import "./ProfilForme.css";
-import { ActionButton, FieldLabel, Input } from "../../../../../shared/components/layouts";
+import { ActionButton, FieldLabel, Input, RadioGroup } from "../../../../../shared/components/layouts";
 import { confirmAction } from "../../../../../shared/utils/uiAlerts.js";
-import {
-  sanitizeText,
-  normalizeNumero,
-  isNumeroValid,
-  validateNumeroYear,
-  filterPostalCodesByGovernorate,
-} from "./profile.helpers";
+import { toast } from "react-toastify";
 
 export default function ProfileForme({
   formData,
-  setFormData,
-  onSubmit,
   isNew,
   isEditing,
   setIsEditing,
-  onCancel,
-  doctors = [],
-  formDataOptions = { governorates: [], postalCodes: [] },
+  doctors,
+  governorates,
+  filteredBirthPostalCodes,
+  filteredResidencePostalCodes,
+  canEditNumero,
+  numeroHasError,
+  handleChange,
+  handleNumeroChange,
+  handleHospitalisationChange,
+  handleSubmit,
+  handleCancel,
 }) {
-  const { governorates, postalCodes } = formDataOptions;
-
-  /* ------------------ DERIVED DATA ------------------ */
-  const filteredBirthPostalCodes = filterPostalCodesByGovernorate(
-    postalCodes,
-    formData.birth_governorate
-  );
-
-  const filteredResidencePostalCodes = filterPostalCodesByGovernorate(
-    postalCodes,
-    formData.residence_governorate
-  );
-
-  const canEditNumero = isNew;
-  const numeroHasError = formData.numero && !isNumeroValid(formData.numero);
-
-  /* ------------------ STATE UPDATERS ------------------ */
-  const updateField = (name, value) => {
-    const safeValue = sanitizeText(value);
-
-    setFormData((prev) => {
-      if (name === "birth_governorate") {
-        return {
-          ...prev,
-          birth_governorate: safeValue,
-          birth_postal_code_id: "",
-        };
-      }
-
-      if (name === "residence_governorate") {
-        return {
-          ...prev,
-          residence_governorate: safeValue,
-          residence_postal_code_id: "",
-        };
-      }
-
-      return { ...prev, [name]: safeValue };
-    });
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    updateField(name, value);
-  };
-
-  const handleNumeroChange = (e) => {
-    const value = normalizeNumero(e.target.value);
-    validateNumeroYear(value);
-    setFormData((prev) => ({ ...prev, numero: value }));
-  };
-
-  const handleHospitalisationChange = (e) => {
-    const hospitalisation = e.target.value;
-
-    setFormData((prev) => {
-      let numero = prev.numero || "";
-
-      numero = numero.replace(/^F-/, "");
-
-      if (hospitalisation === "externe" && numero) {
-        numero = `F-${numero}`;
-      }
-
-      return { ...prev, hospitalisation, numero };
-    });
-  };
-
-  /* ------------------ SELECT OPTIONS (keep here) ------------------ */
+  /* -- Select renderers -- */
   const renderGovernorateOptions = () =>
-    governorates.map((g) => (
-      <option key={g.id} value={g.name}>
-        {g.name}
-      </option>
+    (governorates || []).map((g) => (
+      <option key={g.id} value={g.name}>{g.name}</option>
     ));
 
   const renderPostalOptions = (items) =>
-    items.map((pc) => (
-      <option key={pc.id} value={pc.id}>
-        {pc.place_name}
-      </option>
+    (items || []).map((pc) => (
+      <option key={pc.id} value={pc.id}>{pc.place_name}</option>
     ));
 
   return (
     <div className="form-card">
-      <form onSubmit={onSubmit} className="form-grid">
+      <form onSubmit={handleSubmit} className="form-grid">
         <div className="form-group">
           <FieldLabel required>Numéro dossier</FieldLabel>
           <Input
@@ -114,11 +42,11 @@ export default function ProfileForme({
             onChange={handleNumeroChange}
             disabled={!canEditNumero}
             required
-            placeholder="Ex: 001-2026"
+            placeholder="Ex: 0001-2026"
+            onFocus={() => toast.info("Le tiret sera ajouté automatiquement")}
           />
-
           {numeroHasError && (
-            <span className="error-text">Format invalide : ex. 001-2025</span>
+            <span className="error-text">Format invalide : ex. 0001-2025</span>
           )}
         </div>
 
@@ -175,33 +103,18 @@ export default function ProfileForme({
 
         <div className="form-group">
           <FieldLabel required>Sexe</FieldLabel>
-
-          <div className="radio-group">
-            <label>
-              <input
-                type="radio"
-                name="gender"
-                value="homme"
-                checked={formData.gender === "homme"}
-                onChange={handleChange}
-                disabled={!isEditing}
-                required
-              />
-              Homme
-            </label>
-            <label>
-              <input
-                type="radio"
-                name="gender"
-                value="femme"
-                checked={formData.gender === "femme"}
-                onChange={handleChange}
-                disabled={!isEditing}
-                required
-              />
-              Femme
-            </label>
-          </div>
+          <RadioGroup
+            name="gender"
+            value={formData.gender}
+            onChange={handleChange}
+            disabled={!isEditing}
+            required
+            className="radio-group"
+            options={[
+              { label: "Homme", value: "homme" },
+              { label: "Femme", value: "femme" },
+            ]}
+          />
         </div>
 
         <div className="form-group">
@@ -240,9 +153,7 @@ export default function ProfileForme({
             disabled={!isEditing || !formData.birth_governorate}
           >
             <option value="">
-              {formData.birth_governorate
-                ? "Sélectionner"
-                : "Choisir d'abord un gouvernorat"}
+              {formData.birth_governorate ? "Sélectionner" : "Choisir d'abord un gouvernorat"}
             </option>
             {renderPostalOptions(filteredBirthPostalCodes)}
           </select>
@@ -272,9 +183,7 @@ export default function ProfileForme({
             required
           >
             <option value="">
-              {formData.residence_governorate
-                ? "Sélectionner"
-                : "Choisir d'abord un gouvernorat"}
+              {formData.residence_governorate ? "Sélectionner" : "Choisir d'abord un gouvernorat"}
             </option>
             {renderPostalOptions(filteredResidencePostalCodes)}
           </select>
@@ -320,6 +229,7 @@ export default function ProfileForme({
             disabled={!isEditing}
           />
         </div>
+
         <div className="form-group full-width">
           {!isEditing ? (
             <ActionButton
@@ -331,7 +241,6 @@ export default function ProfileForme({
                   "Activer le mode modification ?",
                   "Vous allez pouvoir modifier les informations du patient."
                 );
-
                 if (!confirmed) return;
                 setIsEditing(true);
               }}
@@ -344,19 +253,19 @@ export default function ProfileForme({
                 label={isNew ? "Créer" : "Enregistrer"}
                 showIcon={false}
               />
-
               {!isNew && (
                 <ActionButton
                   type="button"
                   action="annuler"
                   label="Annuler"
-                  onClick={onCancel}
+                  onClick={handleCancel}
                   showIcon={false}
                 />
               )}
             </div>
           )}
         </div>
+
       </form>
     </div>
   );
