@@ -1,0 +1,474 @@
+# 🏗️ Architecture Frontend - Perfect Patient Management System
+
+## 📁 Structure du Projet
+
+```
+frontend/
+├── public/
+│   ├── assets/
+│   │   ├── images/
+│   │   │   ├── logo.png
+│   │   │   ├── default-avatar.png
+│   │   │   └── medical-icons/
+│   │   ├── fonts/
+│   │   └── documents/
+│   └── index.html
+│
+├── src/
+│   ├── main.jsx                          # Point d'entrée
+│   ├── App.jsx                           # Composant racine
+│   ├── App.css                           # Styles globaux
+│   │
+│   ├── config/                           # Configuration
+│   │   ├── api.config.js                 # URLs API
+│   │   ├── routes.config.js              # Routes par rôle
+│   │   └── permissions.config.js         # Permissions
+│   │
+│   ├── assets/                           # Ressources statiques
+│   │   ├── styles/
+│   │   │   ├── variables.css             # Variables CSS
+│   │   │   ├── globals.css               # Styles globaux
+│   │   │   └── themes/
+│   │   │       ├── admin.css
+│   │   │       ├── doctor.css
+│   │   │       ├── nurse.css
+│   │   │       └── scientist.css
+│   │   └── icons/
+│   │
+│   ├── shared/                           # Composants partagés
+│   │   ├── components/
+│   │   │   ├── Layout/
+│   │   │   │   ├── Header.jsx
+│   │   │   │   ├── Header.css
+│   │   │   │   ├── Sidebar.jsx
+│   │   │   │   ├── Sidebar.css
+│   │   │   │   ├── Footer.jsx
+│   │   │   │   └── Footer.css
+│   │   │   │
+│   │   │   ├── UI/
+│   │   │   │   ├── Button/
+│   │   │   │   │   ├── Button.jsx
+│   │   │   │   │   └── Button.css
+│   │   │   │   ├── Input/
+│   │   │   │   │   ├── Input.jsx
+│   │   │   │   │   └── Input.css
+│   │   │   │   ├── Modal/
+│   │   │   │   │   ├── Modal.jsx
+│   │   │   │   │   └── Modal.css
+│   │   │   │   ├── Table/
+│   │   │   │   │   ├── Table.jsx
+│   │   │   │   │   └── Table.css
+│   │   │   │   ├── Card/
+│   │   │   │   │   ├── Card.jsx
+│   │   │   │   │   └── Card.css
+│   │   │   │   ├── Loading/
+│   │   │   │   │   ├── Spinner.jsx
+│   │   │   │   │   └── Spinner.css
+│   │   │   │   └── Alert/
+│   │   │   │       ├── Alert.jsx
+│   │   │   │       └── Alert.css
+│   │   │   │
+│   │   │   ├── Forms/
+│   │   │   │   ├── PatientForm/
+│   │   │   │   │   ├── PatientForm.jsx
+│   │   │   │   │   └── PatientForm.css
+│   │   │   │   ├── SearchBar/
+│   │   │   │   │   ├── SearchBar.jsx
+│   │   │   │   │   └── SearchBar.css
+│   │   │   │   └── DatePicker/
+│   │   │   │       ├── DatePicker.jsx
+│   │   │   │       └── DatePicker.css
+│   │   │   │
+│   │   │   └── Patient/
+│   │   │       ├── PatientCard.jsx
+│   │   │       ├── PatientCard.css
+│   │   │       ├── PatientInfo.jsx
+│   │   │       └── PatientInfo.css
+│   │   │
+│   │   ├── hooks/
+│   │   │   ├── useAuth.js
+│   │   │   ├── useAPI.js
+│   │   │   ├── useForm.js
+│   │   │   ├── useModal.js
+│   │   │   ├── useDebounce.js
+│   │   │   └── useLocalStorage.js
+│   │   │
+│   │   ├── utils/
+│   │   │   ├── api.js                    # Axios instance
+│   │   │   ├── validators.js             # Validation functions
+│   │   │   ├── formatters.js             # Data formatters
+│   │   │   ├── constants.js              # Constantes
+│   │   │   └── helpers.js                # Helper functions
+│   │   │
+│   │   └── services/
+│   │       ├── auth.service.js
+│   │       ├── patient.service.js
+│   │       ├── appointment.service.js
+│   │       └── notification.service.js
+│   │
+│   ├── modules/                          # MODULES PAR RÔLE
+│   │   │
+│   │   ├── admin/                        # 👑 MODULE ADMINISTRATEUR
+│   │   │   ├── pages/
+│   │   │   │   ├── Dashboard/
+│   │   │   │   │   ├── AdminDashboard.jsx
+│   │   │   │   │   └── AdminDashboard.css
+│   │   │   │   ├── UserManagement/
+│   │   │   │   │   ├── UserList.jsx
+│   │   │   │   │   ├── UserList.css
+│   │   │   │   │   ├── CreateUser.jsx
+│   │   │   │   │   ├── EditUser.jsx
+│   │   │   │   │   └── UserDetails.jsx
+│   │   │   │   ├── SystemSettings/
+│   │   │   │   │   ├── GeneralSettings.jsx
+│   │   │   │   │   ├── SecuritySettings.jsx
+│   │   │   │   │   └── BackupSettings.jsx
+│   │   │   │   ├── Reports/
+│   │   │   │   │   ├── FinancialReports.jsx
+│   │   │   │   │   ├── ActivityReports.jsx
+│   │   │   │   │   └── AnalyticsReports.jsx
+│   │   │   │   ├── Billing/
+│   │   │   │   │   ├── BillingOverview.jsx
+│   │   │   │   │   ├── InvoiceManagement.jsx
+│   │   │   │   │   └── PaymentHistory.jsx
+│   │   │   │   └── Departments/
+│   │   │   │       ├── DepartmentList.jsx
+│   │   │   │       └── DepartmentManagement.jsx
+│   │   │   │
+│   │   │   ├── components/
+│   │   │   │   ├── StatsCard/
+│   │   │   │   │   ├── StatsCard.jsx
+│   │   │   │   │   └── StatsCard.css
+│   │   │   │   ├── UserTable/
+│   │   │   │   │   ├── UserTable.jsx
+│   │   │   │   │   └── UserTable.css
+│   │   │   │   ├── Charts/
+│   │   │   │   │   ├── RevenueChart.jsx
+│   │   │   │   │   ├── ActivityChart.jsx
+│   │   │   │   │   └── Charts.css
+│   │   │   │   └── RolePermissions/
+│   │   │   │       ├── RolePermissions.jsx
+│   │   │   │       └── RolePermissions.css
+│   │   │   │
+│   │   │   ├── services/
+│   │   │   │   ├── admin.service.js
+│   │   │   │   ├── user.service.js
+│   │   │   │   └── billing.service.js
+│   │   │   │
+│   │   │   └── routes/
+│   │   │       └── AdminRoutes.jsx
+│   │   │
+│   │   ├── doctor/                       # 👨‍⚕️ MODULE MÉDECIN
+│   │   │   ├── pages/
+│   │   │   │   ├── Dashboard/
+│   │   │   │   │   ├── DoctorDashboard.jsx
+│   │   │   │   │   └── DoctorDashboard.css
+│   │   │   │   ├── Patients/
+│   │   │   │   │   ├── PatientList.jsx
+│   │   │   │   │   ├── PatientDetails.jsx
+│   │   │   │   │   └── PatientHistory.jsx
+│   │   │   │   ├── Consultations/
+│   │   │   │   │   ├── ConsultationList.jsx
+│   │   │   │   │   ├── NewConsultation.jsx
+│   │   │   │   │   └── ConsultationDetails.jsx
+│   │   │   │   ├── MedicalRecords/
+│   │   │   │   │   ├── RecordsList.jsx
+│   │   │   │   │   ├── CreateRecord.jsx
+│   │   │   │   │   └── EditRecord.jsx
+│   │   │   │   ├── Prescriptions/
+│   │   │   │   │   ├── PrescriptionList.jsx
+│   │   │   │   │   ├── CreatePrescription.jsx
+│   │   │   │   │   └── PrescriptionDetails.jsx
+│   │   │   │   ├── Appointments/
+│   │   │   │   │   ├── MyAppointments.jsx
+│   │   │   │   │   ├── AppointmentCalendar.jsx
+│   │   │   │   │   └── AppointmentDetails.jsx
+│   │   │   │   └── LabRequests/
+│   │   │   │       ├── RequestLab.jsx
+│   │   │   │       ├── LabResults.jsx
+│   │   │   │       └── PendingRequests.jsx
+│   │   │   │
+│   │   │   ├── components/
+│   │   │   │   ├── MedicalEditor/
+│   │   │   │   │   ├── MedicalEditor.jsx
+│   │   │   │   │   └── MedicalEditor.css
+│   │   │   │   ├── DiagnosisForm/
+│   │   │   │   │   ├── DiagnosisForm.jsx
+│   │   │   │   │   └── DiagnosisForm.css
+│   │   │   │   ├── VitalSigns/
+│   │   │   │   │   ├── VitalSigns.jsx
+│   │   │   │   │   └── VitalSigns.css
+│   │   │   │   ├── PatientTimeline/
+│   │   │   │   │   ├── PatientTimeline.jsx
+│   │   │   │   │   └── PatientTimeline.css
+│   │   │   │   └── PrescriptionTemplate/
+│   │   │   │       ├── PrescriptionTemplate.jsx
+│   │   │   │       └── PrescriptionTemplate.css
+│   │   │   │
+│   │   │   ├── services/
+│   │   │   │   ├── consultation.service.js
+│   │   │   │   ├── prescription.service.js
+│   │   │   │   └── diagnosis.service.js
+│   │   │   │
+│   │   │   └── routes/
+│   │   │       └── DoctorRoutes.jsx
+│   │   │
+│   │   ├── nurse/                        # 👩‍⚕️ MODULE INFIRMIÈRE
+│   │   │   ├── pages/
+│   │   │   │   ├── Dashboard/
+│   │   │   │   │   ├── NurseDashboard.jsx
+│   │   │   │   │   └── NurseDashboard.css
+│   │   │   │   ├── PatientCare/
+│   │   │   │   │   ├── PatientQueue.jsx
+│   │   │   │   │   ├── TreatmentRoom.jsx
+│   │   │   │   │   └── PatientAdmission.jsx
+│   │   │   │   ├── VitalSigns/
+│   │   │   │   │   ├── RecordVitals.jsx
+│   │   │   │   │   ├── VitalsHistory.jsx
+│   │   │   │   │   └── VitalsMonitoring.jsx
+│   │   │   │   ├── Medications/
+│   │   │   │   │   ├── MedicationAdministration.jsx
+│   │   │   │   │   ├── MedicationSchedule.jsx
+│   │   │   │   │   └── MedicationHistory.jsx
+│   │   │   │   ├── Tasks/
+│   │   │   │   │   ├── NursingTasks.jsx
+│   │   │   │   │   ├── TaskList.jsx
+│   │   │   │   │   └── CompletedTasks.jsx
+│   │   │   │   ├── Observations/
+│   │   │   │   │   ├── PatientObservations.jsx
+│   │   │   │   │   ├── CreateObservation.jsx
+│   │   │   │   │   └── ObservationHistory.jsx
+│   │   │   │   └── Emergency/
+│   │   │   │       ├── EmergencyQueue.jsx
+│   │   │   │       └── TriageForm.jsx
+│   │   │   │
+│   │   │   ├── components/
+│   │   │   │   ├── VitalsForm/
+│   │   │   │   │   ├── VitalsForm.jsx
+│   │   │   │   │   └── VitalsForm.css
+│   │   │   │   ├── MedicationCard/
+│   │   │   │   │   ├── MedicationCard.jsx
+│   │   │   │   │   └── MedicationCard.css
+│   │   │   │   ├── TaskCard/
+│   │   │   │   │   ├── TaskCard.jsx
+│   │   │   │   │   └── TaskCard.css
+│   │   │   │   ├── PatientQueue/
+│   │   │   │   │   ├── QueueCard.jsx
+│   │   │   │   │   └── QueueCard.css
+│   │   │   │   └── NursingNotes/
+│   │   │   │       ├── NursingNotes.jsx
+│   │   │   │       └── NursingNotes.css
+│   │   │   │
+│   │   │   ├── services/
+│   │   │   │   ├── vitals.service.js
+│   │   │   │   ├── medication.service.js
+│   │   │   │   └── nursing.service.js
+│   │   │   │
+│   │   │   └── routes/
+│   │   │       └── NurseRoutes.jsx
+│   │   │
+│   │   └── scientist/                    # 🔬 MODULE SCIENTIFIQUE/LAB
+│   │       ├── pages/
+│   │       │   ├── Dashboard/
+│   │       │   │   ├── ScientistDashboard.jsx
+│   │       │   │   └── ScientistDashboard.css
+│   │       │   ├── Laboratory/
+│   │       │   │   ├── LabRequests.jsx
+│   │       │   │   ├── TestProcessing.jsx
+│   │       │   │   └── CompletedTests.jsx
+│   │       │   ├── Results/
+│   │       │   │   ├── ResultEntry.jsx
+│   │       │   │   ├── ResultValidation.jsx
+│   │       │   │   └── ResultsHistory.jsx
+│   │       │   ├── Samples/
+│   │       │   │   ├── SampleManagement.jsx
+│   │       │   │   ├── SampleTracking.jsx
+│   │       │   │   └── SampleStorage.jsx
+│   │       │   ├── Quality/
+│   │       │   │   ├── QualityControl.jsx
+│   │       │   │   ├── Calibration.jsx
+│   │       │   │   └── EquipmentMaintenance.jsx
+│   │       │   ├── Reports/
+│   │       │   │   ├── LabReports.jsx
+│   │       │   │   ├── StatisticalReports.jsx
+│   │       │   │   └── TrendAnalysis.jsx
+│   │       │   └── Inventory/
+│   │       │       ├── ReagentInventory.jsx
+│   │       │       ├── EquipmentInventory.jsx
+│   │       │       └── OrderSupplies.jsx
+│   │       │
+│   │       ├── components/
+│   │       │   ├── TestForm/
+│   │       │   │   ├── TestForm.jsx
+│   │       │   │   └── TestForm.css
+│   │       │   ├── ResultsTable/
+│   │       │   │   ├── ResultsTable.jsx
+│   │       │   │   └── ResultsTable.css
+│   │       │   ├── SampleCard/
+│   │       │   │   ├── SampleCard.jsx
+│   │       │   │   └── SampleCard.css
+│   │       │   ├── LabEquipment/
+│   │       │   │   ├── EquipmentCard.jsx
+│   │       │   │   └── EquipmentCard.css
+│   │       │   └── QCChart/
+│   │       │       ├── QCChart.jsx
+│   │       │       └── QCChart.css
+│   │       │
+│   │       ├── services/
+│   │       │   ├── lab.service.js
+│   │       │   ├── sample.service.js
+│   │       │   └── results.service.js
+│   │       │
+│   │       └── routes/
+│   │           └── ScientistRoutes.jsx
+│   │
+│   ├── routes/                           # ROUTING PRINCIPAL
+│   │   ├── AppRoutes.jsx                 # Routes principales
+│   │   ├── ProtectedRoute.jsx            # Route protégée
+│   │   └── RoleBasedRoute.jsx            # Route basée sur rôle
+│   │
+│   ├── context/                          # CONTEXT API
+│   │   ├── AuthContext.jsx               # Authentification
+│   │   ├── UserContext.jsx               # Données utilisateur
+│   │   ├── ThemeContext.jsx              # Thème
+│   │   └── NotificationContext.jsx       # Notifications
+│   │
+│   └── pages/                            # PAGES PUBLIQUES
+│       ├── Auth/
+│       │   ├── Login.jsx
+│       │   ├── Login.css
+│       │   ├── Register.jsx
+│       │   ├── ForgotPassword.jsx
+│       │   └── ResetPassword.jsx
+│       ├── NotFound/
+│       │   ├── NotFound.jsx
+│       │   └── NotFound.css
+│       └── Unauthorized/
+│           ├── Unauthorized.jsx
+│           └── Unauthorized.css
+│
+├── .env                                  # Variables d'environnement
+├── .env.example                          # Exemple de variables
+├── .gitignore
+├── package.json
+├── vite.config.js
+└── README.md
+```
+
+## 🎯 Principes d'Organisation
+
+### 1. **Séparation par Rôles**
+Chaque profil a son propre module isolé :
+- ✅ Facilite le développement en parallèle
+- ✅ Évite les conflits de code
+- ✅ Permissions clairement définies
+
+### 2. **Composants Partagés**
+Tout ce qui est réutilisable va dans `/shared/` :
+- UI components (Button, Modal, etc.)
+- Hooks personnalisés
+- Services API
+- Utilitaires
+
+### 3. **Structure par Fonctionnalité**
+Chaque module contient :
+```
+module/
+├── pages/          # Pages complètes
+├── components/     # Composants spécifiques au module
+├── services/       # API calls spécifiques
+└── routes/         # Routes du module
+```
+
+## 📝 Conventions de Nommage
+
+### Fichiers
+- Composants : **PascalCase** (UserList.jsx)
+- Services : **camelCase** (user.service.js)
+- Styles : **PascalCase** (UserList.css)
+- Utils : **camelCase** (validators.js)
+
+### Dossiers
+- Modules : **lowercase** (admin, doctor, nurse, scientist)
+- Composants : **PascalCase** (UserManagement, PatientCard)
+
+## 🔐 Gestion des Permissions
+
+Chaque module a ses permissions définies dans :
+```javascript
+// config/permissions.config.js
+{
+  admin: ['*'],                    // Tous les droits
+  doctor: ['patients:*', 'consultations:*', 'prescriptions:*'],
+  nurse: ['patients:read', 'vitals:*', 'medications:administer'],
+  scientist: ['lab:*', 'results:*', 'samples:*']
+}
+```
+
+## 🚀 Avantages de cette Architecture
+
+✅ **Scalabilité** : Facile d'ajouter de nouveaux modules
+✅ **Maintenance** : Code isolé par responsabilité
+✅ **Performance** : Lazy loading par module
+✅ **Collaboration** : Équipes peuvent travailler en parallèle
+✅ **Sécurité** : Permissions claires par rôle
+✅ **Testabilité** : Tests unitaires par module
+
+## 📦 Dépendances Recommandées
+
+```json
+{
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.20.0",
+    "react-resizable-panels": "^2.1.4",
+    "axios": "^1.6.0",
+    "date-fns": "^3.0.0",
+    "react-hook-form": "^7.49.0",
+    "zustand": "^4.4.7",
+    "recharts": "^2.10.0"
+  }
+}
+
+//lien entre backend et frontend
+
+
+Context Il sert à :
+Stocker les données globales
+Fournir ces données à toute l’application
+Centraliser la logique globale
+
+
+
+┌─────────────┐
+│   Signup    │ (Composant UI)
+│   Component │
+└──────┬──────┘
+       │
+       │ utilise useAuth()
+       ▼
+┌─────────────────┐
+│  AuthContext    │ (Gestion d'état globale) 
+│  (AuthProvider) │
+└──────┬──────────┘
+       │
+       │ appelle
+       ▼
+┌─────────────────┐
+│  authService    │ (Logique métier)
+└──────┬──────────┘
+       │
+       │ utilise
+       ▼
+┌─────────────────┐
+│   axios (API)   │ (Communication HTTP)
+└──────┬──────────┘
+       │
+       │ requête HTTP
+       ▼
+┌─────────────────┐
+│    BACKEND      │
+│  (Node.js API)  │
+└─────────────────┘
+```

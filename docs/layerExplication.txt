@@ -1,0 +1,38 @@
+Description des couches de ton projet
+conclusions/
+├── conclusionHelpers.js        🔧  Layer 1 — Utilitaires
+├── useConclusionLogic.js       🧠  Layer 2 — Logique métier
+├── ConclusionEditor.jsx        🎨  Layer 3 — Composant UI
+├── ConclusionUI.jsx            🎨  Layer 3 — Composant UI
+├── PatientConclusionPage.jsx   🏗️  Layer 4 — Orchestration
+└── conclusion.css              💅  Layer 5 — Styles
+
+Layer 1 — conclusionHelpers.js 🔧 Utilitaires
+Rôle     : Fournir des constantes et fonctions pures réutilisables
+Contient : DEFAULT_LIMIT, TABLE_HEADERS, QUILL_MODULES, formatDate()
+Connait  : ❌ Rien d'autre (aucune dépendance)
+Règle    : Zéro React, zéro état, zéro appel API
+
+Layer 2 — useConclusionLogic.js 🧠 Logique métier
+Rôle     : Gérer tout le state et les interactions avec l'API
+Contient : useState, useEffect, onSave, onEdit, loadHistory...
+Connait  : ✅ conclusionHelpers  ✅ conclusionsService  ✅ useAuth
+Règle    : Zéro JSX — uniquement de la logique pure
+
+Layer 3 — ConclusionUI.jsx + ConclusionEditor.jsx 🎨 Composants UI
+Rôle     : Afficher les données et capturer les actions utilisateur
+Contient : JSX, renderRow, modal preview, éditeur Quill
+Connait  : ✅ conclusionHelpers (formatDate)
+Règle    : Zéro useState, zéro appel API — reçoit tout via props
+
+Layer 4 — PatientConclusionPage.jsx 🏗️ Orchestration
+Rôle     : Assembler les composants et connecter la logique à l'UI
+Contient : useParams, useConclusionLogic, rendu des composants
+Connait  : ✅ useConclusionLogic  ✅ ConclusionUI  ✅ ConclusionEditor
+Règle    : Zéro useState direct, zéro appel API — uniquement du JSX
+
+Layer 5 — conclusion.css 💅 Styles
+Rôle     : Définir l'apparence visuelle
+Contient : Classes CSS pcPage, pcCard, pcModal...
+Connait  : ❌ Rien (aucune dépendance)
+Règle    : Zéro logique, zéro JS
