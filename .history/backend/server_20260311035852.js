@@ -21,9 +21,14 @@ import observations from "./src/routes/examenClinique/observationRoute.js";
 import auditRoutes from "./src/routes/auditRoutes.js";
 import rendezvousRouter from "./src/routes/rendezVousRoute.js";
 import stockRoute from "./src/routes/stockRoute.js";
+<<<<<<< HEAD
 import conclusionRoutes from "./src/routes/doctorConclusionsRoutes.js";
+=======
 import prescriptionMedical from "./src/routes/prescriptionMedicalRoute.js";
 
+
+
+>>>>>>> 5af4bbcc845a7fca03a13670fc6eb8e6234ce21c
 dotenv.config();
 const app = express();
 app.use(express.json());
@@ -59,6 +64,8 @@ app.use("/api/stock", stockRoute);
 app.use("/api", conclusionRoutes);
 app.use("/api/audit", auditRoutes);
 app.use("/api/prescription-medicale", prescriptionMedical);
+
+
 
 // Route racine test
 app.get("/", (req, res) => {
