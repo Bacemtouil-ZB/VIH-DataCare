@@ -1,4 +1,4 @@
-import ActionButton from "./ActionButton";
+import ActionButton from "../ui/ActionButton";
 
 const styles = `.ec-btn-details { border-radius: 6px; font-weight: 600; }`;
 

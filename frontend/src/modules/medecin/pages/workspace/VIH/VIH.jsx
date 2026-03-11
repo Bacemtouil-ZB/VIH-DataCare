@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { confirmEdit } from "../../../../../shared/utils/uiAlerts";
+import { PageTitle } from "../../../../../shared/components/layouts";
 import VihForm from "./vihForm";
 import {
   createVih,
@@ -129,9 +130,7 @@ export default function VihPage() {
 
   return (
     <div className="medical-page">
-      <div className="page-header">
-        <h2>Fiche VIH du patient</h2>
-      </div>
+      <PageTitle title="Fiche VIH du patient" />
 
       <VihForm
         initialData={vihData}

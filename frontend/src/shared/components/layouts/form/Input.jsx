@@ -24,11 +24,19 @@ export default function Input({
   step,
   name,
   id,
+  as,
+  rows,
+  children,
+  onFocus,
+  onBlur,
+  ...rest
 }) {
   return (
     <Form.Control
       id={id}
       name={name}
+      as={as}
+      rows={rows}
       type={type}
       min={min}
       max={max}
@@ -37,7 +45,7 @@ export default function Input({
       onChange={onChange}
       placeholder={placeholder}
       disabled={disabled}
-      className={`${className} custom-input`} // Ajout d'une classe personnalisée
+      className={`${className} custom-input`}
       style={{
         ...customInputStyle,
         background: disabled ? "#f3f4f6" : customInputStyle.background,
@@ -45,9 +53,16 @@ export default function Input({
         opacity: disabled ? 0.9 : 1,
       }}
       onFocus={(e) => {
-        if (!disabled) e.target.style.borderColor = "#1a7a5e"; // Changement de couleur du border au focus
+        if (!disabled) e.target.style.borderColor = "#1a7a5e";
+        if (onFocus) onFocus(e);
       }}
-      onBlur={(e) => (e.target.style.borderColor = "#e5e7eb")} // Couleur par défaut au blur
-    />
+      onBlur={(e) => {
+        e.target.style.borderColor = "#e5e7eb";
+        if (onBlur) onBlur(e);
+      }}
+      {...rest}
+    >
+      {children}
+    </Form.Control>
   );
 }

@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import {
   ActionButton, Badge, FieldLabel, FormulaireWrapper, HistoriqueAccordeon,
-  HistoriqueActions, HistoriqueTable, Input, PageHeader, SearchBar,
+  HistoriqueActions, HistoriqueTable, Input, PageTitle, SearchBar,
 } from "../../../../../shared/components/layouts";
 import { confirmAction, alertError } from "../../../../../shared/utils/uiAlerts";
 import { openFormForCreate, showDetailMode } from "../../../../../shared/utils/logiqueTableHistory";
@@ -140,7 +140,7 @@ export default function RendezVous() {
   // ── Rendu ───────────────────────────────────────────────────────────
   return (
     <div className="ec-page-bg rdv-page">
-      <PageHeader title="Gestion des rendez-vous" />
+      <PageTitle title="Gestion des rendez-vous" />
 
       <div className="rdv-toolbar">
         <SearchBar

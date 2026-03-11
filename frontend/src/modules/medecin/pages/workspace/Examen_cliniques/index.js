@@ -1,17 +1,14 @@
 ﻿import "../../../components/UI/shared.css";
 
 export { parseApiError } from "../../../shared/utils/utils";
-export { PageHeader } from "../../../components/UI/PageHeader";
-export { HistoriqueAccordeon } from "../../../components/UI/HistoriqueAccordeon";
-export { HistoriqueTable } from "../../../components/UI/HistoriqueTable";
-export { HistoriqueActions } from "../../../components/UI/HistoriqueActions";
-export { SectionHeader } from "../../../components/UI/SectionHeader";
-export { EmptyState } from "../../../components/UI/EmptyState";
-export { FormulaireWrapper } from "../../../components/UI/FormulaireWrapper";
+export { PageHeader } from "../../../../../shared/components/layouts/layout/PageHeader";
+export { default as HistoriqueAccordeon } from "../../../../../shared/components/layouts/data-display/HistoriqueAccordeon";
+export { default as HistoriqueTable } from "../../../../../shared/components/layouts/data-display/HistoriqueTable";
+export { default as HistoriqueActions } from "../../../../../shared/components/layouts/data-display/HistoriqueActions";
+export { default as EmptyState } from "../../../../../shared/components/layouts/feedback/EmptyState";
+export { FormulaireWrapper } from "../../../../../shared/components/layouts/form/FormulaireWrapper";
 export { AutresSignesSection } from "../../../components/UI/AutresSignesSection";
-export { Badge } from "../../../components/UI/Badge";
-export { Spinner } from "../../../components/UI/Spinner";
+export { default as Badge } from "../../../../../shared/components/layouts/ui/Badge";
+export { Spinner } from "../../../../../shared/components/layouts/feedback/Spinner";
 export { RasToggle } from "../../../components/UI/RasToggle";
-export { SigneCard } from "../../../components/UI/SigneCard";
 export { ImcField } from "../../../components/UI/ImcField";
-export { AutresSignesHistorique } from "../../../components/UI/AutresSignesHistorique";

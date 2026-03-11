@@ -3,7 +3,7 @@ import { useOutletContext } from "react-router-dom";
 import { toast } from "react-toastify";
 import { confirmAction } from "../../../../../shared/utils/uiAlerts";
 import { getAppareils, getSignesByPatient, createSignesFonctionnels, updateSignesFonctionnels } from "../../../services/examenCliniqueServices/signesFonctionService";
-import { ActionButton } from "../../../components/buttons/ActionButton";
+import ActionButton from "../../../../../shared/components/layouts/ui/ActionButton";
 import { SIGNES_KEYS, SIGNES_LABELS, SIGNES_INIT, FORM_SF_INIT, getSignesPositifs } from "./examenConfig";
 import {
 formatDateFr,mapAutresSignesFromApi,buildAutreSigneItem,removeAutreSigneById,

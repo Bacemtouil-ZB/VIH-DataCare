@@ -4,6 +4,7 @@ import SocialForm from "./SocialForm.jsx";
 import { confirmAction } from "../../../../../shared/utils/uiAlerts.js";
 import { getSocialByNumero, createSocial, updateSocial } from "../../../services/socialServices.jsx";
 import { toast } from "react-toastify";
+import { PageTitle } from "../../../../../shared/components/layouts";
 
 import {
   PROBLEME_OPTIONS,
@@ -128,9 +129,7 @@ export default function SocialFormPage() {
 
   return (
     <div className="medical-page">
-      <div className="page-header">
-        <h2>{isEditing ? "Fiche sociale" : "Nouvelle fiche sociale"}</h2>
-      </div>
+      <PageTitle title={isEditing ? "Fiche sociale" : "Nouvelle fiche sociale"} />
 
       <SocialForm
         formData={formData}

@@ -3,7 +3,7 @@ import { useOutletContext } from "react-router-dom";
 import { toast } from "react-toastify";
 import { confirmAction } from "../../../../../shared/utils/uiAlerts";
 import { createHabitudeDeVie, getHabitudeDeVieByNumeroDossier, updateHabitudeDeVie } from "../../../services/examenCliniqueServices/habitudeDeVieService";
-import { ActionButton } from "../../../components/buttons/ActionButton";
+import ActionButton from "../../../../../shared/components/layouts/ui/ActionButton";
 import ToggleSwitch from "../../../components/buttons/ToggleSwitch";
 import { HABITUDES_CHAMPS, HABITUDES_INIT } from "./examenConfig";
 import { PageHeader, Spinner } from "./index";

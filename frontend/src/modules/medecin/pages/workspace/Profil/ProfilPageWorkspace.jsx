@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { confirmAction } from "../../../../../shared/utils/uiAlerts.js";
+import { PageTitle } from "../../../../../shared/components/layouts";
 import {
   createPatient,
   updatePatient,
@@ -178,9 +179,7 @@ export default function ProfilPageWorkspace() {
 
   return (
     <div className="medical-page">
-      <div className="page-header">
-        <h2>{isNew ? "Nouveau patient" : "Profil du patient"}</h2>
-      </div>
+      <PageTitle title={isNew ? "Nouveau patient" : "Profil du patient"} />
 
       <ProfilForm
         formData={formData}

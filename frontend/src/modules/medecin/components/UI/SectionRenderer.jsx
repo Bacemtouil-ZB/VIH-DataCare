@@ -4,7 +4,7 @@ import SectionCard from "./SectionCard";
 import BoolGrid from "./BoolGrid";
 import ListSection from "./ListSection";
 import Field from "./Field";
-import Input from "./Input";
+import Input from "../../../../shared/components/layouts/form/Input";
 import Textarea from "./Textarea";
 
 export default function SectionRenderer({

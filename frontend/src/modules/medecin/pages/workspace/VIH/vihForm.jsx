@@ -1,11 +1,9 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import {MODES_CONTAMINATION,TYPES_DEPISTAGE,CIRCONSTANCES_DECOUVERTE,STADES_CDC,FORM_INIT,formatDate,normalizeModesContamination,
   serializeModesContamination,
 } from "./vihConfig";
 import "./VihForm.css";
-import FieldLabel from "../../../components/UI/FieldLabel";
-
-
+import { ActionButton, FieldLabel, Input } from "../../../../../shared/components/layouts";
 
 function MultiSelectContamination({ value, onChange, disabled }) {
   const [open, setOpen] = useState(false);
@@ -108,12 +106,12 @@ export default function VihForm({
   return (
     <div className="bg-white border rounded">
 
-  
+
       <form onSubmit={handleSubmit} className="p-4">
         <div className="row g-3">
 
           <div className="col-md-6">
-            <FieldLabel>Mode de contamination <span className="text-danger">*</span></FieldLabel>
+            <FieldLabel required>Mode de contamination</FieldLabel>
             <MultiSelectContamination
               value={formData.mode_contamination}
               onChange={(val) => setFormData((prev) => ({ ...prev, mode_contamination: val }))}
@@ -138,7 +136,7 @@ export default function VihForm({
           </div>
 
           <div className="col-md-6">
-            <FieldLabel>Type de dépistage <span className="text-danger">*</span></FieldLabel>
+            <FieldLabel required>Type de dépistage</FieldLabel>
             <select name="type_depistage" className={`form-select ${errors.type_depistage ? "is-invalid" : ""}`}
               value={formData.type_depistage} onChange={handleChange} disabled={isDisabled || isLoading} required>
               <option value="">-- Sélectionner --</option>
@@ -148,7 +146,7 @@ export default function VihForm({
           </div>
 
           <div className="col-12">
-            <FieldLabel>Circonstance de découverte <span className="text-danger">*</span></FieldLabel>
+            <FieldLabel required>Circonstance de découverte</FieldLabel>
             <select name="circonstance_decouverte" className={`form-select ${errors.circonstance_decouverte ? "is-invalid" : ""}`}
               value={formData.circonstance_decouverte} onChange={handleChange} disabled={isDisabled || isLoading} required>
               <option value="">-- Sélectionner --</option>
@@ -159,27 +157,46 @@ export default function VihForm({
 
           <div className="col-md-6">
             <FieldLabel>Date dernière négative</FieldLabel>
-            <input type="date" name="date_derniere_negative" className={`form-control ${errors.date_derniere_negative ? "is-invalid" : ""}`}
-              value={formData.date_derniere_negative} onChange={handleChange} disabled={isDisabled || isLoading} />
+            <Input
+              type="date"
+              name="date_derniere_negative"
+              className={errors.date_derniere_negative ? "is-invalid" : ""}
+              value={formData.date_derniere_negative}
+              onChange={handleChange}
+              disabled={isDisabled || isLoading}
+            />
             {errors.date_derniere_negative && <div className="invalid-feedback">{errors.date_derniere_negative}</div>}
           </div>
 
           <div className="col-md-6">
             <FieldLabel>Date de contamination</FieldLabel>
-            <input type="date" name="date_contamination" className={`form-control ${errors.date_contamination ? "is-invalid" : ""}`}
-              value={formData.date_contamination} onChange={handleChange} disabled={isDisabled || isLoading} />
+            <Input
+              type="date"
+              name="date_contamination"
+              className={errors.date_contamination ? "is-invalid" : ""}
+              value={formData.date_contamination}
+              onChange={handleChange}
+              disabled={isDisabled || isLoading}
+            />
             {errors.date_contamination && <div className="invalid-feedback">{errors.date_contamination}</div>}
           </div>
 
           <div className="col-md-6">
-            <FieldLabel>Date VIH positif <span className="text-danger">*</span></FieldLabel>
-            <input type="date" name="date_vih_positif" className={`form-control ${errors.date_vih_positif ? "is-invalid" : ""}`}
-              value={formData.date_vih_positif} onChange={handleChange} disabled={isDisabled || isLoading} required />
+            <FieldLabel required>Date VIH positif</FieldLabel>
+            <Input
+              type="date"
+              name="date_vih_positif"
+              className={errors.date_vih_positif ? "is-invalid" : ""}
+              value={formData.date_vih_positif}
+              onChange={handleChange}
+              disabled={isDisabled || isLoading}
+              required
+            />
             {errors.date_vih_positif && <div className="invalid-feedback">{errors.date_vih_positif}</div>}
           </div>
 
           <div className="col-md-6">
-            <FieldLabel>Stade CDC <span className="text-danger">*</span></FieldLabel>
+            <FieldLabel required>Stade CDC</FieldLabel>
             <select name="stade_cdc" className={`form-select ${errors.stade_cdc ? "is-invalid" : ""}`}
               value={formData.stade_cdc} onChange={handleChange} disabled={isDisabled || isLoading} required>
               <option value="">-- Sélectionner --</option>
@@ -191,14 +208,20 @@ export default function VihForm({
           {isStadeC && (
             <div className="col-md-6">
               <FieldLabel>Début stade C</FieldLabel>
-              <input type="date" name="debut_stade_c" className={`form-control ${errors.debut_stade_c ? "is-invalid" : ""}`}
-                value={formData.debut_stade_c} onChange={handleChange} disabled={isDisabled || isLoading} />
+              <Input
+                type="date"
+                name="debut_stade_c"
+                className={errors.debut_stade_c ? "is-invalid" : ""}
+                value={formData.debut_stade_c}
+                onChange={handleChange}
+                disabled={isDisabled || isLoading}
+              />
               {errors.debut_stade_c && <div className="invalid-feedback">{errors.debut_stade_c}</div>}
             </div>
           )}
 
           <div className="col-md-6">
-            <FieldLabel>Typage HLA-B5701 <span className="text-danger">*</span></FieldLabel>
+            <FieldLabel required>Typage HLA-B5701</FieldLabel>
             <div className="d-flex gap-3 mt-2 vih-radio-group">
               {["Positif", "Négatif"].map(v => (
                 <div key={v} className="form-check vih-radio-item">
@@ -228,27 +251,31 @@ export default function VihForm({
 
           <div className="col-12 mt-2">
             {!isEditMode && !isCreateMode ? (
-              <button type="button" className="edit-btn" onClick={onEdit}>
-                Modifier
-              </button>
+              <ActionButton type="button" action="edit" label="Modifier" onClick={onEdit} />
             ) : (
               <div className="edit-actions">
-                <button type="submit" className="save-btn" disabled={isLoading}>
-                  {isLoading
-                    ? "Enregistrement..."
-                    : isCreateMode
-                      ? "Enregistrer la fiche VIH"
-                      : "Enregistrer"}
-                </button>
+                <ActionButton
+                  type="submit"
+                  action="save"
+                  label={
+                    isLoading
+                      ? "Enregistrement..."
+                      : isCreateMode
+                        ? "Enregistrer la fiche VIH"
+                        : "Enregistrer"
+                  }
+                  disabled={isLoading}
+                  showIcon={false}
+                />
                 {!isCreateMode && (
-                  <button
+                  <ActionButton
                     type="button"
-                    className="cancel-btn"
+                    action="annuler"
+                    label="Annuler"
                     onClick={onCancel}
                     disabled={isLoading}
-                  >
-                    Annuler
-                  </button>
+                    showIcon={false}
+                  />
                 )}
               </div>
             )}

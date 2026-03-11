@@ -3,7 +3,7 @@ import { useOutletContext } from "react-router-dom";
 import { toast } from "react-toastify";
 import { confirmAction, alertError } from "../../../../../shared/utils/uiAlerts";
 import { createObservation, getObservationsByPatient, updateObservation } from "../../../services/examenCliniqueServices/observationService";
-import { ActionButton } from "../../../components/buttons/ActionButton";
+import ActionButton from "../../../../../shared/components/layouts/ui/ActionButton";
 import {
 PageHeader,HistoriqueAccordeon,HistoriqueTable,
 HistoriqueActions,FormulaireWrapper,Spinner,parseApiError,

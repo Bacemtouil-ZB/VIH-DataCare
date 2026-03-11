@@ -71,6 +71,7 @@ export function ActionButton({
   loading = false,
   loadingLabel = "Enregistrement...",
   onClick,
+  type,
   disabled = false,
   variant = "filled",
   size = "sm",
@@ -101,6 +102,7 @@ export function ActionButton({
       <button
         className={`btn fw-semibold d-flex align-items-center justify-content-center gap-2 ec-action-btn ${toneClass} ${sizeClass} ${widthClass} ${className}`.trim()}
         onClick={onClick}
+        type={type}
         disabled={isDisabled}
         style={{ height }}
       >

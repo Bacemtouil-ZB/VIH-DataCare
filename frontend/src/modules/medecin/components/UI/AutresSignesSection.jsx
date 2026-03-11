@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Badge } from "./Badge";
+import Badge from "../../../../shared/components/layouts/ui/Badge";
 
 const styles = `
 .ec-autres-title { font-size: .78rem; letter-spacing: .5px; }

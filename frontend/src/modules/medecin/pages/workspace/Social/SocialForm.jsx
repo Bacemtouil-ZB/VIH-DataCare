@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import "./SocialForm.css";
 import ToggleSwitch from "../../../components/buttons/ToggleSwitch.jsx";
 import { confirmAction } from "../../../../../shared/utils/uiAlerts.js";
-import {toast} from "react-toastify";
-import FieldLabel from "../../../components/UI/FieldLabel";
+import { toast } from "react-toastify";
+import { ActionButton, FieldLabel, Input } from "../../../../../shared/components/layouts";
 
 export default function SocialForm({
   formData,
@@ -63,7 +63,7 @@ export default function SocialForm({
 
         <div className="form-group">
           <FieldLabel>Nombre d'enfants</FieldLabel>
-          <input
+          <Input
             type="number"
             name="nombre_enfants"
             value={localFormData.nombre_enfants}
@@ -130,7 +130,9 @@ export default function SocialForm({
         {/* Remarques */}
         <div className="form-group full-width">
           <FieldLabel>Remarques générales</FieldLabel>
-          <textarea
+          <Input
+            as="textarea"
+            rows={3}
             name="remarque"
             value={localFormData.remarque}
             onChange={handleChange}
@@ -142,9 +144,10 @@ export default function SocialForm({
 
         <div className="form-group full-width">
           {!isEditing ? (
-            <button
+            <ActionButton
               type="button"
-              className="edit-btn"
+              action="edit"
+              label="Modifier"
               onClick={async () => {
                 const confirmed = await confirmAction(
                   "Activer le mode modification ?",
@@ -153,24 +156,25 @@ export default function SocialForm({
                 if (!confirmed) return;
                 setIsEditing(true);
               }}
-            >
-              Modifier
-            </button>
+            />
           ) : (
             <div className="edit-actions">
-              <button type="submit" className="save-btn">
-                {isNew ? "Créer" : "Enregistrer"}
-              </button>
-              <button
+              <ActionButton
+                type="submit"
+                action="save"
+                label={isNew ? "Créer" : "Enregistrer"}
+                showIcon={false}
+              />
+              <ActionButton
                 type="button"
-                className="cancel-btn"
+                action="annuler"
+                label="Annuler"
                 onClick={() => {
                   handleCancel();
                   toast.info("Modifications annulées");
                 }}
-              >
-                Annuler
-             </button>
+                showIcon={false}
+              />
             </div>
           )}
         </div>

@@ -1,5 +1,5 @@
-import "./ProfilForme.css";
-import FieldLabel from "../../../components/UI/FieldLabel";
+﻿import "./ProfilForme.css";
+import { ActionButton, FieldLabel, Input } from "../../../../../shared/components/layouts";
 import { confirmAction } from "../../../../../shared/utils/uiAlerts.js";
 import {
   sanitizeText,
@@ -8,7 +8,7 @@ import {
   validateNumeroYear,
   filterPostalCodesByGovernorate,
 } from "./profile.helpers";
-import { ActionButton } from "../../../../../shared/components/UI/Button/ActionButton.jsx";
+
 export default function ProfileForme({
   formData,
   setFormData,
@@ -108,7 +108,7 @@ export default function ProfileForme({
       <form onSubmit={onSubmit} className="form-grid">
         <div className="form-group">
           <FieldLabel required>Numéro dossier</FieldLabel>
-          <input
+          <Input
             name="numero"
             value={formData.numero || ""}
             onChange={handleNumeroChange}
@@ -138,7 +138,7 @@ export default function ProfileForme({
 
         <div className="form-group">
           <FieldLabel required>Nom</FieldLabel>
-          <input
+          <Input
             name="name"
             value={formData.name || ""}
             onChange={handleChange}
@@ -150,7 +150,7 @@ export default function ProfileForme({
 
         <div className="form-group">
           <FieldLabel required>Prénom</FieldLabel>
-          <input
+          <Input
             name="surname"
             value={formData.surname || ""}
             onChange={handleChange}
@@ -162,7 +162,7 @@ export default function ProfileForme({
 
         <div className="form-group">
           <FieldLabel required>Date de naissance</FieldLabel>
-          <input
+          <Input
             type="date"
             name="birthdate"
             value={formData.birthdate || ""}
@@ -175,7 +175,7 @@ export default function ProfileForme({
 
         <div className="form-group">
           <FieldLabel required>Sexe</FieldLabel>
-          
+
           <div className="radio-group">
             <label>
               <input
@@ -206,7 +206,7 @@ export default function ProfileForme({
 
         <div className="form-group">
           <FieldLabel>Téléphone</FieldLabel>
-          <input
+          <Input
             name="phone"
             value={formData.phone || ""}
             onChange={handleChange}
@@ -282,7 +282,7 @@ export default function ProfileForme({
 
         <div className="form-group full-width">
           <FieldLabel>Adresse exacte</FieldLabel>
-          <input
+          <Input
             name="exact_address"
             value={formData.exact_address || ""}
             onChange={handleChange}
@@ -292,7 +292,7 @@ export default function ProfileForme({
         </div>
 
         <div className="form-group">
-          <FieldLabel required >Médecin traitant</FieldLabel>
+          <FieldLabel required>Médecin traitant</FieldLabel>
           <select
             name="doctor_id"
             value={formData.doctor_id || ""}
@@ -311,7 +311,9 @@ export default function ProfileForme({
 
         <div className="form-group full-width">
           <FieldLabel>Remarques</FieldLabel>
-          <textarea
+          <Input
+            as="textarea"
+            rows={3}
             name="remarks"
             value={formData.remarks || ""}
             onChange={handleChange}
@@ -319,37 +321,42 @@ export default function ProfileForme({
           />
         </div>
         <div className="form-group full-width">
-  {!isEditing ? (
-    <button
-      type="button"
-      className="edit-btn"
-      onClick={async () => {
-        const confirmed = await confirmAction(
-          "Activer le mode modification ?",
-          "Vous allez pouvoir modifier les informations du patient."
-        );
+          {!isEditing ? (
+            <ActionButton
+              type="button"
+              action="edit"
+              label="Modifier"
+              onClick={async () => {
+                const confirmed = await confirmAction(
+                  "Activer le mode modification ?",
+                  "Vous allez pouvoir modifier les informations du patient."
+                );
 
-        if (!confirmed) return;
-        setIsEditing(true);
-      }}
-    >
-      Modifier
-    </button>
-  ) : (
-    
-    <div className="edit-actions">
-      <button type="submit" className="save-btn">
-        {isNew ? "Créer" : "Enregistrer"}
-      </button>
+                if (!confirmed) return;
+                setIsEditing(true);
+              }}
+            />
+          ) : (
+            <div className="edit-actions">
+              <ActionButton
+                type="submit"
+                action="save"
+                label={isNew ? "Créer" : "Enregistrer"}
+                showIcon={false}
+              />
 
-      {!isNew && (
-        <button type="button" className="cancel-btn" onClick={onCancel}>
-          Annuler
-        </button>
-      )}
-    </div>
-  )}
-</div>
+              {!isNew && (
+                <ActionButton
+                  type="button"
+                  action="annuler"
+                  label="Annuler"
+                  onClick={onCancel}
+                  showIcon={false}
+                />
+              )}
+            </div>
+          )}
+        </div>
       </form>
     </div>
   );

@@ -17,7 +17,7 @@ import {
   deleteStockItem as deleteStockItemApi,
 } from "../../../services/stockService.jsx";
 import { formatDateTimeFr } from "../../../../../shared/utils/logiqueTableHistory";
-import StockAlert from "../../../../../shared/components/layouts/statistique/Stockalert.jsx"; 
+import StockAlert from "../../../../../shared/components/layouts/feedback/Stockalert";
 import "./Stock.css";
 import { toast } from "react-toastify";
 import { confirmDelete } from "../../../../../shared/utils/uiAlerts";

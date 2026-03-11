@@ -4,8 +4,8 @@ import { toast } from "react-toastify";
 import { confirmAction } from "../../../../../shared/utils/uiAlerts";
 import { createSigneClinique, updateSigneClinique, getSigneCliniqueByNumeroDossier } from "../../../services/examenCliniqueServices/signeCliniqueService";
 import { getAppareils } from "../../../services/examenCliniqueServices/signesFonctionService";
-import { ActionButton } from "../../../components/buttons/ActionButton";
-import FieldLabel from "../../../components/UI/FieldLabel";
+import ActionButton from "../../../../../shared/components/layouts/ui/ActionButton";
+import FieldLabel from "../../../../../shared/components/layouts/form/FieldLabel";
 import { calcIMC, FORM_SC_INIT } from "./examenConfig";
 import {
   formatDateFr,
