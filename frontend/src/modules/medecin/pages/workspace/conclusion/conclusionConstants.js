@@ -1,6 +1,7 @@
 export const DEFAULT_LIMIT = 10;
 
 export const TABLE_HEADERS = [
+  //constant tableau
   "Médecin",
   "Date création",
   "Dernière modification",
