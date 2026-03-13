@@ -1,4 +1,4 @@
-import EmptyState from "../feedback/EmptyState";
+import EmptyState from "../Alert/EmptyState";
 
 export default function HistoriqueTable({ headers, items, renderRow, emptyMessage = "Aucune donnee" }) {
   if (!items?.length) return <EmptyState message={emptyMessage} />;

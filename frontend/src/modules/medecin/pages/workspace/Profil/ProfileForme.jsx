@@ -1,9 +1,10 @@
-﻿import "./ProfilForme.css";
-import { ActionButton, FieldLabel, Input, RadioGroup } from "../../../../../shared/components/layouts";
+import "./ProfilForme.css";
+import { ActionButton, FieldLabel, Input, RadioGroup, Spinner } from "../../../../../shared/components";
 import { confirmAction } from "../../../../../shared/utils/uiAlerts.js";
 import { toast } from "react-toastify";
 
 export default function ProfileForme({
+  loading,
   formData,
   isNew,
   isEditing,
@@ -20,6 +21,8 @@ export default function ProfileForme({
   handleSubmit,
   handleCancel,
 }) {
+  if (loading) return <Spinner />;
+
   /* -- Select renderers -- */
   const renderGovernorateOptions = () =>
     (governorates || []).map((g) => (
@@ -70,7 +73,7 @@ export default function ProfileForme({
             name="name"
             value={formData.name || ""}
             onChange={handleChange}
-            pattern="[A-Za-zÀ-ÿ\s]+"
+            pattern="[A-Za-zé-é\s]+"
             disabled={!isEditing}
             required
           />
@@ -82,7 +85,7 @@ export default function ProfileForme({
             name="surname"
             value={formData.surname || ""}
             onChange={handleChange}
-            pattern="[A-Za-zÀ-ÿ\s]+"
+            pattern="[A-Za-zé-é\s]+"
             disabled={!isEditing}
             required
           />
@@ -270,3 +273,4 @@ export default function ProfileForme({
     </div>
   );
 }
+

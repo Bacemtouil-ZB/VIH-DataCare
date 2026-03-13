@@ -1,6 +1,6 @@
 ﻿import { Navigate } from "react-router-dom";
 import ProtectedRoute from "../../../routes/ProtectedRoute";
-import DashboardLayout from "../../../shared/components/Layout/DashboardLayout";
+import { DashboardLayout } from "../../../shared/components";
 import ProfilPage from "../../../pages/parametres/profile";
 import Patientsordonnances from "../pages/workspace/ordonnance/Patientsordonnances.jsx";
 import Stock from "../pages/workspace/stock/Stock.jsx";

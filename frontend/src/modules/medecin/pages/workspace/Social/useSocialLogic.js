@@ -129,7 +129,6 @@ export function useSocialLogic() {
       setIsEditing(false); // ← ferme seulement si fiche existe
     }
     // si nouvelle fiche → reste ouvert
-    toast.info("Modifications annulées");
   };
 
   return {

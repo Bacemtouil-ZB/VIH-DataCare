@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
-import { NavLink } from "react-router-dom";
-import { getAllPatients} from "../../../shared/services/patientService";
+import { NavLink, useNavigate } from "react-router-dom";
+import { getAllPatients } from "../../../shared/services/patientService";
+import { ActionButton, PageTitle, SearchBar, Spinner } from "../../../shared/components";
 import {  getAllDoctors } from "../services/patientServices";
 
 import "./PatientsPage.css";
 
 export default function PatientsPage() {
+  const navigate = useNavigate();
   const [patients, setPatients] = useState([]);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("");
@@ -45,19 +47,17 @@ export default function PatientsPage() {
     <div className="patients-page">
       <div className="patients-toolbar">
         <div className="toolbar-left">
-          <h2>Patients</h2>
+          <PageTitle title="Patients" className="mb-0" />
           <span className="count">{filteredPatients.length} résultats</span>
         </div>
 
         <div className="toolbar-right">
-          <div className="search-box">
-            <input
-              type="text"
-              placeholder="Rechercher patient..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
+          <SearchBar
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Rechercher patient..."
+            wrapperClassName="search-box mb-0"
+          />
 
           <select
             className="filter-select"
@@ -69,19 +69,17 @@ export default function PatientsPage() {
             <option value="externe">Externe</option>
           </select>
 
-          <NavLink to="/medecin/patient/new/workspace" className="btn-primary">
-            + Nouveau patient
-          </NavLink>
+          <ActionButton
+            action="add"
+            label="Nouveau patient"
+            onClick={() => navigate("/medecin/patient/new/workspace")}
+          />
         </div>
       </div>
 
       <div className="table-wrapper">
         {loading ? (
-          <div className="skeleton-table">
-            <div className="skeleton-row" />
-            <div className="skeleton-row" />
-            <div className="skeleton-row" />
-          </div>
+          <Spinner />
         ) : (
           <table>
             {/* ✅ Un seul thead, pas de double imbrication */}
@@ -91,7 +89,7 @@ export default function PatientsPage() {
                 <th>Patient</th>
                 <th>Date naissance</th>
                 <th>Médecin Traitant</th>
-                <th>Dernière consultation</th>
+                <th>Derniére consultation</th>
                 <th>Traitement</th>
                 <th>Statut</th>
               </tr>
@@ -173,3 +171,5 @@ export default function PatientsPage() {
     </div>
   );
 }
+
+

@@ -8,10 +8,9 @@ export function formatDateTimeFr(dateValue, fallback = "-") {
   return new Date(dateValue).toLocaleString("fr-FR");
 }
 
-export function handleCancelForm(setShowForm, resetForm, toastApi, message = "Operation annulee") {
+export function handleCancelForm(setShowForm, resetForm, ) {
   setShowForm(false);
   resetForm();
-  toastApi.info(message);
 }
 
 export function openFormForCreate(setDetailItem, resetForm, setShowForm) {
@@ -60,4 +59,3 @@ export function removeAutreSigneById(list, id) {
 export function updateAutreSigneDescription(list, id, nouvelleDesc) {
   return list.map((s) => (s.id === id ? { ...s, description: nouvelleDesc } : s));
 }
-

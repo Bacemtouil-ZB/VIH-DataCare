@@ -1,11 +1,11 @@
-﻿import {
+import {
   FormulaireWrapper,
   HistoriqueAccordeon,
   HistoriqueActions,
   HistoriqueTable,
-} from "../../../../../../shared/components/layouts";
-import ActionButton from "../../../../../../shared/components/layouts/ui/ActionButton";
-import { formatDateFr } from "../logiqueTableHistory";
+} from "../../../../../../shared/components";
+import { ActionButton } from "../../../../../../shared/components";
+import { formatDateFr } from "../../../../../../shared/utils/logiqueTableHistory";
 import { HISTORY_HEADERS, LABEL_CLS } from "./observationConstants";
 
 export default function ObservationUI({
@@ -25,6 +25,33 @@ export default function ObservationUI({
 }) {
   return (
     <>
+      {showForm && (
+        <FormulaireWrapper isModifying={isModifying} labelCreate="Nouvelle observation" labelModify="Modifier l'observation">
+          <div className="mb-4">
+            <label className={`${LABEL_CLS} ec-th-sm`}>Remarques observées</label>
+            <textarea
+              className="form-control ec-observation-textarea"
+              rows={6}
+              placeholder="Décrivez les observations médicales..."
+              value={remarque}
+              onChange={(e) => setRemarque(e.target.value)}
+            />
+            <div className="d-flex justify-content-end mt-1">
+              <small className="text-secondary">{remarque.length} caractère{remarque.length !== 1 ? "s" : ""}</small>
+            </div>
+          </div>
+          <ActionButton
+            action="save"
+            block={true}
+            loading={saving}
+            label={isModifying ? "Enregistrer les modifications" : "Enregistrer la fiche"}
+            onClick={handleSave}
+            showIcon={false}
+            height="40px"
+          />
+        </FormulaireWrapper>
+      )}
+
       <HistoriqueAccordeon
         title="Historique des observations"
         count={historique.length}
@@ -53,7 +80,7 @@ export default function ObservationUI({
       </HistoriqueAccordeon>
 
       {detailObservation && (
-        <FormulaireWrapper isModifying={false} labelCreate="Détails de l'observation" labelModify="Détails de l'observation">
+        <FormulaireWrapper isModifying={false} labelCreate="Détails de l'observation" labelModify="D�tails de l'observation">
           <div className="ec-readonly-block">
             <div className="mb-4">
               <label className={`${LABEL_CLS} ec-th-sm`}>Remarques observées</label>
@@ -67,37 +94,11 @@ export default function ObservationUI({
             </div>
           </div>
           <div className="d-flex justify-content-end">
-            <button className="btn btn-sm btn-outline-secondary" onClick={() => setDetailObservation(null)}>Fermer détails</button>
+            <button className="btn btn-sm btn-outline-secondary" onClick={() => setDetailObservation(null)}>Fermer les détails</button>
           </div>
-        </FormulaireWrapper>
-      )}
-
-      {showForm && (
-        <FormulaireWrapper isModifying={isModifying} labelCreate="Nouvelle observation" labelModify="Modifier l'observation">
-          <div className="mb-4">
-            <label className={`${LABEL_CLS} ec-th-sm`}>Remarques observées</label>
-            <textarea
-              className="form-control ec-observation-textarea"
-              rows={6}
-              placeholder="Décrivez les observations médicales..."
-              value={remarque}
-              onChange={(e) => setRemarque(e.target.value)}
-            />
-            <div className="d-flex justify-content-end mt-1">
-              <small className="text-secondary">{remarque.length} caractère{remarque.length !== 1 ? "s" : ""}</small>
-            </div>
-          </div>
-          <ActionButton
-            action="save"
-            block={true}
-            loading={saving}
-            label={isModifying ? "Enregistrer les modifications" : "Enregistrer la fiche"}
-            onClick={handleSave}
-            showIcon={false}
-            height="40px"
-          />
         </FormulaireWrapper>
       )}
     </>
   );
 }
+

@@ -7,7 +7,7 @@ import {
   getSigneCliniqueByNumeroDossier,
 } from "../../../../services/examenCliniqueServices/signeCliniqueService";
 import { getAppareils } from "../../../../services/examenCliniqueServices/signesFonctionService";
-import { calcIMC, FORM_SC_INIT } from "../examenConfig";
+import { calcIMC, FORM_SC_INIT } from "./signesCliniquesConstants";
 import {
   mapAutresSignesFromApi,
   buildAutreSigneItem,
@@ -17,7 +17,7 @@ import {
   openFormForCreate,
   showDetailMode,
   formatDateFr,
-} from "../logiqueTableHistory";
+} from "../../../../../../shared/utils/logiqueTableHistory";
 import { parseApiError } from "../index";
 
 export function useSignesCliniquesLogic(numero, examenId) {
@@ -82,10 +82,7 @@ export function useSignesCliniquesLogic(numero, examenId) {
       "Modifier ce signe clinique ?",
       `Date : ${formatDateFr(s.date_examen)} - Taille : ${s.taille} cm - Poids : ${s.poids} kg`
     );
-    if (!ok) {
-      toast.info("Opération annulée");
-      return;
-    }
+    if (!ok) return;
 
     setDetailSigne(null);
     setSigneId(s.id);
@@ -114,10 +111,7 @@ export function useSignesCliniquesLogic(numero, examenId) {
 
   const supprimerAutreSigne = async (id) => {
     const ok = await confirmAction("Supprimer ce signe ?", "Cette action est irréversible.");
-    if (!ok) {
-      toast.info("Opération annulée");
-      return;
-    }
+    if (!ok) return;
     setAutresSignes((prev) => removeAutreSigneById(prev, id));
     toast.success("Signe supprimé");
   };
@@ -193,3 +187,4 @@ export function useSignesCliniquesLogic(numero, examenId) {
     handleSave,
   };
 }
+

@@ -1,10 +1,11 @@
-﻿import React from "react";
+import React from "react";
 import "./SocialForm.css";
 import ToggleSwitch from "../../../components/buttons/ToggleSwitch.jsx";
 import { confirmAction } from "../../../../../shared/utils/uiAlerts.js";
-import { ActionButton, FieldLabel, Input } from "../../../../../shared/components/layouts";
+import { ActionButton, FieldLabel, Input, Spinner } from "../../../../../shared/components";
 
 export default function SocialForm({
+  loading,
   formData,
   isEditing,
   setIsEditing,
@@ -18,6 +19,8 @@ export default function SocialForm({
   activiteOptions,
   situationSocialOptions,
 }) {
+  if (loading) return <Spinner />;
+
   return (
     <div className="form-card">
       <form
@@ -56,8 +59,8 @@ export default function SocialForm({
           />
         </div>
 
-        {/* Éducation */}
-        <h3>Éducation</h3>
+        {/* éducation */}
+        <h3>éducation</h3>
         <div className="form-group">
           <FieldLabel required>Niveau d'étude</FieldLabel>
           <select
@@ -92,8 +95,8 @@ export default function SocialForm({
           </select>
         </div>
 
-        {/* Problèmes */}
-        <h3>Problèmes rencontrés</h3>
+        {/* Problémes */}
+        <h3>Problémes rencontrés</h3>
         <div className="form-group full-width">
           <div className="toggle-grid">
             {problemeOptions.map(opt => (
@@ -119,7 +122,7 @@ export default function SocialForm({
             value={formData.remarque}
             onChange={handleChange}
             disabled={!isEditing}
-            placeholder="Informations complémentaires max 500 caractères"
+            placeholder="Informations complémentaires max 500 caractéres"
             maxLength={500}
           />
         </div>
@@ -164,3 +167,4 @@ export default function SocialForm({
     </div>
   );
 }
+

@@ -1,9 +1,9 @@
-﻿import { useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   ActionButton,
-  PageHeader,
+  PageTitle,
   SearchBar,
-} from "../../../../../shared/components/layouts";
+} from "../../../../../shared/components";
 import { usePrescreptionMedicalLogic } from "./usePrescreptionMedicalLogic";
 import PrescreptionMedicalUI from "./PrescreptionMedicalUI";
 import "./PrescreptionMedical.css";
@@ -14,7 +14,7 @@ export default function PrescriptionMedical() {
 
   return (
     <div className="ec-page-bg pe-page">
-      <PageHeader title="Prescription médicale" />
+      <PageTitle title="Prescription médicale" />
 
       <div className="pe-toolbar">
         <SearchBar

@@ -1,155 +1,92 @@
-﻿import { useEffect, useState } from "react";
-import { PageTitle, ActionButton, FieldLabel, Input, RadioGroup } from "../../../../../shared/components/layouts";
-import { PAGE_TITLE } from "./vihConstants";
+import { PageTitle, ActionButton, FieldLabel, Input, RadioGroup, Spinner } from "../../../../../shared/components";
 import {
   MODES_CONTAMINATION,
   TYPES_DEPISTAGE,
   CIRCONSTANCES_DECOUVERTE,
   STADES_CDC,
-  FORM_INIT,
-  formatDate,
-  normalizeModesContamination,
-  serializeModesContamination,
-} from "./vihConfig";
+  PAGE_TITLE,
+  TYPAGE_HLA_OPTIONS,
+  PROFIL_SEROCONVERSION_OPTIONS,
+} from "./vihConstants";
 import "./VihForm.css";
-
-function MultiSelectContamination({ value, onChange, disabled }) {
-  const [open, setOpen] = useState(false);
-  const selected = Array.isArray(value) ? value : (value ? [value] : []);
-
-  const toggle = (option) => {
-    if (disabled) return;
-    onChange(selected.includes(option) ? selected.filter((v) => v !== option) : [...selected, option]);
-  };
-
-  return (
-    <div className="multiselect-wrapper">
-      <div
-        className={`form-control multiselect-box ${disabled ? "bg-light" : ""}`}
-        onClick={() => !disabled && setOpen((o) => !o)}
-      >
-        {selected.length === 0
-          ? <span className="multiselect-placeholder">-- Sélectionner --</span>
-          : <span className="multiselect-count">{selected.length} sélectionné(s)</span>
-        }
-        <span className="multiselect-chevron">{open ? "▲" : "▼"}</span>
-      </div>
-
-      {open && (
-        <>
-          <div className="multiselect-overlay" onClick={() => setOpen(false)} />
-          <div className="multiselect-dropdown">
-            {MODES_CONTAMINATION.map((opt) => {
-              const checked = selected.includes(opt);
-              return (
-                <div
-                  key={opt}
-                  className={`multiselect-option ${checked ? "checked" : ""}`}
-                  onClick={(e) => { e.stopPropagation(); toggle(opt); }}
-                >
-                  <input type="checkbox" readOnly checked={checked} className="multiselect-checkbox" />
-                  <span className={checked ? "option-checked" : ""}>{opt}</span>
-                  {checked && <span className="option-tick ms-auto">✓</span>}
-                </div>
-              );
-            })}
-          </div>
-        </>
-      )}
-    </div>
-  );
-}
 
 export default function VihUI({
   isLoadingPage,
-  vihData,
-  handleSubmit,
-  handleEdit,
-  handleCancel,
   isLoading,
   errors,
   isEditMode,
   isCreateMode,
+  isDisabled,
+  isStadeC,
+  formData,
+  selectedModes,
+  isModesOpen,
+  toggleModesOpen,
+  closeModesOpen,
+  handleToggleMode,
+  handleRemoveMode,
+  handleFieldChange,
+  handleFormSubmit,
+  handleEdit,
+  handleCancel,
 }) {
-  const [formData, setFormData] = useState(FORM_INIT);
-
-  useEffect(() => {
-    if (vihData) {
-      setFormData({
-        mode_contamination: normalizeModesContamination(vihData.mode_contamination),
-        type_depistage: vihData.type_depistage || "",
-        circonstance_decouverte: vihData.circonstance_decouverte || "",
-        date_derniere_negative: formatDate(vihData.date_derniere_negative),
-        date_contamination: formatDate(vihData.date_contamination),
-        date_vih_positif: formatDate(vihData.date_vih_positif),
-        stade_cdc: vihData.stade_cdc || "",
-        debut_stade_c: formatDate(vihData.debut_stade_c),
-        typage_hla_b5701: vihData.typage_hla_b5701 || "",
-        profil_seroconversion: vihData.profil_seroconversion ?? null,
-      });
-    }
-  }, [vihData]);
-
-  const onChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prev) => {
-      const next = { ...prev, [name]: type === "checkbox" ? checked : value };
-      if (name === "stade_cdc" && !value.startsWith("C")) next.debut_stade_c = "";
-      return next;
-    });
-  };
-
-  const onSubmit = (e) => {
-    e.preventDefault();
-    handleSubmit({
-      ...formData,
-      mode_contamination: serializeModesContamination(formData.mode_contamination),
-    });
-  };
-
-  if (isLoadingPage) {
-    return (
-      <div className="medical-page">
-        <div className="loading-container">
-          <div className="spinner-large"></div>
-          <p>Chargement du patient...</p>
-        </div>
-      </div>
-    );
-  }
-
-  const isDisabled = !isEditMode && !isCreateMode;
-  const isStadeC = formData.stade_cdc.startsWith("C");
+  if (isLoadingPage) return <Spinner />;
 
   return (
     <div className="medical-page">
       <PageTitle title={PAGE_TITLE} />
 
       <div className="bg-white border rounded">
-        <form onSubmit={onSubmit} className="p-4">
+        <form onSubmit={handleFormSubmit} className="p-4">
           <div className="row g-3">
             <div className="col-md-6">
               <FieldLabel required>Mode de contamination</FieldLabel>
-              <MultiSelectContamination
-                value={formData.mode_contamination}
-                onChange={(val) => setFormData((prev) => ({ ...prev, mode_contamination: val }))}
-                disabled={isDisabled || isLoading}
-              />
+              <div className="multiselect-wrapper">
+                <div
+                  className={`form-control multiselect-box ${isDisabled || isLoading ? "bg-light" : ""}`}
+                  onClick={() => !(isDisabled || isLoading) && toggleModesOpen()}
+                >
+                  {selectedModes.length === 0
+                    ? <span className="multiselect-placeholder">-- Sélectionner --</span>
+                    : <span className="multiselect-count">{selectedModes.length} sélectionné(s)</span>
+                  }
+                  <span className="multiselect-chevron">{isModesOpen ? "^" : "v"}</span>
+                </div>
+
+                {isModesOpen && (
+                  <>
+                    <div className="multiselect-overlay" onClick={closeModesOpen} />
+                    <div className="multiselect-dropdown">
+                      {MODES_CONTAMINATION.map((opt) => {
+                        const checked = selectedModes.includes(opt);
+                        return (
+                          <div
+                            key={opt}
+                            className={`multiselect-option ${checked ? "checked" : ""}`}
+                            onClick={(e) => { e.stopPropagation(); handleToggleMode(opt); }}
+                          >
+                            <input type="checkbox" readOnly checked={checked} className="multiselect-checkbox" />
+                            <span className={checked ? "option-checked" : ""}>{opt}</span>
+                            {checked && <span className="option-tick ms-auto">x</span>}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+              </div>
               {errors.mode_contamination && <div className="text-danger small mt-1">{errors.mode_contamination}</div>}
-              {formData.mode_contamination.length > 0 && (
+              {selectedModes.length > 0 && (
                 <div className="d-flex flex-wrap gap-1 mt-2">
-                  {formData.mode_contamination.map((opt) => (
+                  {selectedModes.map((opt) => (
                     <span key={opt} className="badge-light-green">
                       {opt}
                       {!(isDisabled || isLoading) && (
                         <span
                           className="badge-light-remove"
-                          onClick={() => setFormData((prev) => ({
-                            ...prev,
-                            mode_contamination: prev.mode_contamination.filter((v) => v !== opt),
-                          }))}
+                          onClick={() => handleRemoveMode(opt)}
                         >
-                          ×
+                          é
                         </span>
                       )}
                     </span>
@@ -164,7 +101,7 @@ export default function VihUI({
                 name="type_depistage"
                 className={`form-select ${errors.type_depistage ? "is-invalid" : ""}`}
                 value={formData.type_depistage}
-                onChange={onChange}
+                onChange={handleFieldChange}
                 disabled={isDisabled || isLoading}
                 required
               >
@@ -180,7 +117,7 @@ export default function VihUI({
                 name="circonstance_decouverte"
                 className={`form-select ${errors.circonstance_decouverte ? "is-invalid" : ""}`}
                 value={formData.circonstance_decouverte}
-                onChange={onChange}
+                onChange={handleFieldChange}
                 disabled={isDisabled || isLoading}
                 required
               >
@@ -191,13 +128,13 @@ export default function VihUI({
             </div>
 
             <div className="col-md-6">
-              <FieldLabel>Date dernière négative</FieldLabel>
+              <FieldLabel>Date derniére négative</FieldLabel>
               <Input
                 type="date"
                 name="date_derniere_negative"
                 className={errors.date_derniere_negative ? "is-invalid" : ""}
                 value={formData.date_derniere_negative}
-                onChange={onChange}
+                onChange={handleFieldChange}
                 disabled={isDisabled || isLoading}
               />
               {errors.date_derniere_negative && <div className="invalid-feedback">{errors.date_derniere_negative}</div>}
@@ -210,7 +147,7 @@ export default function VihUI({
                 name="date_contamination"
                 className={errors.date_contamination ? "is-invalid" : ""}
                 value={formData.date_contamination}
-                onChange={onChange}
+                onChange={handleFieldChange}
                 disabled={isDisabled || isLoading}
               />
               {errors.date_contamination && <div className="invalid-feedback">{errors.date_contamination}</div>}
@@ -223,7 +160,7 @@ export default function VihUI({
                 name="date_vih_positif"
                 className={errors.date_vih_positif ? "is-invalid" : ""}
                 value={formData.date_vih_positif}
-                onChange={onChange}
+                onChange={handleFieldChange}
                 disabled={isDisabled || isLoading}
                 required
               />
@@ -236,7 +173,7 @@ export default function VihUI({
                 name="stade_cdc"
                 className={`form-select ${errors.stade_cdc ? "is-invalid" : ""}`}
                 value={formData.stade_cdc}
-                onChange={onChange}
+                onChange={handleFieldChange}
                 disabled={isDisabled || isLoading}
                 required
               >
@@ -254,7 +191,7 @@ export default function VihUI({
                   name="debut_stade_c"
                   className={errors.debut_stade_c ? "is-invalid" : ""}
                   value={formData.debut_stade_c}
-                  onChange={onChange}
+                  onChange={handleFieldChange}
                   disabled={isDisabled || isLoading}
                 />
                 {errors.debut_stade_c && <div className="invalid-feedback">{errors.debut_stade_c}</div>}
@@ -266,11 +203,8 @@ export default function VihUI({
               <RadioGroup
                 name="typage_hla_b5701"
                 value={formData.typage_hla_b5701}
-                onChange={onChange}
-                options={[
-                  { label: "Positif", value: "Positif" },
-                  { label: "Négatif", value: "Négatif" },
-                ]}
+                onChange={handleFieldChange}
+                options={TYPAGE_HLA_OPTIONS.map((label) => ({ label, value: label }))}
                 disabled={isDisabled || isLoading}
                 required={true}
                 className="d-flex gap-3 mt-2 vih-radio-group"
@@ -282,18 +216,12 @@ export default function VihUI({
             </div>
 
             <div className="col-md-6">
-              <FieldLabel>Profil de séroconversion (Fiebig I à V)</FieldLabel>
+              <FieldLabel>Profil de séroconversion (Fiebig I é V)</FieldLabel>
               <RadioGroup
                 name="profil_seroconversion"
                 value={formData.profil_seroconversion}
-                onChange={(e) => setFormData((prev) => ({
-                  ...prev,
-                  profil_seroconversion: e.target.value === "true",
-                }))}
-                options={[
-                  { label: "Oui", value: true },
-                  { label: "Non", value: false },
-                ]}
+                onChange={handleFieldChange}
+                options={PROFIL_SEROCONVERSION_OPTIONS}
                 disabled={isDisabled || isLoading}
                 className="d-flex gap-3 mt-2 vih-radio-group"
                 itemClassName="form-check vih-radio-item"
@@ -304,7 +232,7 @@ export default function VihUI({
 
             <div className="col-12 mt-2">
               {!isEditMode && !isCreateMode ? (
-                <ActionButton type="button" action="edit" label="Modifier" onClick={handleEdit} />
+                <ActionButton type="button" action="edit" label="Modifier" onClick={handleEdit} block={true} />
               ) : (
                 <div className="edit-actions">
                   <ActionButton
@@ -314,7 +242,7 @@ export default function VihUI({
                       isLoading
                         ? "Enregistrement..."
                         : isCreateMode
-                          ? "Enregistrer la fiche VIH"
+                          ? "Créer"
                           : "Enregistrer"
                     }
                     disabled={isLoading}

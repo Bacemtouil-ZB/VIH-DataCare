@@ -1,7 +1,6 @@
-import React from "react";
-import HistoriqueAccordeon from "../../../../../shared/components/layouts/data-display/HistoriqueAccordeon";
-import HistoriqueTable from "../../../../../shared/components/layouts/data-display/HistoriqueTable";
-import HistoriqueActions from "../../../../../shared/components/layouts/data-display/HistoriqueActions";
+﻿import React from "react";
+import { Spinner } from "../../../../../shared/components";
+import { HistoriqueAccordeon, HistoriqueTable, HistoriqueActions } from "../../../../../shared/components";
 import { TABLE_HEADERS, formatDate } from "./conclusionHelpers";
 
 export default function ConclusionUI({
@@ -17,7 +16,7 @@ export default function ConclusionUI({
       <tr key={c.id}>
         <td className="align-middle" style={{ fontSize: 13, fontWeight: 600 }}>
           <i className="bi bi-person-circle me-1 text-muted" />
-          {c.doctor_name || "—"}
+          {c.doctor_name || "â€”"}
         </td>
         <td className="align-middle text-nowrap" style={{ fontSize: 13 }}>
           {formatDate(c.created_at)}
@@ -37,7 +36,7 @@ export default function ConclusionUI({
 
   return (
     <>
-      {/* ── History table ── */}
+      {/* â”€â”€ History table â”€â”€ */}
       <HistoriqueAccordeon
         title="Historique des conclusions"
         count={total}
@@ -46,21 +45,19 @@ export default function ConclusionUI({
         contentClassName="bg-white p-3"
       >
         {histLoading ? (
-          <div className="d-flex align-items-center gap-2 text-muted py-2">
-            <span className="spinner-border spinner-border-sm" /> Chargement…
-          </div>
+          <Spinner />
         ) : (
           <>
             <HistoriqueTable
               headers={TABLE_HEADERS}
               items={conclusions}
               renderRow={renderRow}
-              emptyMessage="Aucune conclusion enregistrée pour ce patient."
+              emptyMessage="Aucune conclusion enregistrÃ©e pour ce patient."
             />
             {conclusions.length > 0 && (
               <div className="pcPager">
                 <div className="text-muted small">
-                  Page {page} / {totalPages} — {total} résultat{total > 1 ? "s" : ""}
+                  Page {page} / {totalPages} â€” {total} rÃ©sultat{total > 1 ? "s" : ""}
                 </div>
                 <div className="d-flex gap-2">
                   <button
@@ -69,7 +66,7 @@ export default function ConclusionUI({
                     onClick={() => setOffset(Math.max(0, offset - limit))}
                     disabled={page <= 1}
                   >
-                    <i className="bi bi-chevron-left me-1" /> Précédent
+                    <i className="bi bi-chevron-left me-1" /> PrÃ©cÃ©dent
                   </button>
                   <button
                     className="pcBtnPager"
@@ -86,7 +83,7 @@ export default function ConclusionUI({
         )}
       </HistoriqueAccordeon>
 
-      {/* ── Preview modal ── */}
+      {/* â”€â”€ Preview modal â”€â”€ */}
       {previewItem && (
         <div className="pcModalOverlay" onClick={() => setPreviewItem(null)}>
           <div className="pcModal" onClick={(e) => e.stopPropagation()}>
@@ -94,13 +91,13 @@ export default function ConclusionUI({
               <div>
                 <div className="pcModalTitle">
                   <i className="bi bi-file-earmark-text me-2" />
-                  Conclusion — {formatDate(previewItem.created_at)}
+                  Conclusion â€” {formatDate(previewItem.created_at)}
                 </div>
                 <div className="pcModalMeta">
                   <i className="bi bi-person-circle me-1" />
-                  {previewItem.doctor_name || "—"}
-                  <span className="mx-2">·</span>
-                  Modifié le {formatDate(previewItem.updated_at)}
+                  {previewItem.doctor_name || "â€”"}
+                  <span className="mx-2">Â·</span>
+                  ModifiÃ© le {formatDate(previewItem.updated_at)}
                 </div>
               </div>
               <button className="pcBtnCancel" onClick={() => setPreviewItem(null)}>
@@ -127,3 +124,6 @@ export default function ConclusionUI({
     </>
   );
 }
+
+
+

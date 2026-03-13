@@ -11,9 +11,6 @@
 .page-header { margin-bottom: 16px; }
 .page-header h2 {
   margin: 0;
-  font-size: 20px;
-  font-weight: 800;
-  color:#16a34a;
 }
 
 /* ── Top bar ── */
@@ -144,6 +141,7 @@
 .pcActions {
   display: flex;
   justify-content: flex-end;
+  gap: 8px;
   margin-top: 12px;
 }
 

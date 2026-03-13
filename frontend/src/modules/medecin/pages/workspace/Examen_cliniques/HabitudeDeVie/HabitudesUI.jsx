@@ -1,8 +1,6 @@
-﻿import ActionButton from "../../../../../../shared/components/layouts/ui/ActionButton";
+import { ActionButton } from "../../../../../../shared/components";
 import ToggleSwitch from "../../../../components/buttons/ToggleSwitch";
-import { PageHeader } from "../index";
-import { HABITUDES_CHAMPS } from "../examenConfig";
-import { HABITUDES_TITLE } from "./habitudesConstants";
+import { HABITUDES_TITLE ,HABITUDES_CHAMPS} from "./habitudesConstants";
 
 export default function HabitudesUI({
   habitudeId,
@@ -26,15 +24,13 @@ export default function HabitudesUI({
 
   return (
     <>
-      <PageHeader
-        actionButton={
-          <ActionButton
-            action={habitudeId ? "edit" : "save"}
-            loading={saving}
-            onClick={handleSave}
-          />
-        }
-      />
+      <div className="d-flex justify-content-end mb-3">
+        <ActionButton
+          action={habitudeId ? "edit" : "save"}
+          loading={saving}
+          onClick={handleSave}
+        />
+      </div>
 
       <div className="bg-white border rounded p-3 mb-4">
         <h6 className="mb-3 ec-habitudes-title">{HABITUDES_TITLE}</h6>

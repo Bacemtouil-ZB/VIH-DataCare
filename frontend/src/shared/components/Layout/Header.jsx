@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../../hooks/useAuth'; // adapte le chemin si besoin
+import { useAuth } from '../../hooks/useAuth'; // adapte le chemin si besoin
 import './Header.css';
 
 const Header = () => {

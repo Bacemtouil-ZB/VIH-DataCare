@@ -1,7 +1,7 @@
 ﻿import { Navigate } from "react-router-dom";
 import NewPatientGuard from "./NewPatientGuard.jsx";
 import ProtectedRoute from "../../../routes/ProtectedRoute";
-import DashboardLayout from "../../../shared/components/Layout/DashboardLayout";
+import { DashboardLayout } from "../../../shared/components";
 import PatientsPage from "../pages/PatientsPage";
 import DashboardMed from "../pages/DashboardMed";
 import ProfilPage from "../../../pages/parametres/profile";

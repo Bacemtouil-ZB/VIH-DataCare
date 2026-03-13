@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   ActionButton,
@@ -9,7 +9,7 @@ import {
   Input,
   SearchBar,
   HistoriqueActions
-} from "../../../../../shared/components/layouts";
+} from "../../../../../shared/components";
 import {
   getStockItems,
   createStockItem as createStockItemApi,
@@ -17,7 +17,7 @@ import {
   deleteStockItem as deleteStockItemApi,
 } from "../../../services/stockService.jsx";
 import { formatDateTimeFr } from "../../../../../shared/utils/logiqueTableHistory";
-import StockAlert from "../../../../../shared/components/layouts/feedback/Stockalert";
+import { StockAlert } from "../../../../../shared/components";
 import "./Stock.css";
 import { toast } from "react-toastify";
 import { confirmDelete } from "../../../../../shared/utils/uiAlerts";
@@ -33,7 +33,7 @@ const toUiStockItem = (row) => ({
 export default function Stock() {
   const { numero } = useParams();
 
-  // États
+  // Ã‰tats
   const [search, setSearch] = useState("");
   const [stockItems, setStockItems] = useState([]);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -93,18 +93,18 @@ export default function Stock() {
 
   const handleAddMedication = async () => {
     if (!medicamentCode.trim()) {
-      toast.error("Veuillez saisir un code de médicament.");
+      toast.error("Veuillez saisir un code de mÃ©dicament.");
       return;
     }
 
     if (!medicamentComposition.trim()) {
-      toast.error("Veuillez saisir la composition du médicament.");
+      toast.error("Veuillez saisir la composition du mÃ©dicament.");
       return;
     }
 
     const q = Number(quantityToAdd);
     if (!Number.isInteger(q) || q < 0) {
-      toast.error("La quantité doit être un entier positif.");
+      toast.error("La quantitÃ© doit Ãªtre un entier positif.");
       return;
     }
 
@@ -125,9 +125,9 @@ export default function Stock() {
       setQuantityToAdd("");
       setShowAddForm(false);
 
-      toast.success("Médicament ajouté avec succès");
+      toast.success("MÃ©dicament ajoutÃ© avec succÃ¨s");
     } catch (err) {
-      console.error(" Détails erreur:", {
+      console.error(" DÃ©tails erreur:", {
         response: err?.response?.data,
         message: err?.message,
         status: err?.response?.status
@@ -146,12 +146,11 @@ export default function Stock() {
 
   const handleDeleteMedication = async (id) => {
     const confirmed = await confirmDelete(
-      "Supprimer ce médicament ?",
-      "Etes-vous sûr de vouloir supprimer ce médicament du stock ? "
+      "Supprimer ce mÃ©dicament ?",
+      "Etes-vous sÃ»r de vouloir supprimer ce mÃ©dicament du stock ? "
     );
 
     if (!confirmed) {
-      toast.info("Suppression annulée");
       return;
     }
 
@@ -159,7 +158,7 @@ export default function Stock() {
       setSaving(true);
       await deleteStockItemApi(id);
       await refreshStock();
-      toast.success("Médicament supprimé avec succès");
+      toast.success("MÃ©dicament supprimÃ© avec succÃ¨s");
 
       if (editingId === id) {
         setEditingId(null);
@@ -190,7 +189,7 @@ export default function Stock() {
   const saveQuantity = async (item) => {
     const q = Number(editingQuantity);
     if (!Number.isInteger(q) || q < 0) {
-      toast.error("La quantité doit être un entier positif.");
+      toast.error("La quantitÃ© doit Ãªtre un entier positif.");
       return;
     }
 
@@ -199,14 +198,14 @@ export default function Stock() {
       await updateStockQuantityApi(item.id, q);
       await refreshStock();
       cancelEditQuantity();
-      toast.success("Quantité mise à jour avec succès");
+      toast.success("QuantitÃ© mise Ã  jour avec succÃ¨s");
     } catch (err) {
-      console.error(" Erreur mise à jour:", err);
+      console.error(" Erreur mise Ã  jour:", err);
       
       const errorMessage = err?.response?.data?.message 
         || err?.response?.data?.error 
         || err?.message 
-        || "Erreur lors de la mise à jour de la quantité.";
+        || "Erreur lors de la mise Ã  jour de la quantitÃ©.";
       
       toast.error(errorMessage);
     } finally {
@@ -216,11 +215,11 @@ export default function Stock() {
 
   return (
     <div className="ph-stock-page">
-      {/* Header avec bouton au même niveau */}
+      {/* Header avec bouton au mÃªme niveau */}
       <div className="ph-stock-header">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <div className="ph-stock-title">
-            <h2>Gestion du stock de médicaments</h2>
+            <h2>Gestion du stock de mÃ©dicaments</h2>
           </div>
           <ActionButton
             action="add"
@@ -240,7 +239,7 @@ export default function Stock() {
         <div className="ph-stock-add-card">
           <div className="ph-stock-add-grid">
             <div className="ph-med-field">
-              <FieldLabel required>Code médicament</FieldLabel>
+              <FieldLabel required>Code mÃ©dicament</FieldLabel>
               <Input
                 type="text"
                 className="form-control"
@@ -252,7 +251,7 @@ export default function Stock() {
             </div>
 
             <div className="ph-comp-field">
-              <FieldLabel required>Composition</FieldLabel>
+              <FieldLabel required>MÃ©dicaments</FieldLabel>
               <Input
                 type="text"
                 className="form-control"
@@ -264,7 +263,7 @@ export default function Stock() {
             </div>
 
             <div className="ph-qty-field">
-              <FieldLabel required>Quantité initiale</FieldLabel>
+              <FieldLabel required>QuantitÃ© initiale</FieldLabel>
               <Input
                 type="number"
                 min="0"
@@ -293,7 +292,6 @@ export default function Stock() {
                     setMedicamentCode("");
                     setMedicamentComposition("");
                     setQuantityToAdd("");
-                    toast.info("Opération annulée");
 
                   }}
                   size="sm"
@@ -317,7 +315,7 @@ export default function Stock() {
 
       {/* Tableau avec colonne ALERTE */}
       <HistoriqueAccordeon
-        title="Stock des médicaments"
+        title="Stock des mÃ©dicaments"
         count={filteredItems.length}
         showCount={true}
         open={showHistory}
@@ -325,9 +323,9 @@ export default function Stock() {
         contentClassName="stock-acc-body"
       >
         <HistoriqueTable
-          headers={["Code", "Médicament", "Quantité", "Dernière maj", "Alerte", "Action"]}
+          headers={["Code", "MÃ©dicament", "QuantitÃ©", "DerniÃ¨re maj", "Alerte", "Action"]}
           items={filteredItems}
-          emptyMessage="Aucun médicament en stock pour le moment."
+          emptyMessage="Aucun mÃ©dicament en stock pour le moment."
           renderRow={(item) => {
             const isEditing = editingId === item.id;
             return (
@@ -371,7 +369,7 @@ export default function Stock() {
                           action="annuler"
                           label="Annuler"
                           onClick={() => {cancelEditQuantity();
-                          toast.info("Opération annulée");}}
+                          }}
                           size="sm"
                           showIcon={false}
                           disabled={saving}
@@ -394,3 +392,4 @@ export default function Stock() {
     </div>
   );
 }
+

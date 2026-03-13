@@ -1,5 +1,5 @@
-import React from "react";
 import { useParams } from "react-router-dom";
+import { ActionButton, PageTitle } from "../../../../../shared/components";
 import { useConclusionLogic } from "./useConclusionLogic";
 import ConclusionUI from "./ConclusionUI";
 import ConclusionEditor from "./ConclusionEditor";
@@ -13,20 +13,17 @@ export default function PatientConclusionPage() {
     <div className="pcPage">
 
       <div className="page-header">
-        <h2>Conclusions m√©dicales</h2>
+        <PageTitle title="Conclusions mÈdicales" />
       </div>
 
       <div className="pcTopBar">
-        <button className="pcBtnAdd" type="button" onClick={logic.openEditor}>
-          <i className="bi bi-plus-lg me-2" />
-          Ajouter
-        </button>
+        {!logic.showEditor ? (
+          <ActionButton action="add" label="Ajouter" onClick={logic.openEditor} />
+        ) : (
+          <ActionButton action="annuler" label="Annuler" onClick={logic.cancelEditor} />
+        )}
       </div>
 
-      <ConclusionUI
-        {...logic}
-        onDetails={(c) => logic.setPreviewItem(c)}
-      />
       {logic.showEditor && (
         <ConclusionEditor
           editorRef={logic.editorRef}
@@ -35,10 +32,18 @@ export default function PatientConclusionPage() {
           isEditing={!!logic.editingId}
           saving={logic.saving}
           onSave={logic.onSave}
-          onCancel={logic.resetEditor}
+          onCancel={logic.cancelEditor}
         />
       )}
+
+      <ConclusionUI
+        {...logic}
+        onDetails={(c) => logic.setPreviewItem(c)}
+      />
 
     </div>
   );
 }
+
+
+

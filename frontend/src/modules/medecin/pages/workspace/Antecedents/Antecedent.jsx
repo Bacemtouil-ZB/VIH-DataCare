@@ -16,7 +16,6 @@ const MESSAGES = {
   READ_ONLY: "Version archivée : lecture seule",
   NEED_EDIT: "Cliquez sur “Modifier” avant d’enregistrer",
   NOTHING_TO_SAVE: "Aucune modification à enregistrer",
-  CANCELLED: "Modifications annulées",
   SAVED: "Enregistré",
   NEW_VERSION_CREATED: "Nouvelle version créée",
   FIRST_CREATED: "Fiche créée",
@@ -234,7 +233,6 @@ export default function AntecedentsForm() {
     setForm(savedRef.current);
     resetDirty();
     setIsEditing(false);
-    toast.info(MESSAGES.CANCELLED);
   };
 
   const handleSaveAll = async () => {
