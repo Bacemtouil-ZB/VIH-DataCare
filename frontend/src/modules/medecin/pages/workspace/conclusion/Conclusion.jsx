@@ -13,7 +13,7 @@ export default function PatientConclusionPage() {
     <div className="pcPage">
 
       <div className="page-header">
-        <PageTitle title="Conclusions médicales" />
+        <PageTitle title="Conclusions mÃ©dicales" />
       </div>
 
       <div className="pcTopBar">

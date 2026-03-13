@@ -18,5 +18,5 @@ export { default as StockAlert } from "./UI/Alert/Stockalert.jsx";
 
 export { default as FieldLabel } from "./Forms/FieldLabel/FieldLabel.jsx";
 export { FormulaireWrapper } from "./Forms/FormulaireWrapper/FormulaireWrapper.jsx";
-export { default as RadioGroup } from "./Forms/RadioGroup/RadioGroup.jsx";
+export { default as RadioGroup } from "./UI/Button/RadioGroup.jsx";
 export { default as SearchBar } from "./Forms/SearchBar/SearchBar.jsx";

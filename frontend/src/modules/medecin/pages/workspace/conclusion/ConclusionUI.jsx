@@ -52,12 +52,12 @@ export default function ConclusionUI({
               headers={TABLE_HEADERS}
               items={conclusions}
               renderRow={renderRow}
-              emptyMessage="Aucune conclusion enregistrÃ©e pour ce patient."
+              emptyMessage="Aucune conclusion enregistrée pour ce patient."
             />
             {conclusions.length > 0 && (
               <div className="pcPager">
                 <div className="text-muted small">
-                  Page {page} / {totalPages} â€” {total} rÃ©sultat{total > 1 ? "s" : ""}
+                  Page {page} / {totalPages} â€” {total} résultat{total > 1 ? "s" : ""}
                 </div>
                 <div className="d-flex gap-2">
                   <button
@@ -66,7 +66,7 @@ export default function ConclusionUI({
                     onClick={() => setOffset(Math.max(0, offset - limit))}
                     disabled={page <= 1}
                   >
-                    <i className="bi bi-chevron-left me-1" /> PrÃ©cÃ©dent
+                    <i className="bi bi-chevron-left me-1" /> Précédent
                   </button>
                   <button
                     className="pcBtnPager"
@@ -83,7 +83,6 @@ export default function ConclusionUI({
         )}
       </HistoriqueAccordeon>
 
-      {/* â”€â”€ Preview modal â”€â”€ */}
       {previewItem && (
         <div className="pcModalOverlay" onClick={() => setPreviewItem(null)}>
           <div className="pcModal" onClick={(e) => e.stopPropagation()}>
@@ -97,7 +96,7 @@ export default function ConclusionUI({
                   <i className="bi bi-person-circle me-1" />
                   {previewItem.doctor_name || "â€”"}
                   <span className="mx-2">Â·</span>
-                  ModifiÃ© le {formatDate(previewItem.updated_at)}
+                  Modifié le {formatDate(previewItem.updated_at)}
                 </div>
               </div>
               <button className="pcBtnCancel" onClick={() => setPreviewItem(null)}>
