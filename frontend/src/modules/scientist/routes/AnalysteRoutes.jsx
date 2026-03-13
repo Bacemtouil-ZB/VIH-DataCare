@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
 import ProtectedRoute from "../../../routes/ProtectedRoute";
-import DashboardLayout from "../../../shared/layouts/DashboardLayout";
+import { DashboardLayout } from "../../../shared/components";
 import StatistiquesPage from "../pages/StatistiquesPage";
 import RapportsPage from "../pages/RapportsPage";
 import DashboardAnalyste from "../pages/DashboardAnalyste";

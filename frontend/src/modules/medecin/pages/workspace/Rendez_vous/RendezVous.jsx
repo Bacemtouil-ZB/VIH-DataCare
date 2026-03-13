@@ -1,9 +1,9 @@
-﻿import { useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
   ActionButton,
   PageTitle,
   SearchBar,
-} from "../../../../../shared/components/layouts";
+} from "../../../../../shared/components";
 import { useRendezVousLogic } from "./useRendezVousLogic";
 import RendezVousUI from "./RendezVousUI";
 import "./RendezVous.css";

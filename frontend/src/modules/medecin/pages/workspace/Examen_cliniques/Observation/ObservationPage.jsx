@@ -1,5 +1,6 @@
-﻿import { useOutletContext } from "react-router-dom";
-import { PageHeader, Spinner } from "../index";
+import { useOutletContext } from "react-router-dom";
+import { ActionButton } from "../../../../../../shared/components";
+import { Spinner } from "../index";
 import ObservationUI from "./ObservationUI";
 import { PAGE_CONTAINER_CLASS } from "./observationConstants";
 import { useObservationLogic } from "./useObservationLogic";
@@ -12,11 +13,21 @@ export default function ObservationPage() {
 
   return (
     <div className={PAGE_CONTAINER_CLASS}>
-      <PageHeader
-        showForm={logic.showForm}
-        onOpen={logic.openCreate}
-        onCancel={logic.handleCancel}
-      />
+      <div className="d-flex justify-content-end mb-3">
+        {!logic.showForm ? (
+          <ActionButton
+            action="add"
+            label="Ajouter"
+            onClick={logic.openCreate}
+          />
+        ) : (
+          <ActionButton
+            action="annuler"
+            label="Annuler"
+            onClick={logic.handleCancel}
+          />
+        )}
+      </div>
 
       <ObservationUI
         historique={logic.historique}

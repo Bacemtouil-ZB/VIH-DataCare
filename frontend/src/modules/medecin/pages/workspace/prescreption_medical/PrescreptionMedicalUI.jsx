@@ -1,4 +1,4 @@
-﻿import {
+import {
   ActionButton,
   Badge,
   EmptyState,
@@ -9,7 +9,7 @@
   HistoriqueTable,
   Input,
   Spinner,
-} from "../../../../../shared/components/layouts";
+} from "../../../../../shared/components";
 import { toFrDate } from "../../../../../shared/utils/dateHelpers";
 import { getStatutStyle } from "./prescreptionMedicalHelpers";
 import { STATUT_LABELS } from "./prescreptionMedicalConstants";
@@ -128,7 +128,7 @@ export default function PrescreptionMedicalUI({
               />
               <ActionButton
                 action="save"
-                label={isModifying ? "Mettre à jour" : "Enregistrer"}
+                label={isModifying ? "Mettre é jour" : "Enregistrer"}
                 loading={saving}
                 size="sm"
                 showIcon={false}

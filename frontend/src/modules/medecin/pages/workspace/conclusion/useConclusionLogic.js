@@ -57,6 +57,11 @@ export function useConclusionLogic(numero) {
     setShowEditor(false);
   };
 
+  const cancelEditor = () => {
+    toast.dismiss();
+    resetEditor();
+  };
+
   const onSave = async () => {
     const text = editorValue.replace(/<[^>]*>/g, "").trim();
     if (text.length < 5) {
@@ -130,6 +135,7 @@ export function useConclusionLogic(numero) {
     onSave,
     onEdit,
     resetEditor,
+    cancelEditor,
     openEditor,
     onToggleHist: () => setHistOpen((v) => !v),
   };

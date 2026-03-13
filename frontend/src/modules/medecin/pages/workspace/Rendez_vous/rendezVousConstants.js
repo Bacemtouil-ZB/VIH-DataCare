@@ -12,3 +12,4 @@ export const STATUS_COLORS = {
   Annule: { bg: "#fee2e2", color: "#991b1b" },
   Termine: { bg: "#ede9fe", color: "#5b21b6" },
 };
+export const getStatusStyle = (status) => STATUS_COLORS[status] || { bg: "#f1f5f9", color: "#334155" };

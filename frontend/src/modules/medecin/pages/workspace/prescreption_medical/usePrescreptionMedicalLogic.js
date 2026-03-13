@@ -76,7 +76,6 @@ export function usePrescreptionMedicalLogic(numero) {
   const closeForm = (notify = true) => {
     resetForm();
     setShowForm(false);
-    if (notify) toast.info("Opération annulée");
   };
 
   const handleMedSelect = (e) => {
@@ -94,7 +93,7 @@ export function usePrescreptionMedicalLogic(numero) {
       "Modifier cette prescription ?",
       `Médicament : ${item.traitement || "-"} - Date : ${item.date ? item.date.slice(0, 10) : "-"}`,
     );
-    if (!ok) { toast.info("Opération annulée"); return; }
+    if (!ok) return;
 
     setDetailItem(null);
     setIsModifying(true);
@@ -134,7 +133,7 @@ export function usePrescreptionMedicalLogic(numero) {
       isModifying ? "Enregistrer les modifications ?" : "Créer cette prescription ?",
       "Les données seront enregistrées dans le dossier patient.",
     );
-    if (!ok) { toast.info("Opération annulée"); return; }
+    if (!ok) return;
 
     try {
       setSaving(true);

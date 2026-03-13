@@ -1,4 +1,4 @@
-﻿import {
+import {
   ActionButton,
   Badge,
   FieldLabel,
@@ -7,7 +7,8 @@
   HistoriqueActions,
   HistoriqueTable,
   Input,
-} from "../../../../../shared/components/layouts";
+  Spinner,
+} from "../../../../../shared/components";
 import { toFrDate } from "../../../../../shared/utils/dateHelpers";
 
 export default function RendezVousUI({
@@ -94,7 +95,7 @@ export default function RendezVousUI({
             <div className="rdv-form-actions">
               <ActionButton
                 action="save"
-                label={isModifying ? "Mettre à jour" : "Enregistrer"}
+                label={isModifying ? "Mettre é jour" : "Enregistrer"}
                 showIcon={false}
                 size="sm"
                 block={true}
@@ -111,9 +112,7 @@ export default function RendezVousUI({
         onToggle={() => setShowHistory((v) => !v)}
       >
         {loading ? (
-          <div className="text-center py-3 text-secondary">
-            <span className="spinner-border spinner-border-sm me-2"></span>Chargement...
-          </div>
+          <Spinner />
         ) : (
           <HistoriqueTable
             headers={["Date", "Heure", "Type", "Statut", "Action"]}
@@ -181,3 +180,5 @@ export default function RendezVousUI({
     </>
   );
 }
+
+

@@ -1,5 +1,6 @@
-﻿import { useOutletContext, useParams } from "react-router-dom";
-import { PageHeader, Spinner } from "../index";
+import { useOutletContext, useParams } from "react-router-dom";
+import { ActionButton } from "../../../../../../shared/components";
+import { Spinner } from "../index";
 import SignesCliniquesUI from "./SignesCliniquesUI";
 import { PAGE_CONTAINER_CLASS } from "./signesCliniquesConstants";
 import { useSignesCliniquesLogic } from "./useSignesCliniquesLogic";
@@ -13,11 +14,21 @@ export default function SignesCliniques() {
 
   return (
     <div className={PAGE_CONTAINER_CLASS}>
-      <PageHeader
-        showForm={logic.showForm}
-        onOpen={logic.openCreate}
-        onCancel={logic.handleCancel}
-      />
+      <div className="d-flex justify-content-end mb-3">
+        {!logic.showForm ? (
+          <ActionButton
+            action="add"
+            label="Ajouter"
+            onClick={logic.openCreate}
+          />
+        ) : (
+          <ActionButton
+            action="annuler"
+            label="Annuler"
+            onClick={logic.handleCancel}
+          />
+        )}
+      </div>
 
       <SignesCliniquesUI
         historique={logic.historique}

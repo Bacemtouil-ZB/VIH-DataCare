@@ -7,7 +7,7 @@ import {
   HistoriqueTable,
   Input,
   SearchBar,
-} from "../../../../../shared/components/layouts";
+} from "../../../../../shared/components";
 import { getPatientsWithOrdonnances } from "../../../services/Patientordonnanceservice";
 import { updateDateProchainePrise } from "../../../services/ordonnanceService";
 import { formatDateFr } from "../../../../../shared/utils/logiqueTableHistory";

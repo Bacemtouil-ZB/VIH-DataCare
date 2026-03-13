@@ -7,8 +7,8 @@ import {
   getPatientByNumero,
   getVihByNumero,
 } from "../../../services/vihService";
-import { getVihValidationError } from "./vihHelpers";
-import { REQUIRED_FIELDS } from "./vihConfig";
+import { buildFormFromVihData, getVihValidationError, serializeModesContamination } from "./vihHelpers";
+import { FORM_INIT, REQUIRED_FIELDS } from "./vihConstants";
 
 export function useVihLogic(numero) {
   const [patientId, setPatientId] = useState(null);
@@ -17,6 +17,8 @@ export function useVihLogic(numero) {
   const [isLoadingPage, setIsLoadingPage] = useState(true);
   const [errors, setErrors] = useState({});
   const [isEditMode, setIsEditMode] = useState(false);
+  const [formData, setFormData] = useState(FORM_INIT);
+  const [isModesOpen, setIsModesOpen] = useState(false);
 
   useEffect(() => {
     if (!numero) return;
@@ -46,8 +48,12 @@ export function useVihLogic(numero) {
     })();
   }, [numero]);
 
-  const handleSubmit = async (formData) => {
-    const errorMessage = getVihValidationError(formData, REQUIRED_FIELDS);
+  useEffect(() => {
+    setFormData(buildFormFromVihData(vihData));
+  }, [vihData]);
+
+  const submitVihData = async (payload) => {
+    const errorMessage = getVihValidationError(payload, REQUIRED_FIELDS);
     if (errorMessage) {
       toast.error(errorMessage);
       return;
@@ -58,10 +64,10 @@ export function useVihLogic(numero) {
 
     try {
       if (vihData) {
-        await updateVih(vihData.id, formData);
+        await updateVih(vihData.id, payload);
         toast.success("Fiche VIH mise à jour avec succès");
       } else {
-        await createVih({ ...formData, patient_id: patientId });
+        await createVih({ ...payload, patient_id: patientId });
         toast.success("Fiche VIH créée avec succès");
       }
 
@@ -88,6 +94,50 @@ export function useVihLogic(numero) {
     }
   };
 
+  const handleFieldChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => {
+      let nextValue = type === "checkbox" ? checked : value;
+      if (name === "profil_seroconversion") {
+        nextValue = value === "true" || value === true;
+      }
+      const next = { ...prev, [name]: nextValue };
+      if (name === "stade_cdc" && !String(nextValue).startsWith("C")) {
+        next.debut_stade_c = "";
+      }
+      return next;
+    });
+  };
+
+  const handleModesChange = (values) => {
+    setFormData((prev) => ({ ...prev, mode_contamination: values }));
+  };
+
+  const handleToggleMode = (option) => {
+    setFormData((prev) => {
+      const selected = Array.isArray(prev.mode_contamination) ? prev.mode_contamination : [];
+      const nextModes = selected.includes(option)
+        ? selected.filter((v) => v !== option)
+        : [...selected, option];
+      return { ...prev, mode_contamination: nextModes };
+    });
+  };
+
+  const handleRemoveMode = (opt) => {
+    setFormData((prev) => ({
+      ...prev,
+      mode_contamination: prev.mode_contamination.filter((v) => v !== opt),
+    }));
+  };
+
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    submitVihData({
+      ...formData,
+      mode_contamination: serializeModesContamination(formData.mode_contamination),
+    });
+  };
+
   const handleEdit = async () => {
     const confirmed = await confirmEdit(
       "Modifier la fiche VIH ?",
@@ -96,15 +146,12 @@ export function useVihLogic(numero) {
     if (confirmed) {
       setIsEditMode(true);
       toast.info("Mode édition activé");
-    } else {
-      toast.info("Opération annulée - aucune modification enregistrée");
     }
   };
 
   const handleCancel = () => {
     setIsEditMode(false);
     setErrors({});
-    toast.info("Opération annulée - aucune modification enregistrée");
   };
 
   return {
@@ -114,7 +161,20 @@ export function useVihLogic(numero) {
     errors,
     isEditMode,
     isCreateMode: !vihData,
-    handleSubmit,
+    formData,
+    selectedModes: Array.isArray(formData.mode_contamination)
+      ? formData.mode_contamination
+      : (formData.mode_contamination ? [formData.mode_contamination] : []),
+    isDisabled: !isEditMode && !!vihData,
+    isStadeC: (formData.stade_cdc || "").startsWith("C"),
+    handleFieldChange,
+    handleModesChange,
+    handleToggleMode,
+    handleRemoveMode,
+    handleFormSubmit,
+    isModesOpen,
+    toggleModesOpen: () => setIsModesOpen((v) => !v),
+    closeModesOpen: () => setIsModesOpen(false),
     handleEdit,
     handleCancel,
   };

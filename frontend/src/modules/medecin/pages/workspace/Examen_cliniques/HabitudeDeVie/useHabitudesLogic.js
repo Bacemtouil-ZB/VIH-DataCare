@@ -6,7 +6,7 @@ import {
   getHabitudeDeVieByNumeroDossier,
   updateHabitudeDeVie,
 } from "../../../../services/examenCliniqueServices/habitudeDeVieService";
-import { HABITUDES_INIT } from "../examenConfig";
+import { HABITUDES_INIT } from "./habitudesConstants";
 
 export function useHabitudesLogic(patientNumero, examenId) {
   const [loading, setLoading] = useState(true);
@@ -84,7 +84,6 @@ export function useHabitudesLogic(patientNumero, examenId) {
       setAlcoolemie(lastSavedAlcoolemie);
       setToxicomanie(lastSavedToxicomanie);
       setActivitePhysique(lastSavedActivitePhysique);
-      toast.info("Opération annulée");
       return;
     }
 

@@ -1,11 +1,9 @@
-﻿import ProfilForm from "./ProfileForme.jsx";
+import ProfilForm from "./ProfileForme.jsx";
 import { useProfileLogic } from "./useProfileLogic";
-import { PageTitle } from "../../../../../shared/components/layouts";
+import { PageTitle } from "../../../../../shared/components";
 
 export default function ProfilPageWorkspace() {
   const logic = useProfileLogic();
-
-  if (logic.loading) return <p>Chargement...</p>;
 
   return (
     <div className="medical-page">

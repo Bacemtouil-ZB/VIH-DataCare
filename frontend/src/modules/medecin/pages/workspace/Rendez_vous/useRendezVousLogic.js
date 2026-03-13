@@ -8,8 +8,7 @@ import {
   updateRendezvous,
 } from "../../../services/rendezvousService";
 import { toInputDate, toInputTime } from "../../../../../shared/utils/dateHelpers";
-import { getStatusStyle } from "./rendezVousHelpers";
-import { INITIAL_FORM } from "./rendezVousConstants";
+import { INITIAL_FORM,getStatusStyle  } from "./rendezVousConstants";
 
 export function useRendezVousLogic(numero) {
   const [searchDate, setSearchDate] = useState("");
@@ -54,7 +53,6 @@ export function useRendezVousLogic(numero) {
   const closeForm = (notify = true) => {
     resetForm();
     setShowForm(false);
-    if (notify) toast.info("Opération annulée");
   };
 
   const openEdit = async (item) => {
@@ -62,7 +60,7 @@ export function useRendezVousLogic(numero) {
       "Modifier ce rendez-vous ?",
       `Date : ${new Date(item.date).toLocaleDateString("fr-FR")} - Heure : ${item.heure}`,
     );
-    if (!ok) { toast.info("Opération annulée"); return; }
+    if (!ok) return;
 
     setDetailRdv(null);
     setFormData({
@@ -89,7 +87,7 @@ export function useRendezVousLogic(numero) {
       isModifying ? "Enregistrer les modifications ?" : "Créer ce rendez-vous ?",
       "Les données seront enregistrées dans le dossier patient.",
     );
-    if (!ok) { toast.info("Opération annulée"); return; }
+    if (!ok) return;
 
     try {
       if (isModifying && editingId) {

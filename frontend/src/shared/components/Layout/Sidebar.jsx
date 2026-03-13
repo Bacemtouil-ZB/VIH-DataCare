@@ -1,8 +1,8 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import './Sidebar.css';
-import AccountButton from '../../UI/Button/AccountButton.jsx';
-import { useAuth } from '../../../hooks/useAuth.js';
+import AccountButton from '../UI/Button/AccountButton.jsx';
+import { useAuth } from '../../hooks/useAuth.js';
 
 const Sidebar = () => {
   const { user } = useAuth();

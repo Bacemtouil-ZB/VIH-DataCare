@@ -1,6 +1,6 @@
-﻿import SocialForm from "./SocialForm.jsx";
+import SocialForm from "./SocialForm.jsx";
 import { useSocialLogic } from "./useSocialLogic.js";
-import { PageTitle } from "../../../../../shared/components/layouts";
+import { PageTitle } from "../../../../../shared/components";
 import {
   PROBLEME_OPTIONS,
   NIVEAU_ETUDE_OPTIONS,
@@ -10,8 +10,6 @@ import {
 
 export default function SocialFormPage() {
   const logic = useSocialLogic();
-
-  if (logic.loading) return <p>Chargement...</p>;
 
   return (
     <div className="medical-page">

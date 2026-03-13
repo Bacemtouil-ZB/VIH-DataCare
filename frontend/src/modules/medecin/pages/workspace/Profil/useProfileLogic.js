@@ -200,7 +200,6 @@ export function useProfileLogic() {
           "Les changements seront appliqués au dossier patient.",
         );
         if (!confirmed) {
-          toast.info("Modification annulée");
           return;
         }
       }
@@ -236,7 +235,6 @@ export function useProfileLogic() {
       setFormData(savedFormData);
     }
     setIsEditing(false);
-    toast.info("Modifications annulées");
   };
 
   return {
