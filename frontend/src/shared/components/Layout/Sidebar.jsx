@@ -29,12 +29,7 @@ const Sidebar = () => {
         label: 'Dashboard',
         end : true,   
       },
-      {
-        to: 'settings',
-        icon: 'bi-person-gear',
-        label: 'Gestion profil',
-        end: true,
-      },
+
  
     ],
     

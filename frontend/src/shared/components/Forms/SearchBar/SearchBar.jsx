@@ -1,5 +1,6 @@
 import React from "react";
 import { Form } from "react-bootstrap";
+
 export default function SearchBar({
   value,
   onChange,
@@ -7,17 +8,19 @@ export default function SearchBar({
   label = "",
   inputClassName = "",
   wrapperClassName = "",
-  type = "text",          
+  type = "text",
+  height = "auto",
 }) {
   return (
     <div className={`mb-3 ${wrapperClassName}`}>
       {label && <Form.Label>{label}</Form.Label>}
       <Form.Control
-        type={type}        
+        type={type}
         value={value}
         onChange={onChange}
         placeholder={placeholder}
         className={`sh-searchbar-input ${inputClassName}`}
+        style={{ height }}
       />
     </div>
   );
