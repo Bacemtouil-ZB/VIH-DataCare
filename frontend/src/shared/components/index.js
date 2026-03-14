@@ -2,7 +2,7 @@ export { default as Header } from "./Layout/Header.jsx";
 export { default as Sidebar } from "./Layout/Sidebar.jsx";
 export { default as Footer } from "./Layout/Footer.jsx";
 export { default as DashboardLayout } from "./Layout/DashboardLayout.jsx";
-export { default as PageTitle } from "./Layout/PageTitle.jsx";
+export { default as PageTitle } from "../../modules/medecin/components/UI/PageTitle.jsx";
 
 export { ActionButton } from "./UI/Button/ActionButton.jsx";
 export { default as AccountButton } from "./UI/Button/AccountButton.jsx";

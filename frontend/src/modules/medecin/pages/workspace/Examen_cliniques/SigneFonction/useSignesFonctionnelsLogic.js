@@ -103,7 +103,6 @@ export function useSignesFonctionnelsLogic(patientNumero, examenId) {
     setAutresSignes((prev) => [...prev, item]);
     setAppareilSel("");
     setDescription("");
-    toast.success("Signe ajouté");
   };
 
   const supprimerAutreSigne = async (id) => {

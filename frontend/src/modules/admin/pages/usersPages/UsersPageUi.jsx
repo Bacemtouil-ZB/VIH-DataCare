@@ -1,5 +1,17 @@
-import React from "react";
-import { Table, Button, Spinner, Badge, Modal, Form, InputGroup } from "react-bootstrap";
+// ── UsersPageUI.jsx ──────────────────────────────────────────────────────────
+// Rendu pur — aucune logique métier, que des props
+
+import { Modal, Form } from "react-bootstrap";
+import {
+  ActionButton,
+  Badge,
+  HistoriqueTable,
+  SearchBar,
+  Spinner,
+} from "../../../../shared/components/index";
+import PageHeader from "../../components/PageHeader";
+import UserStatsCards from "../../components/Userstatscards";
+import { roleBadgeColor, STATUS_OPTIONS, TABLE_HEADERS } from "./usersConstants";
 import "./users_page.css";
 
 export default function UsersPageUI({
@@ -8,19 +20,15 @@ export default function UsersPageUI({
   actionLoading,
   roleOptions,
   totals,
-
-  query,
-  setQuery,
-  roleFilter,
-  setRoleFilter,
-  statusFilter,
-  setStatusFilter,
-
+  // filtres
+  query,        setQuery,
+  roleFilter,   setRoleFilter,
+  statusFilter, setStatusFilter,
+  // modal
   showRoleModal,
   selectedUser,
-  newRole,
-  setNewRole,
-
+  newRole,      setNewRole,
+  // handlers
   onToggleActivation,
   onOpenRoleModal,
   onCloseRoleModal,
@@ -28,42 +36,82 @@ export default function UsersPageUI({
 }) {
   const { totalUsers, activeUsers, inactiveUsers } = totals;
 
-  return (
-    <div className="users-page">
-      <div className="users-page__header">
-        <div className="users-page__title">
-          <h2>Utilisateurs</h2>
-          <p>Gérez les comptes, les rôles et l’activation.</p>
-        </div>
+  // ── Rendu d'une ligne du tableau ─────────────────────────────────────────
+  const renderRow = (user) => {
+    const busy = actionLoading === user.id;
+    const { bg: roleBg, color: roleColor } = roleBadgeColor(user.role);
 
-        <div className="users-page__stats" aria-label="Statistiques utilisateurs">
-          <div className="stat-card">
-            <span>Total</span>
-            <strong>{totalUsers}</strong>
+    return (
+      <tr key={user.id}>
+        <td>{user._index + 1}</td>
+        <td className="cell-strong">{user.nom}</td>
+        <td>{user.prenom}</td>
+        <td className="cell-email">{user.email}</td>
+        <td>
+          <Badge bg={roleBg} color={roleColor}>{user.role}</Badge>
+        </td>
+        <td>
+          <Badge
+            bg={user.isactivated ? "#198754" : "rgba(55, 54, 54, 0.25)"}
+            color="#0e0d0d"
+          >
+            <i
+              className={`bi ${user.isactivated ? "bi-check-circle" : "bi-dash-circle"} me-1`}
+              aria-hidden="true"
+            />
+            {user.isactivated ? "Activé" : "Inactif"}
+          </Badge>
+        </td>
+        <td style={{ whiteSpace: "nowrap" }}>
+          <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
+            <ActionButton
+              action={user.isactivated ? "annuler" : "validate"}
+              label={user.isactivated ? "Désactiver" : "Activer"}
+              loading={busy}
+              loadingLabel="..."
+              disabled={busy}
+              variant={user.isactivated ? "outline" : "filled"}
+              onClick={() => onToggleActivation(user.id, user.isactivated)}
+            />
+            <ActionButton
+              action="edit"
+              label="Changer rôle"
+              disabled={busy}
+              variant="outline"
+              onClick={() => onOpenRoleModal(user)}
+            />
           </div>
-          <div className="stat-card stat-card--success">
-            <span>Activés</span>
-            <strong>{activeUsers}</strong>
-          </div>
-          <div className="stat-card stat-card--muted">
-            <span>Inactifs</span>
-            <strong>{inactiveUsers}</strong>
-          </div>
-        </div>
+        </td>
+      </tr>
+    );
+  };
+
+  return (
+    <div className="users-page" style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+
+      <div className="users-page__header">
+        <PageHeader
+          title="Gestion des utilisateurs"
+          icon="bi bi-people"
+          noBorder
+        />
+        <UserStatsCards
+          totalUsers={totalUsers}
+          activeUsers={activeUsers}
+          inactiveUsers={inactiveUsers}
+        />
       </div>
 
+      {/* ── Toolbar filtres ────────────────────────────────────────────────── */}
       <div className="users-page__toolbar">
-        <InputGroup className="toolbar__search">
-          <InputGroup.Text aria-label="Rechercher">
-            <i className="bi bi-search" aria-hidden="true" />
-          </InputGroup.Text>
-          <Form.Control
-            placeholder="Rechercher (nom, prénom, email)..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            aria-label="Rechercher par nom, prénom ou email"
-          />
-        </InputGroup>
+
+        {/* SearchBar — composant réutilisable depuis shared/components */}
+        <SearchBar
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Rechercher (nom, prénom, email)..."
+          wrapperClassName="toolbar__search mb-0"
+        />
 
         <Form.Select
           className="toolbar__select"
@@ -73,9 +121,7 @@ export default function UsersPageUI({
         >
           <option value="all">Tous les rôles</option>
           {roleOptions.map((r) => (
-            <option key={r.value} value={r.value}>
-              {r.label}
-            </option>
+            <option key={r.value} value={r.value}>{r.label}</option>
           ))}
         </Form.Select>
 
@@ -85,107 +131,31 @@ export default function UsersPageUI({
           onChange={(e) => setStatusFilter(e.target.value)}
           aria-label="Filtrer par statut"
         >
-          <option value="all">Tous les statuts</option>
-          <option value="active">Activés</option>
-          <option value="inactive">Inactifs</option>
+          {STATUS_OPTIONS.map((s) => (
+            <option key={s.value} value={s.value}>{s.label}</option>
+          ))}
         </Form.Select>
       </div>
 
+      {/* ── Tableau — Spinner + HistoriqueTable réutilisables ─────────────── */}
       {loading ? (
-        <div className="users-page__loading" aria-busy="true">
-          <Spinner animation="border" variant="primary" />
+        <div aria-busy="true">
+          <Spinner />
         </div>
       ) : (
-        <div className="users-table-wrap">
-          <Table hover responsive className="users-table mb-0">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Nom</th>
-                <th>Prénom</th>
-                <th>Email</th>
-                <th>Rôle</th>
-                <th>Statut</th>
-                <th className="text-end">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredUsers.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="users-table__empty">
-                    Aucun utilisateur trouvé.
-                  </td>
-                </tr>
-              ) : (
-                filteredUsers.map((user, index) => {
-                  const busy = actionLoading === user.id;
-
-                  return (
-                    <tr key={user.id}>
-                      <td>{index + 1}</td>
-                      <td className="cell-strong">{user.nom}</td>
-                      <td>{user.prenom}</td>
-                      <td className="cell-email">{user.email}</td>
-                      <td className="text-capitalize">{user.role}</td>
-                      <td>
-                        <Badge
-                          bg={user.isactivated ? "success" : "secondary"}
-                          className="status-badge"
-                        >
-                          <i
-                            className={`bi ${
-                              user.isactivated ? "bi-check-circle" : "bi-dash-circle"
-                            } me-1`}
-                            aria-hidden="true"
-                          />
-                          {user.isactivated ? "Activé" : "Inactif"}
-                        </Badge>
-                      </td>
-                      <td>
-                        <div className="users-table__actions">
-                          <Button
-                            size="sm"
-                            variant={user.isactivated ? "outline-secondary" : "success"}
-                            disabled={busy}
-                            onClick={() => onToggleActivation(user.id, user.isactivated)}
-                            className="btn-icon"
-                          >
-                            {busy ? (
-                              <Spinner as="span" animation="border" size="sm" />
-                            ) : (
-                              <>
-                                <i
-                                  className={`bi ${
-                                    user.isactivated ? "bi-pause-circle" : "bi-play-circle"
-                                  } me-2`}
-                                  aria-hidden="true"
-                                />
-                                {user.isactivated ? "Désactiver" : "Activer"}
-                              </>
-                            )}
-                          </Button>
-
-                          <Button
-                            size="sm"
-                            variant="outline-primary"
-                            disabled={busy}
-                            onClick={() => onOpenRoleModal(user)}
-                            className="btn-icon"
-                          >
-                            <i className="bi bi-person-gear me-2" aria-hidden="true" />
-                            Changer rôle
-                          </Button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </Table>
+        <div className="users-table-wrap" style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
+          <div style={{ flex: 1, overflowY: "auto" }}>
+            <HistoriqueTable
+              headers={TABLE_HEADERS}
+              items={filteredUsers.map((u, i) => ({ ...u, _index: i }))}
+              renderRow={renderRow}
+              emptyMessage="Aucun utilisateur trouvé."
+            />
+          </div>
         </div>
       )}
 
+      {/* ── Modal changement de rôle ───────────────────────────────────────── */}
       <Modal show={showRoleModal} onHide={onCloseRoleModal} centered>
         <Modal.Header closeButton>
           <Modal.Title>
@@ -197,32 +167,26 @@ export default function UsersPageUI({
             <Form.Label>Nouveau rôle</Form.Label>
             <Form.Select value={newRole} onChange={(e) => setNewRole(e.target.value)}>
               {roleOptions.map((role) => (
-                <option value={role.value} key={role.value}>
-                  {role.label}
-                </option>
+                <option value={role.value} key={role.value}>{role.label}</option>
               ))}
             </Form.Select>
           </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="outline-secondary" onClick={onCloseRoleModal}>
-            Annuler
-          </Button>
-          <Button
-            variant="primary"
+          {/* ActionButton réutilisable depuis shared/components */}
+          <ActionButton
+            action="annuler"
+            onClick={onCloseRoleModal}
+            variant="outline"
+          />
+          <ActionButton
+            action="validate"
+            label="Confirmer"
             onClick={onChangeRole}
+            loading={actionLoading === selectedUser?.id}
+            loadingLabel="Enregistrement..."
             disabled={actionLoading === selectedUser?.id}
-            className="btn-icon"
-          >
-            {actionLoading === selectedUser?.id ? (
-              <Spinner as="span" animation="border" size="sm" />
-            ) : (
-              <>
-                <i className="bi bi-check2 me-2" aria-hidden="true" />
-                Confirmer
-              </>
-            )}
-          </Button>
+          />
         </Modal.Footer>
       </Modal>
     </div>

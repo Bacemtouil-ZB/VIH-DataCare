@@ -28,21 +28,16 @@
 }
 
 .audit__title {
-  margin: 0;
+  margin-bottom: 0;
   font-size: 18px;
   font-weight: 800;
   color: var(--text);
 }
 
-.audit__subtitle {
-  margin: 4px 0 0;
-  font-size: 13px;
-  color: var(--muted);
-}
-
 .auditContainer {
   max-width: 1200px;
   margin: 0 auto;
+  
 }
 
 .audit__card {

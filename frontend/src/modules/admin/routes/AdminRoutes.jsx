@@ -6,7 +6,6 @@ import AdminDashboard from "../pages/AdminDashboard";
 
 import ProtectedRoute from "../../../routes/ProtectedRoute";
 import { DashboardLayout } from "../../../shared/components";
-import ProfilPage from "../../../pages/parametres/profile";
 
 const adminRoutes = [
   {
@@ -21,7 +20,6 @@ const adminRoutes = [
       { path: "dashboard", element: <AdminDashboard /> },
       { path: "users", element: <UsersPage /> },
       { path: "audit-logs", element: <AuditLogsPage /> },
-      { path: "settings", element: <ProfilPage /> }, 
     ],
   },
 ];
