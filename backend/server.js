@@ -65,7 +65,7 @@ const startServer = async () => {
     console.log("PostgreSQL connecté, démarrage du serveur...");
 
     const PORT = process.env.PORT;
-    app.listen(PORT, () => {
+    app.listen(PORT,'0.0.0.0', () => {
       console.log(`Server running sur http://localhost:${PORT}`);
     });
   } catch (err) {

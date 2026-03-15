@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "5173:5173"  # Assure-toi que ce port est exposé pour le frontend
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_URL=http://localhost:3000  # Exemple d'URL pour se connecter au backend
+
+  backend:
+    build:
+      context: ./backend
+    ports:
+      - "3000:3000"  # Expose le port du backend
+    env_file:
+      - ./backend/.env.docker
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"  # Exposer le port PostgreSQL
+
+volumes:
+  db_data:

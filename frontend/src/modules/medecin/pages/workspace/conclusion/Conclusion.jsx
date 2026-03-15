@@ -3,7 +3,7 @@ import { ActionButton, PageTitle } from "../../../../../shared/components";
 import { useConclusionLogic } from "./useConclusionLogic";
 import ConclusionUI from "./ConclusionUI";
 import ConclusionEditor from "./ConclusionEditor";
-import "./conclusion.css";
+import "./Conclusion.css";
 
 export default function PatientConclusionPage() {
   const { numero } = useParams();
