@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import runMigrations from "./run_migrations.js"; // Importer le script de migration
 import db from "./src/config/db.js"; // pour connecter PostgreSQL
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -62,11 +63,12 @@ app.use("/api/prescription-medicale", prescriptionMedical);
 const startServer = async () => {
   try {
     await db.connect(); // test de connexion
+    await runMigrations(); // Exécuter les migrations
     console.log("PostgreSQL connecté, démarrage du serveur...");
 
     const PORT = process.env.PORT;
-    app.listen(PORT, () => {
-      console.log(`Server running sur http://localhost:${PORT}`);
+    app.listen(PORT,  '0.0.0.0',() => {
+      console.log(`Server running sur http://localhost:${PORT}` );
     });
   } catch (err) {
     console.error("Impossible de se connecter à PostgreSQL :", err);
@@ -74,17 +76,5 @@ const startServer = async () => {
   }
 };
 
-// this is a catch-all route for any undefined routes, returning a 404 error
-app.use((req, res) => {
-  res.status(404).json({ message: "Route not found" });
-});
-
-// this is a global error handler for any unhandled errors in the routes
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res
-    .status(err.status || 500)
-    .json({ message: err.message || "Server error" });
-});
 
 startServer();
