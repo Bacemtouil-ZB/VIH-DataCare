@@ -48,7 +48,7 @@ export default function UsersPageUI({
         <td>{user.prenom}</td>
         <td className="cell-email">{user.email}</td>
         <td>
-          <Badge bg={roleBg} color={roleColor}>{user.role}</Badge>
+          {user.role}
         </td>
         <td>
           <Badge
@@ -111,6 +111,7 @@ export default function UsersPageUI({
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Rechercher (nom, prénom, email)..."
           wrapperClassName="toolbar__search mb-0"
+          
         />
 
         <Form.Select

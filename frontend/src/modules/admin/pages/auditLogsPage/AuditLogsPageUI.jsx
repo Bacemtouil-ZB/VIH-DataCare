@@ -1,6 +1,6 @@
 import { fmt, prettyValue, txt } from "./helpers";
 import PageHeader from "../../components/PageHeader";
-import { ActionButton, HistoriqueActions,HistoriqueTable,Spinner} from "../../../../shared/components/index";
+import { ActionButton, HistoriqueActions,HistoriqueTable,Spinner,EmptyState} from "../../../../shared/components/index";
 
 const AuditLogsPageUI = ({
   patientNumeroInput,
@@ -227,7 +227,7 @@ const AuditLogsPageUI = ({
                 {detailsLoading ? (
                   <Spinner />
                 ) : !details ? (
-                  <div className="audit__muted">Aucun détail.</div>
+                  <EmptyState>Aucun détail.</EmptyState>
                 ) : (
                   <>
                     <div className="auditModal__meta2">

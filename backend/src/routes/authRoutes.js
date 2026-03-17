@@ -23,7 +23,7 @@ import {
 
 const router = express.Router();
 
-router.post("/login", loginLimiter, validateLogin, loginController);
+router.post("/login", validateLogin, loginController);
 router.post("/register", registerLimiter, validateRegister, registerController);
 router.post(
   "/forgot-password",

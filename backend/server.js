@@ -1,6 +1,5 @@
 import express from "express";
 import dotenv from "dotenv";
-import runMigrations from "./run_migrations.js"; // Importer le script de migration
 import db from "./src/config/db.js"; // pour connecter PostgreSQL
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -59,16 +58,16 @@ app.use("/api/stock", stockRoute);
 app.use("/api", conclusionRoutes); // routes pour les conclusions du médecin(diffrentes de celles du patient)
 app.use("/api/prescription-medicale", prescriptionMedical);
 
+// ✅ AJOUTEZ un health check DOCKER pour vérifier que le serveur est opérationnel
+app.get("/health", (req, res) => {
+  res.json({ status: "OK" });
+});
+
 // Fonction pour lancer le serveur après connexion DB
 const startServer = async () => {
   try {
     await db.connect(); // test de connexion
     console.log("PostgreSQL connecté, démarrage du serveur...");
-
-     console.log("🔄 Exécution des migrations...");
-    await runMigrations();
-    console.log("✅ Migrations terminées");
-
     const PORT = process.env.PORT;
     app.listen(PORT,  '0.0.0.0',() => {
       console.log(`Server running sur http://localhost:${PORT}` );
