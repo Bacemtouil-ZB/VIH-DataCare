@@ -1,4 +1,4 @@
-CREATE TABLE examen_clinique (
+CREATE TABLE IF NOT EXISTS examen_clinique (
     id SERIAL PRIMARY KEY,
     patient_id INTEGER NOT NULL,
     date_examen TIMESTAMP NOT NULL,

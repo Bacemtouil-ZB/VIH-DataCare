@@ -63,8 +63,11 @@ app.use("/api/prescription-medicale", prescriptionMedical);
 const startServer = async () => {
   try {
     await db.connect(); // test de connexion
-    await runMigrations(); // Exécuter les migrations
     console.log("PostgreSQL connecté, démarrage du serveur...");
+
+     console.log("🔄 Exécution des migrations...");
+    await runMigrations();
+    console.log("✅ Migrations terminées");
 
     const PORT = process.env.PORT;
     app.listen(PORT,  '0.0.0.0',() => {

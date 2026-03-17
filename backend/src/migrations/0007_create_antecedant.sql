@@ -2,7 +2,7 @@
 -- ANTECEDENTS (INTEGER)
 -- =========================
 
-CREATE TABLE antecedents (
+CREATE TABLE IF NOT EXISTS antecedents (
   id SERIAL PRIMARY KEY,
 
   patient_id INTEGER NOT NULL REFERENCES patients(id) ON DELETE RESTRICT,

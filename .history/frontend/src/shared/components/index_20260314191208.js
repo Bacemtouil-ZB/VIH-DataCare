@@ -11,7 +11,6 @@ export { default as Badge } from "./UI/Badge/Badge.jsx";
 export { default as Input } from "./UI/Input/Input.jsx";
 export { default as HistoriqueAccordeon } from "./UI/Table/HistoriqueAccordeon.jsx";
 export { default as HistoriqueTable } from "./UI/Table/HistoriqueTable.jsx";
-export { default as DashboardStatCard } from "./UI/Card/DashboardStatCard.jsx";
 export { Spinner } from "./UI/Loading/Spinner.jsx";
 export { default as EmptyState } from "./UI/Alert/EmptyState.jsx";
 export { default as StockAlert } from "./UI/Alert/Stockalert.jsx";

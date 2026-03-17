@@ -1,5 +1,5 @@
 
-CREATE TABLE habitudes_vie (
+CREATE TABLE IF NOT EXISTS habitudes_vie (
   id SERIAL PRIMARY KEY,
   examen_clinique_id INTEGER NOT NULL REFERENCES examen_clinique(id) ON DELETE CASCADE,
   tabagisme BOOLEAN DEFAULT FALSE NOT NULL,

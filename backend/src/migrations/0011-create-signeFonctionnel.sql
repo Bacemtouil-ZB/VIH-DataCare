@@ -1,5 +1,5 @@
 
-CREATE TABLE signes_fonctionnels (
+CREATE TABLE IF NOT EXISTS signes_fonctionnels (
     id SERIAL PRIMARY KEY,
     examen_clinique_id INTEGER NOT NULL,
     fievre BOOLEAN DEFAULT FALSE,

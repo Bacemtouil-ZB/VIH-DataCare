@@ -1,5 +1,5 @@
 
-CREATE TABLE ordonnances (
+CREATE TABLE IF NOT EXISTS ordonnances (
   id SERIAL PRIMARY KEY,
   nom_traitement VARCHAR(500) NOT NULL,
   quantite_prescrite INTEGER NOT NULL CHECK (quantite_prescrite > 0),

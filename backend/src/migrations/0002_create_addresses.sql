@@ -1,4 +1,26 @@
-﻿ALTER TABLE postal_codes
+﻿
+CREATE TABLE IF NOT EXISTS governorates (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL UNIQUE
+);
+
+CREATE TABLE  IF NOT EXISTS postal_codes (
+    id SERIAL PRIMARY KEY,
+    governorate_id INTEGER NOT NULL 
+        REFERENCES governorates(id)
+        ON DELETE CASCADE,
+    code CHAR(4) NOT NULL UNIQUE
+        CHECK (code ~ '^[0-9]{4}$')
+);
+
+CREATE TABLE IF NOT EXISTS addresses (
+    id SERIAL PRIMARY KEY,
+    postal_code_id INTEGER NOT NULL 
+        REFERENCES postal_codes(id),
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+ALTER TABLE postal_codes
 ADD COLUMN IF NOT EXISTS place_name VARCHAR(120) NOT NULL DEFAULT '';
 
 ALTER TABLE postal_codes

@@ -1,4 +1,4 @@
-CREATE TABLE signes_cliniques (
+CREATE TABLE IF NOT EXISTS signes_cliniques (
     id SERIAL PRIMARY KEY,
     examen_clinique_id INTEGER NOT NULL,
     poids DECIMAL(5,2),

@@ -1,4 +1,4 @@
-CREATE TABLE observations (
+CREATE TABLE IF NOT EXISTS observations (
     id                 SERIAL PRIMARY KEY,
     examen_clinique_id INTEGER NOT NULL,
     remarque           TEXT    NOT NULL,

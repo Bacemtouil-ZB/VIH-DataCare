@@ -1,7 +1,18 @@
-FROM node:20-alpine
+FROM node:18-alpine
+
 WORKDIR /app
-COPY package.json package-lock.json ./
-RUN npm install
+
+# Copier les fichiers de dépendances
+COPY package*.json ./
+
+# Installer les dépendances
+RUN npm ci --only=production
+
+# Copier tout le code
 COPY . .
+
+# Exposer le port
 EXPOSE 3000
-CMD ["npm", "start"]
+
+# Démarrer l'application
+CMD ["node", "server.js"]
