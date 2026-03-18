@@ -20,12 +20,13 @@ export default function MainWorkspaceLayout() {
   const [rightClosed, setRightClosed] = useState(false);
 
   return (
-    <div className="workspace-container"
-    >
+    <div className="workspace-container">
       <Header />
 
-      <PanelGroup direction="horizontal">
-
+        <PanelGroup
+            direction="horizontal"
+            style={{ flex: 1, minHeight: 0, overflow: "hidden" }} 
+          >
         {/* LEFT PANEL */}
         <Panel
           ref={leftRef}

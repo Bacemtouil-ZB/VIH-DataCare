@@ -1,0 +1,6 @@
+.main-content {
+  height: 100%;
+  overflow-y: auto;   /* ✅ scroll interne au lieu de pousser le layout */
+  overflow-x: hidden; /* ✅ évite le scroll horizontal parasite */
+  background: #ffffff;
+}

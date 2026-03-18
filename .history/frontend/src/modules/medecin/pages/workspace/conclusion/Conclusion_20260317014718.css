@@ -1,12 +1,11 @@
 /* ── Page wrapper ── */
-.pcPage{
+.pcPage {
   max-width: 1100px;
   margin: 0 auto;
   padding: 20px 16px;
   background: #f0f2f5;
-  min-height: 100%;      
-  box-sizing: border-box;
-  
+  min-height: auto;
+ 
 }
 
 /* ── Page title ── */
@@ -135,9 +134,7 @@
   font-size: 14px;
 }
 .pcQuillLarge .ql-editor {
-  min-height: 220px;      /* hauteur minimale */
-  max-height: 350px;      /* limite pour ne pas casser le layout */
-  overflow-y: auto;       /* scroll si contenu dépasse */
+  min-height: 220px;
   line-height: 1.7;
 }
 

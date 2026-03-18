@@ -89,13 +89,13 @@ export default function ConclusionUI({
               <div>
                 <div className="pcModalTitle">
                   <i className="bi bi-file-earmark-text me-2" />
-                    Conclusion médicale — {formatDate(previewItem.created_at)}
+                  Conclusion â€” {formatDate(previewItem.created_at)}
                 </div>
                 <div className="pcModalMeta">
                   <i className="bi bi-person-circle me-1" />
-                  {previewItem.doctor_name || "â”"}
-                  <span className="mx-2">Â</span>
-                 Modifié le {new Date(previewItem.updated_at).toLocaleString()}
+                  {previewItem.doctor_name || "â€”"}
+                  <span className="mx-2">Â·</span>
+                  Modifié le {formatDate(previewItem.updated_at)}
                 </div>
               </div>
               <button className="pcBtnCancel" onClick={() => setPreviewItem(null)}>
