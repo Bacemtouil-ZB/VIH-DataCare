@@ -1,6 +1,6 @@
-import { fmt, prettyValue, txt } from "./helpers";
+﻿import { fmt, prettyValue, txt } from "./helpers";
 import PageHeader from "../../components/PageHeader";
-import { ActionButton, HistoriqueActions,HistoriqueTable,Spinner} from "../../../../shared/components/index";
+import { ActionButton, FilterToolbar, HistoriqueActions,HistoriqueTable,Spinner} from "../../../../shared/components/index";
 
 const AuditLogsPageUI = ({
   patientNumeroInput,
@@ -70,39 +70,53 @@ const AuditLogsPageUI = ({
 
       <div className="auditContainer">
         <section className="audit__card">
-          <form className="audit__row" onSubmit={onSearch}>
-            <div className="audit__field audit__field--grow">
-              <label className="audit__label">Numéro patient</label>
-              <input
-                className="audit__input"
-                value={patientNumeroInput}
-                onChange={(e) => setPatientNumeroInput(e.target.value)}
-                placeholder="Ex: VIH-2026-001"
-              />
-            </div>
-            <ActionButton
-              action="add"
-              label="Rechercher"
-              type="submit"
-              showIcon={false}
-            />
-            <ActionButton
-              action="annuler"
-              label="Reset"
-              type="button"
-              onClick={onReset}
-              variant="outline"
-              showIcon={false}
-            />
-          </form>
+          <FilterToolbar
+            as="form"
+            className="audit__row"
+            onSubmit={onSearch}
+            items={[
+              {
+                type: "input",
+                label: "Numéro patient",
+                labelClassName: "audit__label",
+                wrapperClassName: "audit__field audit__field--grow",
+                className: "audit__input",
+                value: patientNumeroInput,
+                onChange: (e) => setPatientNumeroInput(e.target.value),
+                placeholder: "Ex: VIH-2026-001",
+              },
+            ]}
+            actions={[
+              <ActionButton
+                key="search"
+                action="add"
+                label="Rechercher"
+                type="submit"
+                showIcon={false}
+              />,
+              <ActionButton
+                key="reset"
+                action="annuler"
+                label="Reset"
+                type="button"
+                onClick={onReset}
+                variant="outline"
+                showIcon={false}
+              />,
+            ]}
+          />
 
-          <div className="audit__filters">
-            <div className="audit__field">
-              <label className="audit__label">Module</label>
-              <select
-                className="audit__input"
-                value={module}
-                onChange={(e) => {
+          <FilterToolbar
+            className="audit__filters"
+            items={[
+              {
+                type: "select",
+                label: "Module",
+                labelClassName: "audit__label",
+                wrapperClassName: "audit__field",
+                className: "audit__input",
+                value: module,
+                onChange: (e) => {
                   setOffset(0);
                   const nextModule = e.target.value;
                   setModule(nextModule);
@@ -110,49 +124,47 @@ const AuditLogsPageUI = ({
                     const actionModule = action.split("_").slice(0, -1).join("_");
                     if (actionModule !== nextModule) setAction("");
                   }
-                }}
-              >
-                <option value="">Tous</option>
-                {modules.map((m) => (
-                  <option key={m} value={m}>{m}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="audit__field">
-              <label className="audit__label">Action</label>
-              <select
-                className="audit__input"
-                value={action}
-                onChange={(e) => { setOffset(0); setAction(e.target.value); }}
-              >
-                <option value="">Toutes</option>
-                {actionsForModule.map((a) => (
-                  <option key={a} value={a}>{a}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="audit__field">
-              <label className="audit__label">Du</label>
-              <input
-                className="audit__input"
-                type="date"
-                value={from}
-                onChange={(e) => { setOffset(0); setFrom(e.target.value); }}
-              />
-            </div>
-
-            <div className="audit__field">
-              <label className="audit__label">Au</label>
-              <input
-                className="audit__input"
-                type="date"
-                value={to}
-                onChange={(e) => { setOffset(0); setTo(e.target.value); }}
-              />
-            </div>
-          </div>
+                },
+                options: [
+                  { value: "", label: "Tous" },
+                  ...modules.map((m) => ({ value: m, label: m })),
+                ],
+              },
+              {
+                type: "select",
+                label: "Action",
+                labelClassName: "audit__label",
+                wrapperClassName: "audit__field",
+                className: "audit__input",
+                value: action,
+                onChange: (e) => { setOffset(0); setAction(e.target.value); },
+                options: [
+                  { value: "", label: "Toutes" },
+                  ...actionsForModule.map((a) => ({ value: a, label: a })),
+                ],
+              },
+              {
+                type: "input",
+                label: "Du",
+                labelClassName: "audit__label",
+                wrapperClassName: "audit__field",
+                className: "audit__input",
+                inputType: "date",
+                value: from,
+                onChange: (e) => { setOffset(0); setFrom(e.target.value); },
+              },
+              {
+                type: "input",
+                label: "Au",
+                labelClassName: "audit__label",
+                wrapperClassName: "audit__field",
+                className: "audit__input",
+                inputType: "date",
+                value: to,
+                onChange: (e) => { setOffset(0); setTo(e.target.value); },
+              },
+            ]}
+          />
         </section>
 
         <div className="auditSpacer" />

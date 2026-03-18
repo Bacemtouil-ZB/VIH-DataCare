@@ -131,6 +131,11 @@
   color: var(--text);
 }
 
+.users-table-wrap table th:first-child,
+.users-table-wrap table td:first-child {
+  padding-left: 16px;
+}
+
 .users-table tbody tr:hover {
   background: #f8fafc;
 }
@@ -158,6 +163,14 @@
   border-radius: 14px;
   border: 1px solid var(--line);
   box-shadow: var(--shadow);
+}
+
+.modal-header .btn-close {
+  opacity: 1;
+  filter: none;
+  width: 0.85rem;
+  height: 0.85rem;
+  background-size: 0.85rem 0.85rem;
 }
 
 .cell-strong {
@@ -191,4 +204,37 @@
   .users-page__toolbar {
     grid-template-columns: 1fr;
   }
+}
+.users-page .modal-header {
+  align-items: center;
+}
+
+.users-page .modal-header .btn-close {
+  opacity: 1 !important;
+  filter: none !important;
+  width: 1.1rem;
+  height: 1.1rem;
+  background-size: 1.1rem 1.1rem;
+  background-color: transparent !important;
+  border: none;
+  border-radius: 6px;
+  padding: 0;
+  margin: 0;
+  line-height: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath stroke='%23000' stroke-linecap='round' stroke-width='2' d='M2 2l12 12M14 2L2 14'/%3e%3c/svg%3e");
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #000;
+  transform: none !important;
+}
+
+.users-page .modal-header .btn-close:hover,
+.users-page .modal-header .btn-close:focus,
+.users-page .modal-header .btn-close:active {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  opacity: 1 !important;
 }

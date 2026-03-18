@@ -1,4 +1,4 @@
-import { Spinner } from "../../../../../shared/components";
+﻿import { Spinner } from "../../../../../shared/components";
 import { HistoriqueAccordeon, HistoriqueTable, HistoriqueActions } from "../../../../../shared/components";
 import { TABLE_HEADERS, formatDate } from "./conclusionConstants.js";
 
@@ -15,7 +15,7 @@ export default function ConclusionUI({
       <tr key={c.id}>
         <td className="align-middle" style={{ fontSize: 13, fontWeight: 600 }}>
           <i className="bi bi-person-circle me-1 text-muted" />
-          {c.doctor_name || "â€”"}
+          {c.doctor_name || "—"}
         </td>
         <td className="align-middle text-nowrap" style={{ fontSize: 13 }}>
           {formatDate(c.created_at)}
@@ -35,7 +35,7 @@ export default function ConclusionUI({
 
   return (
     <>
-      {/* â”€â”€ History table â”€â”€ */}
+      {/* — History table — */}
       <HistoriqueAccordeon
         title="Historique des conclusions"
         count={total}
@@ -56,7 +56,7 @@ export default function ConclusionUI({
             {conclusions.length > 0 && (
               <div className="pcPager">
                 <div className="text-muted small">
-                  Page {page} / {totalPages} â€” {total} résultat{total > 1 ? "s" : ""}
+                  Page {page} / {totalPages} — {total} résultat{total > 1 ? "s" : ""}
                 </div>
                 <div className="d-flex gap-2">
                   <button
@@ -89,12 +89,12 @@ export default function ConclusionUI({
               <div>
                 <div className="pcModalTitle">
                   <i className="bi bi-file-earmark-text me-2" />
-                  Conclusion â€” {formatDate(previewItem.created_at)}
+                  Conclusion — {formatDate(previewItem.created_at)}
                 </div>
                 <div className="pcModalMeta">
                   <i className="bi bi-person-circle me-1" />
-                  {previewItem.doctor_name || "â€”"}
-                  <span className="mx-2">Â·</span>
+                  {previewItem.doctor_name || "—"}
+                  <span className="mx-2">·</span>
                   Modifié le {formatDate(previewItem.updated_at)}
                 </div>
               </div>

@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { getAllPatients } from "../../../shared/services/patientService";
-import { ActionButton, PageTitle, SearchBar, Spinner } from "../../../shared/components";
-import {  getAllDoctors } from "../services/patientServices";
+import { getAllPatients } from "../../../../../shared/services/patientService";
+import { ActionButton, PageTitle, FilterToolbar, Spinner } from "../../../../../shared/components";
+import { getAllDoctors } from "../../../services/patientServices";
 
 import "./PatientsPage.css";
 
@@ -51,30 +51,39 @@ export default function PatientsPage() {
           <span className="count">{filteredPatients.length} résultats</span>
         </div>
 
-        <div className="toolbar-right">
-          <SearchBar
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Rechercher patient..."
-            wrapperClassName="search-box mb-0"
-          />
-
-          <select
-            className="filter-select"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-          >
-            <option value="">Tous</option>
-            <option value="interne">Interne</option>
-            <option value="externe">Externe</option>
-          </select>
-
+        <FilterToolbar
+        className="toolbar-right"
+        items={[
+          {
+            type: "search",
+            value: search,
+            onChange: (e) => setSearch(e.target.value),
+            placeholder: "Rechercher patient...",
+            wrapperClassName: "search-box mb-0",
+            height: "40px",
+          },
+          {
+            type: "select",
+            value: filter,
+            onChange: (e) => setFilter(e.target.value),
+            className: "filter-select",
+            options: [
+              { value: "", label: "Tous" },
+              { value: "interne", label: "Interne" },
+              { value: "externe", label: "Externe" },
+            ],
+          },
+        ]}
+        actions={[
           <ActionButton
+            key="add"
             action="add"
             label="Nouveau patient"
             onClick={() => navigate("/medecin/patient/new/workspace")}
-          />
-        </div>
+            height="40px"
+          />,
+        ]}
+      />
       </div>
 
       <div className="table-wrapper">
@@ -82,14 +91,14 @@ export default function PatientsPage() {
           <Spinner />
         ) : (
           <table>
-            {/* ✅ Un seul thead, pas de double imbrication */}
+            {/* Un seul thead, pas de double imbrication */}
             <thead>
               <tr>
                 <th>Dossier</th>
                 <th>Patient</th>
                 <th>Date naissance</th>
                 <th>Médecin Traitant</th>
-                <th>Derniére consultation</th>
+                <th>Dernière consultation</th>
                 <th>Traitement</th>
                 <th>Statut</th>
               </tr>
@@ -171,5 +180,6 @@ export default function PatientsPage() {
     </div>
   );
 }
+
 
 

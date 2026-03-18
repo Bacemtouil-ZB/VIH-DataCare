@@ -1,4 +1,4 @@
-/* ── PrescriptionExamens.css ─────────────────────────────────── */
+﻿/* ── PrescriptionExamens.css ─────────────────────────────────── */
 
 .pe-page {
   padding: 1.25rem 1.5rem;
@@ -13,10 +13,21 @@
   margin-bottom: 16px;
 }
 
+.pe-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
 .pe-search {
   margin-bottom: 0 !important;
   flex: 1;
   max-width: 280px;
+}
+
+.pe-search-date {
+  max-width: 190px;
 }
 
 /* Formulaire — grille 2 colonnes */
@@ -119,4 +130,30 @@
 .pe-stock-hint.alerte {
   color: #dc2626;
   font-weight: 600;
+}
+
+/* Médicament + stock en ligne */
+.pe-med-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 120px;
+  gap: 12px;
+  align-items: start;
+}
+
+.pe-med-qty {
+  max-width: 160px;
+}
+
+.pe-qty-mini {
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .pe-med-row {
+    grid-template-columns: 1fr;
+  }
+
+  .pe-med-qty {
+    max-width: 100%;
+  }
 }

@@ -2,7 +2,7 @@
 import NewPatientGuard from "./NewPatientGuard.jsx";
 import ProtectedRoute from "../../../routes/ProtectedRoute";
 import { DashboardLayout } from "../../../shared/components";
-import PatientsPage from "../pages/PatientsPage";
+import PatientsPage from "../pages/workspace/patientsPage/PatientsPage";
 import DashboardMed from "../pages/DashboardMed";
 import ProfilPage from "../../../pages/parametres/profile";
 import MainWorkspaceLayout from "../pages/MainWorkspaceLayout";

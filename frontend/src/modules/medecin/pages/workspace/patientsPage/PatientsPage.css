@@ -44,10 +44,25 @@
 }
 
 .toolbar-right {
+  margin-left: auto;
+}
+
+.patients-toolbar .filters-toolbar.toolbar-right {
   display: flex;
   align-items: center;
   gap: 10px;
-  flex-wrap: wrap;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+}
+
+.patients-toolbar .filters-toolbar.toolbar-right .sh-searchbar-input,
+.patients-toolbar .filters-toolbar.toolbar-right .filter-select,
+.patients-toolbar .filters-toolbar.toolbar-right .ec-action-btn {
+  height: 40px;
+}
+
+.patients-toolbar .filters-toolbar.toolbar-right .mb-3 {
+  margin-bottom: 0 !important;
 }
 
 /* Search */

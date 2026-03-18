@@ -1,17 +1,16 @@
-// ── UsersPageUI.jsx ──────────────────────────────────────────────────────────
-// Rendu pur — aucune logique métier, que des props
+﻿
 
 import { Modal, Form } from "react-bootstrap";
 import {
   ActionButton,
   Badge,
   HistoriqueTable,
-  SearchBar,
+  FilterToolbar,
   Spinner,
 } from "../../../../shared/components/index";
 import PageHeader from "../../components/PageHeader";
 import UserStatsCards from "../../components/Userstatscards";
-import { roleBadgeColor, STATUS_OPTIONS, TABLE_HEADERS } from "./usersConstants";
+import { STATUS_OPTIONS, TABLE_HEADERS } from "./usersConstants";
 import "./users_page.css";
 
 export default function UsersPageUI({
@@ -36,10 +35,9 @@ export default function UsersPageUI({
 }) {
   const { totalUsers, activeUsers, inactiveUsers } = totals;
 
-  // ── Rendu d'une ligne du tableau ─────────────────────────────────────────
+  // Rendu d'une ligne du tableau
   const renderRow = (user) => {
     const busy = actionLoading === user.id;
-    const { bg: roleBg, color: roleColor } = roleBadgeColor(user.role);
 
     return (
       <tr key={user.id}>
@@ -47,9 +45,7 @@ export default function UsersPageUI({
         <td className="cell-strong">{user.nom}</td>
         <td>{user.prenom}</td>
         <td className="cell-email">{user.email}</td>
-        <td>
-          <Badge bg={roleBg} color={roleColor}>{user.role}</Badge>
-        </td>
+        <td>{user.role}</td>
         <td>
           <Badge
             bg={user.isactivated ? "#198754" : "rgba(55, 54, 54, 0.25)"}
@@ -102,42 +98,39 @@ export default function UsersPageUI({
         />
       </div>
 
-      {/* ── Toolbar filtres ────────────────────────────────────────────────── */}
-      <div className="users-page__toolbar">
+      {/* Toolbar filtres */}
+      <FilterToolbar
+        className="users-page__toolbar"
+        items={[
+          {
+            type: "search",
+            value: query,
+            onChange: (e) => setQuery(e.target.value),
+            placeholder: "Rechercher (nom, prénom, email)...",
+            wrapperClassName: "toolbar__search mb-0",
+          },
+          {
+            type: "select",
+            value: roleFilter,
+            onChange: (e) => setRoleFilter(e.target.value),
+            ariaLabel: "Filtrer par rôle",
+            className: "toolbar__select form-select",
+            options: [
+              { value: "all", label: "Tous les rôles" },
+              ...roleOptions,
+            ],
+          },
+          {
+            type: "select",
+            value: statusFilter,
+            onChange: (e) => setStatusFilter(e.target.value),
+            ariaLabel: "Filtrer par statut",
+            className: "toolbar__select form-select",
+            options: STATUS_OPTIONS,
+          },
+        ]}
+      />
 
-        {/* SearchBar — composant réutilisable depuis shared/components */}
-        <SearchBar
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Rechercher (nom, prénom, email)..."
-          wrapperClassName="toolbar__search mb-0"
-        />
-
-        <Form.Select
-          className="toolbar__select"
-          value={roleFilter}
-          onChange={(e) => setRoleFilter(e.target.value)}
-          aria-label="Filtrer par rôle"
-        >
-          <option value="all">Tous les rôles</option>
-          {roleOptions.map((r) => (
-            <option key={r.value} value={r.value}>{r.label}</option>
-          ))}
-        </Form.Select>
-
-        <Form.Select
-          className="toolbar__select"
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          aria-label="Filtrer par statut"
-        >
-          {STATUS_OPTIONS.map((s) => (
-            <option key={s.value} value={s.value}>{s.label}</option>
-          ))}
-        </Form.Select>
-      </div>
-
-      {/* ── Tableau — Spinner + HistoriqueTable réutilisables ─────────────── */}
       {loading ? (
         <div aria-busy="true">
           <Spinner />
@@ -155,7 +148,7 @@ export default function UsersPageUI({
         </div>
       )}
 
-      {/* ── Modal changement de rôle ───────────────────────────────────────── */}
+      {/* Modal changement de rôle */}
       <Modal show={showRoleModal} onHide={onCloseRoleModal} centered>
         <Modal.Header closeButton>
           <Modal.Title>
@@ -164,7 +157,7 @@ export default function UsersPageUI({
         </Modal.Header>
         <Modal.Body>
           <Form.Group>
-            <Form.Label>Nouveau rôle</Form.Label>
+            <Form.Label>Nouveau rôle</Form.Label> 
             <Form.Select value={newRole} onChange={(e) => setNewRole(e.target.value)}>
               {roleOptions.map((role) => (
                 <option value={role.value} key={role.value}>{role.label}</option>

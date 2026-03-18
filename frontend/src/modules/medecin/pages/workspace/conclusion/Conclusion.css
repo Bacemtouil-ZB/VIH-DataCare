@@ -3,8 +3,9 @@
   max-width: 1100px;
   margin: 0 auto;
   padding: 20px 16px;
-  background: #f0f2f5;
-  min-height: 100vh;
+  background: transparent;
+  min-height: 0;
+  padding-bottom: 0;
 }
 
 /* ── Page title ── */

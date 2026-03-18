@@ -230,8 +230,8 @@
 }
 
 .auditModal--compact {
-  width: min(820px, 100%);
-  max-height: min(74vh, 640px);
+  width: min(980px, 100%);
+  max-height: min(86vh, 780px);
   display: flex;
   flex-direction: column;
 }
@@ -356,5 +356,5 @@
 }
 
 .auditDiff__row--changed td {
-  background: #fff7ed;
+  background: #f7f1e6 !important;
 }

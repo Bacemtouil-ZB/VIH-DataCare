@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+﻿import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { getPatientByNumero } from "../../../services/patientServices";
 import { getThreeLastPrise } from "../../../services/ordonnancesService";
@@ -134,7 +134,7 @@ export default function LeftPanel() {
     return (
       <div className="patient-panel">
         <div className="error-container">
-          <p className="error-message">⚠️ {error}</p>
+          <p className="error-message">! {error}</p>
         </div>
       </div>
     );

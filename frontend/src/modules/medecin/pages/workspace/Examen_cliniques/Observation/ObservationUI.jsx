@@ -80,7 +80,7 @@ export default function ObservationUI({
       </HistoriqueAccordeon>
 
       {detailObservation && (
-        <FormulaireWrapper isModifying={false} labelCreate="Détails de l'observation" labelModify="D�tails de l'observation">
+        <FormulaireWrapper isModifying={false} labelCreate="Détails de l'observation" labelModify="Détails de l'observation">
           <div className="ec-readonly-block">
             <div className="mb-4">
               <label className={`${LABEL_CLS} ec-th-sm`}>Remarques observées</label>

@@ -1,4 +1,5 @@
 import { PageTitle, ActionButton, FieldLabel, FieldError, Input, RadioGroup, Spinner } from "../../../../../shared/components";
+import { toInputDate } from "../../../../../shared/utils/dateHelpers";
 import {
   MODES_CONTAMINATION,
   TYPES_DEPISTAGE,
@@ -31,6 +32,7 @@ export default function VihUI({
   handleCancel,
 }) {
   if (isLoadingPage) return <Spinner />;
+  const today = toInputDate(new Date());
 
   return (
     <div className="medical-page">
@@ -140,6 +142,7 @@ export default function VihUI({
                 className={errors.date_derniere_negative ? "is-invalid" : ""}
                 value={formData.date_derniere_negative}
                 onChange={handleFieldChange}
+                max={today}
                 disabled={isDisabled || isLoading}
               />
               <FieldError error={errors.date_derniere_negative} />
@@ -154,6 +157,7 @@ export default function VihUI({
                 className={errors.date_contamination ? "is-invalid" : ""}
                 value={formData.date_contamination}
                 onChange={handleFieldChange}
+                max={today}
                 disabled={isDisabled || isLoading}
               />
               <FieldError error={errors.date_contamination} />
@@ -168,6 +172,7 @@ export default function VihUI({
                 className={errors.date_vih_positif ? "is-invalid" : ""}
                 value={formData.date_vih_positif}
                 onChange={handleFieldChange}
+                max={today}
                 disabled={isDisabled || isLoading}
                 required
               />
@@ -201,6 +206,7 @@ export default function VihUI({
                   className={errors.debut_stade_c ? "is-invalid" : ""}
                   value={formData.debut_stade_c}
                   onChange={handleFieldChange}
+                  max={today}
                   disabled={isDisabled || isLoading}
                 />
                 <FieldError error={errors.debut_stade_c} />

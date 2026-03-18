@@ -33,6 +33,13 @@ main > div {
   overflow: visible;       /* changed from hidden */
 }
 
+/* Let Conclusion page shrink to content to avoid blank footer */
+main > div:has(.pcPage--no-fill) {
+  flex: 0 0 auto;
+  align-self: flex-start;
+  height: auto;
+}
+
 /* Outlet container scrolls */
 .outlet-container {
   width: 100%;
@@ -44,6 +51,13 @@ main > div {
   /* CRITICAL */
   min-height: 0;          /* added */
   overflow-y: auto;       /* keep */
+}
+
+.outlet-container:has(.pcPage--no-fill) {
+  flex: 0 0 auto;
+  height: auto;
+  min-height: 0;
+  overflow: visible;
 }
 
 /* Responsive pour petits écrans */

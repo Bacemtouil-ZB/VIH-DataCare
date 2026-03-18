@@ -8,9 +8,11 @@ import {
   HistoriqueActions,
   HistoriqueTable,
   Input,
+  PageTitle,
+  SearchBar,
   Spinner,
 } from "../../../../../shared/components";
-import { toFrDate } from "../../../../../shared/utils/dateHelpers";
+import { toFrDate, toInputDate } from "../../../../../shared/utils/dateHelpers";
 import { getStatutStyle } from "./prescreptionMedicalHelpers";
 import { STATUT_LABELS } from "./prescreptionMedicalConstants";
 
@@ -33,39 +35,78 @@ export default function PrescreptionMedicalUI({
   saving,
   closeForm,
   handleSubmit,
+  searchTerm,
+  setSearchTerm,
+  searchDate,
+  setSearchDate,
+  openCreate,
 }) {
+  const today = toInputDate(new Date());
   return (
-    <>
+    <div className="ec-page-bg pe-page">
+      <PageTitle title="Prescription mÈdicale" />
+
+      <div className="pe-toolbar">
+        <div className="pe-toolbar-left">
+          <SearchBar
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Rechercher un mÈdicament, .."
+            wrapperClassName="pe-search"
+          />
+          <SearchBar
+            type="date"
+            value={searchDate}
+            onChange={(e) => setSearchDate(e.target.value)}
+            wrapperClassName="pe-search pe-search-date"
+            max={today}
+          />
+        </div>
+        {!showForm ? (
+          <ActionButton action="add" label="Ajouter" size="sm" onClick={openCreate} />
+        ) : (
+          <ActionButton action="annuler" label="Annuler" size="sm" onClick={closeForm} />
+        )}
+      </div>
+
       {showForm && (
         <FormulaireWrapper
           isModifying={isModifying}
-          labelCreate="Nouvelle prescription m√©dicale"
+          labelCreate="Nouvelle prescription mÈdicale"
           labelModify="Modifier la prescription"
         >
           <form onSubmit={handleSubmit}>
             <div className="pe-form-grid">
               <div className="pe-col-span-2">
-                <FieldLabel required>M√©dicament (stock)</FieldLabel>
-                <select
-                  className="pe-select form-select"
-                  value={formData.medicament_id}
-                  onChange={handleMedSelect}
-                  required
-                >
-                  <option value="">-- S√©lectionner un m√©dicament --</option>
-                  {stockItems.map((med) => (
-                    <option key={med.id} value={med.id}>
-                      {med.code ? `[${med.code}]` : ""} {med.composition || med.nom || "M√©dicament"} - Stock : {med.quantite ?? med.quantity ?? 0}
-                    </option>
-                  ))}
-                </select>
-                {selectedMed && (
-                  <p className={`pe-stock-hint ${(selectedMed.quantite ?? selectedMed.quantity ?? 0) === 0 ? "alerte" : ""}`}>
-                    {(selectedMed.quantite ?? selectedMed.quantity ?? 0) === 0
-                      ? "Attention : rupture de stock - m√©dicament indisponible"
-                      : `Quantit√© disponible : ${selectedMed.quantite ?? selectedMed.quantity}`}
-                  </p>
-                )}
+                <div className="pe-med-row">
+                  <div className="pe-med-col">
+                    <FieldLabel required>MÈdicament (stock)</FieldLabel>
+                    <select
+                      className="pe-select form-select"
+                      value={formData.medicament_id}
+                      onChange={handleMedSelect}
+                      required
+                    >
+                      <option value="">-- SÈlectionner un mÈdicament --</option>
+                      {stockItems.map((med) => (
+                        <option key={med.id} value={med.id}>
+                          {med.code ? `[${med.code}]` : ""} {med.composition || med.nom || "MÈdicament"}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="pe-med-qty">
+                    <FieldLabel>QtÈ stock</FieldLabel>
+                    <Input
+                      type="text"
+                      value={selectedMed ? (selectedMed.quantite ?? selectedMed.quantity ?? 0) : ""}
+                      placeholder="--"
+                      disabled
+                      className="pe-qty-mini"
+                    />
+                  </div>
+                </div>
               </div>
 
               <div>
@@ -73,7 +114,7 @@ export default function PrescreptionMedicalUI({
                 <Input
                   value={formData.posologie}
                   onChange={field("posologie")}
-                  placeholder="Ex : 1 comprim√© matin et soir"
+                  placeholder="Ex : 1 comprimÈ matin et soir"
                 />
               </div>
 
@@ -92,11 +133,12 @@ export default function PrescreptionMedicalUI({
                   type="date"
                   value={formData.date}
                   onChange={field("date")}
+                  max={today}
                 />
               </div>
 
               <div>
-                <FieldLabel required>Quantit√© prescrite</FieldLabel>
+                <FieldLabel required>QuantitÈ prescrite</FieldLabel>
                 <Input
                   type="number"
                   min="1"
@@ -113,7 +155,7 @@ export default function PrescreptionMedicalUI({
                   rows={3}
                   value={formData.remarque}
                   onChange={field("remarque")}
-                  placeholder="Observations ou instructions compl√©mentaires (optionnel)"
+                  placeholder="Observations ou instructions complÈmentaires (optionnel)"
                 />
               </div>
             </div>
@@ -128,7 +170,7 @@ export default function PrescreptionMedicalUI({
               />
               <ActionButton
                 action="save"
-                label={isModifying ? "Mettre √© jour" : "Enregistrer"}
+                label={isModifying ? "Mettre ‡ jour" : "Enregistrer"}
                 loading={saving}
                 size="sm"
                 showIcon={false}
@@ -140,7 +182,7 @@ export default function PrescreptionMedicalUI({
       )}
 
       <HistoriqueAccordeon
-        title="Historique des prescriptions m√©dicales"
+        title="Historique des prescriptions mÈdicales"
         count={filtered.length}
         open={showHistory}
         onToggle={() => setShowHistory((v) => !v)}
@@ -148,12 +190,12 @@ export default function PrescreptionMedicalUI({
         {loading ? (
           <Spinner />
         ) : filtered.length === 0 ? (
-          <EmptyState message="Aucune prescription enregistr√©e." />
+          <EmptyState message="Aucune prescription enregistrÈe." />
         ) : (
           <HistoriqueTable
-            headers={["Date", "M√©dicament", "Posologie", "Dosage", "Qt√©", "Statut", "Action"]}
+            headers={["Date", "MÈdicament", "Posologie", "Dosage", "QtÈ", "Statut", "Action"]}
             items={filtered}
-            emptyMessage="Aucune prescription enregistr√©e."
+            emptyMessage="Aucune prescription enregistrÈe."
             renderRow={(p) => (
               <tr key={p.id}>
                 <td>{toFrDate(p.date)}</td>
@@ -184,12 +226,12 @@ export default function PrescreptionMedicalUI({
       {detailItem && (
         <FormulaireWrapper
           isModifying={false}
-          labelCreate="D√©tails de la prescription"
-          labelModify="D√©tails de la prescription"
+          labelCreate="DÈtails de la prescription"
+          labelModify="DÈtails de la prescription"
         >
           <div className="pe-detail-grid">
             <div>
-              <FieldLabel>M√©dicament</FieldLabel>
+              <FieldLabel>MÈdicament</FieldLabel>
               <Input value={detailItem.traitement || "-"} disabled />
             </div>
             <div>
@@ -205,7 +247,7 @@ export default function PrescreptionMedicalUI({
               <Input value={detailItem.dosage || "-"} disabled />
             </div>
             <div>
-              <FieldLabel>Quantit√© prescrite</FieldLabel>
+              <FieldLabel>QuantitÈ prescrite</FieldLabel>
               <Input value={detailItem.quantite || "-"} disabled />
             </div>
             <div>
@@ -232,6 +274,6 @@ export default function PrescreptionMedicalUI({
           </div>
         </FormulaireWrapper>
       )}
-    </>
+    </div>
   );
 }

@@ -10,7 +10,7 @@ export default function PatientConclusionPage() {
   const logic = useConclusionLogic(numero);
 
   return (
-    <div className="pcPage">
+    <div className="pcPage pcPage--no-fill">
 
       <div className="page-header">
         <PageTitle title="Conclusions médicales" />

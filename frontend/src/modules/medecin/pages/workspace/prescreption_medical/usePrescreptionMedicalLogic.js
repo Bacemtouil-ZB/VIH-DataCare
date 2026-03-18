@@ -21,6 +21,7 @@ export function usePrescreptionMedicalLogic(numero) {
   const [detailItem, setDetailItem] = useState(null);
   const [formData, setFormData] = useState(INITIAL_FORM);
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchDate, setSearchDate] = useState("");
 
   useEffect(() => {
     if (!numero) return;
@@ -48,15 +49,28 @@ export function usePrescreptionMedicalLogic(numero) {
   );
 
   const filtered = useMemo(() => {
-    if (!searchTerm.trim()) return prescriptions;
-    const q = searchTerm.toLowerCase();
-    return prescriptions.filter(
-      (p) =>
+    const q = searchTerm.trim().toLowerCase();
+    const dateQ = searchDate.trim();
+    return prescriptions.filter((p) => {
+      const matchesText =
+        !q ||
         p.traitement?.toLowerCase().includes(q) ||
         p.statut?.toLowerCase().includes(q) ||
-        p.posologie?.toLowerCase().includes(q)
-    );
-  }, [prescriptions, searchTerm]);
+        p.posologie?.toLowerCase().includes(q);
+
+      if (!matchesText) return false;
+      if (!dateQ) return true;
+
+      const raw = p.date || p.created_at || "";
+      if (!raw) return false;
+
+      const iso = raw instanceof Date
+        ? raw.toISOString().split("T")[0]
+        : String(raw).split("T")[0];
+
+      return iso === dateQ;
+    });
+  }, [prescriptions, searchTerm, searchDate]);
 
   const field = (key) => (e) =>
     setFormData((prev) => ({ ...prev, [key]: e.target.value }));
@@ -180,6 +194,8 @@ export function usePrescreptionMedicalLogic(numero) {
     setFormData,
     searchTerm,
     setSearchTerm,
+    searchDate,
+    setSearchDate,
     selectedMed,
     filtered,
     field,

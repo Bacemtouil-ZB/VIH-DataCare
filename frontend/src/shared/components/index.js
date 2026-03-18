@@ -21,3 +21,4 @@ export { FormulaireWrapper } from "./Forms/FormulaireWrapper/FormulaireWrapper.j
 export { default as RadioGroup } from "./UI/Button/RadioGroup.jsx";
 export { default as SearchBar } from "./Forms/SearchBar/SearchBar.jsx";
 export { default as FieldError } from "./Forms/FieldLabel/FieldError.jsx";
+export { FilterToolbar } from "./Forms/FilterToolbar/FilterToolbar.jsx";

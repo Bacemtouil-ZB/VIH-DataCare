@@ -7,9 +7,11 @@ import {
   HistoriqueActions,
   HistoriqueTable,
   Input,
+  PageTitle,
+  SearchBar,
   Spinner,
 } from "../../../../../shared/components";
-import { toFrDate } from "../../../../../shared/utils/dateHelpers";
+import { toFrDate, toInputDate } from "../../../../../shared/utils/dateHelpers";
 
 export default function RendezVousUI({
   filtered,
@@ -21,14 +23,36 @@ export default function RendezVousUI({
   detailRdv,
   setDetailRdv,
   statusStyle,
+  searchDate,
+  setSearchDate,
   showForm,
+  openCreate,
+  closeForm,
   formData,
   setFormData,
   isModifying,
   handleSubmit,
 }) {
+  const today = toInputDate(new Date());
   return (
     <>
+      <PageTitle title="Gestion des rendez-vous" />
+
+      <div className="rdv-toolbar">
+        <SearchBar
+          type="date"
+          value={searchDate}
+          onChange={(e) => setSearchDate(e.target.value)}
+          max={today}
+          wrapperClassName="rdv-search"
+        />
+        {!showForm ? (
+          <ActionButton action="add" label="Ajouter" size="sm" onClick={openCreate} />
+        ) : (
+          <ActionButton action="annuler" label="Annuler" size="sm" onClick={() => closeForm()} />
+        )}
+      </div>
+
       {showForm && (
         <FormulaireWrapper
           isModifying={isModifying}
@@ -43,6 +67,7 @@ export default function RendezVousUI({
                   type="date"
                   className="form-control"
                   value={formData.date}
+                  max={today}
                   onChange={(e) => setFormData((prev) => ({ ...prev, date: e.target.value }))}
                 />
               </div>

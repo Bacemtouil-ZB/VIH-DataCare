@@ -1,9 +1,4 @@
 import { useParams } from "react-router-dom";
-import {
-  ActionButton,
-  PageTitle,
-  SearchBar,
-} from "../../../../../shared/components";
 import { useRendezVousLogic } from "./useRendezVousLogic";
 import RendezVousUI from "./RendezVousUI";
 import "./RendezVous.css";
@@ -14,22 +9,6 @@ export default function RendezVous() {
 
   return (
     <div className="ec-page-bg rdv-page">
-      <PageTitle title="Gestion des rendez-vous" />
-
-      <div className="rdv-toolbar">
-        <SearchBar
-          type="date"
-          value={logic.searchDate}
-          onChange={(e) => logic.setSearchDate(e.target.value)}
-          wrapperClassName="rdv-search"
-        />
-        {!logic.showForm ? (
-          <ActionButton action="add" label="Ajouter" size="sm" onClick={logic.openCreate} />
-        ) : (
-          <ActionButton action="annuler" label="Annuler" size="sm" onClick={() => logic.closeForm()} />
-        )}
-      </div>
-
       <RendezVousUI
         filtered={logic.filtered}
         loading={logic.loading}
@@ -40,7 +19,11 @@ export default function RendezVous() {
         detailRdv={logic.detailRdv}
         setDetailRdv={logic.setDetailRdv}
         statusStyle={logic.statusStyle}
+        searchDate={logic.searchDate}
+        setSearchDate={logic.setSearchDate}
         showForm={logic.showForm}
+        openCreate={logic.openCreate}
+        closeForm={logic.closeForm}
         formData={logic.formData}
         setFormData={logic.setFormData}
         isModifying={logic.isModifying}

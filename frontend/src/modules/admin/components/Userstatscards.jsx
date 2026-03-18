@@ -1,7 +1,7 @@
-const styles = `
+﻿const styles = `
 .users-stats {
   display: flex;
-  gap: 1rem;
+  gap: 0.45rem;
   flex-wrap: wrap;
 }
 
@@ -10,26 +10,28 @@ const styles = `
   flex-direction: column;
   align-items: flex-start;
   gap: 0.25rem;
-  padding: 0.75rem 1.5rem;
+  padding: 0.5rem 0.95rem;         /* reduced size */
   border: 1px solid #e9ecef;
   border-radius: 10px;
   background: #fff;
-  min-width: 100px;
+  min-width: 76px;
 }
 
 .users-stat-card__label {
-  font-size: 0.7rem;
+  font-size: 0.7rem;           /* reduced size */
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #6c757d;
+  
 }
 
 .users-stat-card__value {
-  font-size: 1.75rem;
+  font-size: 1.3rem;             /* reduced size */
   font-weight: 800;
   line-height: 1;
   color: #1e293b;
+  
 }
 
 .users-stat-card--success .users-stat-card__value {

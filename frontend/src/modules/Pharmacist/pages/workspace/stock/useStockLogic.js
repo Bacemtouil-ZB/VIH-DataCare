@@ -138,14 +138,17 @@ export function useStockLogic(numero) {
   };
 
   const saveQuantity = async (item) => {
-    const q = Number(editingQuantity);
-    if (!Number.isInteger(q) || q < 0) {
+    const delta = Number(editingQuantity);
+    if (!Number.isInteger(delta) || delta < 0) {
       toast.error("La quantité doit être un entier positif.");
       return;
     }
+    const current = Number(item?.quantity);
+    const base = Number.isFinite(current) ? current : 0;
+    const newQuantity = base + delta;
     try {
       setSaving(true);
-      await updateStockQuantityApi(item.id, q);
+      await updateStockQuantityApi(item.id, newQuantity);
       await refreshStock();
       cancelEditQuantity();
       toast.success("Quantité mise à jour avec succès");
