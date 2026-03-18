@@ -1,4 +1,4 @@
-﻿import { Spinner } from "../../../../../shared/components";
+import { Spinner } from "../../../../../shared/components";
 import { HistoriqueAccordeon, HistoriqueTable, HistoriqueActions } from "../../../../../shared/components";
 import { TABLE_HEADERS, formatDate } from "./conclusionConstants.js";
 

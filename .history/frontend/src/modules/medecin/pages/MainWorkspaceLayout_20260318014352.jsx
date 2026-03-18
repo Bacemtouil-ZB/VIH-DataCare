@@ -21,6 +21,12 @@ export default function MainWorkspaceLayout() {
 
   return (
     <div className="workspace-container"
+    style={{
+        display: "grid",
+        gridTemplateRows: "48px 1fr",
+        height: "100vh",
+        overflow: "hidden",
+      }}
     >
       <Header />
 

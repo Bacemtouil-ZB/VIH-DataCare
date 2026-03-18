@@ -1,4 +1,4 @@
-﻿import { Spinner } from "../../../../../shared/components";
+import { Spinner } from "../../../../../shared/components";
 import { HistoriqueAccordeon, HistoriqueTable, HistoriqueActions } from "../../../../../shared/components";
 import { TABLE_HEADERS, formatDate } from "./conclusionConstants.js";
 
@@ -95,7 +95,7 @@ export default function ConclusionUI({
                   <i className="bi bi-person-circle me-1" />
                   {previewItem.doctor_name || "â”"}
                   <span className="mx-2">Â</span>
-                 Modifié le {new Date(previewItem.updated_at).toLocaleString()}
+                  Modifié le {formatDate(previewItem.updated_at)}
                 </div>
               </div>
               <button className="pcBtnCancel" onClick={() => setPreviewItem(null)}>

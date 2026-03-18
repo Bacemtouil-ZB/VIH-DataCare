@@ -1,12 +1,13 @@
 /* ── Page wrapper ── */
-.pcPage{
+.pcPage {
   max-width: 1100px;
   margin: 0 auto;
   padding: 20px 16px;
   background: #f0f2f5;
-  min-height: 100%;      
-  box-sizing: border-box;
-  
+  min-height: 100vh;
+  overflow-y: auto; 
+  box-sizing: border-box; /* ✅ AJOUTER CECI */
+ 
 }
 
 /* ── Page title ── */

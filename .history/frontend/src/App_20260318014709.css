@@ -171,3 +171,8 @@ body {
   background: #b86a2f;
 }
 
+#root {
+  height: 100vh;  /* ✅ manquant */
+  overflow: hidden;
+}
+

@@ -1,0 +1,119 @@
+html, body {
+  height: 100%;
+  overflow: hidden; /* prevent page scrolling */
+}
+
+/* BASE HANDLE AREA */
+.resize-handle {
+  position: relative;
+  width: 8px;
+  min-width: 8px;
+  background: #dedeeb;            /* soft neutral — visible on white */
+  border-left: 1px solid #eef2f7;
+  border-right: 1px solid #eef2f7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s ease;
+}
+
+/* always visible center grip */
+.resize-handle::after {
+  content: "";
+  width: 2px;
+  height: 42px;
+  background:#043b08;           /* permanent indicator */
+  border-radius: 2px;
+  opacity: 0.8;
+  transition: all 0.15s ease;
+}
+
+/* hover feedback */
+.resize-handle:hover {
+  background: #eef2ff;
+}
+
+.resize-handle:hover::after {
+  background:#909192;
+  height: 60px;
+  opacity: 1;
+}
+
+/* grabbing state */
+.resize-handle:active::after {
+  background: #408d47;
+  height: 70px;
+}
+
+/* invisible wide grab zone (UX improvement) */
+.resize-handle::before {
+  content: "";
+  position: absolute;
+  inset: -6px;      /* easier to grab */
+  cursor: col-resize;
+}
+
+/* COLLAPSED MODE (panel at 0) */
+.resize-handle.collapsed {
+  width: 14px;
+  background: #f1f5f9;
+  border-left: 1px solid #e2e8f0;
+  border-right: 1px solid #e2e8f0;
+}
+
+/* arrow icon */
+.handle-arrow {
+  font-size: 16px;
+  color: #b7d7c0;
+  pointer-events: none;
+}
+
+.resize-handle.collapsed:hover {
+  background: #e2e8f0;
+}
+
+/* Scrollbar personnalisée */
+.main-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.main-content::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.main-content::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 20px;
+}
+
+.main-content::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* ── Protéger le Header contre la compression ── */
+.workspace-container > header,
+.workspace-container > .header,
+.workspace-container > nav {
+  flex-shrink: 0 !important;
+}
+
+.workspace-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;      /* 🔥 obligatoire */
+  overflow: hidden;   /* 🔥 bloque le débordement global */
+}
+
+.panel-main {
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+
+.main-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
