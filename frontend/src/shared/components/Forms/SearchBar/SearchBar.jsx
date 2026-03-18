@@ -10,6 +10,7 @@ export default function SearchBar({
   wrapperClassName = "",
   type = "text",
   height = "auto",
+  width = "auto",
   max,
 }) {
   return (
@@ -22,7 +23,7 @@ export default function SearchBar({
         placeholder={placeholder}
         className={`sh-searchbar-input ${inputClassName}`}
         max={max}
-        style={{ height }}
+        style={{ height, width }}
       />
     </div>
   );

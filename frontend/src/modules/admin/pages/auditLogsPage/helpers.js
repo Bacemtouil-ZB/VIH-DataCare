@@ -41,6 +41,7 @@ export const buildDiffRows = (oldData, newData) => {
   const newObj = isPlainObject(newData) ? newData : {};
 
   const excludedKeys = new Set([
+    "id",
     "created_by",
     "updated_by",
     "createdBy",

@@ -1,4 +1,4 @@
-import {
+ï»¿import {
   ActionButton,
   Badge,
   EmptyState,
@@ -42,16 +42,17 @@ export default function PrescreptionMedicalUI({
   openCreate,
 }) {
   const today = toInputDate(new Date());
+
   return (
     <div className="ec-page-bg pe-page">
-      <PageTitle title="Prescription médicale" />
+      <PageTitle title="Prescription medicale" />
 
       <div className="pe-toolbar">
         <div className="pe-toolbar-left">
           <SearchBar
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Rechercher un médicament, .."
+            placeholder="Rechercher un medicament, .."
             wrapperClassName="pe-search"
           />
           <SearchBar
@@ -72,7 +73,7 @@ export default function PrescreptionMedicalUI({
       {showForm && (
         <FormulaireWrapper
           isModifying={isModifying}
-          labelCreate="Nouvelle prescription médicale"
+          labelCreate="Nouvelle prescription medicale"
           labelModify="Modifier la prescription"
         >
           <form onSubmit={handleSubmit}>
@@ -80,24 +81,24 @@ export default function PrescreptionMedicalUI({
               <div className="pe-col-span-2">
                 <div className="pe-med-row">
                   <div className="pe-med-col">
-                    <FieldLabel required>Médicament (stock)</FieldLabel>
+                    <FieldLabel required>Medicament (stock)</FieldLabel>
                     <select
                       className="pe-select form-select"
                       value={formData.medicament_id}
                       onChange={handleMedSelect}
                       required
                     >
-                      <option value="">-- Sélectionner un médicament --</option>
+                      <option value="">-- Selectionner un medicament --</option>
                       {stockItems.map((med) => (
                         <option key={med.id} value={med.id}>
-                          {med.code ? `[${med.code}]` : ""} {med.composition || med.nom || "Médicament"}
+                          {med.code ? `[${med.code}] : ` : ""} {med.composition || med.nom || "Medicament"} - Stock : {med.quantite ?? med.quantity ?? 0}
                         </option>
                       ))}
                     </select>
                   </div>
 
                   <div className="pe-med-qty">
-                    <FieldLabel>Qté stock</FieldLabel>
+                    <FieldLabel>Qte stock</FieldLabel>
                     <Input
                       type="text"
                       value={selectedMed ? (selectedMed.quantite ?? selectedMed.quantity ?? 0) : ""}
@@ -114,7 +115,7 @@ export default function PrescreptionMedicalUI({
                 <Input
                   value={formData.posologie}
                   onChange={field("posologie")}
-                  placeholder="Ex : 1 comprimé matin et soir"
+                  placeholder="Ex : 1 comprime matin et soir"
                 />
               </div>
 
@@ -138,7 +139,7 @@ export default function PrescreptionMedicalUI({
               </div>
 
               <div>
-                <FieldLabel required>Quantité prescrite</FieldLabel>
+                <FieldLabel required>Quantite prescrite</FieldLabel>
                 <Input
                   type="number"
                   min="1"
@@ -155,25 +156,19 @@ export default function PrescreptionMedicalUI({
                   rows={3}
                   value={formData.remarque}
                   onChange={field("remarque")}
-                  placeholder="Observations ou instructions complémentaires (optionnel)"
+                  placeholder="Observations ou instructions complementaires (optionnel)"
                 />
               </div>
             </div>
 
             <div className="pe-form-actions">
               <ActionButton
-                action="annuler"
-                label="Annuler"
-                size="sm"
-                onClick={closeForm}
-                type="button"
-              />
-              <ActionButton
                 action="save"
-                label={isModifying ? "Mettre à jour" : "Enregistrer"}
+                label={isModifying ? "Mettre a jour" : "Enregistrer"}
                 loading={saving}
                 size="sm"
                 showIcon={false}
+                block={true}
                 type="submit"
               />
             </div>
@@ -182,7 +177,7 @@ export default function PrescreptionMedicalUI({
       )}
 
       <HistoriqueAccordeon
-        title="Historique des prescriptions médicales"
+        title="Historique des prescriptions medicales"
         count={filtered.length}
         open={showHistory}
         onToggle={() => setShowHistory((v) => !v)}
@@ -190,12 +185,12 @@ export default function PrescreptionMedicalUI({
         {loading ? (
           <Spinner />
         ) : filtered.length === 0 ? (
-          <EmptyState message="Aucune prescription enregistrée." />
+          <EmptyState message="Aucune prescription enregistree." />
         ) : (
           <HistoriqueTable
-            headers={["Date", "Médicament", "Posologie", "Dosage", "Qté", "Statut", "Action"]}
+            headers={["Date", "Medicament", "Posologie", "Dosage", "Qte", "Statut", "Action"]}
             items={filtered}
-            emptyMessage="Aucune prescription enregistrée."
+            emptyMessage="Aucune prescription enregistree."
             renderRow={(p) => (
               <tr key={p.id}>
                 <td>{toFrDate(p.date)}</td>
@@ -226,12 +221,12 @@ export default function PrescreptionMedicalUI({
       {detailItem && (
         <FormulaireWrapper
           isModifying={false}
-          labelCreate="Détails de la prescription"
-          labelModify="Détails de la prescription"
+          labelCreate="Details de la prescription"
+          labelModify="Details de la prescription"
         >
           <div className="pe-detail-grid">
             <div>
-              <FieldLabel>Médicament</FieldLabel>
+              <FieldLabel>Medicament</FieldLabel>
               <Input value={detailItem.traitement || "-"} disabled />
             </div>
             <div>
@@ -247,7 +242,7 @@ export default function PrescreptionMedicalUI({
               <Input value={detailItem.dosage || "-"} disabled />
             </div>
             <div>
-              <FieldLabel>Quantité prescrite</FieldLabel>
+              <FieldLabel>Quantite prescrite</FieldLabel>
               <Input value={detailItem.quantite || "-"} disabled />
             </div>
             <div>

@@ -1,4 +1,4 @@
-﻿import { Spinner } from "../../../../../shared/components";
+﻿import { ActionButton, Spinner } from "../../../../../shared/components";
 import { HistoriqueAccordeon, HistoriqueTable, HistoriqueActions } from "../../../../../shared/components";
 import { TABLE_HEADERS, formatDate } from "./conclusionConstants.js";
 
@@ -108,12 +108,12 @@ export default function ConclusionUI({
             />
             <div className="pcModalFooter">
               {Number(previewItem.doctor_id) === Number(user?.id) && (
-                <button
-                  className="pcBtnSave"
+                <ActionButton
+                  action="edit"
+                  label="Modifier"
                   onClick={() => { onEdit(previewItem); setPreviewItem(null); }}
-                >
-                  <i className="bi bi-pencil-square me-2" /> Modifier
-                </button>
+                />
+
               )}
             </div>
           </div>

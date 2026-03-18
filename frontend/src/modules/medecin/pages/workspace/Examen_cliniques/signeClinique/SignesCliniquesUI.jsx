@@ -104,7 +104,6 @@ export default function SignesCliniquesUI({
             label={isModifying ? "Enregistrer les modifications" : "Enregistrer la fiche"}
             onClick={handleSave}
             showIcon={false}
-            height="40px"
           />
         </FormulaireWrapper>
       )}

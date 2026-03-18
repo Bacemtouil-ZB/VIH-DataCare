@@ -4,6 +4,7 @@ import { Modal, Form } from "react-bootstrap";
 import {
   ActionButton,
   Badge,
+  HistoriqueActions,
   HistoriqueTable,
   FilterToolbar,
   Spinner,
@@ -59,24 +60,30 @@ export default function UsersPageUI({
           </Badge>
         </td>
         <td style={{ whiteSpace: "nowrap" }}>
-          <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
-            <ActionButton
-              action={user.isactivated ? "annuler" : "validate"}
-              label={user.isactivated ? "Désactiver" : "Activer"}
-              loading={busy}
-              loadingLabel="..."
-              disabled={busy}
-              variant={user.isactivated ? "outline" : "filled"}
-              onClick={() => onToggleActivation(user.id, user.isactivated)}
-            />
-            <ActionButton
-              action="edit"
-              label="Changer rôle"
-              disabled={busy}
-              variant="outline"
-              onClick={() => onOpenRoleModal(user)}
-            />
-          </div>
+          <HistoriqueActions
+            onValidate={!user.isactivated ? () => onToggleActivation(user.id, user.isactivated) : undefined}
+            onCancel={user.isactivated ? () => onToggleActivation(user.id, user.isactivated) : undefined}
+            onEdit={() => onOpenRoleModal(user)}
+            validateProps={{
+              label: "Activer",
+              loading: busy && !user.isactivated,
+              loadingLabel: "...",
+              disabled: busy,
+              variant: "filled",
+            }}
+            cancelProps={{
+              label: "Désactiver",
+              loading: busy && user.isactivated,
+              loadingLabel: "...",
+              disabled: busy,
+              variant: "outline",
+            }}
+            editProps={{
+              label: "Changer rôle",
+              disabled: busy,
+              variant: "outline",
+            }}
+          />
         </td>
       </tr>
     );

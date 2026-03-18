@@ -29,6 +29,7 @@ export function FilterToolbar({
               wrapperClassName={item.wrapperClassName || ""}
               inputClassName={item.inputClassName || ""}
               height={item.height}
+              width={item.width}
             />
           );
         } else if (item.type === "select") {

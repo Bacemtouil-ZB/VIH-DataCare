@@ -16,7 +16,6 @@ export default function ExamenLayout() {
   const navigate = useNavigate();
 
   const [examenId, setExamenId] = useState(null);
-  const [dateExamen, setDateExamen] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -34,14 +33,12 @@ export default function ExamenLayout() {
       if (response.success && response.examens?.length > 0) {
         const dernierExamen = response.examens[0];
         setExamenId(dernierExamen.id);
-        setDateExamen(dernierExamen.date_examen);
       } else {
         const created = await createExamenClinique({ patient_numero: numero });
         if (!created?.success || !created?.examen?.id) {
           throw new Error(created?.message || "Creation examen clinique impossible");
         }
         setExamenId(created.examen.id);
-        setDateExamen(created.examen.date_examen);
       }
     } catch (error) {
       await alertError(error?.message || "Erreur lors de l'initialisation de l'examen clinique");
@@ -77,7 +74,7 @@ export default function ExamenLayout() {
 
       <div className="tab-content">
         {examenId ? (
-          <Outlet context={{ examenId, dateExamen, patientNumero: numero }} />
+          <Outlet context={{ examenId, patientNumero: numero }} />
         ) : (
           <div className="p-5 text-center text-muted">
             <i className="bi bi-clipboard-x examen-empty-icon"></i>
