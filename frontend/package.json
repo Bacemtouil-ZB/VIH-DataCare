@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "check:imports-case": "node scripts/check-import-case.mjs",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
