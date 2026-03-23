@@ -2,7 +2,7 @@ services:
   db:
     image: postgres:16-alpine
     container_name: vih_db
-    restart: unless-stopped
+    restart: unless-stopped       // Il s'arrête seulement si on le stoppe manuellement , si le conteneur crashe, Docker le redémarre automatiquement
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
@@ -10,31 +10,35 @@ services:
     ports:
       - "${DB_PORT:-5432}:5432"
     volumes:
+      C'est un stockage persistant pour les données de la base de données. Sans ça, à chaque fois que le conteneur redémarre, toutes les données seraient perdues
       - db_data:/var/lib/postgresql/data
       - ./backend/backup/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+  //Docker sait qu'un conteneur est lancé — mais pas qu'il est prêt. Le healthcheck résout ça.
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"] 
+       //pg_isready est une commande PostgreSQL qui répond OK quand la base est opérationnelle. Sans ça, le backend démarrerait avant que la base soit prête et planterait
+ 
       interval: 5s
       timeout: 5s
       retries: 20
 
   backend:
     build:
-      context: ./backend
+      context: ./backend  //contient permet de prendre  tous les fichiers du dossier backend pour construire l'image".
       dockerfile: Dockerfile
     container_name: vih_backend
     restart: unless-stopped
     env_file:
       - ./.env
     environment:
-      DB_HOST: db
+      DB_HOST: db  //le nom du service de la base de données dans le docker-compose CAR les conteneurs se trouvent par leur nom de service, 
       DB_PORT: 5432
       NODE_ENV: production
     ports:
-      - "${PORT:-3000}:3000"
+      - "${PORT:-3000}:3000" 
     depends_on:
       db:
-        condition: service_healthy
+        condition: service_healthy    //uste vérifier que le serveur répond      
     healthcheck:
       test: ["CMD-SHELL", "wget --spider -q http://127.0.0.1:3000/health || exit 1"]
       interval: 10s
@@ -45,8 +49,10 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      args:
-        VITE_API_URL: ${VITE_API_URL:-http://localhost:3000/api}
+      args:  
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3000/api}         //:- permet de définir une valeur par défaut 
+          // Les args sont des variables d'environnement qui sont utilisées uniquement pendant la construction de l image
+
     container_name: vih_frontend
     restart: unless-stopped
     ports:
