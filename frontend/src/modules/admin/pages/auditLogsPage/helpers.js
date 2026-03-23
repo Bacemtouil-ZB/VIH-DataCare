@@ -1,5 +1,4 @@
 import { toFrDateTime } from "../../../../shared/utils/dateHelpers";
-
 const isIsoDateString = (v) =>
   typeof v === "string" &&
   /\d{4}-\d{2}-\d{2}T/.test(v) &&
@@ -22,7 +21,8 @@ export const prettyValue = (v) => {
   if (v === null || v === undefined || v === "") return "—";
   if (typeof v === "boolean") return v ? "Oui" : "Non";
   if (typeof v === "number") return String(v);
-  if (typeof v === "string") return isIsoDateString(v) ? toFrDateTime(v, "—") : v;
+  if (typeof v === "string")
+    return isIsoDateString(v) ? toFrDateTime(v, "—") : v;
   try {
     return JSON.stringify(v);
   } catch {
@@ -46,6 +46,9 @@ export const buildDiffRows = (oldData, newData) => {
     "updated_by",
     "createdBy",
     "updatedBy",
+    "patient_name",
+    "patient_numero",
+    "patient_surname",
   ]);
 
   const keys = Array.from(

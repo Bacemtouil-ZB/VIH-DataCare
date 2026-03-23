@@ -8,6 +8,7 @@ export function FilterToolbar({
   items = [],
   actions = [],
   onSubmit,
+  
 }) {
   const wrapperClass = ["filters-toolbar", className].filter(Boolean).join(" ");
   const content = (
@@ -94,6 +95,7 @@ export function FilterToolbar({
       </form>
     );
   }
+  
 
   return (
     <Component className={wrapperClass}>

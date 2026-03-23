@@ -326,7 +326,7 @@
 }
 
 .auditDiffTable thead th {
-  background: #f8fafc;
+  background: #fcf8f8;
   border-bottom: 1px solid var(--line);
   font-size: 12px;
   font-weight: 900;
@@ -337,7 +337,7 @@
 }
 
 .auditDiff__cell {
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f9f1f2;
   padding: 10px 12px;
   font-size: 12px;
   vertical-align: top;
@@ -356,5 +356,5 @@
 }
 
 .auditDiff__row--changed td {
-  background: #f7f1e6 !important;
+  background: #e21e1e !important;
 }
