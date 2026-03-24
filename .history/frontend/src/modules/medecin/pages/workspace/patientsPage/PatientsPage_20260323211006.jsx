@@ -55,43 +55,45 @@ export default function PatientsPage() {
 
         <div className="patients-controls-row">
           <FilterToolbar
-  className="toolbar-search"
-  items={[
-    {
-      type: "search",
-      value: search,
-      onChange: (e) => setSearch(e.target.value),
-      placeholder: "Rechercher patient...",
-      wrapperClassName: "search-box mb-0",
-      height: "40px",
-      width: "520px",
-    },
-    {
-      type: "select",
-      value: filter,
-      onChange: (e) => setFilter(e.target.value),
-      className: "filter-select",
-      options: [
-        { value: "", label: "Tous" },
-        { value: "interne", label: "Interne" },
-        { value: "externe", label: "Externe" },
-      ],
-    },
-  ]}
-/>
+            className="toolbar-search"
+            items={[
+              {
+                type: "search",
+                value: search,
+                onChange: (e) => setSearch(e.target.value),
+                placeholder: "Rechercher patient...",
+                wrapperClassName: "search-box mb-0",
+                height: "40px",
+                width: "520px",
+              },
+            ]}
+          />
 
-<FilterToolbar
-  className="toolbar-right"
-  actions={[
-    <ActionButton
-      key="add"
-      action="add"
-      label="Nouveau patient"
-      onClick={() => navigate("/medecin/patient/new/workspace")}
-      height="40px"
-    />,
-  ]}
-/>
+          <FilterToolbar
+            className="toolbar-right"
+            items={[
+              {
+                type: "select",
+                value: filter,
+                onChange: (e) => setFilter(e.target.value),
+                className: "filter-select",
+                options: [
+                  { value: "", label: "Tous" },
+                  { value: "interne", label: "Interne" },
+                  { value: "externe", label: "Externe" },
+                ],
+              },
+            ]}
+            actions={[
+              <ActionButton
+                key="add"
+                action="add"
+                label="Nouveau patient"
+                onClick={() => navigate("/medecin/patient/new/workspace")}
+                height="40px"
+              />,
+            ]}
+          />
         </div>
       </div>
 

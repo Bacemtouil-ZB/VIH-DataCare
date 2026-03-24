@@ -14,7 +14,7 @@ import {
   updatePassword,
 } from "../../shared/services/profilService.jsx";
 
-import { confirmAction } from "../../shared/utils/uiAlerts.js";
+import { confirmAction } from "../../shared/utils/";
 
 // ─── useInfoForm ──────────────────────────────────────────────────────────────
 

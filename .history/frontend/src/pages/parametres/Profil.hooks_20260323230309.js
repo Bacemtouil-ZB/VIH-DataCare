@@ -5,45 +5,45 @@ import {
   INITIAL_INFO_FORM,
   INITIAL_PWD_FORM,
   TOAST_MESSAGES,
-} from "./Profil.constants.js";
+} from "./Profil.constants";
 
-import { validateInfoForm, validatePwdForm } from "./Profil.helpers.js";
+import {
+  hasInfoChanged,
+  validateInfoForm,
+  validatePwdForm,
+} from "./Profil.helpers";
 
 import {
   updateProfile,
   updatePassword,
 } from "../../shared/services/profilService.jsx";
 
-import { confirmAction } from "../../shared/utils/uiAlerts.js";
-
 // ─── useInfoForm ──────────────────────────────────────────────────────────────
 
 export const useInfoForm = (user) => {
   const [form, setForm] = useState(INITIAL_INFO_FORM);
-  const [savedForm, setSavedForm] = useState(INITIAL_INFO_FORM);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
+  // Seed form from user data — depend on primitive values, not the object reference
   useEffect(() => {
     if (user) {
-      const values = { nom: user.nom, prenom: user.prenom, email: user.email };
-      setForm(values);
-      setSavedForm(values);
+      setForm({ nom: user.nom, prenom: user.prenom, email: user.email });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user?.nom, user?.prenom, user?.email]);
+  }, [user?.nom, user?.prenom, user?.email]); // ✅ stable primitives, no infinite loop
 
+  // Derived value — no setState needed, no effect needed
   const isDirty = useMemo(
-    () =>
-      form.nom !== savedForm.nom ||
-      form.prenom !== savedForm.prenom ||
-      form.email !== savedForm.email,
-    [form.nom, form.prenom, form.email, savedForm],
+    () => hasInfoChanged(form, user),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [form.nom, form.prenom, form.email, user?.nom, user?.prenom, user?.email],
   );
 
   const setField = useCallback(
     (field, value) => {
       setForm((prev) => ({ ...prev, [field]: value }));
+      // Clear field error on change
       if (errors[field]) setErrors((prev) => ({ ...prev, [field]: undefined }));
     },
     [errors],
@@ -59,21 +59,11 @@ export const useInfoForm = (user) => {
         return;
       }
 
-      const confirmed = await confirmAction({
-        title: "Confirmer les modifications",
-        message: "Voulez-vous enregistrer les modifications de votre profil ?",
-        confirmLabel: "Enregistrer",
-        cancelLabel: "Annuler",
-      });
-
-      if (!confirmed) return;
-
       setErrors({});
       setLoading(true);
 
       try {
         await updateProfile(form);
-        setSavedForm(form);
         toast.success(TOAST_MESSAGES.INFO_SUCCESS);
       } catch (err) {
         toast.error(err.message || TOAST_MESSAGES.INFO_ERROR);
@@ -88,7 +78,10 @@ export const useInfoForm = (user) => {
 };
 
 // ─── usePwdForm ───────────────────────────────────────────────────────────────
-
+/**
+ * Manages the password change section:
+ * form state, show/hide toggles, validation, and submission.
+ */
 export const usePwdForm = () => {
   const [form, setForm] = useState(INITIAL_PWD_FORM);
   const [errors, setErrors] = useState({});

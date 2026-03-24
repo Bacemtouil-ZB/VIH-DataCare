@@ -278,8 +278,8 @@
 }
 
 .profil-btn--primary {
-  background: var(--profil-accent);
-  color: #000000;
+  
+  color: #ffffff;
 }
 
 .profil-btn--primary:hover {

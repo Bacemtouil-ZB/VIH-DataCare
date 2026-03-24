@@ -272,37 +272,3 @@ tbody tr:hover {
   0%   { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
-
-.patients-toolbar .filters-toolbar.toolbar-search {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 12px;
-}
-
-.patients-toolbar .filters-toolbar.toolbar-search > * {
-  margin: 0 !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-}
-
-.patients-toolbar .filters-toolbar.toolbar-search .sh-searchbar-input,
-.patients-toolbar .filters-toolbar.toolbar-search .filter-select {
-  height: 40px !important;
-  line-height: 40px;
-  box-sizing: border-box;
-  margin: 0 !important;
-}
-
-.patients-toolbar .filters-toolbar.toolbar-search .filter-select {
-  padding: 0 10px;
-  font-size: 13px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: #fff;
-  cursor: pointer;
-  outline: none;
-  flex-shrink: 0;
-  display: block;
-  align-self: center;
-}

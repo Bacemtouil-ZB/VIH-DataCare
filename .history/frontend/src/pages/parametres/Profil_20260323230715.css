@@ -23,6 +23,7 @@
 /* ── Page ─────────────────────────────────────────────────────────────────────── */
 .profil-page {
   min-height: 100vh;
+  background: var(--profil-bg);
   padding: 2rem 1.5rem;
   font-family: var(--profil-font);
 }
@@ -279,7 +280,7 @@
 
 .profil-btn--primary {
   background: var(--profil-accent);
-  color: #000000;
+  color: #ffffff;
 }
 
 .profil-btn--primary:hover {

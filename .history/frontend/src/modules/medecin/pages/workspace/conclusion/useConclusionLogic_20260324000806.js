@@ -1,3 +1,4 @@
+// cerveau file
 import { useEffect, useMemo, useState, useRef } from "react";
 import { toast } from "react-toastify";
 import { useAuth } from "../../../../../shared/hooks/useAuth";
@@ -7,10 +8,6 @@ import {
   updateConclusion,
 } from "../../../services/conclusionsService";
 import { DEFAULT_LIMIT } from "./conclusionConstants";
-import {
-  confirmAction,
-  alertError,
-} from "../../../../../shared/utils/uiAlerts";
 
 export function useConclusionLogic(numero) {
   const { user } = useAuth();
@@ -43,7 +40,7 @@ export function useConclusionLogic(numero) {
       setConclusions(data.conclusions || []);
       setTotal(data.total ?? 0);
     } catch (e) {
-      alertError(e?.message || "Erreur chargement historique");
+      toast.error(e?.message || "Erreur chargement historique");
     } finally {
       setHistLoading(false);
     }
@@ -71,19 +68,6 @@ export function useConclusionLogic(numero) {
       toast.info("Veuillez saisir une conclusion (min 5 caractères).");
       return;
     }
-
-    const confirmed = await confirmAction({
-      title: editingId ? "Modifier la conclusion" : "Enregistrer la conclusion",
-      message:
-        editingId ?
-          "Voulez-vous enregistrer les modifications de cette conclusion ?"
-        : "Voulez-vous enregistrer cette nouvelle conclusion ?",
-      confirmLabel: editingId ? "Modifier" : "Enregistrer",
-      cancelLabel: "Annuler",
-    });
-
-    if (!confirmed) return;
-
     setSaving(true);
     try {
       if (editingId) {
@@ -98,22 +82,13 @@ export function useConclusionLogic(numero) {
       await loadHistory();
       setHistOpen(true);
     } catch (e) {
-      alertError(e?.message || "Erreur enregistrement");
+      toast.error(e?.message || "Erreur enregistrement");
     } finally {
       setSaving(false);
     }
   };
 
-  const onEdit = async (c) => {
-    const confirmed = await confirmAction({
-      title: "Modifier la conclusion",
-      message: "Voulez-vous modifier cette conclusion ?",
-      confirmLabel: "Modifier",
-      cancelLabel: "Annuler",
-    });
-
-    if (!confirmed) return;
-
+  const onEdit = (c) => {
     setEditorValue(c.content || "");
     setEditingId(c.id);
     setShowEditor(true);
@@ -121,6 +96,7 @@ export function useConclusionLogic(numero) {
       editorRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 100);
   };
+
   const openEditor = () => {
     setEditingId(null);
     setEditorValue("");
@@ -131,15 +107,20 @@ export function useConclusionLogic(numero) {
   };
 
   return {
+    // auth
     user,
+    // refs
     editorRef,
+    // editor state
     editorValue,
     setEditorValue,
     editingId,
     saving,
     showEditor,
+    // modal
     previewItem,
     setPreviewItem,
+    // history
     histOpen,
     setHistOpen,
     histLoading,
@@ -150,6 +131,7 @@ export function useConclusionLogic(numero) {
     setOffset,
     page,
     totalPages,
+    // actions
     onSave,
     onEdit,
     resetEditor,

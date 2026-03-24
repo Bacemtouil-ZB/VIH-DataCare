@@ -104,16 +104,7 @@ export function useConclusionLogic(numero) {
     }
   };
 
-  const onEdit = async (c) => {
-    const confirmed = await confirmAction({
-      title: "Modifier la conclusion",
-      message: "Voulez-vous modifier cette conclusion ?",
-      confirmLabel: "Modifier",
-      cancelLabel: "Annuler",
-    });
-
-    if (!confirmed) return;
-
+  const onEdit = (c) => {
     setEditorValue(c.content || "");
     setEditingId(c.id);
     setShowEditor(true);
@@ -121,6 +112,7 @@ export function useConclusionLogic(numero) {
       editorRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 100);
   };
+
   const openEditor = () => {
     setEditingId(null);
     setEditorValue("");

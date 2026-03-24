@@ -1,23 +1,14 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
-import {
-  confirmAction,
-  alertError,
-} from "../../../../../shared/utils/uiAlerts";
-import {
-  openFormForCreate,
-  showDetailMode,
-} from "../../../../../shared/utils/logiqueTableHistory";
+import { confirmAction, alertError } from "../../../../../shared/utils/uiAlerts";
+import { openFormForCreate, showDetailMode } from "../../../../../shared/utils/logiqueTableHistory";
 import {
   createRendezvous,
   getRendezvousByNumeroDossier,
   updateRendezvous,
 } from "../../../services/rendezvousService";
-import {
-  toInputDate,
-  toInputTime,
-} from "../../../../../shared/utils/dateHelpers";
-import { INITIAL_FORM, getStatusStyle } from "./rendezVousConstants";
+import { toInputDate, toInputTime } from "../../../../../shared/utils/dateHelpers";
+import { INITIAL_FORM,getStatusStyle  } from "./rendezVousConstants";
 
 export function useRendezVousLogic(numero) {
   const [searchDate, setSearchDate] = useState("");
@@ -38,9 +29,7 @@ export function useRendezVousLogic(numero) {
         const res = await getRendezvousByNumeroDossier(numero);
         setRendezVous(res.rendezvous || []);
       } catch (err) {
-        toast.error(
-          err?.message || "Erreur lors du chargement des rendez-vous",
-        );
+        toast.error(err?.message || "Erreur lors du chargement des rendez-vous");
       } finally {
         setLoading(false);
       }
@@ -59,10 +48,9 @@ export function useRendezVousLogic(numero) {
     setEditingId(null);
   };
 
-  const openCreate = () =>
-    openFormForCreate(setDetailRdv, resetForm, setShowForm);
+  const openCreate = () => openFormForCreate(setDetailRdv, resetForm, setShowForm);
 
-  const closeForm = () => {
+  const closeForm = (notify = true) => {
     resetForm();
     setShowForm(false);
   };
@@ -96,9 +84,7 @@ export function useRendezVousLogic(numero) {
     }
 
     const ok = await confirmAction(
-      isModifying ?
-        "Enregistrer les modifications ?"
-      : "Créer ce rendez-vous ?",
+      isModifying ? "Enregistrer les modifications ?" : "Créer ce rendez-vous ?",
       "Les données seront enregistrées dans le dossier patient.",
     );
     if (!ok) return;
@@ -111,10 +97,7 @@ export function useRendezVousLogic(numero) {
         );
         toast.success("Rendez-vous mis à jour");
       } else {
-        const res = await createRendezvous({
-          ...formData,
-          numero_dossier: numero,
-        });
+        const res = await createRendezvous({ ...formData, numero_dossier: numero });
         setRendezVous((prev) => [res.rendezvous, ...prev]);
         toast.success("Rendez-vous enregistré");
       }

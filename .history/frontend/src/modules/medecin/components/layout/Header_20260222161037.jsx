@@ -40,6 +40,13 @@ export default function Header() {
           {formatTime(currentTime)}
         </span>
 
+        <button className="icon-btn">
+          <Settings size={16} />
+        </button>
+
+        <button className="icon-btn danger">
+          <LogOut size={16} />
+        </button>
       </div>
 
     </header>

@@ -7,14 +7,18 @@ import {
   TOAST_MESSAGES,
 } from "./Profil.constants.js";
 
-import { validateInfoForm, validatePwdForm } from "./Profil.helpers.js";
+import {
+  hasInfoChanged,
+  validateInfoForm,
+  validatePwdForm,
+} from "./Profil.helpers.js";
 
 import {
   updateProfile,
   updatePassword,
 } from "../../shared/services/profilService.jsx";
 
-import { confirmAction } from "../../shared/utils/uiAlerts.js";
+import { confirmAction } from "../../../../../shared/utils/uiAlerts.js";
 
 // ─── useInfoForm ──────────────────────────────────────────────────────────────
 
