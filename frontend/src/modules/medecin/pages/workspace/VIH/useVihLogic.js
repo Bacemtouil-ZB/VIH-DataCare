@@ -114,15 +114,8 @@ export function useVihLogic(numero) {
   const handleFieldChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => {
-      let nextValue = type === "checkbox" ? checked : value;
-      if (name === "profil_seroconversion") {
-        nextValue = value === "true" || value === true;
-      }
-      const next = { ...prev, [name]: nextValue };
-      if (name === "stade_cdc" && !String(nextValue).startsWith("C")) {
-        next.debut_stade_c = "";
-      }
-      return next;
+      const nextValue = type === "checkbox" ? checked : value;
+      return { ...prev, [name]: nextValue };
     });
 
     // Supprime automatiquement l'erreur de ce champ
@@ -190,7 +183,6 @@ export function useVihLogic(numero) {
       : formData.mode_contamination ? [formData.mode_contamination]
       : [],
     isDisabled: !isEditMode && !!vihData,
-    isStadeC: (formData.stade_cdc || "").startsWith("C"),
     handleFieldChange,
     handleModesChange,
     handleToggleMode,

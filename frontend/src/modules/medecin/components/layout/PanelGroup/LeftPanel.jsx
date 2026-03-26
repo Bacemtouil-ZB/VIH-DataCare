@@ -1,7 +1,7 @@
 ﻿import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { getPatientByNumero } from "../../../services/patientServices";
-import { getThreeLastPrise } from "../../../services/ordonnancesService";
+import { getThreeLastPrise } from "../../../services/prescriptionWorkflowService";
 import "./LeftPanel.css";
 
 export default function LeftPanel() {

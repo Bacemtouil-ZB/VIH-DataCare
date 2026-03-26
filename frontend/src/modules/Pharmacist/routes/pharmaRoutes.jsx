@@ -2,7 +2,7 @@
 import ProtectedRoute from "../../../routes/ProtectedRoute";
 import { DashboardLayout } from "../../../shared/components";
 import ProfilPage from "../../../pages/parametres/profile";
-import Patientsordonnances from "../pages/workspace/ordonnance/Patientsordonnances.jsx";
+import PatientsPrescriptions from "../pages/workspace/prescriptionMedicale/PatientsPrescriptions.jsx";
 import Stock from "../pages/workspace/stock/Stock.jsx";
 
 const pharmacienRoutes = [
@@ -14,25 +14,25 @@ const pharmacienRoutes = [
       </ProtectedRoute>
     ),
     children: [
-      { 
-        index: true, 
-        element: <Navigate to="ordonnances" replace /> 
+      {
+        index: true,
+        element: <Navigate to="prescriptions-medicales" replace />,
       },
-      { 
-        path: "ordonnances", 
-        element: <Patientsordonnances /> 
+      {
+        path: "prescriptions-medicales",
+        element: <PatientsPrescriptions />,
       },
-      { 
-        path: "stock", 
-        element: <Stock /> 
+      {
+        path: "stock",
+        element: <Stock />,
       },
       {
         path: "stock/:numero",
         element: <Stock />,
       },
-      { 
-        path: "settings", 
-        element: <ProfilPage /> 
+      {
+        path: "settings",
+        element: <ProfilPage />,
       },
     ],
   },

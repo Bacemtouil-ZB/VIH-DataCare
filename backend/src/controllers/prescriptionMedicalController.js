@@ -9,7 +9,7 @@ import { logAction } from "../services/auditService.js";
 // ── CREATE ────────────────────────────────────────────────────────────────────
 export const createPrescriptionExamenController = async (req, res) => {
   try {
-    const prescription = await createPrescriptionExamenService(req.body);
+    const prescription = await createPrescriptionExamenService(req.body, req.user.id);
 
     await logAction(req, {
       module:     "PRESCRIPTION_MEDICALE",

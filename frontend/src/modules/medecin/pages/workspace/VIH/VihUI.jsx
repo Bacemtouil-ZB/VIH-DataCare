@@ -1,4 +1,12 @@
-import { PageTitle, ActionButton, FieldLabel, FieldError, Input, RadioGroup, Spinner } from "../../../../../shared/components";
+import {
+  PageTitle,
+  ActionButton,
+  FieldLabel,
+  FieldError,
+  Input,
+  RadioGroup,
+  Spinner,
+} from "../../../../../shared/components";
 import { toInputDate } from "../../../../../shared/utils/dateHelpers";
 import {
   MODES_CONTAMINATION,
@@ -7,7 +15,6 @@ import {
   STADES_CDC,
   PAGE_TITLE,
   TYPAGE_HLA_OPTIONS,
-  PROFIL_SEROCONVERSION_OPTIONS,
 } from "./vihConstants";
 import "./VihForm.css";
 
@@ -18,7 +25,6 @@ export default function VihUI({
   isEditMode,
   isCreateMode,
   isDisabled,
-  isStadeC,
   formData,
   selectedModes,
   isModesOpen,
@@ -41,8 +47,6 @@ export default function VihUI({
       <div className="bg-white border rounded">
         <form onSubmit={handleFormSubmit} className="p-4">
           <div className="row g-3">
-
-            {/* ── Mode de contamination ── */}
             <div className="col-md-6">
               <FieldLabel required>Mode de contamination</FieldLabel>
               <div className="multiselect-wrapper">
@@ -50,10 +54,9 @@ export default function VihUI({
                   className={`form-control multiselect-box ${isDisabled || isLoading ? "bg-light" : ""}`}
                   onClick={() => !(isDisabled || isLoading) && toggleModesOpen()}
                 >
-                  {selectedModes.length === 0
-                    ? <span className="multiselect-placeholder">-- Sélectionner --</span>
-                    : <span className="multiselect-count">{selectedModes.length} sélectionné(s)</span>
-                  }
+                  {selectedModes.length === 0 ?
+                    <span className="multiselect-placeholder">-- Selectionner --</span>
+                  : <span className="multiselect-count">{selectedModes.length} selectionne(s)</span>}
                   <span className="multiselect-chevron">{isModesOpen ? "^" : "v"}</span>
                 </div>
 
@@ -67,9 +70,17 @@ export default function VihUI({
                           <div
                             key={opt}
                             className={`multiselect-option ${checked ? "checked" : ""}`}
-                            onClick={(e) => { e.stopPropagation(); handleToggleMode(opt); }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleToggleMode(opt);
+                            }}
                           >
-                            <input type="checkbox" readOnly checked={checked} className="multiselect-checkbox" />
+                            <input
+                              type="checkbox"
+                              readOnly
+                              checked={checked}
+                              className="multiselect-checkbox"
+                            />
                             <span className={checked ? "option-checked" : ""}>{opt}</span>
                             {checked && <span className="option-tick ms-auto">x</span>}
                           </div>
@@ -99,9 +110,8 @@ export default function VihUI({
               )}
             </div>
 
-            {/* ── Type de dépistage ── */}
             <div className="col-md-6">
-              <FieldLabel required>Type de dépistage</FieldLabel>
+              <FieldLabel required>Type de depistage</FieldLabel>
               <select
                 name="type_depistage"
                 className={`form-select ${errors.type_depistage ? "is-invalid" : ""}`}
@@ -110,15 +120,14 @@ export default function VihUI({
                 disabled={isDisabled || isLoading}
                 required
               >
-                <option value="">-- Sélectionner --</option>
+                <option value="">-- Selectionner --</option>
                 {TYPES_DEPISTAGE.map((t) => <option key={t}>{t}</option>)}
               </select>
               <FieldError error={errors.type_depistage} />
             </div>
 
-            {/* ── Circonstance de découverte ── */}
-            <div className="col-12">
-              <FieldLabel required>Circonstance de découverte</FieldLabel>
+            <div className="col-md-8">
+              <FieldLabel required>Circonstance de decouverte</FieldLabel>
               <select
                 name="circonstance_decouverte"
                 className={`form-select ${errors.circonstance_decouverte ? "is-invalid" : ""}`}
@@ -127,28 +136,28 @@ export default function VihUI({
                 disabled={isDisabled || isLoading}
                 required
               >
-                <option value="">-- Sélectionner --</option>
+                <option value="">-- Selectionner --</option>
                 {CIRCONSTANCES_DECOUVERTE.map((c) => <option key={c}>{c}</option>)}
               </select>
               <FieldError error={errors.circonstance_decouverte} />
             </div>
 
-            {/* ── Date dernière négative ── */}
-            <div className="col-md-6">
-              <FieldLabel>Date dernière négative</FieldLabel>
-              <Input
-                type="date"
-                name="date_derniere_negative"
-                className={errors.date_derniere_negative ? "is-invalid" : ""}
-                value={formData.date_derniere_negative}
+            <div className="col-md-4">
+              <FieldLabel>Typage HLA-B5701</FieldLabel>
+              <RadioGroup
+                name="typage_hla_b5701"
+                value={formData.typage_hla_b5701}
                 onChange={handleFieldChange}
-                max={today}
+                options={TYPAGE_HLA_OPTIONS.map((label) => ({ label, value: label }))}
                 disabled={isDisabled || isLoading}
+                className="d-flex gap-3 mt-2 vih-radio-group"
+                itemClassName="form-check vih-radio-item"
+                inputClassName="form-check-input"
+                labelTextClassName="form-check-label"
               />
-              <FieldError error={errors.date_derniere_negative} />
+              <FieldError error={errors.typage_hla_b5701} />
             </div>
 
-            {/* ── Date de contamination ── */}
             <div className="col-md-6">
               <FieldLabel>Date de contamination</FieldLabel>
               <Input
@@ -163,7 +172,21 @@ export default function VihUI({
               <FieldError error={errors.date_contamination} />
             </div>
 
-            {/* ── Date VIH positif ── */}
+            <div className="col-md-6">
+              <FieldLabel>Date derniere negative</FieldLabel>
+              <Input
+                type="date"
+                name="date_derniere_negative"
+                className={errors.date_derniere_negative ? "is-invalid" : ""}
+                value={formData.date_derniere_negative}
+                onChange={handleFieldChange}
+                max={today}
+                disabled={isDisabled || isLoading}
+              />
+              <FieldError error={errors.date_derniere_negative} />
+            </div>
+
+
             <div className="col-md-6">
               <FieldLabel required>Date VIH positif</FieldLabel>
               <Input
@@ -179,90 +202,31 @@ export default function VihUI({
               <FieldError error={errors.date_vih_positif} />
             </div>
 
-            {/* ── Stade CDC ── */}
             <div className="col-md-6">
-              <FieldLabel required>Stade CDC</FieldLabel>
+              <FieldLabel>Stade CDC</FieldLabel>
               <select
                 name="stade_cdc"
                 className={`form-select ${errors.stade_cdc ? "is-invalid" : ""}`}
                 value={formData.stade_cdc}
                 onChange={handleFieldChange}
                 disabled={isDisabled || isLoading}
-                required
               >
-                <option value="">-- Sélectionner --</option>
+                <option value="">-- Selectionner --</option>
                 {STADES_CDC.map((s) => <option key={s}>{s}</option>)}
               </select>
               <FieldError error={errors.stade_cdc} />
             </div>
 
-            {/* ── Début stade C ── */}
-            {isStadeC && (
-              <div className="col-md-6">
-                <FieldLabel>Début stade C</FieldLabel>
-                <Input
-                  type="date"
-                  name="debut_stade_c"
-                  className={errors.debut_stade_c ? "is-invalid" : ""}
-                  value={formData.debut_stade_c}
-                  onChange={handleFieldChange}
-                  max={today}
-                  disabled={isDisabled || isLoading}
-                />
-                <FieldError error={errors.debut_stade_c} />
-              </div>
-            )}
+            
 
-            {/* ── Typage HLA-B5701 ── */}
-            <div className="col-md-6">
-              <FieldLabel required>Typage HLA-B5701</FieldLabel>
-              <RadioGroup
-                name="typage_hla_b5701"
-                value={formData.typage_hla_b5701}
-                onChange={handleFieldChange}
-                options={TYPAGE_HLA_OPTIONS.map((label) => ({ label, value: label }))}
-                disabled={isDisabled || isLoading}
-                required={true}
-                className="d-flex gap-3 mt-2 vih-radio-group"
-                itemClassName="form-check vih-radio-item"
-                inputClassName="form-check-input"
-                labelTextClassName="form-check-label"
-              />
-              <FieldError error={errors.typage_hla_b5701} />
-            </div>
-
-            {/* ── Profil de séroconversion ── */}
-            <div className="col-md-6">
-              <FieldLabel>Profil de séroconversion (Fiebig I à V)</FieldLabel>
-              <RadioGroup
-                name="profil_seroconversion"
-                value={formData.profil_seroconversion}
-                onChange={handleFieldChange}
-                options={PROFIL_SEROCONVERSION_OPTIONS}
-                disabled={isDisabled || isLoading}
-                className="d-flex gap-3 mt-2 vih-radio-group"
-                itemClassName="form-check vih-radio-item"
-                inputClassName="form-check-input"
-                labelTextClassName="form-check-label"
-              />
-            </div>
-
-            {/* ── Actions ── */}
-            <div className="col-12 mt-2">
-              {!isEditMode && !isCreateMode ? (
+            <div className="col-12 mt-2  mt-4">
+              {!isEditMode && !isCreateMode ?
                 <ActionButton type="button" action="edit" label="Modifier" onClick={handleEdit} block={true} />
-              ) : (
-                <div className="edit-actions">
+              : <div className="edit-actions">
                   <ActionButton
                     type="submit"
                     action="save"
-                    label={
-                      isLoading
-                        ? "Enregistrement..."
-                        : isCreateMode
-                          ? "Créer"
-                          : "Enregistrer"
-                    }
+                    label={isLoading ? "Enregistrement..." : isCreateMode ? "Creer" : "Enregistrer"}
                     disabled={isLoading}
                     showIcon={false}
                   />
@@ -276,10 +240,8 @@ export default function VihUI({
                       showIcon={false}
                     />
                   )}
-                </div>
-              )}
+                </div>}
             </div>
-
           </div>
         </form>
       </div>

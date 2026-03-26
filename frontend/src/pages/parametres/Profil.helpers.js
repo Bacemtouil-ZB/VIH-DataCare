@@ -1,6 +1,6 @@
 // ─── profil.helpers.js ────────────────────────────────────────────────────────
 
-import { PASSWORD_MIN_LENGTH } from "./Profil.constants";
+import { PASSWORD_MIN_LENGTH } from "./Profil.constants.js";
 
 /**
  * Build avatar initials from user object

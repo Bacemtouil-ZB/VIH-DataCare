@@ -1,4 +1,4 @@
-﻿import {
+import {
   ActionButton,
   Badge,
   EmptyState,
@@ -40,6 +40,10 @@ export default function PrescreptionMedicalUI({
   searchDate,
   setSearchDate,
   openCreate,
+  confirmationModal,
+  closeConfirmationModal,
+  confirmPrescription,
+  medecinDisplayName,
 }) {
   const today = toInputDate(new Date());
 
@@ -63,11 +67,9 @@ export default function PrescreptionMedicalUI({
             max={today}
           />
         </div>
-        {!showForm ? (
+        {!showForm ?
           <ActionButton action="add" label="Ajouter" size="sm" onClick={openCreate} />
-        ) : (
-          <ActionButton action="annuler" label="Annuler" size="sm" onClick={closeForm} />
-        )}
+        : <ActionButton action="annuler" label="Annuler" size="sm" onClick={closeForm} />}
       </div>
 
       {showForm && (
@@ -81,7 +83,7 @@ export default function PrescreptionMedicalUI({
               <div className="pe-col-span-2">
                 <div className="pe-med-row">
                   <div className="pe-med-col">
-                    <FieldLabel required>Medicament (stock)</FieldLabel>
+                    <FieldLabel required>Medicament</FieldLabel>
                     <select
                       className="pe-select form-select"
                       value={formData.medicament_id}
@@ -91,7 +93,8 @@ export default function PrescreptionMedicalUI({
                       <option value="">-- Selectionner un medicament --</option>
                       {stockItems.map((med) => (
                         <option key={med.id} value={med.id}>
-                          {med.code ? `[${med.code}] : ` : ""} {med.composition || med.nom || "Medicament"} - Stock : {med.quantite ?? med.quantity ?? 0}
+                          {med.code ? `[${med.code}] : ` : ""}
+                          {med.composition || med.nom || "Medicament"}
                         </option>
                       ))}
                     </select>
@@ -129,23 +132,13 @@ export default function PrescreptionMedicalUI({
               </div>
 
               <div>
-                <FieldLabel required>Date de prescription</FieldLabel>
-                <Input
-                  type="date"
-                  value={formData.date}
-                  onChange={field("date")}
-                  max={today}
-                />
-              </div>
-
-              <div>
                 <FieldLabel required>Quantite prescrite</FieldLabel>
                 <Input
                   type="number"
                   min="1"
                   value={formData.quantite}
                   onChange={field("quantite")}
-                  placeholder="Ex : 30"
+                  placeholder="Ex : 3"
                 />
               </div>
 
@@ -164,7 +157,7 @@ export default function PrescreptionMedicalUI({
             <div className="pe-form-actions">
               <ActionButton
                 action="save"
-                label={isModifying ? "Mettre a jour" : "Enregistrer"}
+                label={isModifying ? "Mettre a jour" : "Confirmer"}
                 loading={saving}
                 size="sm"
                 showIcon={false}
@@ -182,12 +175,11 @@ export default function PrescreptionMedicalUI({
         open={showHistory}
         onToggle={() => setShowHistory((v) => !v)}
       >
-        {loading ? (
+        {loading ?
           <Spinner />
-        ) : filtered.length === 0 ? (
+        : filtered.length === 0 ?
           <EmptyState message="Aucune prescription enregistree." />
-        ) : (
-          <HistoriqueTable
+        : <HistoriqueTable
             headers={["Date", "Medicament", "Posologie", "Dosage", "Qte", "Statut", "Action"]}
             items={filtered}
             emptyMessage="Aucune prescription enregistree."
@@ -199,11 +191,8 @@ export default function PrescreptionMedicalUI({
                 <td>{p.dosage || "-"}</td>
                 <td>{p.quantite || "-"}</td>
                 <td>
-                  <Badge
-                    bg={getStatutStyle(p.statut).bg}
-                    color={getStatutStyle(p.statut).color}
-                  >
-                    {STATUT_LABELS[p.statut] || p.statut}
+                  <Badge bg={getStatutStyle(p.statut).bg} color={getStatutStyle(p.statut).color}>
+                    {STATUT_LABELS[p.statut] || p.statut || "-"}
                   </Badge>
                 </td>
                 <td>
@@ -214,8 +203,7 @@ export default function PrescreptionMedicalUI({
                 </td>
               </tr>
             )}
-          />
-        )}
+          />}
       </HistoriqueAccordeon>
 
       {detailItem && (
@@ -251,23 +239,47 @@ export default function PrescreptionMedicalUI({
             </div>
             <div style={{ gridColumn: "span 2" }}>
               <FieldLabel>Remarque</FieldLabel>
-              <textarea
-                className="pe-textarea form-control"
-                rows={3}
-                value={detailItem.remarque || "-"}
-                disabled
-              />
+              <textarea className="pe-textarea form-control" rows={3} value={detailItem.remarque || "-"} disabled />
             </div>
           </div>
           <div className="pe-form-actions">
-            <ActionButton
-              action="annuler"
-              label="Fermer"
-              size="sm"
-              onClick={() => setDetailItem(null)}
-            />
+            <ActionButton action="annuler" label="Fermer" size="sm" onClick={() => setDetailItem(null)} />
           </div>
         </FormulaireWrapper>
+      )}
+
+      {confirmationModal && (
+        <div className="pe-confirm-backdrop" onClick={closeConfirmationModal}>
+          <div className="pe-confirm-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="pe-confirm-header">
+              <h3>Confirmation de la prescription</h3>
+              <div className="pe-confirm-meta">
+                <span>{medecinDisplayName}</span>
+                <span>{toFrDate(new Date())}</span>
+              </div>
+            </div>
+
+            <div className="pe-confirm-grid">
+              <div><strong>Medicament:</strong> {confirmationModal.data.traitement}</div>
+              <div><strong>Posologie:</strong> {confirmationModal.data.posologie}</div>
+              <div><strong>Dosage:</strong> {confirmationModal.data.dosage}</div>
+              <div><strong>Quantite:</strong> {confirmationModal.data.quantite} mois</div>
+              <div className="pe-confirm-remark"><strong>Remarque:</strong> {confirmationModal.data.remarque}</div>
+            </div>
+
+            <div className="pe-confirm-actions">
+              <ActionButton action="annuler" label="Annuler" size="sm" onClick={closeConfirmationModal} />
+              <ActionButton
+                action="save"
+                label={saving ? "Confirmation..." : "Confirmer"}
+                size="sm"
+                showIcon={false}
+                disabled={saving}
+                onClick={confirmPrescription}
+              />
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

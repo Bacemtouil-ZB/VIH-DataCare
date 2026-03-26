@@ -1,11 +1,13 @@
 import { useParams } from "react-router-dom";
 import { usePrescreptionMedicalLogic } from "./usePrescreptionMedicalLogic";
 import PrescreptionMedicalUI from "./PrescreptionMedicalUI";
+import { useAuth } from "../../../../../shared/hooks/useAuth";
 import "./PrescreptionMedical.css";
 
 export default function PrescriptionMedical() {
   const { numero } = useParams();
-  const logic = usePrescreptionMedicalLogic(numero);
+  const { user } = useAuth();
+  const logic = usePrescreptionMedicalLogic(numero, user);
 
   return (
     <PrescreptionMedicalUI
@@ -32,6 +34,10 @@ export default function PrescriptionMedical() {
       searchDate={logic.searchDate}
       setSearchDate={logic.setSearchDate}
       openCreate={logic.openCreate}
+      confirmationModal={logic.confirmationModal}
+      closeConfirmationModal={logic.closeConfirmationModal}
+      confirmPrescription={logic.confirmPrescription}
+      medecinDisplayName={logic.medecinDisplayName}
     />
   );
 }

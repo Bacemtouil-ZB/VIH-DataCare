@@ -1,4 +1,4 @@
-import { NavLink } from "react-router-dom";
+﻿import { NavLink } from "react-router-dom";
 import {
   User,
   Users,
@@ -20,7 +20,7 @@ export default function RightPanel() {
 
       <NavLink to="#prescriptions" className="menu-item">
         <User size={18} />
-        <span>Ordonnances</span>
+        <span>Prescriptions medicales</span>
       </NavLink>
 
      
