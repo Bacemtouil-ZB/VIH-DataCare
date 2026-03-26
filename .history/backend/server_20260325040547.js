@@ -24,7 +24,7 @@ import rendezvousRouter from "./src/routes/rendezVousRoute.js";
 import stockRoute from "./src/routes/stockRoute.js";
 import conclusionRoutes from "./src/routes/doctorConclusionsRoutes.js";
 import prescriptionMedical from "./src/routes/prescriptionMedicalRoute.js";
-import mobileAuthRoutes from "./src/routes/mobile/mobileAuthRoutes.js";
+import mobileAuthRoutes from "./routes/mobile/mobileAuthRoutes.js";
 dotenv.config();
 const app = express();
 app.use(express.json());

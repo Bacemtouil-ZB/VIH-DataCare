@@ -31,4 +31,3 @@ ADD COLUMN username VARCHAR(100) UNIQUE; -- don't touch email for web app, add u
 --nom et prenom ne sont pas obligatoires pour les utilisateurs de l'application mobile, donc on les rend optionnels 
 ALTER TABLE users ALTER COLUMN nom DROP NOT NULL;
 ALTER TABLE users ALTER COLUMN prenom DROP NOT NULL;
-ALTER TABLE users ALTER COLUMN email DROP NOT NULL;

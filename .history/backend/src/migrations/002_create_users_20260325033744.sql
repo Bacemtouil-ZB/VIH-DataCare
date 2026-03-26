@@ -26,9 +26,4 @@ ALTER TABLE users
 ADD COLUMN must_change_password BOOLEAN DEFAULT false;
 
 ALTER TABLE users 
-ADD COLUMN username VARCHAR(100) UNIQUE; -- don't touch email for web app, add username for mobile app
-
---nom et prenom ne sont pas obligatoires pour les utilisateurs de l'application mobile, donc on les rend optionnels 
-ALTER TABLE users ALTER COLUMN nom DROP NOT NULL;
-ALTER TABLE users ALTER COLUMN prenom DROP NOT NULL;
-ALTER TABLE users ALTER COLUMN email DROP NOT NULL;
+ADD COLUMN username VARCHAR(100) UNIQUE; -- don't touch email for web app, add username for mobile app 

@@ -1,0 +1,103 @@
+Mobile App — Full Folder Architecture
+mobile-vihdatacare/
+│
+├── src/
+│   │
+│   ├── api/                        ← DATA LAYER
+│   │   ├── client.js               (axios instance, base URL, token injection)
+│   │   ├── auth.api.js             (login, getMe)
+│   │   ├── rendezvous.api.js       (getRendezvous)
+│   │   └── patient.api.js          (getProfile, updateProfile, savePushToken)
+│   │
+│   ├── features/                   ← FEATURE LAYER
+│   │   ├── auth/
+│   │   │   ├── screens/
+│   │   │   │   └── LoginScreen.jsx
+│   │   │   ├── components/
+│   │   │   │   └── LoginForm.jsx
+│   │   │   └── hooks/
+│   │   │       └── useLogin.js
+│   │   │
+│   │   ├── rendezvous/
+│   │   │   ├── screens/
+│   │   │   │   ├── RendezvousListScreen.jsx
+│   │   │   │   └── RendezvousDetailScreen.jsx
+│   │   │   ├── components/
+│   │   │   │   ├── RendezvousCard.jsx
+│   │   │   │   └── RendezvousStatusBadge.jsx
+│   │   │   └── hooks/
+│   │   │       └── useRendezvous.js
+│   │   │
+│   │   ├── reminders/
+│   │   │   ├── screens/
+│   │   │   │   ├── RemindersListScreen.jsx
+│   │   │   │   └── CreateReminderScreen.jsx
+│   │   │   ├── components/
+│   │   │   │   ├── ReminderCard.jsx
+│   │   │   │   └── ReminderForm.jsx
+│   │   │   └── hooks/
+│   │   │       └── useReminders.js
+│   │   │
+│   │   └── home/
+│   │       ├── screens/
+│   │       │   └── HomeScreen.jsx
+│   │       └── components/
+│   │           ├── NextAppointmentBanner.jsx
+│   │           └── TodayRemindersList.jsx
+│   │
+│   ├── components/                 ← SHARED/REUSABLE UI COMPONENTS
+│   │   ├── Button.jsx
+│   │   ├── Input.jsx
+│   │   ├── Card.jsx
+│   │   ├── Loader.jsx
+│   │   ├── EmptyState.jsx
+│   │   └── ErrorMessage.jsx
+│   │
+│   ├── navigation/                 ← NAVIGATION LAYER
+│   │   ├── AppNavigator.jsx        (root — decides auth vs app stack)
+│   │   ├── AuthStack.jsx           (login screen)
+│   │   └── AppTabs.jsx             (home, rendezvous, reminders)
+│   │
+│   ├── store/                      ← STATE MANAGEMENT
+│   │   ├── authStore.js            (user, token)
+│   │   └── reminderStore.js        (local reminders state)
+│   │
+│   ├── hooks/                      ← SHARED HOOKS
+│   │   ├── useAuth.js
+│   │   └── useNotifications.js
+│   │
+│   ├── services/                   ← SERVICES LAYER
+│   │   ├── storage.service.js      (SecureStore wrapper)
+│   │   ├── notification.service.js (Expo notifications)
+│   │   └── cache.service.js        (AsyncStorage for offline)
+│   │
+│   ├── constants/
+│   │   ├── colors.js
+│   │   ├── spacing.js
+│   │   └── config.js               (API base URL, env)
+│   │
+│   └── utils/
+│       ├── date.utils.js
+│       └── token.utils.js
+│
+├── assets/
+├── app.json
+├── App.jsx                         ← entry point
+└── .env
+
+| Category             | Package                                     | Role                     | Usage in Your App                                       |
+| -------------------- | ------------------------------------------- | ------------------------ | ------------------------------------------------------- |
+| **Navigation**       | `@react-navigation/native`                  | Core navigation system   | Manages navigation state across the app                 |
+|                      | `@react-navigation/stack`                   | Stack navigation         | Login → Home → Details flow                             |
+|                      | `@react-navigation/bottom-tabs`             | Tab navigation           | Main sections (Home, Rendez-vous, Profile, Reminders)   |
+|                      | `react-native-screens`                      | Performance optimization | Improves navigation performance using native components |
+|                      | `react-native-safe-area-context`            | Safe UI layout           | Prevents UI overlap with notch/status bar               |
+| **API / Networking** | `axios`                                     | HTTP client              | Calls backend API (login, rendez-vous, reminders)       |
+| **State Management** | `zustand`                                   | Global state manager     | Stores auth (token, user) and shared data               |
+| **Forms**            | `react-hook-form`                           | Form handling            | Manages inputs (login, profile, reminders)              |
+|                      | `zod`                                       | Data validation          | Validates form data (email, password, etc.)             |
+|                      | `@hookform/resolvers`                       | Integration tool         | Connects react-hook-form with zod                       |
+| **Storage**          | `@react-native-async-storage/async-storage` | Local storage            | Stores non-sensitive data (settings, cache)             |
+|                      | `expo-secure-store`                         | Secure storage           | Stores JWT token and sensitive data (VERY IMPORTANT)    |
+| **Mobile Features**  | `expo-notifications`                        | Notifications system     | Medication reminders, appointment alerts                |
+|                      | `expo-device`                               | Device info              | Detect device type, debugging, analytics                |

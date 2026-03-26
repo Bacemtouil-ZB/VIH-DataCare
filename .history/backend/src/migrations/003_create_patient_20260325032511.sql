@@ -38,5 +38,3 @@ CREATE TABLE patients (
 
 --for mobile app 
 ALTER TYPE role_enum ADD VALUE 'patient';
-ALTER TABLE patients 
-ADD COLUMN user_id INTEGER UNIQUE REFERENCES users(id);
