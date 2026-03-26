@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { NavLink } from 'react-router-dom';
 import './Sidebar.css';
 import AccountButton from '../UI/Button/AccountButton.jsx';
@@ -8,7 +8,7 @@ const Sidebar = () => {
   const { user } = useAuth();
   const userRole = user?.role || 'medecin';
   
-  // Configuration des liens par rôle
+  // Configuration des liens par rÃ´le
   const roleLinks = {
     admin: [
       {
@@ -57,9 +57,9 @@ const Sidebar = () => {
   pharmacien: [
 
     {
-      to: "ordonnances",
+      to: "prescriptions-medicales",
       icon: "bi-people-fill",
-      label: "Ordonnances",
+      label: "Prescriptions",
       end : true,
     },
     {
@@ -105,12 +105,12 @@ const Sidebar = () => {
   ],
   };
 
-  // Utiliser les liens personnalisés ou ceux du rôle
+  // Utiliser les liens personnalisÃ©s ou ceux du rÃ´le
   const links =  roleLinks[userRole] ;
 
   return (
     <div className="sidebar-custom d-flex flex-column" style={{ width: '240px', minHeight: '100vh' }}>
-      {/* Logo / En-tête avec cœur et VIHDataCare */}
+      {/* Logo / En-tÃªte avec cÅ“ur et VIHDataCare */}
       <div className="sidebar-header py-3 px-4">
         <div className="text-center sidebar-header-content">
           <div className="heart-icon-container mb-2">
@@ -145,7 +145,7 @@ const Sidebar = () => {
 
       {/* Section Footer */}
       <div className="sidebar-footer-section px-3 py-4 border-top">
-        {/* Bouton Déconnexion */}
+        {/* Bouton DÃ©connexion */}
         <AccountButton />
       </div>
     </div>
@@ -153,3 +153,4 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+

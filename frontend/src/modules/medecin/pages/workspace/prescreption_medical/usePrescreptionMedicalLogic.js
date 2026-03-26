@@ -1,6 +1,6 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
-import { confirmAction, alertError } from "../../../../../shared/utils/uiAlerts";
+import { alertError, confirmAction } from "../../../../../shared/utils/uiAlerts";
 import {
   createPrescription,
   getPrescriptionsByNumeroDossier,
@@ -9,7 +9,7 @@ import {
 } from "../../../services/precriptionMedicalService.jsx";
 import { INITIAL_FORM } from "./prescreptionMedicalConstants";
 
-export function usePrescreptionMedicalLogic(numero) {
+export function usePrescreptionMedicalLogic(numero, currentUser) {
   const [prescriptions, setPrescriptions] = useState([]);
   const [stockItems, setStockItems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -22,6 +22,7 @@ export function usePrescreptionMedicalLogic(numero) {
   const [formData, setFormData] = useState(INITIAL_FORM);
   const [searchTerm, setSearchTerm] = useState("");
   const [searchDate, setSearchDate] = useState("");
+  const [confirmationModal, setConfirmationModal] = useState(null);
 
   useEffect(() => {
     if (!numero) return;
@@ -34,8 +35,8 @@ export function usePrescreptionMedicalLogic(numero) {
         ]);
         setPrescriptions(presRes.prescriptions || []);
         setStockItems(stockRes.items || []);
-      } catch (err) {
-        alertError("Impossible de charger les données.");
+      } catch {
+        alertError("Impossible de charger les donnees.");
       } finally {
         setLoading(false);
       }
@@ -43,9 +44,14 @@ export function usePrescreptionMedicalLogic(numero) {
     fetchAll();
   }, [numero]);
 
+  const medecinDisplayName = useMemo(() => {
+    const fullName = `${currentUser?.prenom || ""} ${currentUser?.nom || ""}`.trim();
+    return fullName || "Medecin";
+  }, [currentUser]);
+
   const selectedMed = useMemo(
     () => stockItems.find((s) => String(s.id) === String(formData.medicament_id)),
-    [stockItems, formData.medicament_id]
+    [stockItems, formData.medicament_id],
   );
 
   const filtered = useMemo(() => {
@@ -64,10 +70,9 @@ export function usePrescreptionMedicalLogic(numero) {
       const raw = p.date || p.created_at || "";
       if (!raw) return false;
 
-      const iso = raw instanceof Date
-        ? raw.toISOString().split("T")[0]
+      const iso = raw instanceof Date ?
+          raw.toISOString().split("T")[0]
         : String(raw).split("T")[0];
-
       return iso === dateQ;
     });
   }, [prescriptions, searchTerm, searchDate]);
@@ -83,14 +88,18 @@ export function usePrescreptionMedicalLogic(numero) {
 
   const openCreate = () => {
     setDetailItem(null);
+    setConfirmationModal(null);
     resetForm();
     setShowForm(true);
   };
 
-  const closeForm = (notify = true) => {
+  const closeForm = () => {
     resetForm();
     setShowForm(false);
+    setConfirmationModal(null);
   };
+
+  const closeConfirmationModal = () => setConfirmationModal(null);
 
   const handleMedSelect = (e) => {
     const id = e.target.value;
@@ -105,7 +114,7 @@ export function usePrescreptionMedicalLogic(numero) {
   const openEdit = async (item) => {
     const ok = await confirmAction(
       "Modifier cette prescription ?",
-      `Médicament : ${item.traitement || "-"} - Date : ${item.date ? item.date.slice(0, 10) : "-"}`,
+      `Medicament : ${item.traitement || "-"} - Quantite : ${item.quantite || "-"}`,
     );
     if (!ok) return;
 
@@ -116,13 +125,12 @@ export function usePrescreptionMedicalLogic(numero) {
       medicament_id: String(item.medicament_id || ""),
       traitement: item.traitement || "",
       posologie: item.posologie || "",
-      date: item.date ? item.date.slice(0, 10) : "",
       quantite: item.quantite || "",
       dosage: item.dosage || "",
       remarque: item.remarque || "",
     });
     setShowForm(true);
-    toast.info("Mode modification activé");
+    toast.info("Mode modification active");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -130,47 +138,62 @@ export function usePrescreptionMedicalLogic(numero) {
     setShowForm(false);
     resetForm();
     setDetailItem(item);
-    toast.info("Mode détails actif");
+    setConfirmationModal(null);
+    toast.info("Mode details actif");
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!formData.medicament_id) {
-      toast.warning("Veuillez sélectionner un médicament.");
+      toast.warning("Veuillez selectionner un medicament.");
       return;
     }
-    if (!formData.date) {
-      toast.warning("La date est obligatoire.");
+    if (!formData.posologie?.trim()) {
+      toast.warning("La posologie est obligatoire.");
       return;
     }
-    const ok = await confirmAction(
-      isModifying ? "Enregistrer les modifications ?" : "Créer cette prescription ?",
-      "Les données seront enregistrées dans le dossier patient.",
-    );
-    if (!ok) return;
+    if (!formData.quantite || Number(formData.quantite) <= 0) {
+      toast.warning("La quantite prescrite doit etre superieure a 0.");
+      return;
+    }
 
+    setConfirmationModal({
+      mode: isModifying ? "update" : "create",
+      data: {
+        traitement: formData.traitement || selectedMed?.composition || "-",
+        posologie: formData.posologie || "-",
+        dosage: formData.dosage || "-",
+        quantite: formData.quantite || "-",
+        remarque: formData.remarque || "-",
+      },
+    });
+  };
+
+  const confirmPrescription = async () => {
+    if (!confirmationModal) return;
     try {
       setSaving(true);
-      if (isModifying) {
-        const { statut: _s, ...formWithoutStatut } = formData;
+
+      if (confirmationModal.mode === "update") {
         const res = await updatePrescription(editingId, {
-          ...formWithoutStatut,
+          ...formData,
           numero_dossier: numero,
         });
         setPrescriptions((prev) =>
-          prev.map((p) => (p.id === editingId ? res.prescription : p))
+          prev.map((p) => (p.id === editingId ? res.prescription : p)),
         );
-        toast.success("Prescription mise à jour.");
+        toast.success("Prescription mise a jour.");
       } else {
-        const { statut: _s2, ...formWithoutStatut2 } = formData;
         const res = await createPrescription({
-          ...formWithoutStatut2,
+          ...formData,
           numero_dossier: numero,
         });
         setPrescriptions((prev) => [res.prescription, ...prev]);
-        toast.success("Prescription créée avec succès.");
+        toast.success("Prescription envoyee a la pharmacie.");
       }
-      closeForm(false);
+
+      setConfirmationModal(null);
+      closeForm();
     } catch (err) {
       alertError(err?.response?.data?.message || "Erreur lors de l'enregistrement.");
     } finally {
@@ -205,5 +228,9 @@ export function usePrescreptionMedicalLogic(numero) {
     openEdit,
     handleShowDetails,
     handleSubmit,
+    confirmationModal,
+    closeConfirmationModal,
+    confirmPrescription,
+    medecinDisplayName,
   };
 }

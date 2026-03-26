@@ -8,9 +8,7 @@ export const FORM_INIT = {
   date_contamination: "",
   date_vih_positif: "",
   stade_cdc: "",
-  debut_stade_c: "",
   typage_hla_b5701: "",
-  profil_seroconversion: null,
 };
 
 export const MODES_CONTAMINATION = [
@@ -50,11 +48,6 @@ export const STADES_CDC = [
 export const TYPAGE_HLA_OPTIONS = [
   "Positif",
   "Négatif",
-];
-
-export const PROFIL_SEROCONVERSION_OPTIONS = [
-  { label: "Oui", value: true },
-  { label: "Non", value: false },
 ];
 
 export const REQUIRED_FIELDS = [

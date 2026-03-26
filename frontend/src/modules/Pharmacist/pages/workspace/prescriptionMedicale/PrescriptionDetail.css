@@ -1,8 +1,8 @@
-/* ==========================================
-   ORDONNANCE DETAIL - CORRIGÉ
+﻿/* ==========================================
+   PRESCRIPTION DETAIL - CORRIGÃ‰
    ========================================== */
 
-.ordonnance-detail-container {
+.prescription-detail-container {
   width: 100%;
   height: 100%;
   overflow-y: auto;
@@ -37,8 +37,8 @@
   box-shadow: 0 4px 6px rgba(16, 185, 129, 0.2);
 }
 
-/* SÉLECTEUR ORDONNANCE */
-.ordonnance-selector {
+/* SÃ‰LECTEUR PRESCRIPTION */
+.prescription-selector {
   margin-bottom: 2rem;
   padding: 1.25rem;
   background: white;
@@ -47,7 +47,7 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-.ordonnance-selector label {
+.prescription-selector label {
   display: block;
   font-weight: 700;
   color: #374151;
@@ -55,7 +55,7 @@
   font-size: 0.95rem;
 }
 
-.select-ordonnance {
+.select-prescription {
   width: 100%;
   padding: 0.875rem 1.125rem;
   border: 2px solid #d1d5db;
@@ -67,7 +67,7 @@
   outline: none;
 }
 
-.select-ordonnance:focus {
+.select-prescription:focus {
   border-color: #10b981;
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
 }
@@ -85,7 +85,7 @@
   margin-bottom: 1.75rem;
 }
 
-/* GROUPES COMPACTS - RÉDUITS */
+/* GROUPES COMPACTS - RÃ‰DUITS */
 .form-group-compact {
   margin-bottom: 1.25rem;
 }
@@ -155,7 +155,7 @@
   font-style: italic;
 }
 
-/* CALCUL EN TEMPS RÉEL */
+/* CALCUL EN TEMPS RÃ‰EL */
 .calculation-preview {
   padding: 1.5rem;
   background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
@@ -220,7 +220,7 @@
   transform: none;
 }
 
-/* BLOC STATUT SUPPRIMÉ */
+/* BLOC STATUT SUPPRIMÃ‰ */
 
 /* LOADING & ERROR */
 .loading-spinner,
@@ -265,7 +265,7 @@
 
 /* RESPONSIVE */
 @media (max-width: 768px) {
-  .ordonnance-detail-container {
+  .prescription-detail-container {
     padding: 1rem;
   }
 

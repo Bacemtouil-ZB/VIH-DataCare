@@ -1,4 +1,4 @@
-.ordonnances-page-container {
+﻿.prescriptions-page-container {
   width: 100%;
   min-height: 100%;
   padding: 1.25rem;
@@ -6,7 +6,7 @@
   color: #0f172a;
 }
 
-.ordonnances-header {
+.prescriptions-header {
   padding: 0;
   background: transparent;
   border: 0;
@@ -25,13 +25,13 @@
   margin: 0;
 }
 
-.ord-search.sh-searchbar {
+.prescription-search.sh-searchbar {
   width: min(220px, 100%);
   max-width: 220px;
   min-width: 220px;
 }
 
-.ord-search .sh-searchbar-input,
+.prescription-search .sh-searchbar-input,
 .search-input {
   width: 100%;
   max-width: 220px;
@@ -40,28 +40,28 @@
   font-size: 0.9rem !important;
 }
 
-.ord-search .sh-searchbar-input:focus,
+.prescription-search .sh-searchbar-input:focus,
 .search-input:focus {
   border-color: #2563eb !important;
   box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08) !important;
 }
 
-.ordonnances-page-container .table {
+.prescriptions-page-container .table {
   margin-bottom: 0;
   min-width: 1020px;
 }
 
-.ordonnances-page-container .table-responsive {
+.prescriptions-page-container .table-responsive {
   margin: 0;
   padding: 0;
 }
 
-.ord-acc-body {
+.prescription-acc-body {
   padding: 0 !important;
   background: #ffffff !important;
 }
 
-.ordonnances-page-container .table thead th {
+.prescriptions-page-container .table thead th {
   background: #f8fafc;
   color: #64748b;
   text-transform: uppercase;
@@ -73,20 +73,20 @@
   white-space: nowrap;
 }
 
-.ordonnances-page-container .table tbody td {
+.prescriptions-page-container .table tbody td {
   padding: 0.8rem;
   color: #0f172a;
   vertical-align: middle;
   border-bottom: 1px solid #e2e8f0;
 }
 
-.ordonnances-page-container .table thead th:last-child,
-.ordonnances-page-container .table tbody td:last-child {
+.prescriptions-page-container .table thead th:last-child,
+.prescriptions-page-container .table tbody td:last-child {
   width: 220px;
   min-width: 220px;
 }
 
-.ordonnances-page-container .table tbody tr:hover {
+.prescriptions-page-container .table tbody tr:hover {
   background: #f8fafc;
 }
 
@@ -326,7 +326,7 @@
   font-style: italic;
 }
 
-.ord-modal-backdrop {
+.prescription-modal-backdrop {
   position: fixed;
   inset: 0;
   background: rgba(15, 23, 42, 0.5);
@@ -337,7 +337,7 @@
   padding: 1rem;
 }
 
-.ord-modal {
+.prescription-modal {
   width: min(680px, 95vw);
   background: #ffffff;
   border-radius: 0.75rem;
@@ -346,20 +346,20 @@
   padding: 1rem 1.25rem;
 }
 
-.ord-modal-title {
+.prescription-modal-title {
   margin: 0 0 0.4rem 0;
   font-size: 1.1rem;
   font-weight: 800;
   color: #1f2937;
 }
 
-.ord-modal-subtitle {
+.prescription-modal-subtitle {
   margin: 0 0 0.9rem 0;
   color: #4b5563;
   font-size: 0.9rem;
 }
 
-.ord-modal-grid {
+.prescription-modal-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.55rem 1rem;
@@ -389,34 +389,35 @@
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
 }
 
-.ord-preview {
+.prescription-preview {
   margin: 0 0 0.85rem 0;
   color: #0f766e;
   font-size: 0.9rem;
 }
 
-.ord-modal-actions {
+.prescription-modal-actions {
   display: flex;
   justify-content: flex-end;
   gap: 0.55rem;
 }
 
 @media (max-width: 1024px) {
-  .ordonnances-header {
+  .prescriptions-header {
     flex-direction: column;
     align-items: stretch;
   }
 
-  .ord-search,
-  .ord-search.sh-searchbar,
-  .ord-search .sh-searchbar-input,
+  .prescription-search,
+  .prescription-search.sh-searchbar,
+  .prescription-search .sh-searchbar-input,
   .search-input {
     width: 100%;
     min-width: 0;
     max-width: none;
   }
 
-  .ord-modal-grid {
+  .prescription-modal-grid {
     grid-template-columns: 1fr;
   }
 }
+

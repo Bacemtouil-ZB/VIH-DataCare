@@ -1,5 +1,5 @@
 import { useUsersLogic } from "./useUsersLogic";
-import UsersPageUI from "./UsersPageUI";
+import UsersPageUI from "./UsersPageUi";
 
 export default function UsersPage() {
   const logic = useUsersLogic();

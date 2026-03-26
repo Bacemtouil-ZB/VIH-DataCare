@@ -10,18 +10,16 @@ export const createVih = async (vihData, createdBy) => {
     date_contamination,
     date_vih_positif,
     stade_cdc,
-    debut_stade_c,
     typage_hla_b5701,
-    profil_seroconversion,
   } = vihData;
 
   const query = `
     INSERT INTO vih (
       patient_id, mode_contamination, type_depistage, circonstance_decouverte,
       date_derniere_negative, date_contamination, date_vih_positif, stade_cdc,
-      debut_stade_c, typage_hla_b5701, profil_seroconversion, created_by
+       typage_hla_b5701, created_by
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
     RETURNING *;
   `;
 
@@ -34,9 +32,7 @@ export const createVih = async (vihData, createdBy) => {
     date_contamination || null,
     date_vih_positif || null,
     stade_cdc || null,
-    debut_stade_c || null,
     typage_hla_b5701 || null,
-    profil_seroconversion || false,
     createdBy,
   ];
 
@@ -96,9 +92,8 @@ export const updateVih = async (id, vihData, updatedBy) => {
     date_contamination,
     date_vih_positif,
     stade_cdc,
-    debut_stade_c,
     typage_hla_b5701,
-    profil_seroconversion,
+    
   } = vihData;
 
   const query = `
@@ -111,12 +106,10 @@ export const updateVih = async (id, vihData, updatedBy) => {
       date_contamination = $5,
       date_vih_positif = COALESCE($6, date_vih_positif),
       stade_cdc = COALESCE($7, stade_cdc),
-      debut_stade_c = $8,
-      typage_hla_b5701 = COALESCE($9, typage_hla_b5701),
-      profil_seroconversion = COALESCE($10, profil_seroconversion),
-      updated_by = $11,
+      typage_hla_b5701 = COALESCE($8, typage_hla_b5701),
+      updated_by = $9,
       updated_at = NOW()
-    WHERE id = $12
+    WHERE id = $10
     RETURNING *;
   `;
 
@@ -128,9 +121,7 @@ export const updateVih = async (id, vihData, updatedBy) => {
     date_contamination || null,
     date_vih_positif || null,
     stade_cdc || null,
-    debut_stade_c || null,
     typage_hla_b5701 || null,
-    profil_seroconversion !== undefined ? profil_seroconversion : null,
     updatedBy,
     id,
   ];
