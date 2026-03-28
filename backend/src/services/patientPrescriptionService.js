@@ -1,6 +1,5 @@
 ﻿import { getPatientsWithPrescriptions as getPatientsModel } from "../models/patientPrescriptionModel.js";
 import { SuiviTherapeutique } from "./suiviTherapeutique/SuiviTherapeutique.js";
-import { upsertSuiviTherapeutique } from "../models/prescriptionWorkflowModel.js";
 
 export const getPatientsWithPrescriptions = async () => {
   const patients = await getPatientsModel();
@@ -23,15 +22,6 @@ export const getPatientsWithPrescriptions = async () => {
         date_ecart: ecartFromDb > 0 ? ecartFromDb : computed.date_ecart,
       };
 
-      if (patient.prescription_id && patient.patient_id) {
-        await upsertSuiviTherapeutique({
-          prescriptionId: patient.prescription_id,
-          patientId: patient.patient_id,
-          statutPatient: suiviData.statut_patient,
-          dateProchainePrise: patient.date_prochaine_prise,
-          dateEcart: suiviData.date_ecart,
-        });
-      }
     }
 
     patientsWithStatus.push({

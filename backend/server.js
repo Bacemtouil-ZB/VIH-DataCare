@@ -4,6 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import db from "./src/config/db.js";
+import suiviTherapeutiqueRoute from "./src/routes/suiviTherapeutiqueRoute.js";
 
 import authRoutes from "./src/routes/authRoutes.js";
 import userRoutes from "./src/routes/userRoutes.js";
@@ -23,7 +24,6 @@ import auditRoutes from "./src/routes/auditRoutes.js";
 import rendezvousRouter from "./src/routes/rendezVousRoute.js";
 import stockRoute from "./src/routes/stockRoute.js";
 import conclusionRoutes from "./src/routes/doctorConclusionsRoutes.js";
-import prescriptionMedicalRoute from "./src/routes/prescriptionMedicalRoute.js";
 
 dotenv.config();
 
@@ -41,7 +41,7 @@ app.use(
 
 app.use("/api/auth", authRoutes);
 app.use("/api", userRoutes);
-app.use("/api/prescriptions-medicales", prescriptionWorkflowRoute);
+app.use("/api/prescription-medicale", prescriptionWorkflowRoute);
 app.use("/api/patients/prescriptions-medicales", patientPrescriptionRoute);
 app.use("/api/vih", vihRoute);
 app.use("/api/patients", patientRoutes);
@@ -57,7 +57,7 @@ app.use("/api/audit", auditRoutes);
 app.use("/api/rendezvous", rendezvousRouter);
 app.use("/api/stock", stockRoute);
 app.use("/api", conclusionRoutes);
-app.use("/api/prescription-medicale", prescriptionMedicalRoute);
+app.use("/api/suivi-therapeutique", suiviTherapeutiqueRoute);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });

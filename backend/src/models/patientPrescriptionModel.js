@@ -8,7 +8,6 @@ export const getPatientsWithPrescriptions = async () => {
       p.name AS patient_name,
       p.surname AS patient_surname,
       pe.id AS prescription_id,
-      pe.traitement AS nom_traitement,
       pe.date AS date_debut_traitement,
       pe.quantite AS quantite_prescrite,
       pe.statut AS statut_prescription,

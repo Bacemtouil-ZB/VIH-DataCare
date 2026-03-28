@@ -58,9 +58,7 @@ export function FilterToolbar({
               placeholder={item.placeholder}
             />
           );
-        } else if (item.type === "custom" && typeof item.render === "function") {
-          control = item.render();
-        }
+        } 
 
         if (item.type === "search") {
           return <Fragment key={key}>{control}</Fragment>;
@@ -88,14 +86,6 @@ export function FilterToolbar({
     </>
   );
 
-  if (Component === "form") {
-    return (
-      <form className={wrapperClass} onSubmit={onSubmit}>
-        {content}
-      </form>
-    );
-  }
-  
 
   return (
     <Component className={wrapperClass}>
