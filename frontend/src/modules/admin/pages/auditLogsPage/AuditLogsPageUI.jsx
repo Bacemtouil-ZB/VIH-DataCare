@@ -1,6 +1,12 @@
 ﻿import { fmt, prettyValue, txt } from "./helpers";
 import PageHeader from "../../components/PageHeader";
-import { ActionButton, FilterToolbar, HistoriqueActions,HistoriqueTable,Spinner} from "../../../../shared/components/index";
+import {
+  ActionButton,
+  FilterToolbar,
+  HistoriqueActions,
+  HistoriqueTable,
+  Spinner,
+} from "../../../../shared/components/index";
 
 const AuditLogsPageUI = ({
   patientNumeroInput,
@@ -32,71 +38,72 @@ const AuditLogsPageUI = ({
   prev,
   setOffset,
 }) => {
+
   const tableHeaders = ["Date", "Médecin", "Module", "Action", ""];
 
-  // Définir une erreur si le numéro patient n'est pas vide et ne correspond pas au format attendu
   const numeroError =
     patientNumeroInput &&
     !/^\d{4}-\d{4}$/.test(patientNumeroInput)
       ? "Format invalide (ex: 0001-2025)"
       : "";
 
-  const renderLogRow = (l) => (
-    <tr key={l.id}>
-      <td className="audit__cell">{fmt(l.created_at)}</td>
-      <td className="audit__cell">
-        <div className="audit__strong">{txt(l.user_nom)} {txt(l.user_prenom)}</div>
-        <div className="audit__muted">{txt(l.user_email)}</div>
-      </td>
-      <td className="audit__cell">{txt(l.module)}</td>
-      <td className="audit__cell">{txt(l.action)}</td>
-      <td className="audit__cell audit__cell--right">
-        <HistoriqueActions onDetails={() => openDetails(l.id)} />
-      </td>
-    </tr>
-  );
+  const renderLogRow = (l) => {
+   
+    return (
+      <tr key={l.id}>
+        <td className="audit__cell">{fmt(l.created_at)}</td>
+        <td className="audit__cell">
+          <div className="audit__strong">
+            {txt(l.user_nom)} {txt(l.user_prenom)}
+          </div>
+          <div className="audit__muted">{txt(l.user_email)}</div>
+        </td>
+        <td className="audit__cell">{txt(l.module)}</td>
+        <td className="audit__cell">{txt(l.action)}</td>
+        <td className="audit__cell audit__cell--right">
+          <HistoriqueActions onDetails={() => openDetails(l.id)} />
+        </td>
+      </tr>
+    );
+  };
 
   const diffHeaders = ["Champ", "Ancien", "Nouveau"];
 
   const renderDiffRow = (r) => (
     <tr key={r.key} className={r.changed ? "auditDiff__row--changed" : ""}>
       <td className="auditDiff__cell auditDiff__key">{r.key}</td>
-      <td className="auditDiff__cell auditDiff__mono">{prettyValue(r.oldValue)}</td>
-      <td className="auditDiff__cell auditDiff__mono">{prettyValue(r.newValue)}</td>
+      <td className="auditDiff__cell auditDiff__mono">
+        {prettyValue(r.oldValue)}
+      </td>
+      <td className="auditDiff__cell auditDiff__mono">
+        {prettyValue(r.newValue)}
+      </td>
     </tr>
   );
 
   return (
     <div className="audit audit--white">
       <header className="audit__header">
-        <PageHeader
-          title="Audit patient" 
-          noBorder
-        />
+        <PageHeader title="Audit patient" noBorder />
       </header>
 
       <div className="auditContainer">
         <section className="audit__card">
-         <FilterToolbar
-            as="form"
+          
+          <FilterToolbar
             className="audit__row"
-            onSubmit={onSearch}
             items={[
               {
                 type: "input",
                 label: "Numéro patient",
                 labelClassName: "audit__label",
                 wrapperClassName: "audit__field audit__field--grow",
-
                 className: `audit__input ${numeroError ? "input-error" : ""}`,
                 value: patientNumeroInput,
                 onChange: (e) => {
                   let value = e.target.value.toUpperCase();
-
-                  // supprimer tout sauf chiffres et "-"
                   value = value.replace(/[^\d-]/g, "");
 
-                  // auto format 0001-2025
                   if (value.length > 4 && !value.includes("-")) {
                     value = value.slice(0, 4) + "-" + value.slice(4);
                   }
@@ -111,9 +118,9 @@ const AuditLogsPageUI = ({
                 key="search"
                 action="add"
                 label="Rechercher"
-                type="submit"
+                type="button" 
+                onClick={onSearch} 
                 showIcon={false}
-
                 disabled={!!numeroError}
               />,
               <ActionButton
@@ -127,11 +134,21 @@ const AuditLogsPageUI = ({
               />,
             ]}
           />
-        {numeroError && (
-          <div className="audit__error-message" style={{ color: "red", marginTop: 4, marginLeft: 8 , fontSize: "0.75rem" }}>
-            {numeroError}
-          </div>
-        )}
+
+          {numeroError && (
+            <div
+              className="audit__error-message"
+              style={{
+                color: "red",
+                marginTop: 4,
+                marginLeft: 8,
+                fontSize: "0.75rem",
+              }}
+            >
+              {numeroError}
+            </div>
+          )}
+
           <FilterToolbar
             className="audit__filters"
             items={[
@@ -146,6 +163,7 @@ const AuditLogsPageUI = ({
                   setOffset(0);
                   const nextModule = e.target.value;
                   setModule(nextModule);
+
                   if (nextModule && action) {
                     const actionModule = action.split("_").slice(0, -1).join("_");
                     if (actionModule !== nextModule) setAction("");
@@ -163,7 +181,10 @@ const AuditLogsPageUI = ({
                 wrapperClassName: "audit__field",
                 className: "audit__input",
                 value: action,
-                onChange: (e) => { setOffset(0); setAction(e.target.value); },
+                onChange: (e) => {
+                  setOffset(0);
+                  setAction(e.target.value);
+                },
                 options: [
                   { value: "", label: "Toutes" },
                   ...actionsForModule.map((a) => ({ value: a, label: a })),
@@ -177,7 +198,10 @@ const AuditLogsPageUI = ({
                 className: "audit__input",
                 inputType: "date",
                 value: from,
-                onChange: (e) => { setOffset(0); setFrom(e.target.value); },
+                onChange: (e) => {
+                  setOffset(0);
+                  setFrom(e.target.value);
+                },
               },
               {
                 type: "input",
@@ -187,7 +211,10 @@ const AuditLogsPageUI = ({
                 className: "audit__input",
                 inputType: "date",
                 value: to,
-                onChange: (e) => { setOffset(0); setTo(e.target.value); },
+                onChange: (e) => {
+                  setOffset(0);
+                  setTo(e.target.value);
+                },
               },
             ]}
           />
@@ -213,6 +240,7 @@ const AuditLogsPageUI = ({
             <div className="audit__muted">
               Total: <span className="audit__strong">{total}</span> • Page {page}/{totalPages}
             </div>
+
             <div className="auditPager__actions">
               <ActionButton
                 action="annuler"
@@ -237,59 +265,37 @@ const AuditLogsPageUI = ({
         </section>
 
         {detailsOpen && (
-          <div className="auditModal__overlay" onClick={() => closeDetails()}>
+          <div className="auditModal__overlay" onClick={closeDetails}>
             <div
               className="auditModal auditModal--compact"
               onClick={(e) => e.stopPropagation()}
-              role="dialog"
-              aria-modal="true"
-              aria-label="Détails du log"
             >
               <div className="auditModal__header">
                 <div className="auditModal__title">
-                  <i className="bi bi-info-circle" /> Détails du log
+                  Détails du log
                 </div>
-                <div className="auditModal__headerActions">
-                  <ActionButton
-                    action="annuler"
-                    label="Fermer"
-                    type="button"
-                    onClick={closeDetails}
-                    variant="outline"
-                    showIcon={true}
-                  />
-                </div>
+
+                <ActionButton
+                  action="annuler"
+                  label="Fermer"
+                  type="button"
+                  onClick={closeDetails}
+                  variant="outline"
+                  showIcon
+                />
               </div>
 
-              <div className="auditModal__body auditModal__body--scroll">
+              <div className="auditModal__body">
                 {detailsLoading ? (
                   <Spinner />
                 ) : !details ? (
-                  <div className="audit__muted">Aucun détail.</div>
+                  <div>Aucun détail</div>
                 ) : (
-                  <>
-                    <div className="auditModal__meta2">
-                      <div className="auditMetaRow">
-                        <div className="auditMetaRow__k">IP</div>
-                        <div className="auditMetaRow__v">{txt(details.ip_address)}</div>
-                      </div>
-                      <div className="auditMetaRow">
-                        <div className="auditMetaRow__k">UA</div>
-                        <div className="auditMetaRow__v auditMetaRow__v--mono">{txt(details.user_agent)}</div>
-                      </div>
-                    </div>
-
-                    <div className="auditModal__section">Comparaison (old_data vs new_data)</div>
-
-                    <div className="auditDiffTable">
-                      <HistoriqueTable
-                        headers={diffHeaders}
-                        items={diffRows}
-                        renderRow={renderDiffRow}
-                        emptyMessage="Aucune donnée à comparer."
-                      />
-                    </div>
-                  </>
+                  <HistoriqueTable
+                    headers={diffHeaders}
+                    items={diffRows}
+                    renderRow={renderDiffRow}
+                  />
                 )}
               </div>
             </div>
