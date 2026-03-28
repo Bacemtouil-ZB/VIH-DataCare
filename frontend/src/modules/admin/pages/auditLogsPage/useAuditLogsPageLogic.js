@@ -117,9 +117,11 @@ export const useAuditLogsPageLogic = () => {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [detailsOpen, closeDetails]);
 
-  // 🔥 FIX ICI (validation ajoutée)
+  
   const onSearch = useCallback(
+    
     async (e) => {
+      console.log("🔥 onSearch déclenché");
       e.preventDefault();
 
       const numero = patientNumeroInput.trim();
@@ -203,8 +205,6 @@ export const useAuditLogsPageLogic = () => {
 
     modules,
     actionsForModule,
-
-    // 🔥 IMPORTANT POUR UI
     numeroError,
 
     onSearch,
