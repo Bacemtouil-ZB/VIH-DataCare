@@ -32,7 +32,7 @@ export const mobileLoginService = async (username, password) => {
       username: user.username,
       role: user.role,
     },
-    "8h",
+    "30d", //"30d" during development only
   );
 
   // Get patient profile

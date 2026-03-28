@@ -274,3 +274,7 @@ Screen
 Components
 
 Never skip the order.
+
+backend bib installed for mobie app 
+npm install expo-server-sdk 
+npm install node-cron

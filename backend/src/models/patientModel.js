@@ -42,15 +42,15 @@ export const getPatientByNumero = async (numero) => {
       bg.name AS birth_governorate,
       bp.id AS birth_postal_code_id,    -- ID du code postal
       bp.code AS birth_postal_code,     -- Code postal affichable
-      bp.place_name AS birth_place_name,-- ✅ (optional) name to display instead of code
+      bp.place_name AS birth_place_name,--  (optional) name to display instead of code
 
       -- Gouvernorat et code postal résidence
       rg.name AS residence_governorate,
       rp.id AS residence_postal_code_id,
       rp.code AS residence_postal_code,
-      rp.place_name AS residence_place_name, -- ✅ (optional)
+      rp.place_name AS residence_place_name, -- (optional)
 
-      -- ✅ Exact address (résidence only, as you requested)
+      --  Exact address (résidence only, as you requested)
       r.exact_address AS exact_address,
 
       -- Créé et modifié par
@@ -137,7 +137,7 @@ export const createPatient = async (client, patientData, userId) => {
     gender,
     birth_postal_code_id,
     residence_postal_code_id,
-    exact_address, // ✅ from form (residence exact address)
+    exact_address, //  from form (residence exact address)
     phone,
     hospitalisation,
     status,
@@ -283,3 +283,5 @@ export const updatePatient = async (id, patientData, updatedBy) => {
     client.release();
   }
 };
+
+

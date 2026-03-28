@@ -24,7 +24,11 @@ import rendezvousRouter from "./src/routes/rendezVousRoute.js";
 import stockRoute from "./src/routes/stockRoute.js";
 import conclusionRoutes from "./src/routes/doctorConclusionsRoutes.js";
 import prescriptionMedicalRoute from "./src/routes/prescriptionMedicalRoute.js";
-
+import mobileAuthRoutes from "./src/routes/mobile/mobileAuthRoutes.js";
+import mobilePatientRoutes from "./src/routes/mobile/mobilePatientRoutes.js";
+import mobileRendezvousRoutes from "./src/routes/mobile/mobileRendezvousRoutes.js";
+// Scheduler
+import { startScheduler } from './src/services/mobile/mobileScheduler.js';
 dotenv.config();
 
 const app = express();
@@ -38,6 +42,9 @@ app.use(
     credentials: true,
   }),
 );
+
+// Start the rendezvous notification scheduler
+startScheduler();
 
 app.use("/api/auth", authRoutes);
 app.use("/api", userRoutes);
@@ -58,7 +65,13 @@ app.use("/api/rendezvous", rendezvousRouter);
 app.use("/api/stock", stockRoute);
 app.use("/api", conclusionRoutes);
 app.use("/api/prescription-medicale", prescriptionMedicalRoute);
+app.use("/api/mobile/auth", mobileAuthRoutes);
+app.use("/api/mobile/patient", mobilePatientRoutes);
+app.use("/api/mobile/rendezvous", mobileRendezvousRoutes);
 
+
+
+// 404 handler
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
 });
@@ -74,7 +87,7 @@ const startServer = async () => {
     console.log("PostgreSQL connected, server starting...");
 
     const PORT = process.env.PORT || 3000;
-    app.listen(PORT, () => {
+    app.listen(PORT,'0.0.0.0', () => {
       console.log(`Server running on http://localhost:${PORT}`);
     });
   } catch (err) {

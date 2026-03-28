@@ -1,13 +1,31 @@
-//The bottom tab bar shown when user IS logged in.
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
 import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from '../features/home/screens/homeScreen';
 import RendezvousListScreen from '../features/rendezvous/screens/rendezvousListScreen';
+import RendezvousDetailScreen from '../features/rendezvous/screens/rendezvousDetailScreen';
 import RemindersListScreen from '../features/reminders/screens/remindersListScreen';
+import CreateReminderScreen from '../features/reminders/screens/createReminderScreen';
 import colors from '../constants/colors';
 
 const Tab = createBottomTabNavigator();
+const RendezvousStack = createStackNavigator();
+const RemindersStack = createStackNavigator();
+
+const RendezvousNavigator = () => (
+  <RendezvousStack.Navigator screenOptions={{ headerShown: false }}>
+    <RendezvousStack.Screen name="RendezvousList" component={RendezvousListScreen} />
+    <RendezvousStack.Screen name="RendezvousDetail" component={RendezvousDetailScreen} />
+  </RendezvousStack.Navigator>
+);
+
+const RemindersNavigator = () => (
+  <RemindersStack.Navigator screenOptions={{ headerShown: false }}>
+    <RemindersStack.Screen name="RemindersList" component={RemindersListScreen} />
+    <RemindersStack.Screen name="CreateReminder" component={CreateReminderScreen} />
+  </RemindersStack.Navigator>
+);
 
 const AppTabs = () => {
   return (
@@ -42,12 +60,12 @@ const AppTabs = () => {
       />
       <Tab.Screen
         name="Rendezvous"
-        component={RendezvousListScreen}
+        component={RendezvousNavigator}
         options={{ tabBarLabel: 'Rendez-vous' }}
       />
       <Tab.Screen
         name="Reminders"
-        component={RemindersListScreen}
+        component={RemindersNavigator}
         options={{ tabBarLabel: 'Rappels' }}
       />
     </Tab.Navigator>

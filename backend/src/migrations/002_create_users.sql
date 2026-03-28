@@ -32,3 +32,6 @@ ADD COLUMN username VARCHAR(100) UNIQUE; -- don't touch email for web app, add u
 ALTER TABLE users ALTER COLUMN nom DROP NOT NULL;
 ALTER TABLE users ALTER COLUMN prenom DROP NOT NULL;
 ALTER TABLE users ALTER COLUMN email DROP NOT NULL;
+
+-- Add a column for storing the Expo push token : work as device identifier for mobile app to send push notifications
+ALTER TABLE users ADD COLUMN expo_push_token VARCHAR(255);

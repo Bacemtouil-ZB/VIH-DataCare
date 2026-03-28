@@ -74,6 +74,43 @@ export const checkPatientNumero = async (numero) => {
   }
 };
 
+// ─── MOBILE ACCESS ────────────────────────────────────────────────────────────
+
+export const getMobileAccountStatus = async (numero) => {
+  try {
+    const response = await API.get(`/mobile/patient/account-status/${numero}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export const createMobileAccount = async (numero) => {
+  try {
+    const response = await API.post(`/mobile/patient/create-account/${numero}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export const resetMobilePassword = async (numero) => {
+  try {
+    const response = await API.put(`/mobile/patient/reset-password/${numero}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
+export const deactivateMobileAccount = async (numero) => {
+  try {
+    const response = await API.put(`/mobile/patient/deactivate/${numero}`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
 
 // Export par défaut
 export default {
@@ -83,5 +120,9 @@ export default {
   updatePatient,
   getAllDoctors,
   getFormData,
-  checkPatientNumero
+  checkPatientNumero ,
+  getMobileAccountStatus,
+  createMobileAccount,
+  resetMobilePassword,
+  deactivateMobileAccount
 };

@@ -67,7 +67,7 @@ export default function RendezVousUI({
                   type="date"
                   className="form-control"
                   value={formData.date}
-                  max={today}
+                  min={today}
                   onChange={(e) => setFormData((prev) => ({ ...prev, date: e.target.value }))}
                 />
               </div>

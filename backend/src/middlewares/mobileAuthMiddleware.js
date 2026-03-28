@@ -1,9 +1,7 @@
 import jwt from "jsonwebtoken";
 import { findMobileUserById } from "../models/mobile/mobileUserModel.js";
-
 export const mobileProtect = async (req, res, next) => {
   try {
-    // Read token from Authorization header
     const authHeader = req.headers.authorization;
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -15,11 +13,15 @@ export const mobileProtect = async (req, res, next) => {
 
     const token = authHeader.split(" ")[1];
 
-    // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("=== MOBILE AUTH DEBUG ===");
+    console.log("JWT_SECRET:", process.env.JWT_SECRET);
+    console.log("TOKEN:", token);
 
-    // Find user in DB
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("DECODED:", decoded);
+
     const user = await findMobileUserById(decoded.id);
+    console.log("USER:", user);
 
     if (!user) {
       return res.status(401).json({
@@ -35,10 +37,10 @@ export const mobileProtect = async (req, res, next) => {
       });
     }
 
-    // Attach user to request
     req.user = user;
     next();
   } catch (error) {
+    console.log("JWT ERROR:", error.message);
     return res.status(401).json({
       success: false,
       message: "Token invalide ou expiré.",

@@ -1,4 +1,3 @@
-// The root navigator — reads auth state and decides which stack to show.
 import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { ActivityIndicator, View } from 'react-native';
@@ -8,7 +7,7 @@ import useAuthStore from '../store/authStore';
 import colors from '../constants/colors';
 
 const AppNavigator = () => {
-  const { isAuthenticated, restoreSession } = useAuthStore();
+  const { isAuthenticated, mustChangePassword, restoreSession } = useAuthStore();
   const [isLoading, setIsLoading] = React.useState(true);
 
   useEffect(() => {
@@ -29,7 +28,7 @@ const AppNavigator = () => {
 
   return (
     <NavigationContainer>
-      {isAuthenticated ? <AppTabs /> : <AuthStack />}
+      {isAuthenticated && !mustChangePassword ? <AppTabs /> : <AuthStack />}
     </NavigationContainer>
   );
 };

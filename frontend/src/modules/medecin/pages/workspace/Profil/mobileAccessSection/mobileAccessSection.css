@@ -1,0 +1,354 @@
+/* ── Button trigger ──────────────────────────────────────── */
+.mobile-access-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background-color: #1a6b4a;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.mobile-access-trigger:hover {
+  background-color: #155a3e;
+}
+
+.mobile-access-trigger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.mobile-access-trigger .trigger-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.mobile-access-trigger .trigger-badge.active {
+  background-color: #27ae60;
+}
+
+.mobile-access-trigger .trigger-badge.inactive {
+  background-color: #e74c3c;
+}
+
+.mobile-access-trigger .trigger-badge.none {
+  background-color: #9ca3af;
+}
+
+/* ── Modal overlay ───────────────────────────────────────── */
+.mobile-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* ── Modal box ───────────────────────────────────────────── */
+.mobile-modal-box {
+  background: #fff;
+  border-radius: 12px;
+  padding: 32px;
+  width: 480px;
+  max-width: 95vw;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.mobile-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.mobile-modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a2e;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mobile-modal-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 4px;
+  border-radius: 4px;
+  transition: color 0.2s;
+}
+
+.mobile-modal-close:hover {
+  color: #1a1a2e;
+}
+
+/* ── Patient info ────────────────────────────────────────── */
+.mobile-modal-patient {
+  background: #f8fafb;
+  border-radius: 8px;
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mobile-modal-patient-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.mobile-modal-patient-numero {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* ── Status badge ────────────────────────────────────────── */
+.mobile-status-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mobile-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.mobile-status-badge.active {
+  background-color: #e8f5ee;
+  color: #1a6b4a;
+}
+
+.mobile-status-badge.inactive {
+  background-color: #fde8e8;
+  color: #e74c3c;
+}
+
+.mobile-status-badge.none {
+  background-color: #f3f4f6;
+  color: #6b7280;
+}
+
+.mobile-status-username {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* ── Action buttons ──────────────────────────────────────── */
+.mobile-modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-mobile-create {
+  width: 100%;
+  padding: 12px;
+  background-color: #1a6b4a;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-mobile-create:hover {
+  background-color: #155a3e;
+}
+
+.btn-mobile-reset {
+  width: 100%;
+  padding: 12px;
+  background-color: #fff;
+  color: #f39c12;
+  border: 2px solid #f39c12;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-mobile-reset:hover {
+  background-color: #fff8ed;
+}
+
+.btn-mobile-deactivate {
+  width: 100%;
+  padding: 12px;
+  background-color: #fff;
+  color: #e74c3c;
+  border: 2px solid #e74c3c;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-mobile-deactivate:hover {
+  background-color: #fde8e8;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Credentials box ─────────────────────────────────────── */
+.credentials-box {
+  background: #f8fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.credential-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+}
+
+.credential-label {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.credential-value {
+  color: #1a1a2e;
+  font-weight: 600;
+}
+
+.credential-password {
+  font-family: monospace;
+  font-size: 16px;
+  letter-spacing: 2px;
+  color: #1a6b4a;
+}
+
+.credentials-warning {
+  font-size: 12px;
+  color: #f39c12;
+  background: #fff8ed;
+  border: 1px solid #f39c12;
+  border-radius: 6px;
+  padding: 8px 12px;
+}
+
+.credentials-print-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.btn-print {
+  padding: 10px 20px;
+  background-color: #1a6b4a;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-print:hover {
+  background-color: #155a3e;
+}
+
+/* ── Error ───────────────────────────────────────────────── */
+.mobile-error {
+  font-size: 13px;
+  color: #e74c3c;
+  background: #fde8e8;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+/*******************/
+/* Icons */
+.bi {
+  font-size: 16px;
+  vertical-align: middle;
+}
+
+.mobile-modal-title i {
+  font-size: 18px;
+  margin-right: 6px;
+}
+
+.mobile-status-badge i {
+  margin-right: 6px;
+}
+
+button i {
+  margin-right: 6px;
+}
+
+/* Improved spacing */
+.mobile-modal-box {
+  padding: 20px 24px;
+  width: 520px;
+  gap: 16px;
+  border: 1px solid #eef2f7;
+}
+
+.mobile-modal-overlay {
+  padding: 16px;
+}
+
+.credentials-box {
+  padding: 12px 16px;
+  gap: 10px;
+}
+
+.credentials-warning {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+/* Header alignment (used in ProfilPageWorkspace) */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+/* Fix spacing of mobile access button */
+.mobile-access-trigger {
+  margin: 0;
+}
+.trigger-badge i {
+  font-size: 20px;
+}

@@ -1,6 +1,6 @@
 import pool from "../../config/db.js";
 
-// Get patient profile by user_id
+// Used by mobileAuthService → login → get patient profile
 export const findPatientByUserId = async (userId) => {
   const query = `
     SELECT 
@@ -23,35 +23,61 @@ export const findPatientByUserId = async (userId) => {
   const result = await pool.query(query, [userId]);
   return result.rows[0] || null;
 };
-// Link patient record to user account
-export const linkPatientToUser = async (patientId, userId) => {
+
+// Used by createMobileAccountService → quick check before creating account
+export const checkPatientHasMobileAccount = async (patientId) => {
   const query = `
-    UPDATE patients
-    SET user_id = $1, updated_at = NOW()
-    WHERE id = $2
+    SELECT p.id, p.user_id, p.numero, p.name, p.surname
+    FROM patients p
+    WHERE p.id = $1
+  `;
+  const result = await pool.query(query, [patientId]);
+  return result.rows[0] || null;
+};
+
+// Used by createMobileAccountService → links patient to user after account created
+export const linkPatientToUser = async (client, patientId, userId, doctorId) => {
+  const query = `
+    UPDATE patients 
+    SET user_id = $1, updated_by = $2, updated_at = NOW()
+    WHERE id = $3
     RETURNING *;
   `;
-  const result = await pool.query(query, [userId, patientId]);
+  const result = await client.query(query, [userId, doctorId, patientId]);
   return result.rows[0];
 };
 
-// Find patient by numero — used when doctor creates mobile account
+// Used by getMobileAccountStatusService, resetMobilePasswordService, deactivateMobileAccountService
+export const getPatientWithMobileAccount = async (patientId) => {
+  const query = `
+    SELECT 
+      p.id,
+      p.numero,
+      p.name,
+      p.surname,
+      p.user_id,
+      u.username,
+      u.isactivated,
+      u.must_change_password
+    FROM patients p
+    LEFT JOIN users u ON u.id = p.user_id
+    WHERE p.id = $1
+  `;
+  const result = await pool.query(query, [patientId]);
+  return result.rows[0] || null;
+};
+
+// Find patient by numero — used by all mobile patient account services
 export const findPatientByNumero = async (numero) => {
   const query = `
     SELECT 
-      id,
-      numero,
-      name,
-      surname,
-      birthdate,
-      gender,
-      phone,
-      hospitalisation,
-      status,
-      doctor_id,
-      user_id
-    FROM patients 
-    WHERE numero = $1
+      p.id,
+      p.numero,
+      p.name,
+      p.surname,
+      p.user_id
+    FROM patients p
+    WHERE p.numero = $1
   `;
   const result = await pool.query(query, [numero]);
   return result.rows[0] || null;

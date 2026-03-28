@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "frontend-mobile",
+    "name": "MonSuivi",
     "slug": "frontend-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -9,24 +9,45 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#1a6b4a"
     },
     "ios": {
       "supportsTablet": true
     },
     "android": {
+      "package": "com.zb9.vihdatacare",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
-      }
+      },
+      "permissions": [
+        "NOTIFICATIONS",
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-secure-store"
-    ]
+      "expo-secure-store",
+      "@react-native-community/datetimepicker",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#1a6b4a"
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "1a501d53-b5d2-4f43-bfdc-7a01b2cc3bca"
+      }
+    },
+    "owner": "zb9"
   }
 }
