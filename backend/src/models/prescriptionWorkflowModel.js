@@ -1,334 +1,125 @@
-﻿import pool from "../config/db.js";
+﻿
+import pool from "../config/db.js";
 
 const PRESCRIPTION_SELECT = `
   SELECT
-    pe.id,
-    pe.patient_id,
-    pe.medecin_id,
-    pe.medicament_id,
-    pe.traitement AS nom_traitement,
-    pe.posologie,
-    pe.dosage,
-    pe.quantite AS quantite_prescrite,
-    pe.date AS date_prescription,
-    pe.date AS date_debut_traitement,
-    pe.statut AS statut_prescription,
-    pe.date_delivrance,
-    pe.remarque,
-    pe.created_at,
-    pe.updated_at,
-    st.date_prochaine_prise,
-    st.date_ecart AS duree_perte_de_vue,
-    CASE
-      WHEN pe.statut = 'envoyee' THEN 'en attente'
-      ELSE COALESCE(st.statut_patient, 'actif')
-    END AS statut
+    pm.id,
+    pm.patient_id,
+    pm.medecin_id,
+    pm.medicament_id,
+    sm.code        AS traitement,
+    sm.composition AS composition_medicament,
+    pm.posologie,
+    pm.dosage,
+    pm.quantite,
+    pm.date,
+    pm.statut,
+    pm.date_delivrance,
+    pm.quantite_delivree,
+    pm.remarque,
+    pm.created_at,
+    pm.updated_at
+  FROM prescription_medicale pm
+  LEFT JOIN stock_medicaments sm ON sm.id = pm.medicament_id
 `;
 
-export const addMedicalTreatment = async (treatmentData, medecinId) => {
-  const {
-    patient_id,
-    nom_traitement,
-    quantite_prescrite,
-    date_prescription,
-    posologie,
-    dosage,
-    remarque,
-  } = treatmentData;
-
+// ── GET — prescriptions d'un patient via numero_dossier ───────
+export const findByNumeroDossier = async (numeroDossier) => {
   const query = `
-    INSERT INTO prescription_medicale (
-      patient_id,
-      medecin_id,
-      traitement,
-      posologie,
-      dosage,
-      date,
-      quantite,
-      remarque,
-      statut
-    )
-    VALUES ($1, $2, $3, $4, $5, COALESCE($6, CURRENT_DATE), $7, $8, 'envoyee')
+    ${PRESCRIPTION_SELECT}
+    JOIN patients p ON p.id = pm.patient_id
+    WHERE p.numero = $1
+    ORDER BY pm.created_at DESC;
+  `;
+  const result = await pool.query(query, [numeroDossier]);
+  return result.rows;
+};
+
+// ── CREATE — nouvelle prescription ────────────────────────────
+// Reçoit patient_id déjà résolu par le service
+export const createPrescription = async (
+  { patient_id, medecin_id, medicament_id, posologie, dosage, quantite, remarque },
+) => {
+  const query = `
+    INSERT INTO prescription_medicale
+      (patient_id, medecin_id, medicament_id, posologie, dosage, quantite, remarque, statut)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, 'envoyee')
     RETURNING *;
   `;
-
   const values = [
     patient_id,
-    medecinId,
-    nom_traitement,
-    posologie || "Non renseignee",
-    dosage || null,
-    date_prescription || null,
-    quantite_prescrite,
-    remarque || null,
+    medecin_id      || null,
+    medicament_id   || null,
+    posologie,
+    dosage          || null,
+    Number(quantite),
+    remarque        || null,
   ];
-
   const result = await pool.query(query, values);
   return result.rows[0] || null;
 };
 
-export const findMedicalTreatmentByNumeroDossier = async (numeroDossier) => {
+// ── VALIDER — passer statut → delivree ───────────────────────
+export const validerPrescription = async (id) => {
   const query = `
-    ${PRESCRIPTION_SELECT},
-    p.numero AS numero_dossier,
-    p.name AS patient_name,
-    p.surname AS patient_surname
-    FROM prescription_medicale pe
-    JOIN patients p ON pe.patient_id = p.id
-    LEFT JOIN suivi_therapeutique st ON st.prescription_id = pe.id
-    WHERE p.numero = $1
-    ORDER BY pe.created_at DESC;
+    UPDATE prescription_medicale
+    SET
+      statut          = 'delivree',
+      date_delivrance = CURRENT_DATE,
+      updated_at      = NOW()
+    WHERE id = $1
+    RETURNING *;
   `;
-
-  const result = await pool.query(query, [numeroDossier]);
-  return result.rows;
-};
-
-export const getThreeLastPrise = async (numeroDossier) => {
-  const query = `
-    ${PRESCRIPTION_SELECT},
-    p.numero AS numero_dossier,
-    p.name AS patient_name,
-    p.surname AS patient_surname
-    FROM prescription_medicale pe
-    JOIN patients p ON pe.patient_id = p.id
-    LEFT JOIN suivi_therapeutique st ON st.prescription_id = pe.id
-    WHERE p.numero = $1
-      AND st.date_prochaine_prise IS NOT NULL
-    ORDER BY st.date_prochaine_prise DESC
-    LIMIT 3;
-  `;
-
-  const result = await pool.query(query, [numeroDossier]);
-  return result.rows;
-};
-
-export const getTreatmentStartDate = async (prescriptionId) => {
-  const query = `
-    SELECT date AS date_debut_traitement
-    FROM prescription_medicale
-    WHERE id = $1;
-  `;
-
-  const result = await pool.query(query, [prescriptionId]);
-  return result.rows[0]?.date_debut_traitement || null;
-};
-
-export const getNextIntakeDate = async (prescriptionId) => {
-  const query = `
-    SELECT date_prochaine_prise
-    FROM suivi_therapeutique
-    WHERE prescription_id = $1;
-  `;
-
-  const result = await pool.query(query, [prescriptionId]);
-  return result.rows[0]?.date_prochaine_prise || null;
-};
-
-export const getPrescriptionById = async (id) => {
-  const query = `
-    ${PRESCRIPTION_SELECT}
-    FROM prescription_medicale pe
-    LEFT JOIN suivi_therapeutique st ON st.prescription_id = pe.id
-    WHERE pe.id = $1;
-  `;
-
   const result = await pool.query(query, [id]);
   return result.rows[0] || null;
 };
 
-export const updatePrescription = async (id, data) => {
-  const {
-    nom_traitement,
-    quantite_prescrite,
-    date_debut_traitement,
-    statut_prescription,
-    posologie,
-    dosage,
-    remarque,
-  } = data;
-
-  const query = `
-    UPDATE prescription_medicale
-    SET
-      traitement = COALESCE($1, traitement),
-      quantite = COALESCE($2, quantite),
-      date = COALESCE($3, date),
-      statut = COALESCE($4, statut),
-      posologie = COALESCE($5, posologie),
-      dosage = COALESCE($6, dosage),
-      remarque = COALESCE($7, remarque),
-      updated_at = NOW()
-    WHERE id = $8
-    RETURNING *;
-  `;
-
-  const values = [
-    nom_traitement || null,
-    quantite_prescrite || null,
-    date_debut_traitement || null,
-    statut_prescription || null,
-    posologie || null,
-    dosage || null,
-    remarque || null,
-    id,
-  ];
-
-  const result = await pool.query(query, values);
+// ── GET by id — utilisé en interne par le service ─────────────
+export const findById = async (id) => {
+  const query = `${PRESCRIPTION_SELECT} WHERE pm.id = $1;`;
+  const result = await pool.query(query, [id]);
   return result.rows[0] || null;
 };
 
-export const countPrescriptionsByStatut = async () => {
+/**
+ * Mettre à jour la quantité délivrée par le pharmacien
+ */
+export const updateQuantiteDelivree = async (prescriptionId, quantiteDelivree) => {
   const query = `
-    SELECT statut, COUNT(*)::int AS count
-    FROM (
-      SELECT
-        CASE
-          WHEN pe.statut = 'envoyee' THEN 'en attente'
-          ELSE COALESCE(st.statut_patient, 'actif')
-        END AS statut
-      FROM prescription_medicale pe
-      LEFT JOIN suivi_therapeutique st ON st.prescription_id = pe.id
-    ) source
-    GROUP BY statut;
-  `;
-
-  const result = await pool.query(query);
-  return result.rows;
-};
-
-export const getPatientsPerduDeVue = async () => {
-  const query = `
-    SELECT DISTINCT
-      p.id,
-      p.numero,
-      p.name,
-      p.surname,
-      p.phone,
-      st.date_ecart AS duree_perte_de_vue,
-      st.date_prochaine_prise
-    FROM suivi_therapeutique st
-    JOIN patients p ON st.patient_id = p.id
-    WHERE st.statut_patient = 'perdue de vue'
-       OR (st.date_prochaine_prise IS NOT NULL AND (CURRENT_DATE - st.date_prochaine_prise) > 60)
-    ORDER BY st.date_ecart DESC;
-  `;
-
-  const result = await pool.query(query);
-  return result.rows;
-};
-
-export const updateDateProchainePrise = async (prescriptionId, dateProchainePrise) => {
-  const upsertQuery = `
-    INSERT INTO suivi_therapeutique (
-      prescription_id,
-      patient_id,
-      statut_patient,
-      date_prochaine_prise,
-      date_ecart
-    )
-    SELECT
-      pe.id,
-      pe.patient_id,
-      CASE
-        WHEN (CURRENT_DATE - $1::date) > 60 THEN 'perdue de vue'
-        ELSE 'actif'
-      END,
-      $1::date,
-      GREATEST((CURRENT_DATE - $1::date), 0)
-    FROM prescription_medicale pe
-    WHERE pe.id = $2
-    ON CONFLICT (prescription_id)
-    DO UPDATE SET
-      statut_patient = EXCLUDED.statut_patient,
-      date_prochaine_prise = EXCLUDED.date_prochaine_prise,
-      date_ecart = EXCLUDED.date_ecart,
-      updated_at = NOW()
-    RETURNING *;
-  `;
-
-  await pool.query(upsertQuery, [dateProchainePrise, prescriptionId]);
-  return getPrescriptionById(prescriptionId);
-};
-
-export const validerPrescription = async (
-  prescriptionId,
-  { dateProchainePrise, statutPatient, ecartJours },
-  db = pool,
-) => {
-  const updatePrescriptionQuery = `
     UPDATE prescription_medicale
-    SET
-      statut = 'delivree',
-      date_delivrance = CURRENT_DATE,
-      updated_at = NOW()
-    WHERE id = $1
-    RETURNING *;
+    SET quantite_delivree = $1,
+        updated_at = CURRENT_TIMESTAMP
+    WHERE id = $2
+    RETURNING *
   `;
-
-  const prescriptionRes = await db.query(updatePrescriptionQuery, [prescriptionId]);
-  const prescription = prescriptionRes.rows[0] || null;
-  if (!prescription) return null;
-
-  await upsertSuiviTherapeutique(
-    {
-      prescriptionId: prescription.id,
-      patientId: prescription.patient_id,
-      statutPatient,
-      dateProchainePrise,
-      dateEcart: ecartJours > 0 ? ecartJours : 0,
-    },
-    db,
-  );
-
-  const detailsQuery = `
-    ${PRESCRIPTION_SELECT}
-    FROM prescription_medicale pe
-    LEFT JOIN suivi_therapeutique st ON st.prescription_id = pe.id
-    WHERE pe.id = $1;
-  `;
-
-  const detailsRes = await db.query(detailsQuery, [prescriptionId]);
-  return detailsRes.rows[0] || null;
+  
+  const result = await pool.query(query, [quantiteDelivree, prescriptionId]);
+  
+  if (result.rows.length === 0) {
+    throw new Error("Prescription introuvable");
+  }
+  
+  return result.rows[0];
 };
-
-export const upsertSuiviTherapeutique = async (
-  {
-    prescriptionId,
-    patientId,
-    statutPatient,
-    dateProchainePrise,
-    dateEcart,
-  },
-  db = pool,
-) => {
+export const findLastPrescriptionPerPatient = async () => {
   const query = `
-    INSERT INTO suivi_therapeutique (
-      prescription_id,
-      patient_id,
-      statut_patient,
-      date_prochaine_prise,
-      date_ecart
-    )
-    VALUES ($1, $2, $3, $4, $5)
-    ON CONFLICT (prescription_id)
-    DO UPDATE SET
-      patient_id = EXCLUDED.patient_id,
-      statut_patient = EXCLUDED.statut_patient,
-      date_prochaine_prise = EXCLUDED.date_prochaine_prise,
-      date_ecart = EXCLUDED.date_ecart,
-      updated_at = NOW()
-    RETURNING *;
+    SELECT DISTINCT ON (pm.patient_id)
+      pm.patient_id,
+      sm.code            AS traitement,
+      sm.composition     AS composition_medicament,
+      pm.date_delivrance AS derniere_consultation
+    FROM prescription_medicale pm
+    LEFT JOIN stock_medicaments sm ON sm.id = pm.medicament_id
+    ORDER BY pm.patient_id, pm.created_at DESC;
   `;
-
-  const values = [
-    prescriptionId,
-    patientId,
-    statutPatient,
-    dateProchainePrise || null,
-    dateEcart || 0,
-  ];
-
-  const result = await db.query(query, values);
-  return result.rows[0] || null;
+  const result = await pool.query(query);
+  // Retourne un map { patient_id: { traitement, derniere_consultation } }
+  return result.rows.reduce((acc, row) => {
+    acc[row.patient_id] = {
+      traitement:            row.traitement || row.composition_medicament || "Aucun",
+      derniere_consultation: row.derniere_consultation,
+    };
+    return acc;
+  }, {});
 };
+ 

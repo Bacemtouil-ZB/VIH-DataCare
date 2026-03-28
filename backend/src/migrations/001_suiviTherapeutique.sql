@@ -4,8 +4,8 @@ CREATE TABLE IF NOT EXISTS suivi_therapeutique (
     REFERENCES prescription_medicale(id) ON DELETE CASCADE,
   patient_id INTEGER NOT NULL
     REFERENCES patients(id) ON DELETE CASCADE,
-  statut_patient VARCHAR(50) NOT NULL DEFAULT 'en attente'
-    CHECK (statut_patient IN ('actif', 'perdue de vue', 'en attente', 'decede')),
+  statut_patient VARCHAR(50) NOT NULL DEFAULT 'actif'
+    CHECK (statut_patient IN ('actif', 'perdue de vue', 'décédé','Transferté')),
   date_prochaine_prise DATE,
   date_ecart INTEGER NOT NULL DEFAULT 0 CHECK (date_ecart >= 0),
   created_at TIMESTAMP DEFAULT NOW(),

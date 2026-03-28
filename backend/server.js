@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import helmet from "helmet";
 import db from "./src/config/db.js";
 
+
 import authRoutes from "./src/routes/authRoutes.js";
 import userRoutes from "./src/routes/userRoutes.js";
 import patientRoutes from "./src/routes/patientRoutes.js";
@@ -27,8 +28,10 @@ import prescriptionMedicalRoute from "./src/routes/prescriptionMedicalRoute.js";
 import mobileAuthRoutes from "./src/routes/mobile/mobileAuthRoutes.js";
 import mobilePatientRoutes from "./src/routes/mobile/mobilePatientRoutes.js";
 import mobileRendezvousRoutes from "./src/routes/mobile/mobileRendezvousRoutes.js";
+import suiviTherapeutiqueRoute from "./src/routes/suiviTherapeutiqueRoute.js";
 // Scheduler
 import { startScheduler } from './src/services/mobile/mobileScheduler.js';
+
 dotenv.config();
 
 const app = express();
@@ -48,7 +51,7 @@ startScheduler();
 
 app.use("/api/auth", authRoutes);
 app.use("/api", userRoutes);
-app.use("/api/prescriptions-medicales", prescriptionWorkflowRoute);
+app.use("/api/prescription-medicale", prescriptionWorkflowRoute);
 app.use("/api/patients/prescriptions-medicales", patientPrescriptionRoute);
 app.use("/api/vih", vihRoute);
 app.use("/api/patients", patientRoutes);
@@ -68,6 +71,7 @@ app.use("/api/prescription-medicale", prescriptionMedicalRoute);
 app.use("/api/mobile/auth", mobileAuthRoutes);
 app.use("/api/mobile/patient", mobilePatientRoutes);
 app.use("/api/mobile/rendezvous", mobileRendezvousRoutes);
+app.use("/api/suivi-therapeutique", suiviTherapeutiqueRoute);
 
 
 

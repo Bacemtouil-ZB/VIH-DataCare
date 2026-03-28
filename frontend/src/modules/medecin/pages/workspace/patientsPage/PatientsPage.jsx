@@ -3,27 +3,37 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { getAllPatients } from "../../../../../shared/services/patientService";
 import { ActionButton, PageTitle, FilterToolbar, Spinner } from "../../../../../shared/components";
 import { getAllDoctors } from "../../../services/patientServices";
+import { getLastPrescriptionPerPatient } from "../../../../../shared/services/prescriptionWorkflowService.jsx";
 
 import "./PatientsPage.css";
 
 export default function PatientsPage() {
   const navigate = useNavigate();
-  const [patients, setPatients] = useState([]);
-  const [search, setSearch] = useState("");
-  const [filter, setFilter] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [doctors, setDoctors] = useState({});
+  const [patients,      setPatients]      = useState([]);
+  const [search,        setSearch]        = useState("");
+  const [filter,        setFilter]        = useState("");
+  const [loading,       setLoading]       = useState(true);
+  const [doctors,       setDoctors]       = useState({});
+  const [prescMap,      setPrescMap]      = useState({}); // { patient_id: date_delivrance }
 
   useEffect(() => {
-    const fetchPatients = async () => {
+    const fetchAll = async () => {
       try {
-        const [response, docs] = await Promise.all([getAllPatients(), getAllDoctors()]);
+        const [response, docs, prescData] = await Promise.all([
+          getAllPatients(),
+          getAllDoctors(),
+          getLastPrescriptionPerPatient(),
+        ]);
+
         setPatients(response.patients || response || []);
-        const map = {};
+
+        const docMap = {};
         (docs || []).forEach((d) => {
-          map[d.id] = `Dr. ${d.nom} ${d.prenom}`;
+          docMap[d.id] = `Dr. ${d.nom} ${d.prenom}`;
         });
-        setDoctors(map);
+        setDoctors(docMap);
+
+        setPrescMap(prescData);
       } catch (error) {
         console.error("Erreur chargement patients:", error);
         setPatients([]);
@@ -32,7 +42,7 @@ export default function PatientsPage() {
       }
     };
 
-    fetchPatients();
+    fetchAll();
   }, []);
 
   const filteredPatients = Array.isArray(patients)
@@ -55,43 +65,43 @@ export default function PatientsPage() {
 
         <div className="patients-controls-row">
           <FilterToolbar
-  className="toolbar-search"
-  items={[
-    {
-      type: "search",
-      value: search,
-      onChange: (e) => setSearch(e.target.value),
-      placeholder: "Rechercher patient...",
-      wrapperClassName: "search-box mb-0",
-      height: "40px",
-      width: "520px",
-    },
-    {
-      type: "select",
-      value: filter,
-      onChange: (e) => setFilter(e.target.value),
-      className: "filter-select",
-      options: [
-        { value: "", label: "Tous" },
-        { value: "interne", label: "Interne" },
-        { value: "externe", label: "Externe" },
-      ],
-    },
-  ]}
-/>
+            className="toolbar-search"
+            items={[
+              {
+                type: "search",
+                value: search,
+                onChange: (e) => setSearch(e.target.value),
+                placeholder: "Rechercher patient...",
+                wrapperClassName: "search-box mb-0",
+                height: "40px",
+                width: "520px",
+              },
+              {
+                type: "select",
+                value: filter,
+                onChange: (e) => setFilter(e.target.value),
+                className: "filter-select",
+                options: [
+                  { value: "",        label: "Tous"     },
+                  { value: "interne", label: "Interne"  },
+                  { value: "externe", label: "Externe"  },
+                ],
+              },
+            ]}
+          />
 
-<FilterToolbar
-  className="toolbar-right"
-  actions={[
-    <ActionButton
-      key="add"
-      action="add"
-      label="Nouveau patient"
-      onClick={() => navigate("/medecin/patient/new/workspace")}
-      height="40px"
-    />,
-  ]}
-/>
+          <FilterToolbar
+            className="toolbar-right"
+            actions={[
+              <ActionButton
+                key="add"
+                action="add"
+                label="Nouveau patient"
+                onClick={() => navigate("/medecin/patient/new/workspace")}
+                height="40px"
+              />,
+            ]}
+          />
         </div>
       </div>
 
@@ -115,49 +125,59 @@ export default function PatientsPage() {
             <tbody>
               {filteredPatients.length === 0 ? (
                 <tr>
-                  <td colSpan="8" className="empty">
+                  <td colSpan="7" className="empty">
                     Aucun patient trouve
                   </td>
                 </tr>
               ) : (
-                filteredPatients.map((patient) => (
-                  <tr key={patient.numero}>
-                    <td>
-                      <NavLink to={`/medecin/patient/${patient.numero}/workspace`} className="link">
-                        {patient.numero}
-                      </NavLink>
-                    </td>
+                filteredPatients.map((patient) => {
+                  const derniereConsultation = prescMap[patient.id] ?? null;
+                  return (
+                    <tr key={patient.numero}>
+                      <td>
+                        <NavLink to={`/medecin/patient/${patient.numero}/workspace`} className="link">
+                          {patient.numero}
+                        </NavLink>
+                      </td>
 
-                    <td>
-                      <div className="patient-cell">
-                        <div className="avatar">{patient.name?.charAt(0)}</div>
-                        <div className="name">
-                          {patient.name} {patient.surname}
+                      <td>
+                        <div className="patient-cell">
+                          <div className="avatar">{patient.name?.charAt(0)}</div>
+                          <div className="name">
+                            {patient.name} {patient.surname}
+                          </div>
                         </div>
-                      </div>
-                    </td>
+                      </td>
 
-                    <td>{patient.birthdate ? new Date(patient.birthdate).toLocaleDateString() : "-"}</td>
+                      <td>
+                        {patient.birthdate
+                          ? new Date(patient.birthdate).toLocaleDateString()
+                          : "-"}
+                      </td>
 
-                    <td>{doctors[patient.doctor_id] || "-"}</td>
+                      <td>{doctors[patient.doctor_id] || "-"}</td>
 
-                    <td>
-                      {patient.last_visit_date
-                        ? new Date(patient.last_visit_date).toLocaleDateString()
-                        : "Non encore"}
-                    </td>
+                      {/* Dernière consultation = date_delivrance de la dernière prescription */}
+                      <td>
+                        {derniereConsultation
+                          ? new Date(derniereConsultation).toLocaleDateString()
+                          : "Non encore"}
+                      </td>
 
-                    <td>Aucun</td>
+                      <td>Aucun</td>
 
-                    <td>
-                      <span
-                        className={patient.hospitalisation === "interne" ? "badge danger" : "badge success"}
-                      >
-                        {patient.hospitalisation}
-                      </span>
-                    </td>
-                  </tr>
-                ))
+                      <td>
+                        <span
+                          className={
+                            patient.hospitalisation === "interne" ? "badge danger" : "badge success"
+                          }
+                        >
+                          {patient.hospitalisation}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>

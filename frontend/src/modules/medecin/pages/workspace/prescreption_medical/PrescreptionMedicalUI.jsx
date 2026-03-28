@@ -198,7 +198,6 @@ export default function PrescreptionMedicalUI({
                 <td>
                   <HistoriqueActions
                     onDetails={() => handleShowDetails(p)}
-                    onEdit={() => openEdit(p)}
                   />
                 </td>
               </tr>

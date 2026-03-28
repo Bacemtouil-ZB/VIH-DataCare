@@ -1,7 +1,7 @@
 ﻿import { useState, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { getPatientByNumero } from "../../../services/patientServices";
-import { getThreeLastPrise } from "../../../services/prescriptionWorkflowService";
+//import { getThreeLastPrise } from "../../../services/prescriptionWorkflowService";
 import "./LeftPanel.css";
 
 export default function LeftPanel() {
@@ -41,18 +41,18 @@ export default function LeftPanel() {
           setError("Patient non trouvé");
         }
 
-        try {
-          const prisesResponse = await getThreeLastPrise(numero);
-          if (prisesResponse?.success && Array.isArray(prisesResponse.prises)) {
-            setDerniersPrises(prisesResponse.prises);
-          } else {
-            setDerniersPrises([]);
-          }
-        } catch (err) {
+     //   try {
+          // const prisesResponse = await getThreeLastPrise(numero);
+          // if (prisesResponse?.success && Array.isArray(prisesResponse.prises)) {
+          //   setDerniersPrises(prisesResponse.prises);
+          // } else {
+          //   setDerniersPrises([]);
+          //}
+       // } catch (err) {
           // Not fatal (patient can exist without prises)
-          setDerniersPrises([]);
-          console.log("Pas de prises trouvées:", err);
-        }
+          //setDerniersPrises([]);
+          //console.log("Pas de prises trouvées:", err);
+        //}
       } catch (err) {
         console.error("Erreur chargement patient:", err);
         setPatientData(null);
@@ -199,11 +199,11 @@ export default function LeftPanel() {
         <div className="info-row">
           <span>Statut</span>
           <span className={getStatutBadgeClass(patientData.status)}>
-            {patientData.status || "Actif"}
+            {patientData.status }
           </span>
         </div>
       </div>
-
+        {/*
       {Array.isArray(derniersPrises) && derniersPrises.length > 0 && (
         <div className="dernieres-prises">
           <h3 className="section-title">Dernières prises</h3>
@@ -221,6 +221,7 @@ export default function LeftPanel() {
           </div>
         </div>
       )}
+      */}
     </div>
   );
 }

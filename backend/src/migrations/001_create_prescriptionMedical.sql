@@ -3,7 +3,6 @@ CREATE TABLE IF NOT EXISTS prescription_medicale (
   patient_id INTEGER NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
   medecin_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
   medicament_id INTEGER REFERENCES stock_medicaments(id) ON DELETE SET NULL,
-  traitement VARCHAR(255) NOT NULL,
   posologie VARCHAR(255) NOT NULL,
   dosage VARCHAR(255),
   date DATE NOT NULL DEFAULT CURRENT_DATE,
@@ -12,6 +11,7 @@ CREATE TABLE IF NOT EXISTS prescription_medicale (
     CHECK (statut IN ('envoyee', 'delivree')),
   date_delivrance DATE,
   remarque TEXT,
+  quantite_delivree INTEGER CHECK (quantite_delivree >= 0),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
