@@ -199,7 +199,7 @@ export default function LeftPanel() {
         <div className="info-row">
           <span>Statut</span>
           <span className={getStatutBadgeClass(patientData.status)}>
-            {patientData.status || "Actif"}
+            {patientData.status }
           </span>
         </div>
       </div>

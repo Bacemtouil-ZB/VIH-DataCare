@@ -1,14 +1,11 @@
 import { useEffect, useMemo, useState }  from "react";
-import { getSuiviByNumeroDossier }        from "../../../../../shared/services/suiviTherapeutiqueservice";
-import { validatePrescription }           from "../../../../../shared/services/prescriptionWorkflowService";
+import { getPatientsWithPrescriptions }  from "../../../services/patientPrescriptionService";
+import { validatePrescription }          from "../../../../../shared/services/prescriptionWorkflowService";
 import { toUiPrescriptionItem, MESSAGES } from "./prescriptionsConstants";
-import { filterPrescriptions }            from "./prescriptionsHelpers";
-
-import { getPatientsWithPrescriptions }   from "../../../services/patientPrescriptionService";
+import { filterPrescriptions }           from "./prescriptionsHelpers";
 
 export function usePrescriptionsLogic() {
 
-  // ── États ──────────────────────────────────────────────────
   const [patients,         setPatients]         = useState([]);
   const [search,           setSearch]           = useState("");
   const [loading,          setLoading]          = useState(true);
@@ -18,14 +15,12 @@ export function usePrescriptionsLogic() {
   const [validationItem,   setValidationItem]   = useState(null);
   const [savingValidation, setSavingValidation] = useState(false);
 
-  // ── Chargement : liste globale via suivi_therapeutique ────
-  // Le backend joint prescription_medicale + stock_medicaments
-  // → on récupère nom_traitement (code médicament) + date_prochaine_prise
   const loadPatients = async () => {
     try {
       setLoading(true);
       setError(null);
       const data = await getPatientsWithPrescriptions();
+      // data.patients contient maintenant nom_traitement + date_prochaine_prise
       setPatients(
         Array.isArray(data?.patients)
           ? data.patients.map(toUiPrescriptionItem)
@@ -41,17 +36,14 @@ export function usePrescriptionsLogic() {
 
   useEffect(() => { loadPatients(); }, []);
 
-  // ── Filtrage mémoïsé ──────────────────────────────────────
   const filtered = useMemo(
     () => filterPrescriptions(patients, search),
     [patients, search],
   );
 
-  // ── Détail ────────────────────────────────────────────────
   const openDetail  = (item) => setDetailItem(item);
   const closeDetail = ()     => setDetailItem(null);
 
-  // ── Validation ────────────────────────────────────────────
   const openValidation  = (item) => setValidationItem(item);
   const closeValidation = ()     => { if (!savingValidation) setValidationItem(null); };
 
@@ -69,23 +61,11 @@ export function usePrescriptionsLogic() {
     }
   };
 
-  // ── Interface publique ────────────────────────────────────
   return {
-    search,
-    showHistory,
-    loading,
-    error,
-    filtered,
-    detailItem,
-    validationItem,
-    savingValidation,
-    setSearch,
-    setShowHistory,
-    loadPatients,
-    openDetail,
-    closeDetail,
-    openValidation,
-    closeValidation,
-    handleValidate,
+    search, showHistory, loading, error, filtered,
+    detailItem, validationItem, savingValidation,
+    setSearch, setShowHistory,
+    loadPatients, openDetail, closeDetail,
+    openValidation, closeValidation, handleValidate,
   };
 }
