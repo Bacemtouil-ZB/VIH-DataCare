@@ -9,6 +9,9 @@ export const getPatientsWithPrescriptions = async () => {
   }
 };
 
+
+
 export default {
   getPatientsWithPrescriptions,
+  
 };

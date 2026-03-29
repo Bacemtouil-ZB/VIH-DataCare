@@ -4,6 +4,7 @@ import {
   getRendezvousByNumeroDossierController,
   getRendezvousByIdController,
   updateRendezvousController,
+  getNextRendezVousPerPatientController,
 } from "../controllers/rendezVousController.js";
 import { protect, authorizeMedecin } from "../middlewares/authMiddleware.js";
 //link validators for rendez vous not yet implemented
@@ -13,6 +14,13 @@ import { protect, authorizeMedecin } from "../middlewares/authMiddleware.js";
 // } from "../middlewares/validators/rendezVousValidator.js";
 
 const router = express.Router();
+
+router.get( //get next rendezvous per patient
+  "/next-all",
+  protect,
+  authorizeMedecin,
+  getNextRendezVousPerPatientController,
+);
 
 router.post(
   "/add",

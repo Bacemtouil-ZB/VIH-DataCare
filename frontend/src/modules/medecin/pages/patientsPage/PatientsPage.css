@@ -227,7 +227,7 @@ tbody tr:hover {
   text-decoration: underline;
 }
 
-/* Badge */
+/* ─── Badge base ─────────────────────────────────────── */
 .badge {
   display: inline-block;
   padding: 3px 10px;
@@ -236,6 +236,7 @@ tbody tr:hover {
   font-weight: 500;
 }
 
+/* hospitalisation */
 .badge.success {
   background: #ecfdf5;
   color: #059669;
@@ -244,6 +245,74 @@ tbody tr:hover {
 .badge.danger {
   background: #fef2f2;
   color: #dc2626;
+}
+
+/* ─── RDV none badge ─────────────────────────────────────── */
+.badge.rdv-none {
+  background: #f8fafc;
+  color: #94a3b8;
+  border: 1px dashed #cbd5e1;
+}
+
+/* ─── RDV progress bar cell ──────────────────────────────── */
+.rdv-bar-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 130px;
+}
+
+.rdv-bar-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rdv-bar-date {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.rdv-bar-days {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.rdv-bar-track {
+  height: 4px;
+  border-radius: 999px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.rdv-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.bar-soon  { background: #dc2626; }
+.bar-next  { background: #d97706; }
+.bar-later { background: #059669; }
+.bar-past  { background: #94a3b8; }
+
+/* Active treatment — blue */
+.badge.traitement-active {
+  background: #eff6ff;
+  color: #2563eb;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+/* No treatment — light grey dashed */
+.badge.traitement-none {
+  background: #f8fafc;
+  color: #94a3b8;
+  border: 1px dashed #cbd5e1;
 }
 
 /* Empty */

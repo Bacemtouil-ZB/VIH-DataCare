@@ -60,3 +60,24 @@ export const updateRendezvous = async (id, data) => {
   ]);
   return result.rows[0];
 };
+
+// Returns one row per patient: the closest UPCOMING rendez-vous (today or later).
+// Uses DISTINCT ON (patient_id) + ORDER BY date ASC to get the nearest one.
+ 
+export const getNextRendezVousPerPatient = async () => {
+  const query = `
+    SELECT DISTINCT ON (rdv.patient_id)
+      rdv.patient_id,
+      p.numero   AS numero_dossier,
+      rdv.date,
+      rdv.heure,
+      rdv.type,
+      rdv.statut
+    FROM rendezvous rdv
+    JOIN patients p ON rdv.patient_id = p.id
+    WHERE rdv.date >= CURRENT_DATE
+    ORDER BY rdv.patient_id, rdv.date ASC, rdv.heure ASC;
+  `;
+  const result = await pool.query(query);
+  return result.rows; // [{ patient_id, numero_dossier, date, heure, type, statut }]
+};

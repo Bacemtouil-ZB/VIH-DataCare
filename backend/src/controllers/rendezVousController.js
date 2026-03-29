@@ -98,3 +98,15 @@ export const updateRendezvousController = async (req, res) => {
     res.status(400).json({ success: false, message: error.message });
   }
 };
+
+// New controller to get next rendezvous per patient
+import { getNextRendezVousPerPatient } from "../services/rendezVousService.js";
+ 
+export const getNextRendezVousPerPatientController = async (req, res) => {
+  try {
+    const data = await getNextRendezVousPerPatient();
+    res.status(200).json(data);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

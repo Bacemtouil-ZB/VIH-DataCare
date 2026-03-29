@@ -30,3 +30,10 @@ export const updateRendezvous = async (id, data) => {
   if (!existing) throw new Error("Rendez-vous non trouvé");
   return await updateRendezvousModel(id, data);
 };
+
+// New service function to get next rendezvous per patient
+import { getNextRendezVousPerPatient as getNextRendezVousPerPatientModel } from "../models/rendezVousModel.js";
+ 
+export const getNextRendezVousPerPatient = async () => {
+  return await getNextRendezVousPerPatientModel();
+};
