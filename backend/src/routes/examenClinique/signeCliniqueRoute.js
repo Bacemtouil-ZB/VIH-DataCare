@@ -6,10 +6,7 @@ import {
 } from "../../controllers/examenClinique/signeCliniqueController.js";
 import { protect, authorizeMedecin } from "../../middlewares/authMiddleware.js";
 //link validators for signes cliniques not yet implemented
-// import {
-//   validateSignesCliniques,
-//   validateAutreSigneClinique,
-// } from "../../middlewares/validators/examenCliniqueValidator.js";
+
 
 const router = express.Router();
 

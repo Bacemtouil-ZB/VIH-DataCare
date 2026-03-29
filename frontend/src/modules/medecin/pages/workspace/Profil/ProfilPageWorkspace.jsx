@@ -9,13 +9,13 @@ export default function ProfilPageWorkspace() {
   return (
     <div className="medical-page">
 
-      {/* 🔥 HEADER PRO */}
+      {/*  HEADER PRO */}
       <div className="page-header">
         <PageTitle
           title={logic.isNew ? "Nouveau patient" : "Profil du patient"}
         />
 
-        {/* 👉 Button Mobile Access ici */}
+        {/*  Button Mobile Access ici */}
         {!logic.isNew && (
           <MobileAccessSection numero={logic.formData?.numero} />
         )}

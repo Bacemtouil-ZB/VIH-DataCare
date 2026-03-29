@@ -7,7 +7,6 @@ export const createVih = async (vihData, createdBy) => {
     type_depistage,
     circonstance_decouverte,
     date_derniere_negative,
-    date_contamination,
     date_vih_positif,
     stade_cdc,
     typage_hla_b5701,
@@ -16,10 +15,10 @@ export const createVih = async (vihData, createdBy) => {
   const query = `
     INSERT INTO vih (
       patient_id, mode_contamination, type_depistage, circonstance_decouverte,
-      date_derniere_negative, date_contamination, date_vih_positif, stade_cdc,
+      date_derniere_negative, date_vih_positif, stade_cdc,
        typage_hla_b5701, created_by
     )
-    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
     RETURNING *;
   `;
 
@@ -29,7 +28,6 @@ export const createVih = async (vihData, createdBy) => {
     type_depistage || null,
     circonstance_decouverte || null,
     date_derniere_negative || null,
-    date_contamination || null,
     date_vih_positif || null,
     stade_cdc || null,
     typage_hla_b5701 || null,
@@ -89,7 +87,6 @@ export const updateVih = async (id, vihData, updatedBy) => {
     type_depistage,
     circonstance_decouverte,
     date_derniere_negative,
-    date_contamination,
     date_vih_positif,
     stade_cdc,
     typage_hla_b5701,
@@ -103,13 +100,12 @@ export const updateVih = async (id, vihData, updatedBy) => {
       type_depistage = COALESCE($2, type_depistage),
       circonstance_decouverte = COALESCE($3, circonstance_decouverte),
       date_derniere_negative = $4,
-      date_contamination = $5,
-      date_vih_positif = COALESCE($6, date_vih_positif),
-      stade_cdc = COALESCE($7, stade_cdc),
-      typage_hla_b5701 = COALESCE($8, typage_hla_b5701),
-      updated_by = $9,
+      date_vih_positif = COALESCE($5, date_vih_positif),
+      stade_cdc = COALESCE($6, stade_cdc),
+      typage_hla_b5701 = COALESCE($7, typage_hla_b5701),
+      updated_by = $8,
       updated_at = NOW()
-    WHERE id = $10
+    WHERE id = $9
     RETURNING *;
   `;
 
@@ -118,7 +114,6 @@ export const updateVih = async (id, vihData, updatedBy) => {
     type_depistage || null,
     circonstance_decouverte || null,
     date_derniere_negative || null,
-    date_contamination || null,
     date_vih_positif || null,
     stade_cdc || null,
     typage_hla_b5701 || null,

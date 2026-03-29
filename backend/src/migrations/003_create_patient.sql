@@ -40,3 +40,7 @@ CREATE TABLE patients (
 ALTER TYPE role_enum ADD VALUE 'patient';
 ALTER TABLE patients 
 ADD COLUMN user_id INTEGER UNIQUE REFERENCES users(id);
+
+ALTER TABLE patients
+ADD COLUMN email VARCHAR(255),
+ADD COLUMN whatsapp VARCHAR(20);

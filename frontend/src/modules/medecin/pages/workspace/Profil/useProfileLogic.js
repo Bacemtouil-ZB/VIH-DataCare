@@ -49,6 +49,8 @@ export function useProfileLogic() {
     exact_address: "",
     phone: "",
     hospitalisation: "interne",
+    email: "",
+    whatsapp: "",
     doctor_id: "",
     remarks: "",
   });
@@ -105,6 +107,8 @@ export function useProfileLogic() {
             exact_address: patient.exact_address || "",
             phone: patient.phone || "",
             hospitalisation: patient.hospitalisation || "externe",
+            email: patient.email || "",
+            whatsapp: patient.whatsapp || "",
             doctor_id: patient.doctor_id || "",
             remarks: patient.remarks || "",
           };

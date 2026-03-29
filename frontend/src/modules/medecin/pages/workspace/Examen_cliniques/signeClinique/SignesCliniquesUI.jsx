@@ -56,7 +56,7 @@ export default function SignesCliniquesUI({
           <p className="text-uppercase fw-bold text-secondary mb-3 ec-th-sm">Mesures anthropométriques</p>
           <div className="d-flex gap-4 flex-wrap mb-4 pb-4 border-bottom">
             <div className="ec-flex-input">
-              <FieldLabel required>Taille (cm)</FieldLabel>
+              <FieldLabel >Taille (cm)</FieldLabel>
               <input
                 type="number"
                 className="form-control form-control-sm"
@@ -68,7 +68,7 @@ export default function SignesCliniquesUI({
               />
             </div>
             <div className="ec-flex-input">
-              <FieldLabel required>Poids (kg)</FieldLabel>
+              <FieldLabel >Poids (kg)</FieldLabel>
               <input
                 type="number"
                 className="form-control form-control-sm"

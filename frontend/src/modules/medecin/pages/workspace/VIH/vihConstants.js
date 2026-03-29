@@ -5,7 +5,6 @@ export const FORM_INIT = {
   type_depistage: "",
   circonstance_decouverte: "",
   date_derniere_negative: "",
-  date_contamination: "",
   date_vih_positif: "",
   stade_cdc: "",
   typage_hla_b5701: "",
@@ -51,10 +50,8 @@ export const TYPAGE_HLA_OPTIONS = [
 ];
 
 export const REQUIRED_FIELDS = [
-  { key: "mode_contamination", label: "Le mode de contamination" },
   { key: "type_depistage", label: "Le type de dépistage" },
   { key: "circonstance_decouverte", label: "La circonstance de découverte" },
   { key: "date_vih_positif", label: "La date du test VIH positif" },
-  { key: "stade_cdc", label: "Le stade CDC" },
   { key: "typage_hla_b5701", label: "Le typage HLA-B5701" },
 ];

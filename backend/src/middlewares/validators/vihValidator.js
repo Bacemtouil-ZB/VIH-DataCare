@@ -11,20 +11,7 @@ const CIRCONSTANCES_DECOUVERTE = [
   "Autres circonstances",
 ];
 
-const STADES_CDC = [
-  "A0",
-  "A1",
-  "A2",
-  "A3",
-  "B0",
-  "B1",
-  "B2",
-  "B3",
-  "C0",
-  "C1",
-  "C2",
-  "C3",
-];
+
 
 const TYPAGE_HLA_OPTIONS = ["Positif", "Négatif"];
 
@@ -82,11 +69,7 @@ const validateDateDerniereNegative = body("date_derniere_negative")
     validateDatePast(value, "La date du dernier test négatif"),
   );
 
-const validateDateContamination = body("date_contamination")
-  .optional({ nullable: true, checkFalsy: true })
-  .isDate({ format: "YYYY-MM-DD", strictMode: true })
-  .withMessage("Format invalide (attendu: YYYY-MM-DD)")
-  .custom((value) => validateDatePast(value, "La date de contamination"));
+
 
 const validateDateVihPositif = body("date_vih_positif")
   .trim()
@@ -96,14 +79,6 @@ const validateDateVihPositif = body("date_vih_positif")
   .withMessage("Format invalide (attendu: YYYY-MM-DD)")
   .custom((value) => validateDatePast(value, "La date du test VIH positif"));
 
-const validateStadeCdc = body("stade_cdc")
-  .trim()
-  .notEmpty()
-  .withMessage("Le stade CDC est requis")
-  .isIn(STADES_CDC)
-  .withMessage("Stade CDC invalide")
-  .isLength({ max: 10 })
-  .withMessage("Stade CDC trop long");
 
 const validateTypageHla = body("typage_hla_b5701")
   .trim()
@@ -113,14 +88,13 @@ const validateTypageHla = body("typage_hla_b5701")
   .withMessage("Valeur HLA-B5701 invalide : Positif ou Négatif");
 
 export const validateDateLogic = (req, res, next) => {
-  const { date_derniere_negative, date_contamination, date_vih_positif } =
+  const { date_derniere_negative,  date_vih_positif } =
     req.body;
 
   const datePositif = date_vih_positif ? new Date(date_vih_positif) : null;
   const dateNeg = date_derniere_negative ?
       new Date(date_derniere_negative)
     : null;
-  const dateCont = date_contamination ? new Date(date_contamination) : null;
 
   if (dateNeg && datePositif && dateNeg >= datePositif) {
     return res.status(400).json({
@@ -130,21 +104,7 @@ export const validateDateLogic = (req, res, next) => {
     });
   }
 
-  if (dateCont && datePositif && dateCont >= datePositif) {
-    return res.status(400).json({
-      success: false,
-      message:
-        "La date de contamination doit être antérieure à la date VIH positif",
-    });
-  }
 
-  if (dateNeg && dateCont && dateNeg >= dateCont) {
-    return res.status(400).json({
-      success: false,
-      message:
-        "La date du dernier test négatif doit être antérieure à la date de contamination",
-    });
-  }
 
   next();
 };
@@ -153,9 +113,7 @@ export const validateCreateVih = [
   validateTypeDepistage,
   validateCirconstanceDecouverte,
   validateDateDerniereNegative,
-  validateDateContamination,
   validateDateVihPositif,
-  validateStadeCdc,
   validateTypageHla,
   handleValidation,
 ];
@@ -164,9 +122,7 @@ export const validateUpdateVih = [
   validateTypeDepistage,
   validateCirconstanceDecouverte,
   validateDateDerniereNegative,
-  validateDateContamination,
   validateDateVihPositif,
-  validateStadeCdc,
   validateTypageHla,
   handleValidation,
 ];
