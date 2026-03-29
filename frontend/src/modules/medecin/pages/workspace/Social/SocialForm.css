@@ -15,7 +15,22 @@
   margin: auto;
 }
 
+.form-row {
+  display: grid;
+  grid-template-columns: 60% 60%;  /* Deux colonnes égales de 50% */
+  gap: 1rem;  /* Espacement entre les colonnes */
+  margin-bottom: 1rem;
+}
 
+.form-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.form-row .form-group {
+  flex: 1; /* Chaque champ prendra une largeur égale */
+  min-width: 250px; /* Définit une largeur minimale pour les champs */
+}
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

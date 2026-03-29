@@ -8,7 +8,7 @@ CREATE TABLE patients (
   birthdate DATE NOT NULL,
 
   gender VARCHAR(20)
-      CHECK (gender IN ('homme', 'femme')),
+      CHECK (gender IN ('homme', 'femme', 'transgenre')),
 
   birth_address_id INTEGER
       REFERENCES addresses(id),

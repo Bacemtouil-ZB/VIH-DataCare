@@ -7,7 +7,6 @@ export const FORM_INIT = {
   date_derniere_negative: "",
   date_vih_positif: "",
   stade_cdc: "",
-  typage_hla_b5701: "",
 };
 
 export const MODES_CONTAMINATION = [
@@ -51,7 +50,5 @@ export const TYPAGE_HLA_OPTIONS = [
 
 export const REQUIRED_FIELDS = [
   { key: "type_depistage", label: "Le type de dépistage" },
-  { key: "circonstance_decouverte", label: "La circonstance de découverte" },
   { key: "date_vih_positif", label: "La date du test VIH positif" },
-  { key: "typage_hla_b5701", label: "Le typage HLA-B5701" },
 ];

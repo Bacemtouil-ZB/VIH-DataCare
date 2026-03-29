@@ -7,7 +7,6 @@ CREATE TABLE IF NOT EXISTS vih (
     date_derniere_negative DATE,
     date_vih_positif DATE,
     stade_cdc VARCHAR(10),
-    typage_hla_b5701 VARCHAR(10),
     created_by INTEGER REFERENCES users(id),
     updated_by INTEGER REFERENCES users(id),
     created_at TIMESTAMP DEFAULT NOW(),
@@ -21,7 +20,9 @@ ALTER TABLE vih
   DROP COLUMN IF EXISTS debut_stade_c,
   DROP COLUMN IF EXISTS profil_seroconversion;
   DROP COLUMN date_contamination;
-
+  
+  ALTER TABLE vih
+  DROP COLUMN typage_hla_b5701;
 
 CREATE INDEX IF NOT EXISTS idx_vih_patient_id ON vih(patient_id);
 

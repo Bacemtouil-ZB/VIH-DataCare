@@ -138,10 +138,9 @@ const validateGender = body("gender")
   .trim()
   .notEmpty()
   .withMessage("Le genre est requis")
-  .isIn(["homme", "femme"])
-  .withMessage("Le genre doit être 'homme' ou 'femme'")
+  .isIn(["homme", "femme", "transgenre"])
+  .withMessage("Le genre doit être 'homme' ou 'femme' ou 'transgenre'")
   .custom((value) => {
-    // Valeurs booléennes ou numériques mal typées
     if (typeof value === "boolean" || typeof value === "number") {
       throw new Error("Type de valeur invalide pour le genre");
     }
@@ -248,9 +247,7 @@ const validateBirthPostalCode = body("birth_postal_code_id")
 // ─── Gouvernorat résidence (requis) ───────────────────────────────────────────
 
 const validateResidenceGovernorat = body("residence_governorate")
-  .trim()
-  .notEmpty()
-  .withMessage("Le gouvernorat de résidence est requis")
+  .optional({ nullable: true, checkFalsy: true })
   .isLength({ max: 100 })
   .withMessage("Gouvernorat de résidence trop long")
   .custom((value) => {
@@ -263,8 +260,7 @@ const validateResidenceGovernorat = body("residence_governorate")
 // ─── Code postal résidence (requis) ───────────────────────────────────────────
 
 const validateResidencePostalCode = body("residence_postal_code_id")
-  .notEmpty()
-  .withMessage("Le code postal de résidence est requis")
+  .optional({ nullable: true, checkFalsy: true })
   .custom((value) => {
     if (isNaN(value) || !Number.isInteger(Number(value))) {
       throw new Error("Code postal de résidence invalide");

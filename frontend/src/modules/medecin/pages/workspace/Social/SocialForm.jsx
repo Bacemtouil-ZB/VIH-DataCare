@@ -61,44 +61,41 @@ export default function SocialForm({
           />
            <FieldError error={errors.nombre_enfants} />
         </div>
-        {/* éducation */}
-        <h3>éducation</h3>
-        <div className="form-group">
-          <FieldLabel required>Niveau d'étude</FieldLabel>
-          <select
-            name="niveau_etude"
-            value={formData.niveau_etude}
-            onChange={handleChange}
-            disabled={!isEditing}
-            required
-          >
-            <option value="">Sélectionner</option>
-            {niveauEtudeOptions.map(opt => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
-            ))}
-          </select>
-           <FieldError error={errors.niveau_etude} />
-        </div>
+{/* niveau d'étude et activité professionnelle */}
+<h3>Education & Activité</h3>
+<div className="form-row">
+  <div className="form-group">
+    <FieldLabel>Niveau d'étude</FieldLabel>
+    <select
+      name="niveau_etude"
+      value={formData.niveau_etude}
+      onChange={handleChange}
+      disabled={!isEditing}
+    >
+      <option value="">Sélectionner</option>
+      {niveauEtudeOptions.map(opt => (
+        <option key={opt.value} value={opt.value}>{opt.label}</option>
+      ))}
+    </select>
+    <FieldError error={errors.niveau_etude} />
+  </div>
 
-        {/* Activité */}
-        <h3>Activité & Ressources</h3>
-        <div className="form-group">
-          <FieldLabel required>Activité professionnelle</FieldLabel>
-          <select
-            name="activite_professionnelle"
-            value={formData.activite_professionnelle}
-            onChange={handleChange}
-            disabled={!isEditing}
-            required
-          >
-            <option value="">Sélectionner</option>
-            {activiteOptions.map(opt => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
-            ))}
-          </select>
-           <FieldError error={errors.activite_professionnelle} />
-        </div>
-
+  <div className="form-group">
+    <FieldLabel>Activité professionnelle</FieldLabel>
+    <select
+      name="activite_professionnelle"
+      value={formData.activite_professionnelle}
+      onChange={handleChange}
+      disabled={!isEditing}
+    >
+      <option value="">Sélectionner</option>
+      {activiteOptions.map(opt => (
+        <option key={opt.value} value={opt.value}>{opt.label}</option>
+      ))}
+    </select>
+    <FieldError error={errors.activite_professionnelle} />
+  </div>
+</div>
         {/* Problémes */}
         <h3>Problémes rencontrés</h3>
         <div className="form-group full-width">

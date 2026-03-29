@@ -11,10 +11,6 @@ const CIRCONSTANCES_DECOUVERTE = [
   "Autres circonstances",
 ];
 
-
-
-const TYPAGE_HLA_OPTIONS = ["Positif", "Négatif"];
-
 const validateDatePast = (value, fieldName) => {
   if (!value) return true;
 
@@ -80,12 +76,6 @@ const validateDateVihPositif = body("date_vih_positif")
   .custom((value) => validateDatePast(value, "La date du test VIH positif"));
 
 
-const validateTypageHla = body("typage_hla_b5701")
-  .trim()
-  .notEmpty()
-  .withMessage("Le typage HLA-B5701 est requis")
-  .isIn(TYPAGE_HLA_OPTIONS)
-  .withMessage("Valeur HLA-B5701 invalide : Positif ou Négatif");
 
 export const validateDateLogic = (req, res, next) => {
   const { date_derniere_negative,  date_vih_positif } =
@@ -114,7 +104,6 @@ export const validateCreateVih = [
   validateCirconstanceDecouverte,
   validateDateDerniereNegative,
   validateDateVihPositif,
-  validateTypageHla,
   handleValidation,
 ];
 
@@ -123,6 +112,5 @@ export const validateUpdateVih = [
   validateCirconstanceDecouverte,
   validateDateDerniereNegative,
   validateDateVihPositif,
-  validateTypageHla,
   handleValidation,
 ];

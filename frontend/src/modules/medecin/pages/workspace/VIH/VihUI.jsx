@@ -14,7 +14,6 @@ import {
   CIRCONSTANCES_DECOUVERTE,
   STADES_CDC,
   PAGE_TITLE,
-  TYPAGE_HLA_OPTIONS,
 } from "./vihConstants";
 import "./VihForm.css";
 
@@ -127,37 +126,20 @@ export default function VihUI({
             </div>
 
             <div className="col-md-6">
-              <FieldLabel required>Circonstance de decouverte</FieldLabel>
+              <FieldLabel >Circonstance de decouverte</FieldLabel>
               <select
                 name="circonstance_decouverte"
                 className={`form-select ${errors.circonstance_decouverte ? "is-invalid" : ""}`}
                 value={formData.circonstance_decouverte}
                 onChange={handleFieldChange}
                 disabled={isDisabled || isLoading}
-                required
+                
               >
                 <option value="">-- Selectionner --</option>
                 {CIRCONSTANCES_DECOUVERTE.map((c) => <option key={c}>{c}</option>)}
               </select>
               <FieldError error={errors.circonstance_decouverte} />
             </div>
-
-            <div className="col-md-4">
-              <FieldLabel>Typage HLA-B5701</FieldLabel>
-              <RadioGroup
-                name="typage_hla_b5701"
-                value={formData.typage_hla_b5701}
-                onChange={handleFieldChange}
-                options={TYPAGE_HLA_OPTIONS.map((label) => ({ label, value: label }))}
-                disabled={isDisabled || isLoading}
-                className="d-flex gap-3 mt-2 vih-radio-group"
-                itemClassName="form-check vih-radio-item"
-                inputClassName="form-check-input"
-                labelTextClassName="form-check-label"
-              />
-              <FieldError error={errors.typage_hla_b5701} />
-            </div>
-
             <div className="col-md-6">
               <FieldLabel>Date derniere negative</FieldLabel>
               <Input

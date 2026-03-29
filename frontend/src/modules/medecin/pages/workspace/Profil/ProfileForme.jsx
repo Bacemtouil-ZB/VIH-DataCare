@@ -120,6 +120,8 @@ export default function ProfileForme({
             options={[
               { label: "Homme", value: "homme" },
               { label: "Femme", value: "femme" },
+              { label: "Transgenre", value: "transgenre" },
+
             ]}
           />
         </div>
@@ -180,13 +182,12 @@ export default function ProfileForme({
         </div>
 
         <div className="form-group">
-          <FieldLabel required>Gouvernorat résidence</FieldLabel>
+          <FieldLabel >Gouvernorat résidence</FieldLabel>
           <select
             name="residence_governorate"
             value={formData.residence_governorate || ""}
             onChange={handleChange}
             disabled={!isEditing}
-            required
           >
             <option value="">Sélectionner</option>
             {renderGovernorateOptions()}
@@ -194,13 +195,13 @@ export default function ProfileForme({
         </div>
 
         <div className="form-group">
-          <FieldLabel required>Code postal résidence</FieldLabel>
+          <FieldLabel >Code postal résidence</FieldLabel>
           <select
             name="residence_postal_code_id"
             value={formData.residence_postal_code_id || ""}
             onChange={handleChange}
             disabled={!isEditing || !formData.residence_governorate}
-            required
+            
           >
             <option value="">
               {formData.residence_governorate ? "Sélectionner" : "Choisir d'abord un gouvernorat"}
