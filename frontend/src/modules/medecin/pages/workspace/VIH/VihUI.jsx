@@ -126,7 +126,7 @@ export default function VihUI({
               <FieldError error={errors.type_depistage} />
             </div>
 
-            <div className="col-md-8">
+            <div className="col-md-6">
               <FieldLabel required>Circonstance de decouverte</FieldLabel>
               <select
                 name="circonstance_decouverte"
@@ -156,20 +156,6 @@ export default function VihUI({
                 labelTextClassName="form-check-label"
               />
               <FieldError error={errors.typage_hla_b5701} />
-            </div>
-
-            <div className="col-md-6">
-              <FieldLabel>Date de contamination</FieldLabel>
-              <Input
-                type="date"
-                name="date_contamination"
-                className={errors.date_contamination ? "is-invalid" : ""}
-                value={formData.date_contamination}
-                onChange={handleFieldChange}
-                max={today}
-                disabled={isDisabled || isLoading}
-              />
-              <FieldError error={errors.date_contamination} />
             </div>
 
             <div className="col-md-6">
@@ -214,7 +200,6 @@ export default function VihUI({
                 <option value="">-- Selectionner --</option>
                 {STADES_CDC.map((s) => <option key={s}>{s}</option>)}
               </select>
-              <FieldError error={errors.stade_cdc} />
             </div>
 
             

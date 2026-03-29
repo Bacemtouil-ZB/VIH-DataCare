@@ -5,7 +5,6 @@ CREATE TABLE IF NOT EXISTS vih (
     type_depistage VARCHAR(20),
     circonstance_decouverte VARCHAR(100),
     date_derniere_negative DATE,
-    date_contamination DATE,
     date_vih_positif DATE,
     stade_cdc VARCHAR(10),
     typage_hla_b5701 VARCHAR(10),
@@ -21,6 +20,7 @@ CREATE TABLE IF NOT EXISTS vih (
 ALTER TABLE vih
   DROP COLUMN IF EXISTS debut_stade_c,
   DROP COLUMN IF EXISTS profil_seroconversion;
+  DROP COLUMN date_contamination;
 
 
 CREATE INDEX IF NOT EXISTS idx_vih_patient_id ON vih(patient_id);

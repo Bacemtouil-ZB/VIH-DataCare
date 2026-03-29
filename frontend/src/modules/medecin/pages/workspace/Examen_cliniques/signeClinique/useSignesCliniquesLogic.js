@@ -85,7 +85,7 @@ export function useSignesCliniquesLogic(numero, examenId) {
   const handleEdit = async (s) => {
     const ok = await confirmAction(
       "Modifier ce signe clinique ?",
-      `Date : ${formatDateFr(s.date_examen)} - Taille : ${s.taille} cm - Poids : ${s.poids} kg`,
+      `Date : ${formatDateFr(s.date_examen)} - Taille : ${s.taille || 0} cm - Poids : ${s.poids || 0} kg`,
     );
     if (!ok) return;
 
@@ -135,11 +135,10 @@ export function useSignesCliniquesLogic(numero, examenId) {
   };
 
   const handleSave = async () => {
-    if (!taille || !poids)
-      return toast.error("Veuillez renseigner la taille et le poids");
-    if (+taille <= 0 || +taille > 250)
+    
+    if (+taille > 250)
       return toast.error("Taille invalide (1-250 cm)");
-    if (+poids <= 0 || +poids > 300)
+    if ( +poids > 300)
       return toast.error("Poids invalide (1-300 kg)");
 
     setSaving(true);

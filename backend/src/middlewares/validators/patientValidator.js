@@ -188,7 +188,20 @@ const validatePhone = body("phone")
 
     return true;
   });
+// ───Email ────────────────────────────────────────────────────────────────
+export const validateEmail = body("email")
+  .trim()
+  .notEmpty()
+  .withMessage("L'email est requis")
+  .isEmail()
+  .withMessage("Format d'email invalide")
+  .normalizeEmail() // Normalisation de l'email pour enlever les espaces superflus et traiter les variantes de majuscules/minuscules
+  .custom((value) => {
+    // Null bytes / encodage malveillant
+    if (/\u0000|%00/.test(value)) throw new Error("Caractère interdit détecté");
 
+    return true;
+  });
 // ─── Hospitalisation ──────────────────────────────────────────────────────────
 
 const validateHospitalisation = body("hospitalisation")
@@ -317,9 +330,10 @@ export const validateCreatePatient = [
   validateResidenceGovernorat,
   validateResidencePostalCode,
   validateExactAddress,
-  validateDoctorId,
-  validateRemarks,
+    validateRemarks,
+  validateEmail,
   handleValidation,
+  
 ];
 
 export const validateUpdatePatient = [
@@ -334,7 +348,7 @@ export const validateUpdatePatient = [
   validateResidenceGovernorat,
   validateResidencePostalCode,
   validateExactAddress,
-  validateDoctorId,
   validateRemarks,
+  validateEmail,
   handleValidation,
 ];

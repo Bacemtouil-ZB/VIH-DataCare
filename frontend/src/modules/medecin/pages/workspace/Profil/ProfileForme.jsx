@@ -136,8 +136,19 @@ export default function ProfileForme({
           />
           {errors.phone && <FieldError error={errors.phone} />}
         </div>
-
-        <br />
+        
+        <div className="form-group">
+          <FieldLabel>whatsapp </FieldLabel>
+          <Input
+            name="whatsapp"
+            value={formData.whatsapp || ""}
+            onChange={handleChange}
+            pattern="^[24597][0-9]{7}$"
+            title="Numéro tunisien invalide "
+            disabled={!isEditing}
+          />
+          {errors.whatsapp && <FieldError error={errors.whatsapp} />}
+        </div>
 
         <div className="form-group">
           <FieldLabel>Gouvernorat naissance</FieldLabel>
@@ -211,14 +222,26 @@ export default function ProfileForme({
           {errors.exact_address && <FieldError error={errors.exact_address} />}
         </div>
 
+        <div className="form-group ">
+          <FieldLabel>Email</FieldLabel>
+          <Input
+            type="email"          
+            name="email"
+            value={formData.email || ""}
+            onChange={handleChange}
+            disabled={!isEditing}
+          />
+          {errors.email && <FieldError error={errors.email} />}
+        </div>
+
         <div className="form-group">
-          <FieldLabel required>Médecin traitant</FieldLabel>
+          <FieldLabel >Médecin traitant</FieldLabel>
           <select
             name="doctor_id"
             value={formData.doctor_id || ""}
             onChange={handleChange}
             disabled={!isEditing}
-            required
+            
           >
             <option value="">Sélectionner</option>
             {doctors.map((doc) => (

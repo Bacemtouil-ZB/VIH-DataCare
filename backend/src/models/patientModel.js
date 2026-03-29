@@ -142,6 +142,8 @@ export const createPatient = async (client, patientData, userId) => {
     hospitalisation,
     status,
     remarks,
+    email,
+    whatsapp,
     doctor_id,
   } = patientData;
 
@@ -167,10 +169,11 @@ export const createPatient = async (client, patientData, userId) => {
       INSERT INTO patients (
         numero, name, surname, birthdate, gender,
         birth_address_id, residence_address_id,
-        phone, hospitalisation, status, remarks, doctor_id,
+        phone, hospitalisation, status, remarks,  email,
+    whatsapp, doctor_id,
         created_by, updated_by
       )
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
       RETURNING *;
     `,
     [
@@ -185,6 +188,8 @@ export const createPatient = async (client, patientData, userId) => {
       hospitalisation,
       status || "actif",
       remarks || null,
+      email || null,
+      whatsapp || null,
       doctor_id || null,
       userId,
       userId,
@@ -217,6 +222,8 @@ export const updatePatient = async (id, patientData, updatedBy) => {
       hospitalisation,
       status,
       remarks,
+      email,
+      whatsapp, 
       doctor_id,
     } = patientData;
 
@@ -250,10 +257,12 @@ export const updatePatient = async (id, patientData, updatedBy) => {
         hospitalisation = COALESCE($7, hospitalisation),
         status = COALESCE($8, status),
         remarks = COALESCE($9, remarks),
-        doctor_id = COALESCE($10, doctor_id),
-        updated_by = $11,
+        email = COALESCE($10, email),
+        whatsapp = COALESCE($11, whatsapp),
+        doctor_id = COALESCE($12, doctor_id),
+        updated_by = $13,
         updated_at = NOW()
-      WHERE id = $12
+      WHERE id = $14
       RETURNING *;
       `,
       [
@@ -266,6 +275,8 @@ export const updatePatient = async (id, patientData, updatedBy) => {
         hospitalisation, //  fixed: correct placeholder index
         status || "actif",
         remarks || null,
+        email || null,
+        whatsapp || null,
         doctor_id || null,
         updatedBy,
         id,

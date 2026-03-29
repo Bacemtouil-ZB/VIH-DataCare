@@ -122,10 +122,7 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
       toast.warning("Veuillez selectionner un medicament.");
       return;
     }
-    if (!formData.posologie?.trim()) {
-      toast.warning("La posologie est obligatoire.");
-      return;
-    }
+s
     if (!formData.quantite || Number(formData.quantite) <= 0) {
       toast.warning("La quantite prescrite doit etre superieure a 0.");
       return;

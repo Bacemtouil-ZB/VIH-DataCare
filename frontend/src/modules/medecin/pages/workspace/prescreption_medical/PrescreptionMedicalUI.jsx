@@ -114,7 +114,7 @@ export default function PrescreptionMedicalUI({
               </div>
 
               <div>
-                <FieldLabel required>Posologie</FieldLabel>
+                <FieldLabel >Posologie</FieldLabel>
                 <Input
                   value={formData.posologie}
                   onChange={field("posologie")}
@@ -138,7 +138,6 @@ export default function PrescreptionMedicalUI({
                   min="1"
                   value={formData.quantite}
                   onChange={field("quantite")}
-                  placeholder="Ex : 3"
                 />
               </div>
 
