@@ -88,7 +88,7 @@ export default function RendezVousUI({
                   onChange={(e) => setFormData((prev) => ({ ...prev, type: e.target.value }))}
                 >
                   <option value="Suivi">Suivi</option>
-                  <option value="Biologie">Biologie</option>
+                  <option value="Biologie">Controle</option>
                   <option value="Consultation">Consultation</option>
                   <option value="Urgence">Urgence</option>
                 </select>

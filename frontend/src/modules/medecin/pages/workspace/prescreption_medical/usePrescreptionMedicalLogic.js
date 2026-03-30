@@ -22,6 +22,7 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
   const [searchTerm,        setSearchTerm]        = useState("");
   const [searchDate,        setSearchDate]        = useState("");
   const [confirmationModal, setConfirmationModal] = useState(null);
+  const [patient,           setPatient]           = useState(null);
 
   // ── Chargement initial ────────────────────────────────────────
   useEffect(() => {
@@ -35,6 +36,7 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
         ]);
         setPrescriptions(presRes.prescriptions || []);
         setStockItems(stockRes.items || []);
+        setPatient(presRes.patient || null);
       } catch {
         alertError("Impossible de charger les donnees.");
       } finally {
@@ -129,7 +131,11 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
     }
     setConfirmationModal({
       data: {
-        traitement: formData.traitement || selectedMed?.composition || "-",
+        patient:    patient
+                      ? `${patient.surname || ""} ${patient.name || ""}`.trim()
+                      : "-",
+        dossier:    numero || "-",
+        traitement: formData.traitement || selectedMed?.code || selectedMed?.composition || "-",
         posologie:  formData.posologie  || "-",
         dosage:     formData.dosage     || "-",
         quantite:   formData.quantite   || "-",

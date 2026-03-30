@@ -28,6 +28,7 @@ import mobileAuthRoutes from "./src/routes/mobile/mobileAuthRoutes.js";
 import mobilePatientRoutes from "./src/routes/mobile/mobilePatientRoutes.js";
 import mobileRendezvousRoutes from "./src/routes/mobile/mobileRendezvousRoutes.js";
 import suiviTherapeutiqueRoute from "./src/routes/suiviTherapeutiqueRoute.js";
+import bilanExamenRoute from "./src/routes/bilanExamenRoute.js";
 // Scheduler
 import { startScheduler } from './src/services/mobile/mobileScheduler.js';
 
@@ -70,8 +71,7 @@ app.use("/api/mobile/auth", mobileAuthRoutes);
 app.use("/api/mobile/patient", mobilePatientRoutes);
 app.use("/api/mobile/rendezvous", mobileRendezvousRoutes);
 app.use("/api/suivi-therapeutique", suiviTherapeutiqueRoute);
-
-
+app.use("/api/bilan-examens", bilanExamenRoute);
 
 // 404 handler
 app.use((req, res) => {

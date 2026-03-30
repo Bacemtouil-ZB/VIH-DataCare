@@ -1,0 +1,79 @@
+/* ── Layout page ────────────────────────────────────────────────────────────── */
+.bilan-page {
+  padding: 20px;
+  background: #f8fafc;
+  min-height: 100vh;
+}
+
+.bilan-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+}
+
+/* ── Grille des bilans ──────────────────────────────────────────────────────── */
+.bilan-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px 20px;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: #f9fafb;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+}
+
+/* Bilan initial complet — ligne entière, mis en évidence */
+.bilan-item--master {
+  grid-column: 1 / -1;
+  padding: 10px 12px;
+  background: #e8f5ee;
+  border-radius: 8px;
+  border-left: 4px solid #1a7a5e;
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+.bilan-item {
+  padding: 2px 4px;
+}
+
+/* ── Zone observations ──────────────────────────────────────────────────────── */
+.bilan-observations {
+  margin-bottom: 20px;
+}
+
+/* ── Actions formulaire ─────────────────────────────────────────────────────── */
+.bilan-form-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* ── Tableau historique ─────────────────────────────────────────────────────── */
+.bilan-summary {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #1a7a5e;
+}
+
+.bilan-obs-cell {
+  font-size: 0.82rem;
+  color: #6b7280;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Responsive ─────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .bilan-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .bilan-grid {
+    grid-template-columns: 1fr;
+  }
+}

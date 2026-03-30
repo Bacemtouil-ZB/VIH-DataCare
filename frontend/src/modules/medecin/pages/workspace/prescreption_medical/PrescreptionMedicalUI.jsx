@@ -15,6 +15,7 @@ import {
 import { toFrDate, toInputDate } from "../../../../../shared/utils/dateHelpers";
 import { getStatutStyle } from "./prescreptionMedicalHelpers";
 import { STATUT_LABELS } from "./prescreptionMedicalConstants";
+import ConfirmPrescriptionModal from "../../../components/UI/Confirmprescriptionmodal";
 
 export default function PrescreptionMedicalUI({
   filtered,
@@ -246,39 +247,14 @@ export default function PrescreptionMedicalUI({
         </FormulaireWrapper>
       )}
 
-      {confirmationModal && (
-        <div className="pe-confirm-backdrop" onClick={closeConfirmationModal}>
-          <div className="pe-confirm-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="pe-confirm-header">
-              <h3>Confirmation de la prescription</h3>
-              <div className="pe-confirm-meta">
-                <span>{medecinDisplayName}</span>
-                <span>{toFrDate(new Date())}</span>
-              </div>
-            </div>
-
-            <div className="pe-confirm-grid">
-              <div><strong>Medicament:</strong> {confirmationModal.data.traitement}</div>
-              <div><strong>Posologie:</strong> {confirmationModal.data.posologie}</div>
-              <div><strong>Dosage:</strong> {confirmationModal.data.dosage}</div>
-              <div><strong>Quantite:</strong> {confirmationModal.data.quantite} mois</div>
-              <div className="pe-confirm-remark"><strong>Remarque:</strong> {confirmationModal.data.remarque}</div>
-            </div>
-
-            <div className="pe-confirm-actions">
-              <ActionButton action="annuler" label="Annuler" size="sm" onClick={closeConfirmationModal} />
-              <ActionButton
-                action="save"
-                label={saving ? "Confirmation..." : "Confirmer"}
-                size="sm"
-                showIcon={false}
-                disabled={saving}
-                onClick={confirmPrescription}
-              />
-            </div>
-          </div>
-        </div>
-      )}
+      <ConfirmPrescriptionModal
+        show={!!confirmationModal}
+        data={confirmationModal?.data}
+        saving={saving}
+        medecinDisplayName={medecinDisplayName}
+        onConfirm={confirmPrescription}
+        onClose={closeConfirmationModal}
+      />
     </div>
   );
 }
