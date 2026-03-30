@@ -2,7 +2,6 @@
   getPrescriptions,
   addPrescription,
   valider,
-  updateQuantiteDelivree,
   getLastPrescriptionPerPatient
 } from "../services/prescriptionWorkflowServices.js";
 
@@ -51,21 +50,6 @@ export const validerController = async (req, res) => {
   }
 };
 
-export const updateQuantiteDelivreeController = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { quantite_delivree } = req.body;
-    
-    if (quantite_delivree === undefined) {
-      return res.status(400).json({ success: false, message: "Quantité requise" });
-    }
-    
-    const prescription = await updateQuantiteDelivree(id, quantite_delivree);
-    res.status(200).json({ success: true, message: "Mise à jour réussie", prescription });
-  } catch (error) {
-    res.status(400).json({ success: false, message: error.message });
-  }
-};
 
 export const getLastPerPatientController = async (req, res) => {
   try {

@@ -2,7 +2,7 @@
 import ProtectedRoute from "../../../routes/ProtectedRoute";
 import { DashboardLayout } from "../../../shared/components";
 import ProfilPage from "../../../pages/parametres/profile";
-import PatientsPrescriptions from "../pages/workspace/prescriptionMedicale/PatientsPrescriptions.jsx";
+import PatientsPrescriptions from "../pages/workspace/prescriptionMedicale/PatientsPharmaPrescriptions.jsx";
 import Stock from "../pages/workspace/stock/Stock.jsx";
 
 const pharmacienRoutes = [

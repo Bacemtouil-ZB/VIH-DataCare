@@ -189,9 +189,7 @@ const validatePhone = body("phone")
   });
 // ───Email ────────────────────────────────────────────────────────────────
 export const validateEmail = body("email")
-  .trim()
-  .notEmpty()
-  .withMessage("L'email est requis")
+.optional({ nullable: true, checkFalsy: true })
   .isEmail()
   .withMessage("Format d'email invalide")
   .normalizeEmail() // Normalisation de l'email pour enlever les espaces superflus et traiter les variantes de majuscules/minuscules

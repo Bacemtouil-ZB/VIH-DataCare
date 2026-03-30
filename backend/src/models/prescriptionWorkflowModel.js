@@ -1,5 +1,4 @@
-﻿
-import pool from "../config/db.js";
+﻿import pool from "../config/db.js";
 
 const PRESCRIPTION_SELECT = `
   SELECT
@@ -9,13 +8,11 @@ const PRESCRIPTION_SELECT = `
     pm.medicament_id,
     sm.code        AS traitement,
     sm.composition AS composition_medicament,
-    pm.posologie,
     pm.dosage,
     pm.quantite,
     pm.date,
     pm.statut,
     pm.date_delivrance,
-    pm.quantite_delivree,
     pm.remarque,
     pm.created_at,
     pm.updated_at
@@ -36,21 +33,19 @@ export const findByNumeroDossier = async (numeroDossier) => {
 };
 
 // ── CREATE — nouvelle prescription ────────────────────────────
-// Reçoit patient_id déjà résolu par le service
 export const createPrescription = async (
-  { patient_id, medecin_id, medicament_id, posologie, dosage, quantite, remarque },
+  { patient_id, medecin_id, medicament_id,  dosage, quantite, remarque },
 ) => {
   const query = `
     INSERT INTO prescription_medicale
-      (patient_id, medecin_id, medicament_id, posologie, dosage, quantite, remarque, statut)
-    VALUES ($1, $2, $3, $4, $5, $6, $7, 'envoyee')
+      (patient_id, medecin_id, medicament_id,  dosage, quantite, remarque, statut)
+    VALUES ($1, $2, $3, $4, $5, $6, 'envoyee')
     RETURNING *;
   `;
   const values = [
     patient_id,
     medecin_id      || null,
     medicament_id   || null,
-    posologie,
     dosage          || null,
     Number(quantite),
     remarque        || null,
@@ -81,26 +76,7 @@ export const findById = async (id) => {
   return result.rows[0] || null;
 };
 
-/**
- * Mettre à jour la quantité délivrée par le pharmacien
- */
-export const updateQuantiteDelivree = async (prescriptionId, quantiteDelivree) => {
-  const query = `
-    UPDATE prescription_medicale
-    SET quantite_delivree = $1,
-        updated_at = CURRENT_TIMESTAMP
-    WHERE id = $2
-    RETURNING *
-  `;
-  
-  const result = await pool.query(query, [quantiteDelivree, prescriptionId]);
-  
-  if (result.rows.length === 0) {
-    throw new Error("Prescription introuvable");
-  }
-  
-  return result.rows[0];
-};
+
 export const findLastPrescriptionPerPatient = async () => {
   const query = `
     SELECT DISTINCT ON (pm.patient_id)

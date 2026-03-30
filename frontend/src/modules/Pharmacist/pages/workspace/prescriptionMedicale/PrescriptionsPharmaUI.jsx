@@ -1,17 +1,16 @@
 import {
-  ActionButton,
   HistoriqueAccordeon,
   HistoriqueActions,
   HistoriqueTable,
   SearchBar,
 } from "../../../../../shared/components";
 import { formatDateFr }                    from "../../../../../shared/utils/logiqueTableHistory";
-import { MESSAGES, TABLE_HEADERS }         from "./prescriptionsConstants";
+import { MESSAGES, TABLE_HEADERS }         from "./prescriptionsPharmaConstants";
 import {
   resolveSuiviBadge,
   resolvePrescriptionBadge,
   isValidateDisabled,
-}                                          from "./prescriptionsHelpers";
+}                                          from "./PrescriptionsPharmahelpers";
 import ModalDetailPrescription             from "../../../components/modal/Modaldetailprescription";
 import ModalValidationPrescription         from "../../../components/modal/ModalValidationPrescription";
 

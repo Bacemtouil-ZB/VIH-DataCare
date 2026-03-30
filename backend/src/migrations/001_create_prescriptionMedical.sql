@@ -3,7 +3,6 @@ CREATE TABLE IF NOT EXISTS prescription_medicale (
   patient_id INTEGER NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
   medecin_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
   medicament_id INTEGER REFERENCES stock_medicaments(id) ON DELETE SET NULL,
-  posologie VARCHAR(255) NOT NULL,
   dosage VARCHAR(255),
   date DATE NOT NULL DEFAULT CURRENT_DATE,
   quantite INTEGER NOT NULL CHECK (quantite > 0),
@@ -11,7 +10,6 @@ CREATE TABLE IF NOT EXISTS prescription_medicale (
     CHECK (statut IN ('envoyee', 'delivree')),
   date_delivrance DATE,
   remarque TEXT,
-  quantite_delivree INTEGER CHECK (quantite_delivree >= 0),
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -39,3 +37,9 @@ CREATE TRIGGER update_prescription_medicale_updated_at_trigger
 BEFORE UPDATE ON prescription_medicale
 FOR EACH ROW
 EXECUTE FUNCTION update_prescription_medicale_updated_at();
+
+ALTER TABLE prescription_medicale
+DROP COLUMN posologie
+
+ALTER TABLE prescription_medicale
+DROP COLUMN quantite_delivree

@@ -4,8 +4,7 @@ import {
   createPrescription  as createPrescriptionModel,
   validerPrescription as validerPrescriptionModel,
   findById,
-  updateQuantiteDelivree as updateQuantiteDelivreeModel
-  , findLastPrescriptionPerPatient
+findLastPrescriptionPerPatient
 } from "../models/prescriptionWorkflowModel.js";
 import { getPatientByNumero } from "../models/patientModel.js";
 
@@ -20,7 +19,7 @@ export const getPrescriptions = async (numeroDossier) => {
 
 
 export const addPrescription = async (body, medecinId) => {
-  const {numero_dossier, medicament_id, posologie, dosage, quantite, remarque } = body;
+  const {numero_dossier, medicament_id,  dosage, quantite, remarque } = body;
  
   // 1. Résolution patient
   if (!numero_dossier) throw new Error("numero_dossier est requis");
@@ -37,7 +36,6 @@ export const addPrescription = async (body, medecinId) => {
     patient_id:    patient.id,
     medecin_id:    medecinId,
     medicament_id: Number(medicament_id),
-    posologie:     posologie.trim(),
     dosage:        dosage   || null,
     quantite:      qty,
     remarque:      remarque || null,
@@ -55,15 +53,7 @@ export const valider = async (id) => {
 
   return validerPrescriptionModel(id);
 };
-export const updateQuantiteDelivree = async (prescriptionId, quantiteDelivree) => {
-  
-  const qte = parseInt(quantiteDelivree, 10);
-  if (!Number.isInteger(qte) || qte < 0) throw new Error("Quantité invalide");
-  
-  return await updateQuantiteDelivreeModel(id, qte);
-};
 
 export const getLastPrescriptionPerPatient = async () => {
   return findLastPrescriptionPerPatient();
 };
-

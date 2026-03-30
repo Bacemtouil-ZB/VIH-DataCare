@@ -39,25 +39,6 @@ const validateTraitement = body("traitement")
     return true;
   });
 
-// ─── Posologie (requis) ───────────────────────────────────────────────────────
-
-const validatePosologie = body("posologie")
-  .trim()
-  .notEmpty()
-  .withMessage("La posologie est requise")
-  .isLength({ min: 2 })
-  .withMessage("La posologie doit contenir au moins 2 caractères")
-  .isLength({ max: 255 })
-  .withMessage("La posologie ne peut pas dépasser 255 caractères")
-  .custom((value) => {
-    if (/^\s+$/.test(value)) {
-      throw new Error(
-        "La posologie ne peut pas contenir uniquement des espaces",
-      );
-    }
-    if (/\u0000|%00/.test(value)) throw new Error("Caractère interdit détecté");
-    return true;
-  });
 
 // ─── Dosage (optionnel) ───────────────────────────────────────────────────────
 

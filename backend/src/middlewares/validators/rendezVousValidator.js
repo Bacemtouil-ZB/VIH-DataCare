@@ -40,18 +40,22 @@ const validateDate = body("date")
   });
 
 // ─── Heure (requis) ───────────────────────────────────────────────────────────
-
 const validateHeure = body("heure")
-  .trim()
-  .notEmpty()
-  .withMessage("L'heure du rendez-vous est requise")
-  .matches(/^([01]\d|2[0-3]):([0-5]\d)$/)
-  .withMessage("Format heure invalide (attendu: HH:MM)")
+  .optional({ nullable: true, checkFalsy: true })
   .custom((value) => {
-    // Valeur hors plage horaire médicale (ex: 00:00 à 04:00 suspect)
+    // Si vide → OK
+    if (!value || value === "" || value === null) {
+      return true;
+    }
+    // Si fourni, vérifier format HH:MM
+    const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+    if (!timeRegex.test(value)) {
+      throw new Error("Format heure invalide (attendu: HH:MM)");
+    }
+    // Vérifier heure raisonnable
     const [h] = value.split(":").map(Number);
     if (h >= 0 && h < 5) {
-      throw new Error("Heure de rendez-vous inhabituelle (entre 00h et 05h)");
+      throw new Error("Heure inhabituelle (entre 00h et 05h)");
     }
     return true;
   });

@@ -72,7 +72,7 @@ export default function RendezVousUI({
                 />
               </div>
               <div>
-                <FieldLabel required>Heure</FieldLabel>
+                <FieldLabel >Heure</FieldLabel>
                 <Input
                   type="time"
                   className="form-control"

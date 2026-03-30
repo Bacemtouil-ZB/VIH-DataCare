@@ -7,9 +7,8 @@ import {
 
 // rendezvousService.js
 export const createRendezvous = async (data) => {
-  const { numero_dossier, date, heure, type, statut, commentaire } = data;
-  if (!numero_dossier || !date || !heure || !type || !statut)
-    throw new Error("Les champs numero_dossier, date, heure, type et statut sont obligatoires");
+  const { numero_dossier, date,  type, statut, commentaire } = data;
+  const heure=data.heure || null
   return await createRendezvousModel({ numero_dossier, date, heure, type, statut, commentaire });
 };
 
@@ -28,6 +27,7 @@ export const getRendezvousById = async (id) => {
 export const updateRendezvous = async (id, data) => {
   const existing = await getRendezvousByIdModel(id);
   if (!existing) throw new Error("Rendez-vous non trouvé");
+  
   return await updateRendezvousModel(id, data);
 };
 

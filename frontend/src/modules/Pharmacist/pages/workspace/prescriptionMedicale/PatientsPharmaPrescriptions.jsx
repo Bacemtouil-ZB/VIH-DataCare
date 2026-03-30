@@ -1,8 +1,7 @@
-﻿import { usePrescriptionsLogic } from "./usePrescriptionsLogic";
-import PrescriptionsUI           from "./PrescriptionsUI";
-import { MESSAGES }              from "./prescriptionsConstants";
-import "./PatientsPrescriptions.css";
-
+﻿import { usePrescriptionsLogic } from "./usePrescriptionsPharmaLogic";
+import PrescriptionsUI           from "./PrescriptionsPharmaUI";
+import { MESSAGES }              from "./prescriptionsPharmaConstants";
+import "./PatientsPharmaPrescriptions.css";
 export default function PatientsPrescriptions() {
   const logic = usePrescriptionsLogic();
 

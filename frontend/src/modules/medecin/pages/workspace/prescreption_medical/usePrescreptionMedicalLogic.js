@@ -6,7 +6,6 @@ import {
   getPrescriptionsByNumeroDossier,
   getStockMedicaments,
   validatePrescription,
-  updateQuantiteDelivree,
 } from "../../../../../shared/services/prescriptionWorkflowService.jsx";
 import { INITIAL_FORM } from "./prescreptionMedicalConstants";
 
@@ -64,8 +63,7 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
       const matchesText =
         !q ||
         p.traitement?.toLowerCase().includes(q) ||
-        p.statut?.toLowerCase().includes(q)     ||
-        p.posologie?.toLowerCase().includes(q);
+        p.statut?.toLowerCase().includes(q)     
       if (!matchesText) return false;
       if (!dateQ) return true;
       const raw = p.date || p.created_at || "";
@@ -136,7 +134,6 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
                       : "-",
         dossier:    numero || "-",
         traitement: formData.traitement || selectedMed?.code || selectedMed?.composition || "-",
-        posologie:  formData.posologie  || "-",
         dosage:     formData.dosage     || "-",
         quantite:   formData.quantite   || "-",
         remarque:   formData.remarque   || "-",
@@ -147,7 +144,7 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
   // ── Confirmation → POST /add ──────────────────────────────────
   // Champs strictement alignés sur le backend :
   //   numero_dossier → résolu en patient_id côté service backend
-  //   medicament_id, posologie, dosage, quantite, remarque
+  //   medicament_id, dosage, quantite, remarque
   const confirmPrescription = async () => {
     if (!confirmationModal) return;
     try {
@@ -156,7 +153,6 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
         traitement:     formData.traitement || selectedMed?.composition || "",
         numero_dossier: numero,
         medicament_id:  Number(formData.medicament_id),
-        posologie:      formData.posologie || "",
         dosage:         formData.dosage    || null,
         quantite:       Number(formData.quantite),
         remarque:       formData.remarque  || null,

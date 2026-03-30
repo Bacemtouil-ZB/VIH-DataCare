@@ -70,7 +70,7 @@ export default function PrescreptionMedicalUI({
         </div>
         {!showForm ?
           <ActionButton action="add" label="Ajouter" size="sm" onClick={openCreate} />
-        : <ActionButton action="annuler" label="Annuler" size="sm" onClick={closeForm} />}
+          : <ActionButton action="annuler" label="Annuler" size="sm" onClick={closeForm} />}
       </div>
 
       {showForm && (
@@ -93,9 +93,14 @@ export default function PrescreptionMedicalUI({
                     >
                       <option value="">-- Selectionner un medicament --</option>
                       {stockItems.map((med) => (
-                        <option key={med.id} value={med.id}>
+                        <option
+                          key={med.id}
+                          value={med.id}
+                          disabled={(med.quantite ?? med.quantity ?? 0) === 0}  // Désactive les médicaments en stock 0
+                        >
                           {med.code ? `[${med.code}] : ` : ""}
                           {med.composition || med.nom || "Medicament"}
+                          —Stock : {med.quantite ?? med.quantity ?? 0}
                         </option>
                       ))}
                     </select>
@@ -112,15 +117,6 @@ export default function PrescreptionMedicalUI({
                     />
                   </div>
                 </div>
-              </div>
-
-              <div>
-                <FieldLabel >Posologie</FieldLabel>
-                <Input
-                  value={formData.posologie}
-                  onChange={field("posologie")}
-                  placeholder="Ex : 1 comprime matin et soir"
-                />
               </div>
 
               <div>
@@ -177,32 +173,31 @@ export default function PrescreptionMedicalUI({
       >
         {loading ?
           <Spinner />
-        : filtered.length === 0 ?
-          <EmptyState message="Aucune prescription enregistree." />
-        : <HistoriqueTable
-            headers={["Date", "Medicament", "Posologie", "Dosage", "Qte", "Statut", "Action"]}
-            items={filtered}
-            emptyMessage="Aucune prescription enregistree."
-            renderRow={(p) => (
-              <tr key={p.id}>
-                <td>{toFrDate(p.date)}</td>
-                <td className="fw-semibold">{p.traitement || "-"}</td>
-                <td>{p.posologie || "-"}</td>
-                <td>{p.dosage || "-"}</td>
-                <td>{p.quantite || "-"}</td>
-                <td>
-                  <Badge bg={getStatutStyle(p.statut).bg} color={getStatutStyle(p.statut).color}>
-                    {STATUT_LABELS[p.statut] || p.statut || "-"}
-                  </Badge>
-                </td>
-                <td>
-                  <HistoriqueActions
-                    onDetails={() => handleShowDetails(p)}
-                  />
-                </td>
-              </tr>
-            )}
-          />}
+          : filtered.length === 0 ?
+            <EmptyState message="Aucune prescription enregistree." />
+            : <HistoriqueTable
+              headers={["Date", "Medicament","Dosage", "Qte", "Statut", "Action"]}
+              items={filtered}
+              emptyMessage="Aucune prescription enregistree."
+              renderRow={(p) => (
+                <tr key={p.id}>
+                  <td>{toFrDate(p.date)}</td>
+                  <td className="fw-semibold">{p.traitement || "-"}</td>
+                  <td>{p.dosage || "-"}</td>
+                  <td>{p.quantite || "-"}</td>
+                  <td>
+                    <Badge bg={getStatutStyle(p.statut).bg} color={getStatutStyle(p.statut).color}>
+                      {STATUT_LABELS[p.statut] || p.statut || "-"}
+                    </Badge>
+                  </td>
+                  <td>
+                    <HistoriqueActions
+                      onDetails={() => handleShowDetails(p)}
+                    />
+                  </td>
+                </tr>
+              )}
+            />}
       </HistoriqueAccordeon>
 
       {detailItem && (
@@ -219,10 +214,6 @@ export default function PrescreptionMedicalUI({
             <div>
               <FieldLabel>Date</FieldLabel>
               <Input value={toFrDate(detailItem.date)} disabled />
-            </div>
-            <div>
-              <FieldLabel>Posologie</FieldLabel>
-              <Input value={detailItem.posologie || "-"} disabled />
             </div>
             <div>
               <FieldLabel>Dosage</FieldLabel>

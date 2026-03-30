@@ -10,12 +10,6 @@ const normalizePrescriptions = (payload) => {
   return [];
 };
 
-const normalizePrises = (payload) => {
-  if (Array.isArray(payload))          return payload;
-  if (Array.isArray(payload?.prises))  return payload.prises;
-  if (Array.isArray(payload?.prises?.prises)) return payload.prises.prises;
-  return [];
-};
 
 // ── GET prescriptions par numéro de dossier ───────────────────
 // Utilisé par : médecin (usePrescreptionMedicalLogic) + pharmacien
@@ -55,14 +49,6 @@ export const validatePrescription = async (id) => {
   return response.data;
 };
 
-// ── PATCH mettre à jour la quantité délivrée (pharmacien) ─────
-export const updateQuantiteDelivree = async (prescriptionId, quantiteDelivree) => {
-  const response = await API.patch(
-    `/prescription-medicale/${prescriptionId}/quantite-delivree`,
-    { quantite_delivree: quantiteDelivree },
-  );
-  return response.data;
-};
 
 // ── PATCH date prochaine prise ────────────────────────────────
 export const updateDateProchainePrise = async (id, dateProchainePrise) => {
@@ -82,7 +68,6 @@ export default {
   getStockMedicaments,
   createPrescription,
   validatePrescription,
-  updateQuantiteDelivree,
   updateDateProchainePrise,
   getLastPrescriptionPerPatient,
 };

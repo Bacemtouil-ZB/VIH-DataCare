@@ -90,8 +90,8 @@ export function useRendezVousLogic(numero) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.date || !formData.heure) {
-      toast.error("Date et heure sont obligatoires");
+    if (!formData.date ) {
+      toast.error("Date est obligatoire");
       return;
     }
 
@@ -104,15 +104,22 @@ export function useRendezVousLogic(numero) {
     if (!ok) return;
 
     try {
+
+        // Nettoyer les données AVANT envoi
+  const payload = {
+    ...formData,
+    heure: formData.heure?.trim() || null, // ✅ "" devient null
+    commentaire: formData.commentaire?.trim() || null,
+  };
       if (isModifying && editingId) {
-        const res = await updateRendezvous(editingId, formData);
+        const res = await updateRendezvous(editingId, payload);
         setRendezVous((prev) =>
           prev.map((r) => (r.id === editingId ? res.rendezvous : r)),
         );
         toast.success("Rendez-vous mis à jour");
       } else {
         const res = await createRendezvous({
-          ...formData,
+          ...payload,
           numero_dossier: numero,
         });
         setRendezVous((prev) => [res.rendezvous, ...prev]);

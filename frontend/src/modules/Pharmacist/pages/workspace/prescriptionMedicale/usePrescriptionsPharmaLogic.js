@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState }  from "react";
 import { getPatientsWithPrescriptions }  from "../../../services/patientPrescriptionService";
 import { validatePrescription }          from "../../../../../shared/services/prescriptionWorkflowService";
-import { toUiPrescriptionItem, MESSAGES } from "./prescriptionsConstants";
-import { filterPrescriptions }           from "./prescriptionsHelpers";
+import { toUiPrescriptionItem, MESSAGES } from "./prescriptionsPharmaConstants";
+import { filterPrescriptions }           from "./PrescriptionsPharmahelpers";
 
 export function usePrescriptionsLogic() {
 

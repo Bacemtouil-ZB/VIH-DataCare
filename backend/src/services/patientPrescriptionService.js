@@ -28,17 +28,19 @@ export const getPatientsWithPrescriptions = async () => {
       patient_surname:       patient.patient_surname,
       numero_dossier:        patient.numero_dossier,
       prescription_id:       patient.prescription_id,
-      // ✅ nom_traitement vient maintenant du JOIN stock_medicaments dans le model
       nom_traitement:        patient.nom_traitement ?? "Aucun",
       date_debut_traitement: patient.date_debut_traitement,
-      // ✅ date_prochaine_prise vient du JOIN suivi_therapeutique dans le model
+      // date_prochaine_prise = prochain rendez-vous calculé lors de la validation
       date_prochaine_prise:  patient.date_prochaine_prise,
+      prochain_rendez_vous:  patient.date_prochaine_prise, // alias explicite pour l'UI
       date_delivrance:       patient.date_delivrance,
       quantite_prescrite:    patient.quantite_prescrite,
       statut_prescription:   patient.statut_prescription || "envoyee",
       statut_patient:        suiviData.statut_patient,
       ecart_jours:           suiviData.ecart_jours > 0 ? suiviData.ecart_jours : 0,
       date_ecart:            suiviData.date_ecart,
+      // Données patient
+      date_naissance:        patient.date_naissance,
     });
   }
 

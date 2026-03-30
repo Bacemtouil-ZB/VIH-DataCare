@@ -1,4 +1,4 @@
-import { SUIVI_BADGE_MAP, PRESCRIPTION_BADGE_MAP } from "./prescriptionsConstants";
+import { SUIVI_BADGE_MAP, PRESCRIPTION_BADGE_MAP } from "./prescriptionsPharmaConstants";
 
 // ── Calcul de date ────────────────────────────────────────────
 export const calculatePreviewDate = (quantite) => {

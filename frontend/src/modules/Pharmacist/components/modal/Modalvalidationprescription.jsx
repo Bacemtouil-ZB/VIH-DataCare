@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { formatDateFr } from "../../../../shared/utils/logiqueTableHistory.js";
-import { calculatePreviewDate } from "./../../pages/workspace/prescriptionMedicale/Prescriptionshelpers.js";
+import { calculatePreviewDate } from "./../../pages/workspace/prescriptionMedicale/PrescriptionsPharmahelpers.js";
 
 
 export default function ModalValidationPrescription({ item, saving, onClose, onConfirm }) {
