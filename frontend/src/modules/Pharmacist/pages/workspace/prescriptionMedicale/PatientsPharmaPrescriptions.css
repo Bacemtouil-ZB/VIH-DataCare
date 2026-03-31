@@ -421,3 +421,78 @@
   }
 }
 
+/*css pour rdv*/
+/* ── RDV bar ───────────────────────────────────────────────── */
+.td-rdv { min-width: 170px; }
+
+.rdv-bar-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 160px;
+}
+
+.rdv-bar-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rdv-bar-date {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.rdv-bar-days {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.rdv-bar-meta {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #9ca3af;
+  margin-top: -2px;
+}
+
+.rdv-sep { opacity: 0.5; }
+
+.rdv-bar-track {
+  height: 4px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  overflow: hidden;
+}
+
+.rdv-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+/* ── Couleurs fill — noms uniques sans conflit ─────────────── */
+.rdv-fill-bar-soon  { background: #dc2626; }
+.rdv-fill-bar-next  { background: #d97706; }
+.rdv-fill-bar-later { background: #059669; }
+.rdv-fill-bar-past  { background: #94a3b8; }
+
+/* ── Couleurs jours ────────────────────────────────────────── */
+.rdv-days-bar-soon  { color: #050505; }
+.rdv-days-bar-next  { color: #92400e; }
+.rdv-days-bar-later { color: #065f46; }
+.rdv-days-bar-past  { color: #64748b; }
+
+/* ── Badge aucun RDV ───────────────────────────────────────── */
+.badge.rdv-none {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  background: #f8fafc;
+  color: #94a3b8;
+  border: 1px dashed #cbd5e1;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}

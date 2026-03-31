@@ -12,7 +12,15 @@ import HabitudesPage from "../pages/workspace/Examen_cliniques/HabitudeDeVie/Hab
 import Profilpage from "../pages/workspace/Profil/ProfilPageWorkspace"
 import Social from "../pages/workspace/Social/SocialFormPage.jsx";
 import VIH from "../pages/workspace/VIH/VIH";
-import Antecedent from "../pages/workspace/Antecedents/Antecedent.jsx";
+import Antecedent from "../pages/workspace/Antecedents/AntecedentsLayout.jsx";
+import MedicalOrchestrer from "../pages/workspace/Antecedents/medical/MedicalOrchestrer.jsx";
+import FamilyOrchestrer from "../pages/workspace/Antecedents/family/FamilyOrchestrer.jsx";
+import GynecoOrchestrer from "../pages/workspace/Antecedents/gyneco/GynecoOrchestrer.jsx";
+import TherapeuticOrchestrer from "../pages/workspace/Antecedents/therapeutic/TherapeuticOrchestrer.jsx";
+import HabitudesVieOrchestrer from "../pages/workspace/Antecedents/habitudesVie/HabitudesVieOrchestrer.jsx";
+import SurgicalOrchestrer from "../pages/workspace/Antecedents/surgical/SurgicalOrchestrer.jsx";
+import TransfusionOrchestrer from "../pages/workspace/Antecedents/transfusion/TransfusionOrchestrer.jsx";
+import TpePrepOrchestrer from "../pages/workspace/Antecedents/tpePrep/TpePrepOrchestrer.jsx";
 import SignesFonctionnels from "../pages/workspace/Examen_cliniques/SigneFonction/SignesFonctionnels.jsx";
 import SignesCliniques from "../pages/workspace/Examen_cliniques/signeClinique/SignesCliniques.jsx";
 import ResultatsBiologiquesLayout from "../pages/workspace/resultats_biologiques/resultats_biologiquesLayout";
@@ -71,6 +79,17 @@ const medecinRoutes = [
      {
       path: "antecedents",
       element: <NewPatientGuard><Antecedent /></NewPatientGuard>,
+      children: [
+        { index: true, element: <Navigate to="medical" replace /> },
+        { path: "medical", element: <MedicalOrchestrer /> },
+        { path: "familial", element: <FamilyOrchestrer /> },
+        { path: "gyneco", element: <GynecoOrchestrer /> },
+        { path: "therapeutic", element: <TherapeuticOrchestrer /> },
+        { path: "habitudes-vie", element: <HabitudesVieOrchestrer /> },
+        { path: "surgical", element: <SurgicalOrchestrer /> },
+        { path: "transfusion", element: <TransfusionOrchestrer /> },
+        { path: "tpe-prep", element: <TpePrepOrchestrer /> },
+      ]
     },
     
     {

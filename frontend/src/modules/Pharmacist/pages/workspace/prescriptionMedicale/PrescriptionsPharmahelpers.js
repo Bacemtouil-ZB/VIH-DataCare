@@ -1,6 +1,31 @@
 import { SUIVI_BADGE_MAP, PRESCRIPTION_BADGE_MAP } from "./prescriptionsPharmaConstants";
 
-// ── Calcul de date ────────────────────────────────────────────
+// ── Helpers RDV ───────────────────────────────────────────────
+export const daysUntil = (dateStr) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const target = new Date(dateStr);
+  target.setHours(0, 0, 0, 0);
+  return Math.round((target - today) / (1000 * 60 * 60 * 24));
+};
+
+export const getRdvBarWidth = (days) => {
+  if (days < 0)  return { width: 100, cls: "bar-past"  };
+  if (days <= 1) return { width: 100, cls: "bar-soon"  };
+  if (days <= 7) return { width: 75,  cls: "bar-soon"  };
+  if (days <= 14)return { width: 45,  cls: "bar-next"  };
+  if (days <= 30)return { width: 20,  cls: "bar-later" };
+  return             { width: 8,   cls: "bar-later" };
+};
+
+export const getDaysLabel = (days) => {
+  if (days === 0) return "Aujourd'hui";
+  if (days === 1) return "Demain";
+  if (days < 0)  return `il y a ${Math.abs(days)}j`;
+  return `dans ${days}j`;
+};
+
+// ── Helpers existants (inchangés) ─────────────────────────────
 export const calculatePreviewDate = (quantite) => {
   const months = Number.parseInt(quantite, 10);
   if (!months || months <= 0) return null;
@@ -9,24 +34,17 @@ export const calculatePreviewDate = (quantite) => {
   return next;
 };
 
-
 export const resolveSuiviBadge = (statutPatient, ecartJours) => {
   const key = (statutPatient || "").toLowerCase();
   const isPerdu   = key.includes("perdue") || key.includes("perdu");
   const isAttente = key.includes("attente");
-
   const entry = isPerdu
     ? SUIVI_BADGE_MAP.perdu
     : isAttente
       ? SUIVI_BADGE_MAP.attente
       : SUIVI_BADGE_MAP.actif;
-
-  return {
-    ...entry,
-    showEcart: !isAttente && ecartJours > 0,
-  };
+  return { ...entry, showEcart: !isAttente && ecartJours > 0 };
 };
-
 
 export const resolvePrescriptionBadge = (statutPrescription) => {
   const key = (statutPrescription || "envoyee").toLowerCase();

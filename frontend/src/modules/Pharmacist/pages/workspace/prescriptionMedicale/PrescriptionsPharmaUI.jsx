@@ -10,7 +10,10 @@ import {
   resolveSuiviBadge,
   resolvePrescriptionBadge,
   isValidateDisabled,
-}                                          from "./PrescriptionsPharmahelpers";
+  daysUntil,
+  getRdvBarWidth,
+  getDaysLabel,
+} from "./PrescriptionsPharmahelpers";
 import ModalDetailPrescription             from "../../../components/modal/Modaldetailprescription";
 import ModalValidationPrescription         from "../../../components/modal/ModalValidationPrescription";
 
@@ -28,6 +31,29 @@ function SuiviBadge({ statutPatient, ecartJours }) {
 function PrescriptionBadge({ statutPrescription }) {
   const { badgeClass, badgeText } = resolvePrescriptionBadge(statutPrescription);
   return <span className={`statut-badge ${badgeClass}`}>{badgeText}</span>;
+}
+
+// ── RdvCell ───────────────────────────────────────────────────
+function RdvCell({ rdv }) {
+  if (!rdv?.date) {
+    return <span className="badge rdv-none">Aucun RDV</span>;
+  }
+  const days    = daysUntil(rdv.date);
+  const label   = getDaysLabel(days);
+  const bar     = getRdvBarWidth(days);
+  const rdvDate = new Date(rdv.date).toLocaleDateString("fr-FR");
+
+  return (
+    <div className="rdv-bar-cell">
+      <div className="rdv-bar-top">
+        <span className="rdv-bar-date">{rdvDate}</span>
+        <span className={`rdv-bar-days rdv-days-${bar.cls}`}>{label}</span>
+      </div>
+      <div className="rdv-bar-track">
+        <div className={`rdv-bar-fill rdv-fill-${bar.cls}`} style={{ width: `${bar.width}%` }} />
+      </div>
+    </div>
+  );
 }
 
 // ── Composant principal ───────────────────────────────────────
@@ -80,15 +106,15 @@ export default function PrescriptionsUI({
           emptyMessage={search ? MESSAGES.aucunResultat : MESSAGES.aucunePrescription}
           renderRow={(p) => (
             <tr key={p.prescriptionId || `${p.numeroDossier}-${p.nomTraitement}`}>
-              <td className="td-numero">
-                <span className="numero-simple">{p.numeroDossier}</span>
+             <td className="td-date">
+                {p.dateNaissance
+                  ? new Date(p.dateNaissance).toLocaleDateString("fr-FR")
+                  : "-"}
               </td>
               <td className="td-patient">
                 {`${p.patientSurname} ${p.patientName}`.trim()}
               </td>
-              {/* Traitement depuis stock_medicaments.code via prescription_medicale */}
               <td className="td-traitement">{p.nomTraitement}</td>
-              {/* Prochaine prise depuis suivi_therapeutique.date_prochaine_prise */}
               <td className="td-date">
                 {p.dateProchainePrise ? (
                   <span className={p.ecartJours > 0 ? "date-retard" : "date-future"}>
@@ -103,6 +129,9 @@ export default function PrescriptionsUI({
               <td className="td-statut">
                 <SuiviBadge statutPatient={p.statutPatient} ecartJours={p.ecartJours} />
               </td>
+              <td className="td-rdv">
+                <RdvCell rdv={p.rdv} />
+              </td>
               <td className="td-action">
                 <HistoriqueActions
                   onDetails={() => openDetail(p)}
@@ -115,11 +144,8 @@ export default function PrescriptionsUI({
         />
       </HistoriqueAccordeon>
 
-      {/* ── Modales indépendantes ─────────────────────────── */}
-      <ModalDetailPrescription
-        item={detailItem}
-        onClose={closeDetail}
-      />
+      {/* ── Modales ───────────────────────────────────────── */}
+      <ModalDetailPrescription item={detailItem} onClose={closeDetail} />
       <ModalValidationPrescription
         item={validationItem}
         saving={savingValidation}

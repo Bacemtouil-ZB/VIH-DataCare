@@ -1,0 +1,5 @@
+export const SURGICAL_INITIAL_STATE = {
+  description: "",
+  date_intervention: "",
+  remarque: "",
+};
