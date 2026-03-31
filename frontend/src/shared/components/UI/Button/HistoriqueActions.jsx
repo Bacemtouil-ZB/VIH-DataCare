@@ -32,7 +32,7 @@ export default function HistoriqueActions({
         )}
         {onEdit && <ActionButton action="edit" variant="outline" onClick={onEdit} {...editProps} />}
         {onValidate && (
-          <ActionButton action="validate" variant="outline" onClick={onValidate} {...validateProps} />
+          <ActionButton action="validate" variant="outline" onClick={onValidate} {...validateProps}  />
         )}
         {onDelete && <ActionButton action="delete" variant="outline" onClick={onDelete} {...deleteProps} />}
         {onCancel && <ActionButton action="annuler" variant="outline" onClick={onCancel} {...cancelProps} />}

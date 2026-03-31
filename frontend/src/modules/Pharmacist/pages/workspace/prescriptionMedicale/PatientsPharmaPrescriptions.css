@@ -420,4 +420,11 @@
     grid-template-columns: 1fr;
   }
 }
-
+.ec-action-btn:disabled,
+.ec-action-btn:disabled:hover,
+.ec-action-btn[disabled],
+.ec-action-btn[disabled]:hover {
+  opacity: 0.75;
+  cursor: not-allowed !important;
+  pointer-events: auto !important;
+}

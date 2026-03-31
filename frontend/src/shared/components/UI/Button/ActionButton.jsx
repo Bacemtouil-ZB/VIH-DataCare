@@ -24,8 +24,13 @@ const styles = `
   color: #fff !important;
   box-shadow: 0 2px 6px rgba(46, 125, 82, 0.25);
 }
-.ec-action-btn:disabled {
+.ec-action-btn:disabled,
+.ec-action-btn:disabled:hover,
+.ec-action-btn[disabled],
+.ec-action-btn[disabled]:hover {
   opacity: 0.75;
+  cursor: not-allowed !important;
+  pointer-events: auto !important;
 }
 .ec-action-btn.ec-delete-outline {
   border: 1.5px solid #dc3545 !important;
@@ -51,9 +56,13 @@ const styles = `
   box-shadow: 0 2px 6px rgba(169, 169, 169, 0.25);
 }
 
-.ec-action-btn:disabled {
+.ec-action-btn:disabled,
+.ec-action-btn:disabled:hover,
+.ec-action-btn[disabled],
+.ec-action-btn[disabled]:hover {
   opacity: 0.75;
-  cursor: not-allowed;
+  cursor: not-allowed !important;
+  pointer-events: auto !important;
 }
 `;
 function actionIcon(action) {

@@ -1,7 +1,6 @@
 ﻿import pool from "../config/db.js";
 
 // Normalise le numéro de dossier : accepte "F-0012-2025" ou "0012-2025"
-// et essaie les deux formes dans les requêtes SQL
 const normalizeNumero = (n) => {
   if (!n) return { withPrefix: null, raw: null };
   const raw = String(n).replace(/^F-/i, "").trim();

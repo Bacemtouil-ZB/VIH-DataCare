@@ -61,12 +61,12 @@ FOR EACH ROW EXECUTE FUNCTION fn_suivi_updated_at();
  
 -- ── 5. Backfill des prescriptions déjà délivrées ─────────────
 -- Remplit date_delivrance si NULL (validations anciennes sans trigger)
-UPDATE prescription_medicale
-SET
-  date_delivrance = COALESCE(updated_at::DATE, created_at::DATE, CURRENT_DATE),
-  updated_at      = NOW()
-WHERE statut          = 'delivree'
-  AND date_delivrance IS NULL;
+--UPDATE prescription_medicale
+--SET
+  --date_delivrance = COALESCE(updated_at::DATE, created_at::DATE, CURRENT_DATE),
+  --updated_at      = NOW()
+--WHERE statut          = 'delivree'
+  --AND date_delivrance IS NULL;
  
 -- Insère une ligne suivi pour chaque prescription delivree
 -- qui n'en a pas encore
