@@ -480,7 +480,7 @@
 .rdv-fill-bar-past  { background: #94a3b8; }
 
 /* ── Couleurs jours ────────────────────────────────────────── */
-.rdv-days-bar-soon  { color: #050505; }
+.rdv-days-bar-soon  { color: #64748b; }
 .rdv-days-bar-next  { color: #92400e; }
 .rdv-days-bar-later { color: #065f46; }
 .rdv-days-bar-past  { color: #64748b; }

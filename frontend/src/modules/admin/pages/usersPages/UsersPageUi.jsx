@@ -1,5 +1,4 @@
-﻿
-import { Modal, Form } from "react-bootstrap";
+﻿import { Modal, Form } from "react-bootstrap";
 import {
   ActionButton,
   Badge,
@@ -18,15 +17,16 @@ export default function UsersPageUI({
   loading,
   actionLoading,
   roleOptions,
+  roleOptionsForModal,
   totals,
   // filtres
-  query,        setQuery,
-  roleFilter,   setRoleFilter,
+  query, setQuery,
+  roleFilter, setRoleFilter,
   statusFilter, setStatusFilter,
   // modal
   showRoleModal,
   selectedUser,
-  newRole,      setNewRole,
+  newRole, setNewRole,
   // handlers
   onToggleActivation,
   onOpenRoleModal,
@@ -35,7 +35,6 @@ export default function UsersPageUI({
 }) {
   const { totalUsers, activeUsers, inactiveUsers } = totals;
 
-  // Rendu d'une ligne du tableau
   const renderRow = (user) => {
     const busy = actionLoading === user.id;
 
@@ -46,6 +45,7 @@ export default function UsersPageUI({
         <td>{user.prenom}</td>
         <td className="cell-email">{user.email}</td>
         <td>{user.role}</td>
+
         <td>
           <Badge
             bg={user.isactivated ? "#198754" : "rgba(55, 54, 54, 0.25)"}
@@ -53,16 +53,22 @@ export default function UsersPageUI({
           >
             <i
               className={`bi ${user.isactivated ? "bi-check-circle" : "bi-dash-circle"} me-1`}
-              aria-hidden="true"
             />
             {user.isactivated ? "Activé" : "Inactif"}
           </Badge>
         </td>
+
         <td style={{ whiteSpace: "nowrap" }}>
           <HistoriqueActions
             onValidate={!user.isactivated ? () => onToggleActivation(user.id, user.isactivated) : undefined}
             onCancel={user.isactivated ? () => onToggleActivation(user.id, user.isactivated) : undefined}
-            onEdit={() => onOpenRoleModal(user)}
+
+            // BLOQUE ouverture modal
+            onEdit={() => {
+              if (user.role === "patient") return;
+              onOpenRoleModal(user);
+            }}
+
             validateProps={{
               label: "Activer",
               loading: busy && !user.isactivated,
@@ -70,6 +76,7 @@ export default function UsersPageUI({
               disabled: busy,
               variant: "filled",
             }}
+
             cancelProps={{
               label: "Désactiver",
               loading: busy && user.isactivated,
@@ -77,9 +84,11 @@ export default function UsersPageUI({
               disabled: busy,
               variant: "outline",
             }}
+
+            // BOUTON BLOQUÉ SI PATIENT
             editProps={{
-              label: "Changer rôle",
-              disabled: busy,
+              label: user.role === "patient" ? "Non modifiable" : "Changer rôle",
+              disabled: busy || user.role === "patient",
               variant: "outline",
             }}
           />
@@ -104,7 +113,6 @@ export default function UsersPageUI({
         />
       </div>
 
-      {/* Toolbar filtres */}
       <FilterToolbar
         className="users-page__toolbar"
         items={[
@@ -119,7 +127,6 @@ export default function UsersPageUI({
             type: "select",
             value: roleFilter,
             onChange: (e) => setRoleFilter(e.target.value),
-            ariaLabel: "Filtrer par rôle",
             className: "toolbar__select form-select",
             options: [
               { value: "all", label: "Tous les rôles" },
@@ -130,7 +137,6 @@ export default function UsersPageUI({
             type: "select",
             value: statusFilter,
             onChange: (e) => setStatusFilter(e.target.value),
-            ariaLabel: "Filtrer par statut",
             className: "toolbar__select form-select",
             options: STATUS_OPTIONS,
           },
@@ -138,53 +144,63 @@ export default function UsersPageUI({
       />
 
       {loading ? (
-        <div aria-busy="true">
-          <Spinner />
-        </div>
+        <Spinner />
       ) : (
-        <div className="users-table-wrap" style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
-          <div style={{ flex: 1, overflowY: "auto" }}>
-            <HistoriqueTable
-              headers={TABLE_HEADERS}
-              items={filteredUsers.map((u, i) => ({ ...u, _index: i }))}
-              renderRow={renderRow}
-              emptyMessage="Aucun utilisateur trouvé."
-            />
-          </div>
+        <div className="users-table-wrap" style={{ flex: 1, overflowY: "auto" }}>
+          <HistoriqueTable
+            headers={TABLE_HEADERS}
+            items={filteredUsers.map((u, i) => ({ ...u, _index: i }))}
+            renderRow={renderRow}
+            emptyMessage="Aucun utilisateur trouvé."
+          />
         </div>
       )}
 
-      {/* Modal changement de rôle */}
+      {/* MODAL */}
       <Modal show={showRoleModal} onHide={onCloseRoleModal} centered>
         <Modal.Header closeButton>
           <Modal.Title>
             Changer le rôle de {selectedUser?.prenom} {selectedUser?.nom}
           </Modal.Title>
         </Modal.Header>
+
         <Modal.Body>
           <Form.Group>
-            <Form.Label>Nouveau rôle</Form.Label> 
-            <Form.Select value={newRole} onChange={(e) => setNewRole(e.target.value)}>
-              {roleOptions.map((role) => (
-                <option value={role.value} key={role.value}>{role.label}</option>
+            <Form.Label>Nouveau rôle</Form.Label>
+
+            {/* SELECT BLOQUÉ SI PATIENT */}
+            <Form.Select
+              value={newRole}
+              onChange={(e) => setNewRole(e.target.value)}
+              disabled={selectedUser?.role === "patient"}
+            >
+              {roleOptionsForModal.map((role) => (
+                <option value={role.value} key={role.value}>
+                  {role.label}
+                </option>
               ))}
             </Form.Select>
           </Form.Group>
         </Modal.Body>
+
         <Modal.Footer>
-          {/* ActionButton réutilisable depuis shared/components */}
           <ActionButton
             action="annuler"
             onClick={onCloseRoleModal}
             variant="outline"
           />
+
+          {/*CONFIRM BLOQUÉ */}
           <ActionButton
             action="validate"
             label="Confirmer"
             onClick={onChangeRole}
             loading={actionLoading === selectedUser?.id}
             loadingLabel="Enregistrement..."
-            disabled={actionLoading === selectedUser?.id}
+            disabled={
+              actionLoading === selectedUser?.id ||
+              selectedUser?.role === "patient"
+            }
           />
         </Modal.Footer>
       </Modal>

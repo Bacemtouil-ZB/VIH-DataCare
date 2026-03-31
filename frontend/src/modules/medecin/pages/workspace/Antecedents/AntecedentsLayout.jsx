@@ -1,4 +1,3 @@
-import "./AntecedentsLayout.css";
 import { NavLink, Outlet } from "react-router-dom";
 import "./AntecedentsLayout.css";
 

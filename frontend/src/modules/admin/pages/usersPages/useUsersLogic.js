@@ -97,6 +97,8 @@ export function useUsersLogic() {
     }
   };
 
+  
+
   // ── Filtrage ────────────────────────────────────────────────────────────
   const q = query.trim().toLowerCase();
   const filteredUsers = users.filter((u) => {
@@ -115,12 +117,18 @@ export function useUsersLogic() {
   const activeUsers   = users.filter((u) => u.isactivated).length;
   const inactiveUsers = totalUsers - activeUsers;
 
+// ── Options pour modal (sans patient) ────────────────────────────────
+  const roleOptionsForModal = ROLE_OPTIONS.filter(
+    (role) => role.value !== "patient"
+  );
+
   return {
     // données
     filteredUsers,
     loading,
     actionLoading,
     roleOptions: ROLE_OPTIONS,
+    roleOptionsForModal,
     totals: { totalUsers, activeUsers, inactiveUsers },
     // filtres
     query,       setQuery,

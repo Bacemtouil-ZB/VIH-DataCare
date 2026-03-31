@@ -1,30 +1,8 @@
-﻿import { useOutletContext } from "react-router-dom";
-import { Spinner } from "../index";
-import HabitudesUI from "./HabitudesUI";
-import { PAGE_CONTAINER_CLASS } from "./habitudesConstants";
-import { useHabitudesLogic } from "./useHabitudesLogic";
+﻿import React from 'react'
 
-export default function HabitudesPage() {
-  const { examenId, patientNumero } = useOutletContext();
-  const logic = useHabitudesLogic(patientNumero, examenId);
-
-  if (logic.loading) return <Spinner />;
-
+export const HabitudesPage = () => {
   return (
-    <div className={PAGE_CONTAINER_CLASS}>
-      <HabitudesUI
-        habitudeId={logic.habitudeId}
-        saving={logic.saving}
-        handleSave={logic.handleSave}
-        tabagisme={logic.tabagisme}
-        alcoolemie={logic.alcoolemie}
-        toxicomanie={logic.toxicomanie}
-        activitePhysique={logic.activitePhysique}
-        setTabagisme={logic.setTabagisme}
-        setAlcoolemie={logic.setAlcoolemie}
-        setToxicomanie={logic.setToxicomanie}
-        setActivitePhysique={logic.setActivitePhysique}
-      />
-    </div>
-  );
+    <div>HabitudesPage</div>
+  )
 }
+export default HabitudesPage ;

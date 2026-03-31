@@ -33,7 +33,7 @@ export const toggleUserActivation = async (userId, isactivated) => {
 };
 // ── Service pour changer le rôle d'un utilisateur
 export const changeUserRole = async (userId, role) => {
-  if (!["admin", "medecin", "pharmacien", "analyste"].includes(role)) {
+  if (!["patient", "medecin", "pharmacien", "analyste"].includes(role)) {
     throw new Error("Rôle invalide");
   }
 

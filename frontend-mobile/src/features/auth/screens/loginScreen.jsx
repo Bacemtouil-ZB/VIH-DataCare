@@ -4,8 +4,9 @@ import {
   Text,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import LoginForm from '../components/loginForm';
 import useLogin from '../hooks/useLogin';
 import styles from '../styles/login.styles';
@@ -19,21 +20,60 @@ const LoginScreen = () => {
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <View style={styles.inner}>
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        {/* ── Top Section — Logo ── */}
+        <View style={styles.topSection}>
+          <View style={styles.logoWrapper}>
 
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.logoContainer}>
-            <Ionicons name="medical" size={40} color={colors.white} />
+            {/* Logo */}
+            <View style={styles.logoCircle}>
+              <View style={styles.logoInnerCircle}>
+                <MaterialCommunityIcons
+                  name="leaf" 
+                  size={38}
+                  color={colors.primary}
+                />
+              </View>
+            </View>
+
+            {/* App name */}
+            <Text style={styles.appName}>Zaytouna</Text> 
+            <Text style={styles.appTagline}>Votre espace personnel</Text>
+
           </View>
-          <Text style={styles.title}>VIHDataCare</Text>
-          <Text style={styles.subtitle}>Espace patient</Text>
         </View>
 
-        {/* Form */}
-        <LoginForm onSubmit={handleLogin} isLoading={isLoading} />
+        {/* ── Bottom Section — Form ── */}
+        <View style={styles.bottomSection}>
 
-      </View>
+          {/* Form header */}
+          <View style={styles.formHeader}>
+            <Text style={styles.formTitle}>Connexion</Text>
+            <Text style={styles.formSubtitle}>
+              Entrez vos identifiants pour accéder à votre espace
+            </Text>
+          </View>
+
+          {/* Form */}
+          <LoginForm onSubmit={handleLogin} isLoading={isLoading} />
+
+          {/* Forgot password */}
+          <View style={styles.forgotContainer}>
+            <Text style={styles.forgotText}>
+              Mot de passe oublié ?{' '}
+              <Text style={styles.forgotHighlight}>
+                Contactez votre médecin
+              </Text>
+              {' '}pour réinitialiser votre accès.
+            </Text>
+          </View>
+
+        </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 };

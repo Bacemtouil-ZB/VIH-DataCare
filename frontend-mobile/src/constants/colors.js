@@ -10,7 +10,7 @@ const colors = {
   textPrimary: "#1a1a2e",
   textSecondary: "#6b7280",
   textLight: "#9ca3af",
-  background: "#f8fafb",
+  background: "#e5e7eb",
   surface: "#ffffff",
   border: "#e5e7eb",
   borderLight: "#f3f4f6",

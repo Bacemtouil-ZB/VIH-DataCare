@@ -88,8 +88,12 @@ const CreateReminderScreen = () => {
         <Text style={styles.createHeaderTitle}>Nouveau rappel</Text>
       </View>
 
-      <ScrollView contentContainerStyle={styles.createContent}>
-
+          <ScrollView 
+            contentContainerStyle={[
+              styles.createContent,
+              { paddingBottom: 120 }  // this is used for button to go upper the tab bar
+            ]}
+          >
         {/* Title */}
         <View style={styles.formSection}>
           <Text style={styles.formSectionTitle}>Informations</Text>
@@ -120,7 +124,7 @@ const CreateReminderScreen = () => {
                   <MaterialCommunityIcons
                     name={t.icon}
                     size={18}
-                    color={type === t.key ? colors.white : colors.textPrimary}
+                    color={type === t.key ? colors.primary : colors.textPrimary}
                   />
                   <Text
                     style={[
@@ -197,7 +201,7 @@ const CreateReminderScreen = () => {
             <View style={styles.discreteInfo}>
               <Text style={styles.discreteTitle}>Mode discret</Text>
               <Text style={styles.discreteSubtitle}>
-                La notification affichera "Rappel santé" au lieu du titre exact
+                La notification affichera "Action requise" au lieu du titre exact
               </Text>
             </View>
             <Switch
