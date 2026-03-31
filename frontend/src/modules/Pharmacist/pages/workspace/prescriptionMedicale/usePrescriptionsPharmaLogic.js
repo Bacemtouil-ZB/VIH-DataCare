@@ -1,8 +1,11 @@
-import { useEffect, useMemo, useState }  from "react";
-import { getPatientsWithPrescriptions }  from "../../../services/patientPrescriptionService";
-import { validatePrescription }          from "../../../../../shared/services/prescriptionWorkflowService";
-import { toUiPrescriptionItem, MESSAGES } from "./prescriptionsPharmaConstants";
-import { filterPrescriptions }           from "./PrescriptionsPharmahelpers";
+import { useEffect, useMemo, useState }        from "react";
+import {
+  getPatientsWithPrescriptions,
+  getNextRendezVousPerPatient,               // ← NOUVEAU import
+} from "../../../services/patientPrescriptionService";
+import { validatePrescription }              from "../../../../../shared/services/prescriptionWorkflowService";
+import { toUiPrescriptionItem, MESSAGES }    from "./prescriptionsPharmaConstants";
+import { filterPrescriptions }               from "./PrescriptionsPharmahelpers";
 
 export function usePrescriptionsLogic() {
 
@@ -19,12 +22,26 @@ export function usePrescriptionsLogic() {
     try {
       setLoading(true);
       setError(null);
-      const data = await getPatientsWithPrescriptions();
-      // data.patients contient maintenant nom_traitement + date_prochaine_prise
+
+      // ── MODIFIÉ : fetch en parallèle ──────────────────────
+      const [data, rdvMap] = await Promise.all([
+        getPatientsWithPrescriptions(),
+        getNextRendezVousPerPatient(),   // { [patient_id]: { date, heure, type, statut } }
+      ]);
+
+
+      const rows = Array.isArray(data?.patients) ? data.patients : [];
       setPatients(
-        Array.isArray(data?.patients)
-          ? data.patients.map(toUiPrescriptionItem)
-          : [],
+        rows.map((row) => {
+          const rdv = rdvMap?.[row.patient_id] ?? null;
+          return toUiPrescriptionItem({
+            ...row,
+            rdv_date:   rdv?.date   ?? null,
+            rdv_heure:  rdv?.heure  ?? null,
+            rdv_type:   rdv?.type   ?? null,
+            rdv_statut: rdv?.statut ?? null,
+          });
+        }),
       );
     } catch (err) {
       setError(err?.message || err?.error || MESSAGES.erreurChargement);

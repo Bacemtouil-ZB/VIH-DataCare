@@ -6,7 +6,7 @@ import {
   updateRendezvousController,
   getNextRendezVousPerPatientController,
 } from "../controllers/rendezVousController.js";
-import { protect, authorizeMedecin } from "../middlewares/authMiddleware.js";
+import { protect, authorizeMedecin , authorizePharmacien } from "../middlewares/authMiddleware.js";
 //link validators for rendez vous not yet implemented
 // import {
 //   validateCreateRendezVous,
@@ -15,10 +15,11 @@ import { protect, authorizeMedecin } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-router.get( //get next rendezvous per patient
+router.get( //get next rendezvous per patient this routes used by pharmacist and medecin
   "/next-all",
   protect,
-  authorizeMedecin,
+  // authorizeMedecin,
+  // authorizePharmacien,
   getNextRendezVousPerPatientController,
 );
 

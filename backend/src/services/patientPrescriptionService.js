@@ -24,6 +24,7 @@ export const getPatientsWithPrescriptions = async () => {
     }
 
     patientsWithStatus.push({
+      patient_id:            patient.patient_id,
       patient_name:          patient.patient_name,
       patient_surname:       patient.patient_surname,
       numero_dossier:        patient.numero_dossier,

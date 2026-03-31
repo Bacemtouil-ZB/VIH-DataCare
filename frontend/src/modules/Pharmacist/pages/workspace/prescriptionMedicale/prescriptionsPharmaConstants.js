@@ -1,21 +1,31 @@
 // ── Mapper API → UI ───────────────────────────────────────────
-// Aligne les champs retournés par getSuiviByNumeroDossier (backend)
-// avec les props attendues par PrescriptionsUI
 export const toUiPrescriptionItem = (row) => ({
-  prescriptionId:       row?.prescription_id        ?? row?.id           ?? null,
-  suiviId:              row?.id                      ?? null,
-  patientName:          row?.patient_name             ?? "",
-  patientSurname:       row?.patient_surname          ?? "-",
-  // Traitement : code du médicament (stock_medicaments.code) OU composition
-  nomTraitement:        row?.nom_traitement           ?? row?.composition_medicament ?? "Aucun",
-  compositionMedicament:row?.composition_medicament   ?? "-",
-  dateDebutTraitement:  row?.date_debut_traitement     ?? null,
-  dateDelivrance:       row?.date_delivrance           ?? null,
-  quantitePrescrite:    row?.quantite_prescrite        ?? row?.quantite ?? "-",
-  dosage:               row?.dosage                    ?? "-",
-  statutPrescription:   row?.statut_prescription       ?? row?.statut  ?? "envoyee",
-  statutPatient:        row?.statut_patient             ?? "",
-  ecartJours:           Number(row?.ecart_jours         ?? 0),
+  prescriptionId:        row?.prescription_id        ?? row?.id           ?? null,
+  suiviId:               row?.id                     ?? null,
+  dateNaissance:         row?.date_naissance         ?? null,
+  patientName:           row?.patient_name            ?? "",
+  patientSurname:        row?.patient_surname         ?? "-",
+  nomTraitement:         row?.nom_traitement          ?? row?.composition_medicament ?? "Aucun",
+  compositionMedicament: row?.composition_medicament  ?? "-",
+  dateProchainePrise:    row?.date_prochaine_prise    ?? null,
+  dateDebutTraitement:   row?.date_debut_traitement   ?? null,
+  dateDelivrance:        row?.date_delivrance         ?? null,
+  quantitePrescrite:     row?.quantite_prescrite      ?? row?.quantite ?? "-",
+  posologie:             row?.posologie               ?? "-",
+  dosage:                row?.dosage                  ?? "-",
+  statutPrescription:    row?.statut_prescription     ?? row?.statut  ?? "envoyee",
+  statutPatient:         row?.statut_patient          ?? "",
+  ecartJours:            Number(row?.ecart_jours      ?? 0),
+
+  // ── NOUVEAU ──────────────────────────────────────────────
+  rdv: row?.rdv_date
+    ? {
+        date:   row.rdv_date,
+        heure:  row?.rdv_heure  ?? null,
+        type:   row?.rdv_type   ?? null,
+        statut: row?.rdv_statut ?? null,
+      }
+    : null,
 });
 
 // ── Badges suivi thérapeutique ────────────────────────────────
@@ -44,10 +54,12 @@ export const MESSAGES = {
 
 // ── En-têtes tableau ──────────────────────────────────────────
 export const TABLE_HEADERS = [
+  "Date naissance",
   "Patient",
   "Traitement",
   "Quantite",
   "Statut prescription",
-  "Suivi therapeutique",
+  "S.therapeutique",
+  " RDV",        // ← NOUVEAU
   "Action",
-];
+];  

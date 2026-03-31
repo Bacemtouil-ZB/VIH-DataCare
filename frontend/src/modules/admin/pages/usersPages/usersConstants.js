@@ -1,5 +1,5 @@
 export const ROLE_OPTIONS = [
-  { value: "admin", label: "Admin" },
+  { value: "patient", label: "patient" },
   { value: "medecin", label: "Médecin" },
   { value: "pharmacien", label: "Pharmacien" },
   { value: "analyste", label: "Analyste" },
