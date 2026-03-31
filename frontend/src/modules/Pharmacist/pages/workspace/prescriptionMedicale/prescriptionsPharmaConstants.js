@@ -4,18 +4,14 @@
 export const toUiPrescriptionItem = (row) => ({
   prescriptionId:       row?.prescription_id        ?? row?.id           ?? null,
   suiviId:              row?.id                      ?? null,
-  numeroDossier:        row?.numero_dossier           ?? "-",
   patientName:          row?.patient_name             ?? "",
   patientSurname:       row?.patient_surname          ?? "-",
   // Traitement : code du médicament (stock_medicaments.code) OU composition
   nomTraitement:        row?.nom_traitement           ?? row?.composition_medicament ?? "Aucun",
   compositionMedicament:row?.composition_medicament   ?? "-",
-  // Prochaine prise : depuis suivi_therapeutique.date_prochaine_prise
-  dateProchainePrise:   row?.date_prochaine_prise     ?? null,
   dateDebutTraitement:  row?.date_debut_traitement     ?? null,
   dateDelivrance:       row?.date_delivrance           ?? null,
   quantitePrescrite:    row?.quantite_prescrite        ?? row?.quantite ?? "-",
-  posologie:            row?.posologie                 ?? "-",
   dosage:               row?.dosage                    ?? "-",
   statutPrescription:   row?.statut_prescription       ?? row?.statut  ?? "envoyee",
   statutPatient:        row?.statut_patient             ?? "",
@@ -48,10 +44,8 @@ export const MESSAGES = {
 
 // ── En-têtes tableau ──────────────────────────────────────────
 export const TABLE_HEADERS = [
-  "N dossier",
   "Patient",
   "Traitement",
-  "Prochaine prise",
   "Quantite",
   "Statut prescription",
   "Suivi therapeutique",

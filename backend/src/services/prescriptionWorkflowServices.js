@@ -1,12 +1,11 @@
-﻿
-import {
+﻿import {
   findByNumeroDossier as findByNumeroDossierModel,
   createPrescription  as createPrescriptionModel,
   validerPrescription as validerPrescriptionModel,
   findById,
 findLastPrescriptionPerPatient
 } from "../models/prescriptionWorkflowModel.js";
-import { getPatientByNumero } from "../models/patientModel.js";
+import { getPatientByNumero } from "../services/patientService.js";
 
 // ── GET — liste des prescriptions d'un patient ────────────────
 export const getPrescriptions = async (numeroDossier) => {

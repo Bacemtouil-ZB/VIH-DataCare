@@ -39,6 +39,7 @@ export const getBilansByNumeroDossierController = async (req, res) => {
     const bilans = await getBilansByNumeroDossierService(numeroDossier);
 
     const patient_id = await getPatientIdByNumero(numeroDossier);
+    
     await logAction(req, {
       module:     "BILAN_EXAMEN",
       action:     "BILAN_EXAMEN_VIEW",

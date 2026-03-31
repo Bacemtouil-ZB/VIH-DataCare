@@ -4,7 +4,6 @@ import {
   HistoriqueTable,
   SearchBar,
 } from "../../../../../shared/components";
-import { formatDateFr }                    from "../../../../../shared/utils/logiqueTableHistory";
 import { MESSAGES, TABLE_HEADERS }         from "./prescriptionsPharmaConstants";
 import {
   resolveSuiviBadge,
@@ -79,23 +78,12 @@ export default function PrescriptionsUI({
           items={filtered}
           emptyMessage={search ? MESSAGES.aucunResultat : MESSAGES.aucunePrescription}
           renderRow={(p) => (
-            <tr key={p.prescriptionId || `${p.numeroDossier}-${p.nomTraitement}`}>
-              <td className="td-numero">
-                <span className="numero-simple">{p.numeroDossier}</span>
-              </td>
+            <tr key={p.prescriptionId || p.nomTraitement}>
               <td className="td-patient">
                 {`${p.patientSurname} ${p.patientName}`.trim()}
               </td>
               {/* Traitement depuis stock_medicaments.code via prescription_medicale */}
               <td className="td-traitement">{p.nomTraitement}</td>
-              {/* Prochaine prise depuis suivi_therapeutique.date_prochaine_prise */}
-              <td className="td-date">
-                {p.dateProchainePrise ? (
-                  <span className={p.ecartJours > 0 ? "date-retard" : "date-future"}>
-                    {formatDateFr(p.dateProchainePrise, "-")}
-                  </span>
-                ) : "-"}
-              </td>
               <td className="td-quantite">{p.quantitePrescrite}</td>
               <td className="td-statut">
                 <PrescriptionBadge statutPrescription={p.statutPrescription} />

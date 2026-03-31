@@ -15,10 +15,7 @@ import VIH from "../pages/workspace/VIH/VIH";
 import Antecedent from "../pages/workspace/Antecedents/Antecedent.jsx";
 import SignesFonctionnels from "../pages/workspace/Examen_cliniques/SigneFonction/SignesFonctionnels.jsx";
 import SignesCliniques from "../pages/workspace/Examen_cliniques/signeClinique/SignesCliniques.jsx";
-import ResultatsBiologiquesLayout from "../pages/workspace/resultats_biologiques/resultats_biologiquesLayout";
-import Standard from "../pages/workspace/resultats_biologiques/Standard";
-import Serologie from "../pages/workspace/resultats_biologiques/Serologie";
-import Microbiologie from "../pages/workspace/resultats_biologiques/Microbiologie";
+import ResultatsBiologiques from'../pages/workspace/resultats_biologiques/ResultatsBiologiques.jsx';
 import PrescriptionExamens from "../pages/workspace/prescreption_dexamens/PrescriptionExamens";
 import PrescreptionMedical from "../pages/workspace/prescreption_medical/PrescreptionMedical";
 import Conclusion from "../pages/workspace/conclusion/Conclusion";
@@ -86,13 +83,8 @@ const medecinRoutes = [
     },
     {
       path: "biologie",
-      element: <NewPatientGuard><ResultatsBiologiquesLayout /></NewPatientGuard>,
-      children: [
-        { index: true, element: <Navigate to="standard" replace /> },
-        { path: "standard", element: <Standard /> },
-        { path: "serologie", element: <Serologie /> },
-        { path: "microbiologie", element: <Microbiologie /> },
-      ],
+      element: <NewPatientGuard><ResultatsBiologiques /></NewPatientGuard>,
+
     },
     {
       path: "prescription-examens",
