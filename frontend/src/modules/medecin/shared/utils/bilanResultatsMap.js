@@ -7,7 +7,7 @@ export const BILAN_RESULTATS_MAP = {
     label: "Sérologie VIH",
     hasDate: true, 
     champs: [
-      { key: "vih_charge", label: "Charge virale", type: "select", options: ["Positif", "Négatif"] },
+      { key: "serologie_vih", label: "Charge virale", type: "select", options: ["Positif", "Négatif"] },
     ],
   },
 
@@ -92,8 +92,8 @@ export const BILAN_RESULTATS_MAP = {
     label: "Sérologie syphilis",
     hasDate: true, 
     champs: [
-      { key: "VDRL", label: "VDRL", type: "select", options: ["Positif", "Négatif"] },
-      { key: "TPHA", label: "TPHA", type: "select", options: ["Positif", "Négatif"] },
+      { key: "vdrl", label: "VDRL", type: "select", options: ["Positif", "Négatif"] },
+      { key: "tpha", label: "TPHA", type: "select", options: ["Positif", "Négatif"] },
     ],
   },
 

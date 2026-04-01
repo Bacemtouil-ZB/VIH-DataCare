@@ -6,8 +6,8 @@ CREATE TABLE IF NOT EXISTS resultats_biologiques (
   patient_id  INTEGER NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
   bilan_id    INTEGER REFERENCES bilan_examens(id) ON DELETE SET NULL,
 
-  -- Sérologie VIH  →  key: "vih_charge"
-  vih_charge       NUMERIC,
+  -- Sérologie VIH  →  key: "serologie_vih"
+  serologie_vih      VARCHAR(20),
 
   -- Bilan biochimique  →  keys: asat, alat, phosphore, calcemie, creatinine
   asat        NUMERIC, alat        NUMERIC,

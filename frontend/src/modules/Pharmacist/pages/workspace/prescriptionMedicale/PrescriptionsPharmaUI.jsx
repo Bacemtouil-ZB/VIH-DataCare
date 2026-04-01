@@ -15,7 +15,7 @@ import {
 } from "./PrescriptionsPharmahelpers";
 import ModalDetailPrescription             from "../../../components/modal/Modaldetailprescription";
 import ModalValidationPrescription         from "../../../components/modal/ModalValidationPrescription";
-
+import { formatDateFr }                       from "../../../../../shared/utils/logiqueTableHistory";
 // ── Badges ────────────────────────────────────────────────────
 function SuiviBadge({ statutPatient, ecartJours }) {
   const { badgeClass, badgeText, showEcart } = resolveSuiviBadge(statutPatient, ecartJours);

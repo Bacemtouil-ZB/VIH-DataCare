@@ -1,4 +1,3 @@
-// ── Mapper API → UI ───────────────────────────────────────────
 export const toUiPrescriptionItem = (row) => ({
   prescriptionId:        row?.prescription_id        ?? row?.id           ?? null,
   suiviId:               row?.id                     ?? null,
@@ -57,9 +56,10 @@ export const TABLE_HEADERS = [
   "Date naissance",
   "Patient",
   "Traitement",
+  "Prochaine prise",
   "Quantite",
   "Statut prescription",
   "S.therapeutique",
   " RDV",        // ← NOUVEAU
   "Action",
-];  
+]; 
