@@ -1,9 +1,7 @@
-// ── useResultatsBiologiquesLogic.js ──────────────────────────────────────────
-// Hook custom — toute la logique métier
 
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { toast } from "react-toastify";
+import { useParams }           from "react-router-dom";
+import { toast }               from "react-toastify";
 import { confirmAction, alertError } from "../../../../../shared/utils/uiAlerts";
 import {
   getResultatsByNumeroDossier,
@@ -12,6 +10,7 @@ import {
   updateResultat,
 } from "../../../services/resultatBiologiqueService";
 import { buildInitialForm, getChampActifs } from "../../../shared/utils/bilanResultatsMap";
+import { MESSAGES } from "./ResultatsbiologiquesConstants";
 
 export function useResultatsBiologiquesLogic() {
   const { numero } = useParams();
@@ -47,7 +46,7 @@ export function useResultatsBiologiquesLogic() {
         const actifs = getChampActifs(bilan);
         setChampsActifs(actifs);
       } catch (err) {
-        toast.error(err?.message || "Erreur lors du chargement");
+        toast.error(err?.message || MESSAGES.erreurChargement);
       } finally {
         setLoading(false);
       }
@@ -62,7 +61,9 @@ export function useResultatsBiologiquesLogic() {
     setEditingId(null);
   };
 
-  const closeForm = (notify = true) => {
+  // Suppression du paramètre notify inutilisé : closeForm ne notifie plus,
+  // c'est à l'appelant de décider quoi afficher après fermeture.
+  const closeForm = () => {
     resetForm();
     setShowForm(false);
   };
@@ -80,9 +81,11 @@ export function useResultatsBiologiquesLogic() {
   // ── Ouvrir modification ─────────────────────────────────────────────────────
   const openEdit = async (item) => {
     const ok = await confirmAction(
-      "Modifier ce résultat ?",
+      MESSAGES.confirmerEdit,
       `Date : ${new Date(item.date_resultat || item.created_at).toLocaleDateString("fr-FR")}`,
     );
+    // Correction : garde manquante — l'action s'exécutait même si l'utilisateur annulait
+    if (!ok) return;
 
     setDetailItem(null);
     setIsModifying(true);
@@ -90,17 +93,11 @@ export function useResultatsBiologiquesLogic() {
 
     // Pré-remplir avec les valeurs existantes (champs résultats + dates par section)
     const prefilled = {};
-
     champsActifs.forEach(({ _key, champs }) => {
-      // Champs résultats
       champs.forEach(({ key }) => { prefilled[key] = item[key] ?? ""; });
-      // Date de la section
       const dateKey = `date_${_key}`;
-      prefilled[dateKey] = item[dateKey]
-        ? item[dateKey].slice(0, 10)
-        : "";
+      prefilled[dateKey] = item[dateKey] ? item[dateKey].slice(0, 10) : "";
     });
-
     prefilled.observations  = item.observations ?? "";
     prefilled.date_resultat = item.date_resultat
       ? item.date_resultat.slice(0, 10)
@@ -108,6 +105,7 @@ export function useResultatsBiologiquesLogic() {
 
     setFormData(prefilled);
     setShowForm(true);
+    toast.info(MESSAGES.modeModif);
   };
 
   // ── Détail ──────────────────────────────────────────────────────────────────
@@ -115,7 +113,7 @@ export function useResultatsBiologiquesLogic() {
     setShowForm(false);
     resetForm();
     setDetailItem(item);
-    toast.info("Mode détails actif");
+    toast.info(MESSAGES.modeDetails);
   };
 
   // ── Submit ──────────────────────────────────────────────────────────────────
@@ -123,9 +121,11 @@ export function useResultatsBiologiquesLogic() {
     e.preventDefault();
 
     const ok = await confirmAction(
-      isModifying ? "Enregistrer les modifications ?" : "Enregistrer ce résultat ?",
-      "Les données seront sauvegardées dans le dossier patient.",
+      isModifying ? MESSAGES.confirmerModif : MESSAGES.confirmerCreation,
+      MESSAGES.confirmerModifSub,
     );
+    // Correction : garde manquante — l'enregistrement s'exécutait même si annulé
+    if (!ok) return;
 
     try {
       setSaving(true);
@@ -134,19 +134,19 @@ export function useResultatsBiologiquesLogic() {
         setResultats((prev) =>
           prev.map((r) => (r.id === editingId ? res.resultat : r))
         );
-        toast.success("Résultat mis à jour.");
+        toast.success(MESSAGES.successModif);
       } else {
         const res = await createResultat({
           ...formData,
           numero_dossier: numero,
-          bilan_id: bilanPrescrit?.id || null,
+          bilan_id:       bilanPrescrit?.id || null,
         });
         setResultats((prev) => [res.resultat, ...prev]);
-        toast.success("Résultat enregistré.");
+        toast.success(MESSAGES.successCreation);
       }
-      closeForm(false);
+      closeForm();
     } catch (err) {
-      await alertError(err?.response?.data?.message || "Erreur lors de l'enregistrement.");
+      await alertError(err?.response?.data?.message || MESSAGES.erreurEnregistrement);
     } finally {
       setSaving(false);
     }

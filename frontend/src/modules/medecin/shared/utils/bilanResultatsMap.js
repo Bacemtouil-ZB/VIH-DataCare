@@ -1,11 +1,10 @@
-// bilanResultatsMap.js — source de vérité unique
-// Clé = colonne dans bilan_examens, valeur = champs de résultats à afficher
+﻿// bilanResultatsMap.js - source de verite unique
+// Cle = colonne dans bilan_examens, valeur = champs de resultats a afficher
 
 export const BILAN_RESULTATS_MAP = {
-
   serologie_vih: {
     label: "Sérologie VIH",
-    hasDate: true, 
+    hasDate: true,
     champs: [
       { key: "serologie_vih", label: "Charge virale", type: "select", options: ["Positif", "Négatif"] },
     ],
@@ -13,40 +12,40 @@ export const BILAN_RESULTATS_MAP = {
 
   bilan_biochimique: {
     label: "Bilan biochimique",
-    hasDate: true, 
+    hasDate: true,
     champs: [
-      { key: "asat",       label: "ASAT",       type: "number", unite: "UI/L" },
-      { key: "alat",       label: "ALAT",       type: "number", unite: "UI/L" },
-      { key: "phosphore",  label: "Phosphore",  type: "number", unite: "mmol/L" },
-      { key: "calcemie",   label: "Calcémie",   type: "number", unite: "mmol/L" },
+      { key: "asat", label: "ASAT", type: "number", unite: "UI/L" },
+      { key: "alat", label: "ALAT", type: "number", unite: "UI/L" },
+      { key: "phosphore", label: "Phosphore", type: "number", unite: "mmol/L" },
+      { key: "calcemie", label: "Calcémie", type: "number", unite: "mmol/L" },
       { key: "creatinine", label: "Créatinine", type: "number", unite: "mmol/L" },
     ],
   },
 
   serologie_vhb: {
     label: "Sérologie VHB",
-    hasDate: true, 
+    hasDate: true,
     champs: [
-      { key: "vhb_ag_hbs", label: "HBs",      type: "select", options: ["Positif", "Négatif"] },
+      { key: "vhb_ag_hbs", label: "HBs", type: "select", options: ["Positif", "Négatif"] },
       { key: "vhb_ac_hbs", label: "anti-HBs", type: "select", options: ["Positif", "Négatif"] },
-      { key: "vhb_ac_hbc", label: "anti-HBc", type: "select", options: ["Positif", "Négatif"] },
+      { key: "vhb_ac_hbc", label: "anti-iHBc", type: "select", options: ["Positif", "Négatif"] },
     ],
   },
 
   nfs_complete: {
     label: "NFS complète",
-    hasDate: true, 
+    hasDate: true,
     champs: [
-      { key: "hemoglobine",    label: "Hémoglobine",    type: "number", unite: "g/dL" },
-      { key: "plaquettes",     label: "Plaquettes",     type: "number", unite: "10³/mm³" },
-      { key: "globules_blancs",label: "Globules blancs",type: "number", unite: "10³/mm³" },
-      { key: "lymphocytes",    label: "Lymphocytes",    type: "number", unite: "10³/mm³" },
+      { key: "hemoglobine", label: "Hémoglobine", type: "number", unite: "g/dL" },
+      { key: "plaquettes", label: "Plaquettes", type: "number", unite: "10³/mm³" },
+      { key: "globules_blancs", label: "Globules blancs", type: "number", unite: "10³/mm³" },
+      { key: "lymphocytes", label: "Lymphocytes", type: "number", unite: "10³/mm³" },
     ],
   },
 
   charge_virale_vih: {
     label: "Charge Virale VIH",
-    hasDate: true, 
+    hasDate: true,
     champs: [
       { key: "charge_virale_valeur", label: "Charge virale", type: "number", unite: "copies/mL" },
     ],
@@ -54,43 +53,43 @@ export const BILAN_RESULTATS_MAP = {
 
   cd4_cd8: {
     label: "CD4/CD8",
-    hasDate: true, 
+    hasDate: true,
     champs: [
-      { key: "cd4_absolu",   label: "CD4 absolu", type: "number", unite: "cellules/mm³" },
-      { key: "cd4_pourcent", label: "CD4 %",      type: "number", unite: "%" },
+      { key: "cd4_absolu", label: "CD4", type: "number", unite: "cellules/mm³" },
+      { key: "cd4_pourcent", label: "CD4 %", type: "number", unite: "%" },
     ],
   },
 
   bilan_lipidique: {
     label: "Bilan lipidique",
-    hasDate: true, 
+    hasDate: true,
     champs: [
       { key: "cholesterol_total", label: "Cholestérol total", type: "number", unite: "mmol/L" },
-      { key: "hdl",               label: "HDL",               type: "number", unite: "mmol/L" },
-      { key: "ldl",               label: "LDL",               type: "number", unite: "mmol/L" },
-      { key: "triglycerides",     label: "Triglycérides",     type: "number", unite: "mmol/L" },
+      { key: "hdl", label: "HDL", type: "number", unite: "mmol/L" },
+      { key: "ldl", label: "LDL", type: "number", unite: "mmol/L" },
+      { key: "triglycerides", label: "Triglycérides", type: "number", unite: "mmol/L" },
     ],
   },
 
   serologie_vha: {
     label: "Sérologie VHA",
-    hasDate: true, 
+    hasDate: true,
     champs: [
-      { key: "vha_igg", label: "Ac anti-VHA IgG", type: "select", options: ["Positif", "Négatif"] },
+      { key: "vha_igg", label: "VHA IgG", type: "select", options: ["Positif", "Négatif"] },
     ],
   },
 
   serologie_vhc: {
     label: "Sérologie VHC",
-    hasDate: true, 
+    hasDate: true,
     champs: [
       { key: "vhc", label: "VHC", type: "select", options: ["Positif", "Négatif"] },
     ],
   },
 
-  "serologie_syphilis": {
+  serologie_syphilis: {
     label: "Sérologie syphilis",
-    hasDate: true, 
+    hasDate: true,
     champs: [
       { key: "vdrl", label: "VDRL", type: "select", options: ["Positif", "Négatif"] },
       { key: "tpha", label: "TPHA", type: "select", options: ["Positif", "Négatif"] },
@@ -99,8 +98,7 @@ export const BILAN_RESULTATS_MAP = {
 
   serologie_toxoplasmose: {
     label: "Sérologie toxoplasmose",
-    hasDate: true, 
-
+    hasDate: true,
     champs: [
       { key: "toxo_igm", label: "IgM", type: "select", options: ["Positif", "Négatif"] },
       { key: "toxo_igg", label: "IgG", type: "select", options: ["Positif", "Négatif"] },
@@ -109,7 +107,7 @@ export const BILAN_RESULTATS_MAP = {
 
   serologie_cmv: {
     label: "Sérologie CMV",
-    hasDate: true, 
+    hasDate: true,
     champs: [
       { key: "cmv_igm", label: "IgM", type: "select", options: ["Positif", "Négatif"] },
       { key: "cmv_igg", label: "IgG", type: "select", options: ["Positif", "Négatif"] },
@@ -118,52 +116,80 @@ export const BILAN_RESULTATS_MAP = {
 
   serologie_leishmaniose: {
     label: "Sérologie leishmaniose",
-    hasDate: true, 
+    hasDate: true,
     champs: [
-      { key: "leishmania_ac",    label: "Ac anti-leishmania", type: "select", options: ["Positif", "Négatif"] },
+      { key: "leishmania_ac", label: "Leishmaniose", type: "select", options: ["Positif", "Négatif"] },
     ],
   },
 
   idr_tuberculine: {
     label: "IDR à la tuberculine",
-    hasDate: true, 
+    hasDate: true,
     champs: [
       { key: "idr_tuberculine", label: "IDR à la tuberculine", type: "select", options: ["Négatif", "Douteux", "Positif"] },
     ],
   },
 
-
-
   radio_thorax: {
     label: "Radio thorax",
     hasDate: true,
     champs: [
-      { key: "radio_resultat",    label: "Résultat",    type: "select", options: ["Normal", "Anomalie "] },
+      { key: "radio_resultat", label: "Résultat radio", type: "select", options: ["Normal", "Anomalie"] },
       { key: "radio_description", label: "Description", type: "textarea" },
     ],
   },
 };
+
 export const getChampActifs = (bilanPrescrit) => {
   if (!bilanPrescrit) return [];
   return Object.entries(BILAN_RESULTATS_MAP)
     .filter(([key]) => !!bilanPrescrit[key])
     .map(([key, section]) => ({ ...section, _key: key }));
 };
- 
-// ── Helper : construire INITIAL_FORM dynamiquement ────────────────────────────
+
+const normalize = (value) =>
+  String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase();
+
+const getDefaultToggleValue = (champ) => {
+  if (champ.type !== "select" || !Array.isArray(champ.options) || champ.options.length === 0) {
+    return "";
+  }
+
+  if (champ.key === "radio_resultat") {
+    return champ.options.find((option) => normalize(option) === "normal") || champ.options[0];
+  }
+
+  if (champ.key === "idr_tuberculine") {
+    return champ.options.find((option) => normalize(option) === "negatif") || champ.options[0];
+  }
+
+  const normalizedOptions = champ.options.map(normalize);
+  const isPosNeg = normalizedOptions.length === 2 && normalizedOptions.every((value) =>
+    value === "positif" || value === "negatif"
+  );
+
+  if (!isPosNeg) return "";
+  return champ.options.find((option) => normalize(option) === "negatif") || champ.options[0];
+};
+
+// Helper : construire INITIAL_FORM dynamiquement
 // Inclut les champs de date par section
 export const buildInitialForm = (bilanPrescrit) => {
   const form = {};
   const sections = getChampActifs(bilanPrescrit);
- 
+
   sections.forEach(({ _key, champs }) => {
-    // Champs de résultats
-    champs.forEach(({ key }) => { form[key] = ""; });
-    // Champ date de la section
+    champs.forEach((champ) => {
+      form[champ.key] = getDefaultToggleValue(champ);
+    });
+
     const dateKey = `date_${_key}`;
     form[dateKey] = "";
   });
- 
+
   return form;
 };
- 
