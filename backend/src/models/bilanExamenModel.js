@@ -12,7 +12,7 @@ const BILAN_FIELDS = [
   "bilan_lipidique",
   "serologie_vha",
   "serologie_vhc",
-  "tpha_vdrl",
+  "serologie_syphilis",
   "serologie_toxoplasmose",
   "serologie_cmv",
   "serologie_leishmaniose",
@@ -32,7 +32,7 @@ export const createBilanExamen = async (data) => {
       patient_id,
       bilan_initial_complet, serologie_vih, bilan_biochimique, serologie_vhb,
       nfs_complete, charge_virale_vih, cd4_cd8, bilan_lipidique,
-      serologie_vha, serologie_vhc, tpha_vdrl, serologie_toxoplasmose,
+      serologie_vha, serologie_vhc, serologie_syphilis, serologie_toxoplasmose,
       serologie_cmv, serologie_leishmaniose, idr_tuberculine,
       test_genotypage, radio_thorax, observations
     )
@@ -94,7 +94,7 @@ export const updateBilanExamen = async (id, data) => {
       bilan_lipidique        = COALESCE($8,  bilan_lipidique),
       serologie_vha          = COALESCE($9,  serologie_vha),
       serologie_vhc          = COALESCE($10, serologie_vhc),
-      tpha_vdrl              = COALESCE($11, tpha_vdrl),
+      serologie_syphilis     = COALESCE($11, serologie_syphilis),
       serologie_toxoplasmose = COALESCE($12, serologie_toxoplasmose),
       serologie_cmv          = COALESCE($13, serologie_cmv),
       serologie_leishmaniose = COALESCE($14, serologie_leishmaniose),

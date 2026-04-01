@@ -2,6 +2,7 @@
 CREATE TABLE IF NOT EXISTS bilan_examens (
   id            SERIAL PRIMARY KEY,
   patient_id    INTEGER NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+  
   bilan_initial_complet   BOOLEAN DEFAULT FALSE,
   serologie_vih           BOOLEAN DEFAULT FALSE,
   bilan_biochimique       BOOLEAN DEFAULT FALSE,
@@ -12,7 +13,7 @@ CREATE TABLE IF NOT EXISTS bilan_examens (
   bilan_lipidique         BOOLEAN DEFAULT FALSE,
   serologie_vha           BOOLEAN DEFAULT FALSE,
   serologie_vhc           BOOLEAN DEFAULT FALSE,
-  tpha_vdrl               BOOLEAN DEFAULT FALSE,
+  serologie_syphilis      BOOLEAN DEFAULT FALSE,  
   serologie_toxoplasmose  BOOLEAN DEFAULT FALSE,
   serologie_cmv           BOOLEAN DEFAULT FALSE,
   serologie_leishmaniose  BOOLEAN DEFAULT FALSE,

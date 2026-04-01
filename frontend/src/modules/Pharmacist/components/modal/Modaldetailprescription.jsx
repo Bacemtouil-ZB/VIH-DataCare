@@ -44,10 +44,6 @@ export default function ModalDetailPrescription({ item, onClose }) {
                 <h5 className="modal-title fw-bold mb-0" style={{ color: "#0f172a" }}>
                   Détails de la prescription
                 </h5>
-                <small className="text-muted">
-                  Dossier {item.numeroDossier} —{" "}
-                  {item.patientSurname} {item.patientName}
-                </small>
               </div>
               <button
                 type="button"
@@ -69,6 +65,8 @@ export default function ModalDetailPrescription({ item, onClose }) {
                 <InfoField label="Numéro dossier"  value={item.numeroDossier} />
                 <InfoField label="Nom"             value={item.patientSurname} />
                 <InfoField label="Prénom"          value={item.patientName} />
+                <InfoField label="Date de naissance"
+                           value={item.dateNaissance ? formatDateFr(item.dateNaissance, "-") : "-"} />
               </div>
 
               <hr className="my-3" />
@@ -81,7 +79,6 @@ export default function ModalDetailPrescription({ item, onClose }) {
               <div className="row g-3 mb-4">
                 <InfoField label="Traitement"         value={item.nomTraitement} />
                 <InfoField label="Composition"        value={item.compositionMedicament} />
-                <InfoField label="Posologie"          value={item.posologie} />
                 <InfoField label="Dosage"             value={item.dosage} />
                 <InfoField label="Quantité prescrite" value={item.quantitePrescrite} />
                 <InfoField label="Statut prescription"
@@ -104,10 +101,24 @@ export default function ModalDetailPrescription({ item, onClose }) {
                            value={formatDateFr(item.dateDelivrance, "-")} />
                 <InfoField label="Prochaine prise"
                            value={formatDateFr(item.dateProchainePrise, "-")} />
-                <InfoField label="Statut patient"   value={item.statutPatient || "-"} />
-                <InfoField label="Écart (jours)"
-                           value={item.ecartJours > 0 ? `+${item.ecartJours} j` : "-"}
-                           highlight={item.ecartJours > 0} />
+                <InfoField label="Prochain rendez-vous"
+                           value={formatDateFr(item.prochainRendezVous || item.dateProchainePrise, "-")}
+                           highlight={false} />
+                <InfoField label="Statut patient"
+                           value={item.statutPatient || "-"}
+                           badge
+                           badgeClass={
+                             item.statutPatient === "perdue de vue"
+                               ? "bg-danger-subtle text-danger"
+                               : item.statutPatient === "actif"
+                               ? "bg-success-subtle text-success"
+                               : "bg-warning-subtle text-warning"
+                           } />
+                {item.ecartJours > 0 && (
+                  <InfoField label="Écart de retard"
+                             value={`+${item.ecartJours} jour(s)`}
+                             highlight={true} />
+                )}
               </div>
             </div>
 

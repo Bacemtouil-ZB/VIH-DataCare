@@ -5,7 +5,6 @@ export const getSuiviByPatientId = async (patientId) => {
   const query = `
     SELECT
       st.*,
-      pm.posologie,
       pm.dosage,
       pm.quantite                            AS quantite_prescrite,
       sm.code                                AS nom_traitement,
@@ -31,7 +30,6 @@ export const getSuiviByNumeroDossier = async (numeroDossier) => {
   const query = `
     SELECT
       st.*,
-      pm.posologie,
       pm.dosage,
       pm.quantite                            AS quantite_prescrite,
       sm.code                                AS nom_traitement,

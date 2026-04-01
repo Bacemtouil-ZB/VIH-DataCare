@@ -1,5 +1,12 @@
 ﻿import pool from "../config/db.js";
 
+// Normalise le numéro de dossier : accepte "F-0012-2025" ou "0012-2025"
+const normalizeNumero = (n) => {
+  if (!n) return { withPrefix: null, raw: null };
+  const raw = String(n).replace(/^F-/i, "").trim();
+  return { withPrefix: `F-${raw}`, raw };
+};
+
 const PRESCRIPTION_SELECT = `
   SELECT
     pm.id,
@@ -22,13 +29,14 @@ const PRESCRIPTION_SELECT = `
 
 // ── GET — prescriptions d'un patient via numero_dossier ───────
 export const findByNumeroDossier = async (numeroDossier) => {
+  const { withPrefix, raw } = normalizeNumero(numeroDossier);
   const query = `
     ${PRESCRIPTION_SELECT}
     JOIN patients p ON p.id = pm.patient_id
-    WHERE p.numero = $1
+    WHERE p.numero = $1 OR p.numero = $2
     ORDER BY pm.created_at DESC;
   `;
-  const result = await pool.query(query, [numeroDossier]);
+  const result = await pool.query(query, [withPrefix, raw]);
   return result.rows;
 };
 
@@ -98,4 +106,3 @@ export const findLastPrescriptionPerPatient = async () => {
     return acc;
   }, {});
 };
- 
