@@ -1,9 +1,10 @@
-﻿import { Input } from "../../../../shared/components";
+import { FieldError, Input } from "../../../../shared/components";
+import { Link } from "react-router-dom";
+import { useId } from "react";
 import ToggleSwitch from "../buttons/ToggleSwitch";
 import Textarea from "./Textarea";
 
-const POSITIVE_NEGATIVE_SET = new Set(["positif", "negatif"]);
-const FORCED_TOGGLE_FIELDS = new Set(["idr_tuberculine", "radio_resultat"]);
+const POS_NEG_CONFIG = { falseValue: "Negatif", trueValue: "Positif" };
 
 const normalize = (value) =>
   String(value || "")
@@ -12,145 +13,152 @@ const normalize = (value) =>
     .trim()
     .toLowerCase();
 
-const isPositiveNegativeField = (champ) => {
-  if (champ?.type !== "select" || !Array.isArray(champ?.options) || champ.options.length !== 2) {
-    return false;
-  }
-
-  const normalized = champ.options.map(normalize);
-  return normalized.every((item) => POSITIVE_NEGATIVE_SET.has(item));
+const isPositiveNegativeOptions = (options = []) => {
+  if (!Array.isArray(options) || options.length !== 2) return false;
+  const values = options.map(normalize);
+  return values.includes("positif") && values.includes("negatif");
 };
 
-const isToggleField = (champ) => {
-  if (isPositiveNegativeField(champ)) return true;
-  return champ?.type === "select" && FORCED_TOGGLE_FIELDS.has(champ?.key);
+const getToggleConfig = (champ) => {
+  if (champ?.type !== "select") return null;
+  if (isPositiveNegativeOptions(champ.options)) return POS_NEG_CONFIG;
+  return null;
 };
 
-const getCanonicalOption = (options, normalizedWanted) => {
-  return options.find((opt) => normalize(opt) === normalizedWanted) || null;
-};
-
-const getToggleOptions = (champ) => {
-  const options = champ?.options || [];
-
-  if (champ?.key === "radio_resultat") {
-    const falseOption = getCanonicalOption(options, "normal") || options[0] || "Normal";
-    const trueOption = getCanonicalOption(options, "anomalie") || options[1] || "Anomalie";
-    return { falseOption, trueOption };
-  }
-
-  if (champ?.key === "idr_tuberculine") {
-    const falseOption = getCanonicalOption(options, "negatif") || options[0] || "Negatif";
-    const trueOption = getCanonicalOption(options, "positif") || options[options.length - 1] || "Positif";
-    return { falseOption, trueOption };
-  }
-
-  const falseOption = getCanonicalOption(options, "negatif") || options[0] || "Negatif";
-  const trueOption = getCanonicalOption(options, "positif") || options[1] || "Positif";
-  return { falseOption, trueOption };
-};
-
-function BinaryToggleField({ champ, value, onChange, disabled }) {
-  const { falseOption, trueOption } = getToggleOptions(champ);
-  const rawValue = value === null || value === undefined || String(value).trim() === ""
-    ? falseOption
-    : value;
-  const normalizedValue = normalize(rawValue);
-  const normalizedTrue = normalize(trueOption);
-
-  const checked = normalizedValue === normalizedTrue;
-  const displayLabel = checked ? trueOption : falseOption;
-
-  return (
-    <ToggleSwitch
-      checked={checked}
-      disabled={disabled}
-      label={displayLabel}
-      onChange={(nextChecked) => {
-        const nextValue = nextChecked ? trueOption : falseOption;
-        onChange({ target: { value: nextValue } });
-      }}
-    />
-  );
-}
-
-function ChampResultat({ champ, value, onChange, disabled }) {
-  const { label, type, unite, options = [] } = champ;
-  const isWide = type === "textarea";
-
-  const renderInput = () => {
-    if (isToggleField(champ)) {
-      return (
-        <BinaryToggleField
-          champ={champ}
-          value={value}
-          onChange={onChange}
-          disabled={disabled}
-        />
-      );
-    }
-
-    if (type === "select") {
-      return (
-        <select className="form-select" value={value} onChange={onChange} disabled={disabled}>
-          <option value="">- Selectionner -</option>
-          {options.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-      );
-    }
-
-    if (type === "textarea") {
-      return (
-        <Textarea
-          value={value}
-          onChange={onChange}
-          placeholder={label}
-          disabled={disabled}
-        />
-      );
-    }
-
-    return (
-      <div className="rb-input-unit">
-        <Input
-          type={type}
-          className="form-control"
-          value={value}
-          onChange={onChange}
-          placeholder="-"
-          disabled={disabled}
-        />
-        {unite && <span className="rb-unite">{unite}</span>}
-      </div>
-    );
-  };
-
-  return (
-    <div className={`rb-champ${isWide ? " rb-champ-wide" : ""}`}>
-      <label>{label}</label>
-      {renderInput()}
-    </div>
-  );
-}
-
-const formatDisplayDate = (value) => {
+const formatDateForDetails = (value) => {
   if (!value) return "-";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "-";
   return date.toLocaleDateString("fr-FR");
 };
 
+function ToggleField({ value, onChange, disabled, config }) {
+  const currentValue =
+    value === null || value === undefined || String(value).trim() === ""
+      ? config.falseValue
+      : value;
+
+  const checked = normalize(currentValue) === normalize(config.trueValue);
+
+  return (
+    <ToggleSwitch
+      checked={checked}
+      disabled={disabled}
+      label={checked ? config.trueValue : config.falseValue}
+      onChange={(nextChecked) =>
+        onChange({
+          target: { value: nextChecked ? config.trueValue : config.falseValue },
+        })
+      }
+    />
+  );
+}
+
+function ChampResultat({ champ, value, onChange, disabled, error }) {
+  const toggleConfig = getToggleConfig(champ);
+  const isWide = champ.type === "textarea";
+
+  return (
+    <div className={`rb-champ${isWide ? " rb-champ-wide" : ""}`}>
+      <label>{champ.label}</label>
+      <div className="rb-field-control">
+        {toggleConfig && (
+          <ToggleField value={value} onChange={onChange} disabled={disabled} config={toggleConfig} />
+        )}
+
+        {!toggleConfig && champ.type === "select" && (
+          <select className="form-select" value={value} onChange={onChange} disabled={disabled}>
+            <option value="">- Selectionner -</option>
+            {champ.options.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        )}
+
+        {!toggleConfig && champ.type === "textarea" && (
+          <Textarea value={value} onChange={onChange} placeholder={champ.label} disabled={disabled} />
+        )}
+
+        {!toggleConfig && champ.type !== "select" && champ.type !== "textarea" && (
+          <div className="rb-input-unit">
+            <Input
+              type={champ.type}
+              className="form-control"
+              value={value}
+              onChange={onChange}
+              placeholder="-"
+              disabled={disabled}
+              required={!disabled && champ.type === "number"}
+            />
+            {champ.unite && <span className="rb-unite">{champ.unite}</span>}
+          </div>
+        )}
+
+        <FieldError error={error} />
+      </div>
+    </div>
+  );
+}
+
+function ChampFichier({
+  champ,
+  value,
+  disabled,
+  error,
+  onFileChange,
+  genotypageViewPath,
+}) {
+  const inputId = useId();
+
+  return (
+    <div className="rb-champ rb-champ-wide">
+      <label>{champ.label}</label>
+      <div className="rb-field-control">
+        <div className="rb-input-unit">
+          {!disabled && (
+            <>
+              <input
+                id={inputId}
+                type="file"
+                accept={champ.accept || "image/*,application/pdf"}
+                style={{ display: "none" }}
+                onChange={(e) => onFileChange?.(champ.key, e.target.files?.[0] || null)}
+              />
+              <label htmlFor={inputId} className="btn btn-sm btn-outline-secondary mb-0">
+                Choisir un fichier
+              </label>
+            </>
+          )}
+
+          {value && (
+            <Link
+              to={genotypageViewPath}
+              state={{ scanUrl: value }}
+              className="btn btn-sm btn-outline-success"
+            >
+              Consulter
+            </Link>
+          )}
+        </div>
+
+        <FieldError error={error} />
+      </div>
+    </div>
+  );
+}
+
 export default function BilanResultSection({
   section,
   sectionKey,
   formData,
+  errors = {},
   field,
   disabled = false,
   showDetailDate = false,
+  onFileChange,
+  genotypageViewPath,
 }) {
   const dateKey = sectionKey ? `date_${sectionKey}` : null;
   const maxDate = new Date().toISOString().slice(0, 10);
@@ -166,41 +174,57 @@ export default function BilanResultSection({
         {dateKey && (
           <div className="rb-section-date">
             <label htmlFor={`date-${sectionKey}`}>Date :</label>
-            {disabled && showDetailDate ? (
-              <Input
-                type="text"
-                className="form-control"
-                value={formatDisplayDate(formData[dateKey])}
-                disabled
-                readOnly
-              />
-            ) : (
-              <input
-                id={`date-${sectionKey}`}
-                type="date"
-                value={formData[dateKey] || ""}
-                onChange={field(dateKey)}
-                disabled={disabled}
-                max={maxDate}
-                required
-              />
-            )}
+            <div className="rb-date-control">
+              {disabled && showDetailDate ? (
+                <Input
+                  type="text"
+                  className="form-control"
+                  value={formatDateForDetails(formData[dateKey])}
+                  disabled
+                  readOnly
+                />
+              ) : (
+                <input
+                  id={`date-${sectionKey}`}
+                  type="date"
+                  value={formData[dateKey] || ""}
+                  onChange={field(dateKey)}
+                  disabled={disabled}
+                  max={maxDate}
+                  required
+                />
+              )}
+
+              <FieldError error={errors[dateKey]} />
+            </div>
           </div>
         )}
       </div>
 
       <div className="rb-champs-grid">
-        {section.champs.map((champ) => (
-          <ChampResultat
-            key={champ.key}
-            champ={champ}
-            value={formData[champ.key] ?? ""}
-            onChange={field(champ.key)}
-            disabled={disabled}
-          />
-        ))}
+        {section.champs.map((champ) =>
+          champ.type === "file" ? (
+            <ChampFichier
+              key={champ.key}
+              champ={champ}
+              value={formData[champ.key] ?? ""}
+              disabled={disabled}
+              error={errors[champ.key]}
+              onFileChange={onFileChange}
+              genotypageViewPath={genotypageViewPath}
+            />
+          ) : (
+            <ChampResultat
+              key={champ.key}
+              champ={champ}
+              value={formData[champ.key] ?? ""}
+              onChange={field(champ.key)}
+              disabled={disabled}
+              error={errors[champ.key]}
+            />
+          ),
+        )}
       </div>
     </div>
   );
 }
-

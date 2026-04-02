@@ -126,7 +126,15 @@ export const BILAN_RESULTATS_MAP = {
     label: "IDR à la tuberculine",
     hasDate: true,
     champs: [
-      { key: "idr_tuberculine", label: "IDR à la tuberculine", type: "select", options: ["Négatif", "Douteux", "Positif"] },
+      { key: "idr_tuberculine", label: "IDR à la tuberculine", type: "select", options: ["Positif", "Negatif"] },
+    ],
+  },
+
+  test_genotypage: {
+    label: "Test de génotypage",
+    hasDate: true,
+    champs: [
+      { key: "genotypage_file_url", label: "Fichier scanné", type: "file", accept: "image/*,application/pdf" },
     ],
   },
 
@@ -134,7 +142,7 @@ export const BILAN_RESULTATS_MAP = {
     label: "Radio thorax",
     hasDate: true,
     champs: [
-      { key: "radio_resultat", label: "Résultat radio", type: "select", options: ["Normal", "Anomalie"] },
+      { key: "radio_resultat", label: "Résultat radio", type: "select", options: ["Positif", "Negatif"] },
       { key: "radio_description", label: "Description", type: "textarea" },
     ],
   },
@@ -157,14 +165,6 @@ const normalize = (value) =>
 const getDefaultToggleValue = (champ) => {
   if (champ.type !== "select" || !Array.isArray(champ.options) || champ.options.length === 0) {
     return "";
-  }
-
-  if (champ.key === "radio_resultat") {
-    return champ.options.find((option) => normalize(option) === "normal") || champ.options[0];
-  }
-
-  if (champ.key === "idr_tuberculine") {
-    return champ.options.find((option) => normalize(option) === "negatif") || champ.options[0];
   }
 
   const normalizedOptions = champ.options.map(normalize);

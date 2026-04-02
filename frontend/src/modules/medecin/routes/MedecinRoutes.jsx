@@ -24,6 +24,7 @@ import TpePrepOrchestrer from "../pages/workspace/Antecedents/tpePrep/TpePrepOrc
 import SignesFonctionnels from "../pages/workspace/Examen_cliniques/SigneFonction/SignesFonctionnels.jsx";
 import SignesCliniques from "../pages/workspace/Examen_cliniques/signeClinique/SignesCliniques.jsx";
 import ResultatsBiologiques from'../pages/workspace/resultats_biologiques/ResultatsBiologiques.jsx';
+import GenotypagePage from "../pages/workspace/resultats_biologiques/GenotypagePage.jsx";
 import PrescriptionExamens from "../pages/workspace/prescreption_dexamens/PrescriptionExamens";
 import PrescreptionMedical from "../pages/workspace/prescreption_medical/PrescreptionMedical";
 import Conclusion from "../pages/workspace/conclusion/Conclusion";
@@ -104,6 +105,10 @@ const medecinRoutes = [
       path: "biologie",
       element: <NewPatientGuard><ResultatsBiologiques /></NewPatientGuard>,
 
+    },
+    {
+      path: "biologie/genotypage",
+      element: <NewPatientGuard><GenotypagePage /></NewPatientGuard>,
     },
     {
       path: "prescription-examens",

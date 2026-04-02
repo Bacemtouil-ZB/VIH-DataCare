@@ -1,6 +1,7 @@
 ﻿import {
   ActionButton,
   Badge,
+  FieldError,
   FieldLabel,
   FormulaireWrapper,
   HistoriqueAccordeon,
@@ -12,6 +13,7 @@
 import Textarea from "../../../components/UI/Textarea";
 import PageTitle from "../../../components/UI/PageTitle";
 import BilanResultSection from "../../../components/UI/BilanResultSection";
+import { Link } from "react-router-dom";
 import { HISTORIQUE_HEADERS, MESSAGES } from "./ResultatsbiologiquesConstants";
 
 function ResultatResume({ resultat, champsActifs }) {
@@ -41,7 +43,10 @@ export default function ResultatsBiologiquesUI({
   detailItem,
   setDetailItem,
   formData,
+  errors,
   field,
+  handleFileChange,
+  genotypageViewPath,
   openCreate,
   openEdit,
   closeForm,
@@ -50,6 +55,7 @@ export default function ResultatsBiologiquesUI({
 }) {
   const noBilan = !bilanPrescrit;
   const noChamps = champsActifs.length === 0;
+  const hasGenotypage = resultats.some((item) => item.genotypage_file_url);
 
   return (
     <div className="ec-page-bg rb-page">
@@ -64,6 +70,12 @@ export default function ResultatsBiologiquesUI({
 
       {!noBilan && (
         <div className="rb-toolbar">
+          {hasGenotypage && (
+            <Link to={genotypageViewPath} className="btn btn-sm btn-outline-success me-2">
+              Consulter genotypage
+            </Link>
+          )}
+
           {!showForm ? (
             <ActionButton action="add" label="Saisir les resultats" size="sm" onClick={openCreate} />
           ) : (
@@ -88,7 +100,10 @@ export default function ResultatsBiologiquesUI({
                   section={section}
                   sectionKey={section._key || ""}
                   formData={formData}
+                  errors={errors}
                   field={field}
+                  onFileChange={handleFileChange}
+                  genotypageViewPath={genotypageViewPath}
                   disabled={saving}
                 />
               ))
@@ -102,6 +117,7 @@ export default function ResultatsBiologiquesUI({
                 placeholder="Observations, commentaires du laboratoire..."
                 disabled={saving}
               />
+              <FieldError error={errors.observations} />
             </div>
 
             <div className="rb-form-actions">
@@ -175,6 +191,7 @@ export default function ResultatsBiologiquesUI({
                 field={() => () => {}}
                 disabled
                 showDetailDate
+                genotypageViewPath={genotypageViewPath}
               />
             ))}
 
