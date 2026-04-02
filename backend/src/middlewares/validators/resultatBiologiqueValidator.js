@@ -7,54 +7,39 @@ const NUMERIC_LIMITS = {
   phosphore: { min: 0, max: 10, label: "Phosphore (mmol/L)" },
   calcemie: { min: 0, max: 5, label: "Calcemie (mmol/L)" },
   creatinine: { min: 0, max: 3000, label: "Creatinine" },
+
   hemoglobine: { min: 0, max: 30, label: "Hemoglobine (g/dL)" },
   plaquettes: { min: 0, max: 3000, label: "Plaquettes (10^3/mm^3)" },
   globules_blancs: { min: 0, max: 300, label: "Globules blancs (10^3/mm^3)" },
   lymphocytes: { min: 0, max: 100, label: "Lymphocytes (10^3/mm^3)" },
+
   charge_virale_valeur: { min: 0, max: 1000000000, label: "Charge virale (copies/mL)" },
   cd4_absolu: { min: 0, max: 5000, label: "CD4 absolu (cellules/mm^3)" },
   cd4_pourcent: { min: 0, max: 100, label: "CD4 pourcent (%)" },
+
   cholesterol_total: { min: 0, max: 20, label: "Cholesterol total (mmol/L)" },
   hdl: { min: 0, max: 10, label: "HDL (mmol/L)" },
   ldl: { min: 0, max: 20, label: "LDL (mmol/L)" },
   triglycerides: { min: 0, max: 50, label: "Triglycerides (mmol/L)" },
 };
 
-const RESULT_FIELDS = [
-  "serologie_vih",
-  "asat",
-  "alat",
-  "phosphore",
-  "calcemie",
-  "creatinine",
-  "vhb_ag_hbs",
-  "vhb_ac_hbs",
-  "vhb_ac_hbc",
-  "hemoglobine",
-  "plaquettes",
-  "globules_blancs",
-  "lymphocytes",
-  "charge_virale_valeur",
-  "cd4_absolu",
-  "cd4_pourcent",
-  "cholesterol_total",
-  "hdl",
-  "ldl",
-  "triglycerides",
-  "vha_igg",
-  "vhc",
-  "vdrl",
-  "tpha",
-  "toxo_igm",
-  "toxo_igg",
-  "cmv_igm",
-  "cmv_igg",
-  "leishmania_ac",
-  "idr_tuberculine",
-  "genotypage_file_url",
-  "radio_resultat",
-  "radio_description",
-];
+const SELECT_LIMITS = {
+  serologie_vih: ["positif", "negatif"],
+  vhb_ag_hbs: ["positif", "negatif"],
+  vhb_ac_hbs: ["positif", "negatif"],
+  vhb_ac_hbc: ["positif", "negatif"],
+  vha_igg: ["positif", "negatif"],
+  vhc: ["positif", "negatif"],
+  vdrl: ["positif", "negatif"],
+  tpha: ["positif", "negatif"],
+  toxo_igm: ["positif", "negatif"],
+  toxo_igg: ["positif", "negatif"],
+  cmv_igm: ["positif", "negatif"],
+  cmv_igg: ["positif", "negatif"],
+  leishmania_ac: ["positif", "negatif"],
+  idr_tuberculine: ["negatif", "positif"],
+  radio_resultat: ["negatif", "positif"],
+};
 
 const DATE_FIELDS = [
   "date_resultat",
@@ -76,26 +61,25 @@ const DATE_FIELDS = [
   "date_radio_thorax",
 ];
 
-const DATE_BY_SECTION = [
-  { dateField: "date_serologie_vih", fields: ["serologie_vih"] },
-  { dateField: "date_bilan_biochimique", fields: ["asat", "alat", "phosphore", "calcemie", "creatinine"] },
-  { dateField: "date_serologie_vhb", fields: ["vhb_ag_hbs", "vhb_ac_hbs", "vhb_ac_hbc"] },
-  { dateField: "date_nfs_complete", fields: ["hemoglobine", "plaquettes", "globules_blancs", "lymphocytes"] },
-  { dateField: "date_charge_virale_vih", fields: ["charge_virale_valeur"] },
-  { dateField: "date_cd4_cd8", fields: ["cd4_absolu", "cd4_pourcent"] },
-  { dateField: "date_bilan_lipidique", fields: ["cholesterol_total", "hdl", "ldl", "triglycerides"] },
-  { dateField: "date_serologie_vha", fields: ["vha_igg"] },
-  { dateField: "date_serologie_vhc", fields: ["vhc"] },
-  { dateField: "date_serologie_syphilis", fields: ["vdrl", "tpha"] },
-  { dateField: "date_serologie_toxoplasmose", fields: ["toxo_igm", "toxo_igg"] },
-  { dateField: "date_serologie_cmv", fields: ["cmv_igm", "cmv_igg"] },
-  { dateField: "date_serologie_leishmaniose", fields: ["leishmania_ac"] },
-  { dateField: "date_idr_tuberculine", fields: ["idr_tuberculine"] },
-  { dateField: "date_test_genotypage", fields: ["genotypage_file_url"] },
-  { dateField: "date_radio_thorax", fields: ["radio_resultat", "radio_description"] },
+const TEXT_FIELDS = {
+  observations: { max: 4000, label: "Observations" },
+  radio_description: { max: 4000, label: "Description radio" },
+  genotypage_file_url: { max: 5000000, label: "Fichier genotypage" },
+};
+
+const RESULT_VALUE_FIELDS = [
+  ...Object.keys(NUMERIC_LIMITS),
+  ...Object.keys(SELECT_LIMITS),
+  "radio_description",
+  "genotypage_file_url",
 ];
 
-const hasValue = (value) => value !== null && value !== undefined && String(value).trim() !== "";
+const normalize = (value) =>
+  String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase();
 
 const sanitizeBody = (req, _res, next) => {
   for (const [key, value] of Object.entries(req.body || {})) {
@@ -107,118 +91,110 @@ const sanitizeBody = (req, _res, next) => {
   next();
 };
 
-const validateDateValue = (value, fieldLabel) => {
-  if (!hasValue(value)) return true;
+const validatePastOrTodayDate = (value, fieldLabel) => {
+  if (value === null || value === undefined) return true;
 
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
-    throw new Error(`${fieldLabel} invalide`);
-  }
-
-  const [year, month, day] = String(value).split("-").map(Number);
-  const control = new Date(year, month - 1, day);
-  if (
-    control.getFullYear() !== year ||
-    control.getMonth() !== month - 1 ||
-    control.getDate() !== day
-  ) {
-    throw new Error(`${fieldLabel} invalide`);
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    throw new Error(`${fieldLabel}: date invalide`);
   }
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  date.setHours(0, 0, 0, 0);
 
-  if (date > today) {
+  parsed.setHours(0, 0, 0, 0);
+
+  if (parsed > today) {
     throw new Error(`${fieldLabel} ne peut pas etre dans le futur`);
+  }
+
+  if (parsed.getFullYear() < 1900) {
+    throw new Error(`${fieldLabel} semble incorrecte`);
   }
 
   return true;
 };
 
-const validateNumeroDossier = body("numero_dossier")
-  .trim()
-  .notEmpty()
-  .withMessage("Le numero de dossier est obligatoire");
 
-const validateIdParam = param("id")
-  .isInt({ min: 1 })
-  .withMessage("Identifiant invalide")
-  .toInt();
+const validateDates = DATE_FIELDS.map((field) =>
+  body(field)
+    .if((value, { req }) => Object.prototype.hasOwnProperty.call(req.body || {}, field))
+    .notEmpty()
+    .withMessage(`${field} est obligatoire`)
+    .isISO8601({ strict: true, strictSeparator: true })
+    .withMessage(`${field} doit respecter le format YYYY-MM-DD`)
+    .custom((value) => validatePastOrTodayDate(value, field)),
+);
 
-const validateDateResultatCreate = body("date_resultat")
-  .optional({ nullable: true, checkFalsy: true })
-  .isDate({ format: "YYYY-MM-DD", strictMode: true })
-  .withMessage("La date du resultat doit etre au format YYYY-MM-DD")
-  .custom((value) => validateDateValue(value, "La date du resultat"));
-
-const validateDateFields = DATE_FIELDS.filter((field) => field !== "date_resultat").map((field) =>
+const validateTexts = Object.entries(TEXT_FIELDS).map(([field, meta]) =>
   body(field)
     .optional({ nullable: true, checkFalsy: true })
-    .isDate({ format: "YYYY-MM-DD", strictMode: true })
-    .withMessage(`${field} doit etre au format YYYY-MM-DD`)
-    .custom((value) => validateDateValue(value, field)),
+    .isString()
+    .withMessage(`${meta.label} doit etre un texte`)
+    .isLength({ max: meta.max })
+    .withMessage(`${meta.label} ne doit pas depasser ${meta.max} caracteres`),
 );
 
-const validateSectionDates = DATE_BY_SECTION.map(({ dateField, fields }) =>
-  body(dateField).custom((value, { req }) => {
-    const hasSectionInput = fields.some((field) => hasValue(req.body?.[field]));
-    if (hasSectionInput && !hasValue(value)) {
-      throw new Error(`${dateField} est obligatoire`);
+const validateGenotypageFile = body("genotypage_file_url")
+  .optional({ nullable: true, checkFalsy: true })
+  .custom((value) => {
+    const normalized = String(value || "").trim().toLowerCase();
+    const isDataImage = normalized.startsWith("data:image/");
+    const isDataPdf = normalized.startsWith("data:application/pdf");
+    const isHttpUrl = normalized.startsWith("http://") || normalized.startsWith("https://");
+
+    if (!isDataImage && !isDataPdf && !isHttpUrl) {
+      throw new Error("Le fichier genotypage doit etre une image, un PDF ou une URL valide");
     }
-    return true;
-  }),
-);
 
-const validateNumericBounds = Object.entries(NUMERIC_LIMITS).map(([field, meta]) =>
+    return true;
+  });
+
+const validateNumerics = Object.entries(NUMERIC_LIMITS).map(([field, meta]) =>
   body(field)
-    .if((_, { req }) => Object.prototype.hasOwnProperty.call(req.body || {}, field))
-    .notEmpty()
-    .withMessage(`${meta.label} est obligatoire`)
+    .optional({ nullable: true, checkFalsy: true })
     .isFloat({ min: meta.min, max: meta.max })
     .withMessage(`${meta.label} doit etre entre ${meta.min} et ${meta.max}`)
     .toFloat(),
 );
 
-const requireAtLeastOneResultField = body().custom((_, { req }) => {
-  const hasOneField = RESULT_FIELDS.some((field) => hasValue(req.body?.[field]));
-  if (!hasOneField) {
-    throw new Error("Au moins un resultat biologique doit etre renseigne");
-  }
-  return true;
-});
+const validateSelects = Object.entries(SELECT_LIMITS).map(([field, allowedValues]) =>
+  body(field)
+    .optional({ nullable: true, checkFalsy: true })
+    .isString()
+    .withMessage(`${field} doit etre une valeur texte`)
+    .custom((value) => {
+      const normalizedValue = normalize(value);
+      const normalizedAllowed = allowedValues.map(normalize);
 
-const requireAtLeastOneUpdatableField = body().custom((_, { req }) => {
-  const keys = Object.keys(req.body || {});
-  if (keys.length === 0) {
-    throw new Error("Aucune donnee a mettre a jour");
-  }
-  return true;
-});
+      if (!normalizedAllowed.includes(normalizedValue)) {
+        throw new Error(`${field} contient une valeur non valide`);
+      }
+
+      return true;
+    }),
+);
+
 
 export const validateCreateResultatBiologique = [
   sanitizeBody,
-  validateNumeroDossier,
-  validateDateResultatCreate,
-  ...validateDateFields,
-  ...validateNumericBounds,
-  ...validateSectionDates,
-  requireAtLeastOneResultField,
+
+  ...validateDates,
+  ...validateTexts,
+  validateGenotypageFile,
+  ...validateNumerics,
+  ...validateSelects,
   handleValidation,
 ];
 
 export const validateUpdateResultatBiologique = [
   sanitizeBody,
-  validateIdParam,
-  body("date_resultat")
-    .optional({ nullable: true, checkFalsy: true })
-    .isDate({ format: "YYYY-MM-DD", strictMode: true })
-    .withMessage("La date du resultat doit etre au format YYYY-MM-DD")
-    .custom((value) => validateDateValue(value, "La date du resultat")),
-  ...validateDateFields,
-  ...validateNumericBounds,
-  ...validateSectionDates,
-  requireAtLeastOneUpdatableField,
-  requireAtLeastOneResultField,
+
+  ...validateDates,
+  ...validateTexts,
+  validateGenotypageFile,
+  ...validateNumerics,
+  ...validateSelects,
+
   handleValidation,
 ];
