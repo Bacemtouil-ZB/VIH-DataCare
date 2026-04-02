@@ -1,20 +1,19 @@
 // ============================================================
 //  GraphiqueCV.jsx
-//  Zone 2 — Courbe Charge Virale + zones ARV + seuil
-//  Reçoit: data=[] periodes=[] loading=boolean
+//  Zone 2 — AreaChart Charge Virale + zones ARV + seuil
 // ============================================================
 
 import { Card, Spin, Empty, Typography } from "antd";
 import {
-  ResponsiveContainer,
-  LineChart,
-  Line,
+  AreaChart,
+  Area,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ReferenceLine,
   ReferenceArea,
+  ResponsiveContainer,
 } from "recharts";
 import {
   LIGNES_REF_CV,
@@ -29,11 +28,9 @@ import {
 
 const { Text } = Typography;
 
-// ── Tooltip personnalisé ─────────────────────────────────────
 const TooltipCV = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null;
   const point = payload[0]?.payload;
-
   return (
     <div
       style={{
@@ -57,7 +54,6 @@ const TooltipCV = ({ active, payload, label }) => {
   );
 };
 
-// ── Composant principal ──────────────────────────────────────
 const GraphiqueCV = ({ data = [], periodes = [], loading }) => {
   if (loading) {
     return (
@@ -90,24 +86,28 @@ const GraphiqueCV = ({ data = [], periodes = [], loading }) => {
       }
     >
       <ResponsiveContainer width="100%" height={CONFIG_GRAPHIQUE.hauteur}>
-        <LineChart
+        <AreaChart
           data={data}
           margin={{ top: 10, right: 20, left: 0, bottom: 0 }}
         >
-          {/* ── Zones ARV colorées ── */}
+          {/* ── Dégradé fill CV ── */}
+          <defs>
+            <linearGradient id="gradientCV" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%"  stopColor={CONFIG_GRAPHIQUE.couleur_cv} stopOpacity={0.25} />
+              <stop offset="95%" stopColor={CONFIG_GRAPHIQUE.couleur_cv} stopOpacity={0} />
+            </linearGradient>
+          </defs>
+
+          {/* ── Zones ARV ── */}
           {periodes.map((periode, index) => {
             const couleur = getCouleurARV(index);
             return (
               <ReferenceArea
                 key={periode.medicament_id ?? index}
                 x1={formatDateRecharts(periode.date_debut)}
-                x2={
-                  periode.date_fin
-                    ? formatDateRecharts(periode.date_fin)
-                    : dernierDate
-                }
+                x2={periode.date_fin ? formatDateRecharts(periode.date_fin) : dernierDate}
                 fill={couleur.fill}
-                fillOpacity={0.4}
+                fillOpacity={0.35}
                 stroke={couleur.stroke}
                 strokeOpacity={0.3}
               />
@@ -130,11 +130,7 @@ const GraphiqueCV = ({ data = [], periodes = [], loading }) => {
             />
           ))}
 
-          <CartesianGrid
-            strokeDasharray="3 3"
-            stroke={CONFIG_GRAPHIQUE.couleur_grille}
-            vertical={false}
-          />
+          <CartesianGrid strokeDasharray="3 3" stroke={CONFIG_GRAPHIQUE.couleur_grille} vertical={false} />
 
           <XAxis
             dataKey="dateFormatee"
@@ -148,26 +144,26 @@ const GraphiqueCV = ({ data = [], periodes = [], loading }) => {
             tickLine={false}
             axisLine={false}
             width={60}
-            tickFormatter={(v) =>
-              v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v
-            }
+            tickFormatter={(v) => v >= 1000 ? `${(v / 1000).toFixed(0)}k` : v}
           />
 
           <Tooltip content={<TooltipCV />} />
 
-          <Line
+          <Area
             type="monotone"
             dataKey="charge_virale_valeur"
             stroke={CONFIG_GRAPHIQUE.couleur_cv}
             strokeWidth={CONFIG_GRAPHIQUE.epaisseur_courbe}
+            fill="url(#gradientCV)"
+            fillOpacity={1}
             dot={{ r: CONFIG_GRAPHIQUE.rayon_point, fill: CONFIG_GRAPHIQUE.couleur_cv }}
             activeDot={{ r: CONFIG_GRAPHIQUE.rayon_point_hover }}
             connectNulls={false}
           />
-        </LineChart>
+        </AreaChart>
       </ResponsiveContainer>
 
-      {/* ── Légende traitements (partagée avec CD4) ── */}
+      {/* ── Légende traitements ── */}
       {periodes.length > 0 && (
         <div
           style={{
@@ -182,10 +178,7 @@ const GraphiqueCV = ({ data = [], periodes = [], loading }) => {
           {periodes.map((periode, index) => {
             const couleur = getCouleurARV(index);
             return (
-              <div
-                key={periode.medicament_id ?? index}
-                style={{ display: "flex", alignItems: "center", gap: 6 }}
-              >
+              <div key={periode.medicament_id ?? index} style={{ display: "flex", alignItems: "center", gap: 6 }}>
                 <span
                   style={{
                     display: "inline-block",
