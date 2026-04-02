@@ -56,10 +56,10 @@ export const TABLE_HEADERS = [
   "Date naissance",
   "Patient",
   "Traitement",
-  "Prochaine prise",
+  "Date prochaine prise",
   "Quantite",
   "Statut prescription",
   "S.therapeutique",
-  " RDV",        // ← NOUVEAU
+  "RDV",
   "Action",
 ]; 
