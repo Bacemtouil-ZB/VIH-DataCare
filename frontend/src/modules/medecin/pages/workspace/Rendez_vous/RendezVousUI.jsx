@@ -15,6 +15,7 @@ import { toFrDate, toInputDate } from "../../../../../shared/utils/dateHelpers";
 
 export default function RendezVousUI({
   filtered,
+  prochainePriseReference,
   loading,
   showHistory,
   setShowHistory,
@@ -52,6 +53,17 @@ export default function RendezVousUI({
           <ActionButton action="annuler" label="Annuler" size="sm" onClick={() => closeForm()} />
         )}
       </div>
+
+      {prochainePriseReference && (
+        <div className="rdv-prochaine-prise-banner">
+          <span className="rdv-prochaine-label">Date prochaine prise thérapeutique :</span>
+          <strong>{toFrDate(prochainePriseReference.date)}</strong>
+          <span className="rdv-prochaine-sep">|</span>
+          <span className="rdv-prochaine-traitement">
+            Traitement : {prochainePriseReference.traitement}
+          </span>
+        </div>
+      )}
 
       {showForm && (
         <FormulaireWrapper

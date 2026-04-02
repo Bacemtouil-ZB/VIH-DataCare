@@ -13,11 +13,13 @@ import {
   getRendezvousByNumeroDossier,
   updateRendezvous,
 } from "../../../services/rendezvousService";
+import { getSuiviByNumeroDossier } from "../../../../../shared/services/suiviTherapeutiqueservice";
 import {
   toInputDate,
   toInputTime,
 } from "../../../../../shared/utils/dateHelpers";
-import { INITIAL_FORM, getStatusStyle } from "./rendezVousConstants";
+import { INITIAL_FORM } from "./rendezVousConstants";
+import { getStatusStyle, pickProchainePriseReference } from "./rendezVousHelpers";
 
 export function useRendezVousLogic(numero) {
   const [searchDate, setSearchDate] = useState("");
@@ -28,6 +30,7 @@ export function useRendezVousLogic(numero) {
   const [detailRdv, setDetailRdv] = useState(null);
   const [formData, setFormData] = useState(INITIAL_FORM);
   const [rendezVous, setRendezVous] = useState([]);
+  const [prochainePriseReference, setProchainePriseReference] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -35,8 +38,15 @@ export function useRendezVousLogic(numero) {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const res = await getRendezvousByNumeroDossier(numero);
-        setRendezVous(res.rendezvous || []);
+        const [rdvRes, suiviRes] = await Promise.all([
+          getRendezvousByNumeroDossier(numero),
+          getSuiviByNumeroDossier(numero).catch(() => null),
+        ]);
+
+        setRendezVous(rdvRes.rendezvous || []);
+        setProchainePriseReference(
+          pickProchainePriseReference(suiviRes?.suivis || []),
+        );
       } catch (err) {
         toast.error(
           err?.message || "Erreur lors du chargement des rendez-vous",
@@ -150,6 +160,7 @@ export function useRendezVousLogic(numero) {
     setFormData,
     rendezVous,
     filtered,
+    prochainePriseReference,
     loading,
     openCreate,
     closeForm,

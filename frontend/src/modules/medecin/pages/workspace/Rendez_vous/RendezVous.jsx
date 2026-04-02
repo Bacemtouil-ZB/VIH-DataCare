@@ -11,6 +11,7 @@ export default function RendezVous() {
     <div className="ec-page-bg rdv-page">
       <RendezVousUI
         filtered={logic.filtered}
+        prochainePriseReference={logic.prochainePriseReference}
         loading={logic.loading}
         showHistory={logic.showHistory}
         setShowHistory={logic.setShowHistory}

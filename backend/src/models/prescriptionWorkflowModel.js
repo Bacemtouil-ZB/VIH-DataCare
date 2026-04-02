@@ -65,13 +65,53 @@ export const createPrescription = async (
 // ── VALIDER — passer statut → delivree ───────────────────────
 export const validerPrescription = async (id) => {
   const query = `
-    UPDATE prescription_medicale
-    SET
-      statut          = 'delivree',
-      date_delivrance = CURRENT_DATE,
-      updated_at      = NOW()
-    WHERE id = $1
-    RETURNING *;
+    WITH updated AS (
+      UPDATE prescription_medicale
+      SET
+        statut          = 'delivree',
+        date_delivrance = COALESCE(date_delivrance, CURRENT_DATE),
+        updated_at      = NOW()
+      WHERE id = $1
+      RETURNING *
+    ),
+    upsert_suivi AS (
+      INSERT INTO suivi_therapeutique (
+        prescription_id,
+        patient_id,
+        date_prochaine_prise,
+        statut_patient,
+        date_ecart
+      )
+      SELECT
+        u.id,
+        u.patient_id,
+        (u.date_delivrance + (u.quantite * INTERVAL '1 month'))::DATE,
+        CASE
+          WHEN CURRENT_DATE - (u.date_delivrance + (u.quantite * INTERVAL '1 month'))::DATE > 60
+            THEN 'perdue de vue'
+          ELSE 'actif'
+        END,
+        GREATEST(
+          0,
+          CURRENT_DATE - (u.date_delivrance + (u.quantite * INTERVAL '1 month'))::DATE
+        )
+      FROM updated u
+      ON CONFLICT (prescription_id)
+      DO UPDATE SET
+        patient_id          = EXCLUDED.patient_id,
+        date_prochaine_prise = EXCLUDED.date_prochaine_prise,
+        statut_patient      = EXCLUDED.statut_patient,
+        date_ecart          = EXCLUDED.date_ecart,
+        updated_at          = NOW()
+      RETURNING *
+    )
+    SELECT
+      u.*,
+      s.date_prochaine_prise,
+      s.statut_patient AS suivi_statut_patient,
+      s.date_ecart     AS suivi_date_ecart
+    FROM updated u
+    LEFT JOIN upsert_suivi s ON s.prescription_id = u.id;
   `;
   const result = await pool.query(query, [id]);
   return result.rows[0] || null;
