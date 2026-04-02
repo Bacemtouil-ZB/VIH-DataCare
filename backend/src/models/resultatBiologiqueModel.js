@@ -1,38 +1,44 @@
 import pool from "../config/db.js";
 
-// ── Helper : patient_id depuis numéro dossier ─────────────────────────────────
-const getPatientId = async (numeroDossier) => {
-  const res = await pool.query(
-    "SELECT id FROM patients WHERE numero = $1", [numeroDossier]
-  );
-  if (!res.rows[0]) throw new Error("Patient non trouvé");
-  return res.rows[0].id;
+const findPatientIdByNumero = async (numeroDossier) => {
+  const result = await pool.query("SELECT id FROM patients WHERE numero = $1", [numeroDossier]);
+
+  if (!result.rows[0]) {
+    throw new Error("Patient non trouve");
+  }
+
+  return result.rows[0].id;
 };
 
-// ── CREATE ────────────────────────────────────────────────────────────────────
 export const createResultat = async (data) => {
-  const { numero_dossier, bilan_id, observations, date_resultat, ...champs } = data;
-  const patient_id = await getPatientId(numero_dossier);
+  const { numero_dossier, bilan_id, observations, date_resultat, ...resultFields } = data;
 
-  // Construction dynamique des colonnes et valeurs
-  const keys   = Object.keys(champs);
-  const values = Object.values(champs);
+  const patientId = await findPatientIdByNumero(numero_dossier);
+  const fieldKeys = Object.keys(resultFields);
+  const fieldValues = Object.values(resultFields);
 
-  const cols   = ["patient_id", "bilan_id", "observations", "date_resultat", ...keys];
-  const params = [patient_id, bilan_id || null, observations || null,
-                  date_resultat || new Date().toISOString().slice(0,10), ...values];
-  const placeholders = params.map((_, i) => `$${i + 1}`).join(", ");
+  const columns = ["patient_id", "bilan_id", "observations", "date_resultat", ...fieldKeys];
+  const values = [
+    patientId,
+    bilan_id || null,
+    observations || null,
+    date_resultat || new Date().toISOString().slice(0, 10),
+    ...fieldValues,
+  ];
+
+  const quotedColumns = columns.map((column) => `"${column}"`).join(", ");
+  const placeholders = values.map((_, index) => `$${index + 1}`).join(", ");
 
   const query = `
-    INSERT INTO resultats_biologiques (${cols.map(c => `"${c}"`).join(", ")})
+    INSERT INTO resultats_biologiques (${quotedColumns})
     VALUES (${placeholders})
     RETURNING *;
   `;
-  const result = await pool.query(query, params);
+
+  const result = await pool.query(query, values);
   return result.rows[0];
 };
 
-// ── GET BY NUMERO DOSSIER ─────────────────────────────────────────────────────
 export const getResultatsByNumeroDossier = async (numeroDossier) => {
   const query = `
     SELECT rb.*
@@ -41,11 +47,11 @@ export const getResultatsByNumeroDossier = async (numeroDossier) => {
     WHERE p.numero = $1
     ORDER BY rb.date_resultat DESC, rb.created_at DESC;
   `;
+
   const result = await pool.query(query, [numeroDossier]);
   return result.rows;
 };
 
-// ── GET DERNIER BILAN PRESCRIT ────────────────────────────────────────────────
 export const getDernierBilanPrescrit = async (numeroDossier) => {
   const query = `
     SELECT be.*
@@ -55,42 +61,45 @@ export const getDernierBilanPrescrit = async (numeroDossier) => {
     ORDER BY be.created_at DESC
     LIMIT 1;
   `;
+
   const result = await pool.query(query, [numeroDossier]);
   return result.rows[0] || null;
 };
 
-// ── GET BY ID ─────────────────────────────────────────────────────────────────
 export const getResultatById = async (id) => {
-  const result = await pool.query(
-    "SELECT * FROM resultats_biologiques WHERE id = $1", [id]
-  );
+  const result = await pool.query("SELECT * FROM resultats_biologiques WHERE id = $1", [id]);
   return result.rows[0] || null;
 };
 
-// ── UPDATE ────────────────────────────────────────────────────────────────────
 export const updateResultat = async (id, data) => {
-  const { observations, date_resultat, ...champs } = data;
-  const keys   = Object.keys(champs);
-  const values = Object.values(champs);
+  const { observations, date_resultat, ...resultFields } = data;
 
-  // SET dynamique
-  const setClauses = keys.map((k, i) => `"${k}" = $${i + 1}`).join(", ");
-  const lastIdx = keys.length;
+  const fieldKeys = Object.keys(resultFields);
+  const fieldValues = Object.values(resultFields);
+
+  const setParts = fieldKeys.map((field, index) => `"${field}" = $${index + 1}`);
+  const observationsIndex = fieldValues.length + 1;
+  const dateResultatIndex = fieldValues.length + 2;
+  const idIndex = fieldValues.length + 3;
+
+  setParts.push(`observations = $${observationsIndex}`);
+  setParts.push(`date_resultat = $${dateResultatIndex}`);
+  setParts.push("updated_at = NOW()");
 
   const query = `
     UPDATE resultats_biologiques
-    SET ${setClauses},
-        observations  = $${lastIdx + 1},
-        date_resultat = $${lastIdx + 2},
-        updated_at    = NOW()
-    WHERE id = $${lastIdx + 3}
+    SET ${setParts.join(", ")}
+    WHERE id = $${idIndex}
     RETURNING *;
   `;
-  const result = await pool.query(query, [
-    ...values,
+
+  const params = [
+    ...fieldValues,
     observations || null,
     date_resultat || null,
     id,
-  ]);
-  return result.rows[0];
+  ];
+
+  const result = await pool.query(query, params);
+  return result.rows[0] || null;
 };

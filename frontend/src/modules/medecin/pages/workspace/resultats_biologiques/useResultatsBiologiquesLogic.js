@@ -1,10 +1,8 @@
-// ── useResultatsBiologiquesLogic.js ──────────────────────────────────────────
-// Hook custom — toute la logique métier
-
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { confirmAction, alertError } from "../../../../../shared/utils/uiAlerts";
+import { clearFieldError } from "../../../shared/utils/clearFieldError.js";
 import {
   getResultatsByNumeroDossier,
   getDernierBilanPrescrit,
@@ -12,141 +10,212 @@ import {
   updateResultat,
 } from "../../../services/resultatBiologiqueService";
 import { buildInitialForm, getChampActifs } from "../../../shared/utils/bilanResultatsMap";
+import { MESSAGES } from "./ResultatsbiologiquesConstants";
+
+const getApiErrorMessage = (error, fallbackMessage) =>
+  (typeof error === "string" ? error : error?.message) || fallbackMessage;
+
+const fileToBase64 = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
+const normalizeToggleValue = (field, value) => {
+  if (field !== "idr_tuberculine" && field !== "radio_resultat") {
+    return value;
+  }
+
+  const normalized = String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .trim()
+    .toLowerCase();
+
+  return normalized === "positif" ? "Positif" : "Negatif";
+};
 
 export function useResultatsBiologiquesLogic() {
   const { numero } = useParams();
+  const genotypageViewPath = `/medecin/patient/${numero}/workspace/biologie/genotypage`;
 
-  const [resultats,     setResultats]     = useState([]);
+  const [resultats, setResultats] = useState([]);
   const [bilanPrescrit, setBilanPrescrit] = useState(null);
-  const [champsActifs,  setChampsActifs]  = useState([]);
-  const [loading,       setLoading]       = useState(true);
-  const [saving,        setSaving]        = useState(false);
-  const [showForm,      setShowForm]      = useState(false);
-  const [showHistory,   setShowHistory]   = useState(true);
-  const [isModifying,   setIsModifying]   = useState(false);
-  const [editingId,     setEditingId]     = useState(null);
-  const [detailItem,    setDetailItem]    = useState(null);
-  const [formData,      setFormData]      = useState({});
+  const [champsActifs, setChampsActifs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [showHistory, setShowHistory] = useState(true);
+  const [isModifying, setIsModifying] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [detailItem, setDetailItem] = useState(null);
+  const [formData, setFormData] = useState({});
+  const [errors, setErrors] = useState({});
 
-  // ── Chargement initial ──────────────────────────────────────────────────────
   useEffect(() => {
     if (!numero) return;
+
     const fetchAll = async () => {
       try {
         setLoading(true);
+
         const [resResultats, resBilan] = await Promise.all([
           getResultatsByNumeroDossier(numero),
           getDernierBilanPrescrit(numero),
         ]);
-        setResultats(resResultats.resultats || []);
 
-        const bilan = resBilan.bilan || null;
+        const bilan = resBilan?.bilan || null;
+        const resultatsList = resResultats?.resultats || [];
+
+        setResultats(resultatsList);
         setBilanPrescrit(bilan);
-
-        // Calcule les champs actifs depuis le mapping (inclut _key)
-        const actifs = getChampActifs(bilan);
-        setChampsActifs(actifs);
-      } catch (err) {
-        toast.error(err?.message || "Erreur lors du chargement");
+        setChampsActifs(getChampActifs(bilan));
+      } catch (error) {
+        toast.error(getApiErrorMessage(error, MESSAGES.erreurChargement));
       } finally {
         setLoading(false);
       }
     };
+
     fetchAll();
   }, [numero]);
 
-  // ── Helpers form ────────────────────────────────────────────────────────────
   const resetForm = () => {
     setFormData(buildInitialForm(bilanPrescrit));
     setIsModifying(false);
     setEditingId(null);
+    setErrors({});
   };
 
-  const closeForm = (notify = true) => {
+  const closeForm = () => {
     resetForm();
     setShowForm(false);
   };
 
-  const field = (key) => (e) =>
+  const field = (key) => (e) => {
     setFormData((prev) => ({ ...prev, [key]: e.target.value }));
+    clearFieldError(key, setErrors);
+  };
 
-  // ── Ouvrir création ─────────────────────────────────────────────────────────
+  const handleFileChange = async (key, file) => {
+    if (!file || key !== "genotypage_file_url") return;
+
+    const isImage = file.type.startsWith("image/");
+    const isPdf = file.type === "application/pdf";
+    if (!isImage && !isPdf) {
+      toast.error("Le fichier de genotypage doit etre une image ou un PDF");
+      return;
+    }
+
+    try {
+      const base64 = await fileToBase64(file);
+      const today = new Date().toISOString().slice(0, 10);
+
+      setFormData((prev) => ({
+        ...prev,
+        genotypage_file_url: base64,
+        date_test_genotypage: prev.date_test_genotypage || today,
+      }));
+
+      clearFieldError("genotypage_file_url", setErrors);
+      clearFieldError("date_test_genotypage", setErrors);
+      toast.success("Fichier de genotypage importe");
+    } catch (error) {
+      toast.error(getApiErrorMessage(error, "Impossible d'importer le fichier"));
+    }
+  };
+
   const openCreate = () => {
     setDetailItem(null);
     resetForm();
     setShowForm(true);
   };
 
-  // ── Ouvrir modification ─────────────────────────────────────────────────────
   const openEdit = async (item) => {
     const ok = await confirmAction(
-      "Modifier ce résultat ?",
+      MESSAGES.confirmerEdit,
       `Date : ${new Date(item.date_resultat || item.created_at).toLocaleDateString("fr-FR")}`,
     );
+
+    if (!ok) return;
 
     setDetailItem(null);
     setIsModifying(true);
     setEditingId(item.id);
+    setErrors({});
 
-    // Pré-remplir avec les valeurs existantes (champs résultats + dates par section)
     const prefilled = {};
-
     champsActifs.forEach(({ _key, champs }) => {
-      // Champs résultats
-      champs.forEach(({ key }) => { prefilled[key] = item[key] ?? ""; });
-      // Date de la section
+      champs.forEach(({ key }) => {
+        prefilled[key] = normalizeToggleValue(key, item[key] ?? "");
+      });
+
       const dateKey = `date_${_key}`;
-      prefilled[dateKey] = item[dateKey]
-        ? item[dateKey].slice(0, 10)
-        : "";
+      prefilled[dateKey] = item[dateKey] ? item[dateKey].slice(0, 10) : "";
     });
 
-    prefilled.observations  = item.observations ?? "";
+    prefilled.observations = item.observations ?? "";
     prefilled.date_resultat = item.date_resultat
       ? item.date_resultat.slice(0, 10)
       : new Date().toISOString().slice(0, 10);
 
     setFormData(prefilled);
     setShowForm(true);
+    toast.info(MESSAGES.modeModif);
   };
 
-  // ── Détail ──────────────────────────────────────────────────────────────────
   const handleShowDetails = (item) => {
     setShowForm(false);
     resetForm();
     setDetailItem(item);
-    toast.info("Mode détails actif");
+    toast.info(MESSAGES.modeDetails);
   };
 
-  // ── Submit ──────────────────────────────────────────────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     const ok = await confirmAction(
-      isModifying ? "Enregistrer les modifications ?" : "Enregistrer ce résultat ?",
-      "Les données seront sauvegardées dans le dossier patient.",
+      isModifying ? MESSAGES.confirmerModif : MESSAGES.confirmerCreation,
+      MESSAGES.confirmerModifSub,
     );
+
+    if (!ok) return;
 
     try {
       setSaving(true);
+      setErrors({});
+
       if (isModifying && editingId) {
         const res = await updateResultat(editingId, formData);
-        setResultats((prev) =>
-          prev.map((r) => (r.id === editingId ? res.resultat : r))
-        );
-        toast.success("Résultat mis à jour.");
+        setResultats((prev) => prev.map((row) => (row.id === editingId ? res.resultat : row)));
+        toast.success(MESSAGES.successModif);
       } else {
         const res = await createResultat({
           ...formData,
           numero_dossier: numero,
           bilan_id: bilanPrescrit?.id || null,
         });
+
         setResultats((prev) => [res.resultat, ...prev]);
-        toast.success("Résultat enregistré.");
+        toast.success(MESSAGES.successCreation);
       }
-      closeForm(false);
-    } catch (err) {
-      await alertError(err?.response?.data?.message || "Erreur lors de l'enregistrement.");
+
+      closeForm();
+    } catch (error) {
+      if (error?.errors && Array.isArray(error.errors)) {
+        const formattedErrors = {};
+
+        error.errors.forEach((item) => {
+          formattedErrors[item.field] = item.message;
+        });
+
+        setErrors(formattedErrors);
+        return;
+      }
+
+      await alertError(getApiErrorMessage(error, MESSAGES.erreurEnregistrement));
     } finally {
       setSaving(false);
     }
@@ -154,12 +223,26 @@ export function useResultatsBiologiquesLogic() {
 
   return {
     numero,
-    resultats, bilanPrescrit, champsActifs,
-    loading, saving,
-    showForm, showHistory, setShowHistory,
+    resultats,
+    bilanPrescrit,
+    champsActifs,
+    loading,
+    saving,
+    showForm,
+    showHistory,
+    setShowHistory,
     isModifying,
-    detailItem, setDetailItem,
-    formData, field,
-    openCreate, openEdit, closeForm, handleShowDetails, handleSubmit,
+    detailItem,
+    setDetailItem,
+    formData,
+    errors,
+    field,
+    handleFileChange,
+    genotypageViewPath,
+    openCreate,
+    openEdit,
+    closeForm,
+    handleShowDetails,
+    handleSubmit,
   };
 }

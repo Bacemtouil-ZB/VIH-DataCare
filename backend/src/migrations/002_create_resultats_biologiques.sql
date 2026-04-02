@@ -53,6 +53,7 @@ CREATE TABLE IF NOT EXISTS resultats_biologiques (
 
   -- Radio thorax  →  keys: radio_resultat, radio_description
   radio_resultat    VARCHAR(30), radio_description TEXT,
+  genotypage_file_url TEXT,
 
 
   -- ── Dates par section (hasDate: true dans bilanResultatsMap.js) ────────────
@@ -70,6 +71,7 @@ CREATE TABLE IF NOT EXISTS resultats_biologiques (
   date_serologie_cmv           DATE,
   date_serologie_leishmaniose  DATE,
   date_idr_tuberculine         DATE,
+  date_test_genotypage         DATE,
   date_radio_thorax            DATE,
 
 
@@ -85,3 +87,10 @@ CREATE TABLE IF NOT EXISTS resultats_biologiques (
 ALTER TYPE action_enum ADD VALUE IF NOT EXISTS 'RESULTAT_BIOLOGIQUE_CREATE';
 ALTER TYPE action_enum ADD VALUE IF NOT EXISTS 'RESULTAT_BIOLOGIQUE_VIEW';
 ALTER TYPE action_enum ADD VALUE IF NOT EXISTS 'RESULTAT_BIOLOGIQUE_UPDATE';
+
+
+ALTER TABLE resultats_biologiques
+ADD COLUMN IF NOT EXISTS genotypage_file_url TEXT;
+
+ALTER TABLE resultats_biologiques
+ADD COLUMN IF NOT EXISTS date_test_genotypage DATE;
