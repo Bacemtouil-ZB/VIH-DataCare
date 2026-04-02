@@ -41,12 +41,6 @@ const Sidebar = () => {
       end : true,
     },
     {
-      to: "dashboard",
-      icon: "bi-speedometer2",
-      label: "Dashboard",
-      end : true,
-    },
-    {
       to: "settings",
       icon: "bi-person-gear",
       label: "Gestion profil",

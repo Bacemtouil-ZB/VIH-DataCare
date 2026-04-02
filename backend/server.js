@@ -29,8 +29,10 @@ import mobileRendezvousRoutes from "./src/routes/mobile/mobileRendezvousRoutes.j
 import suiviTherapeutiqueRoute from "./src/routes/suiviTherapeutiqueRoute.js";
 import bilanExamenRoute from "./src/routes/bilanExamenRoute.js";
 import resultatBiologiqueRoute from "./src/routes/resultatBiologiqueRoute.js";
+import suiviBiologiqueRoute from "./src/routes/Suivibiologiqueroute.js";
 // Scheduler
 import { startScheduler } from './src/services/mobile/mobileScheduler.js';
+
 
 dotenv.config();
 
@@ -72,6 +74,7 @@ app.use("/api/mobile/rendezvous", mobileRendezvousRoutes);
 app.use("/api/suivi-therapeutique", suiviTherapeutiqueRoute);
 app.use("/api/bilan-examens", bilanExamenRoute);
 app.use("/api/resultats-biologiques", resultatBiologiqueRoute);
+app.use("/api/suivi-biologique", suiviBiologiqueRoute);
 
 // 404 handler
 app.use((req, res) => {

@@ -3,7 +3,6 @@ import NewPatientGuard from "./NewPatientGuard.jsx";
 import ProtectedRoute from "../../../routes/ProtectedRoute";
 import { DashboardLayout } from "../../../shared/components";
 import PatientsPage from "../pages/patientsPage/PatientsPage";
-import DashboardMed from "../pages/DashboardMed";
 import ProfilPage from "../../../pages/parametres/profile";
 import MainWorkspaceLayout from "../pages/MainWorkspaceLayout";
 import ExamenLayout from "../pages/workspace/Examen_cliniques/ExamenClinique/ExamenLayout.jsx";
@@ -28,7 +27,7 @@ import PrescriptionExamens from "../pages/workspace/prescreption_dexamens/Prescr
 import PrescreptionMedical from "../pages/workspace/prescreption_medical/PrescreptionMedical";
 import Conclusion from "../pages/workspace/conclusion/Conclusion";
 import SuiviLayout from "../pages/workspace/suivi/SuiviLayout";
-import Dashbord from "../pages/workspace/suivi/Dashbord";
+import SuiviDashboard from "../pages/workspace/suivi/orchestrer/SuiviDashboard.jsx";
 import ControleTherapeutique from "../pages/workspace/suivi/controleTherapitique";
 import RendezVous from "../pages/workspace/Rendez_vous/RendezVous.jsx";
 
@@ -43,7 +42,6 @@ const medecinRoutes = [
     children: [
       { index: true, element: <Navigate to="patients" replace /> }, // default /medecin
       { path: "patients", element: <PatientsPage /> },
-      { path: "dashboard", element: <DashboardMed /> },
       { path: "settings", element: <ProfilPage /> },
       
 
@@ -126,7 +124,7 @@ const medecinRoutes = [
       element: <NewPatientGuard><SuiviLayout /></NewPatientGuard>,
       children: [
         { index: true, element: <Navigate to="Dashbord" replace /> },
-        { path: "Dashbord", element: <Dashbord /> },
+        { path: "Dashbord", element: <SuiviDashboard /> },
         { path: "controleTherapeutique", element: <ControleTherapeutique /> },
         { path: "habitudes", element: <HabitudesPage /> },
       ],
