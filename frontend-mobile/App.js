@@ -13,7 +13,7 @@ export default function App() {
 
   return (
     <>
-      <AppNavigator />
+     <AppNavigator />
      <Toast config={toastConfig} />
     </>
   );

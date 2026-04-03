@@ -65,14 +65,14 @@ const SuiviDashboard = () => {
       </Title>
 
       <Row gutter={[16, 16]}>
-        <Col xs={24} xl={12}>
+        <Col xs={24} >
           <GraphiqueCD4
             data={graphiques.cd4}
             periodes={graphiques.periodes}
             loading={l2}
           />
         </Col>
-        <Col xs={24} xl={12}>
+        <Col xs={24}>
           <GraphiqueCV
             data={graphiques.cv}
             periodes={graphiques.periodes}

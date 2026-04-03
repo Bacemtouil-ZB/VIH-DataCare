@@ -1,18 +1,12 @@
-// ============================================================
-//  TableauSuivi.jsx
-//  Zone 3 — Tableau chronologique bilans biologiques
-//  Reçoit: data=[] loading=boolean onApercu=(row)=>void
-// ============================================================
-
 import { Table, Tag, Button, Spin, Empty } from "antd";
 import {
   formatDate,
   formatCD4,
   formatCV,
-  formatHGB,
+  formatCreatinine,        // ✅
   getCD4AntColor,
   getCVAntColor,
-  getHGBAntColor,
+  getCreatinineAntColor,   // ✅
 } from "../../helpers/suiviHelpers";
 import {
   COULEURS_STATUT,
@@ -23,15 +17,13 @@ import {
 
 const TableauSuivi = ({ data = [], loading, onApercu }) => {
   const columns = [
-    // ── Date ────────────────────────────────────────────────
     {
       title: "Date CD4",
       dataIndex: "date_cd4",
       key: "date_cd4",
       width: 110,
       render: (val) => formatDate(val),
-      sorter: (a, b) =>
-        new Date(a.date_tri) - new Date(b.date_tri),
+      sorter: (a, b) => new Date(a.date_tri) - new Date(b.date_tri),
       defaultSortOrder: "descend",
     },
     {
@@ -41,8 +33,6 @@ const TableauSuivi = ({ data = [], loading, onApercu }) => {
       width: 110,
       render: (val) => formatDate(val),
     },
-
-    // ── CD4 ─────────────────────────────────────────────────
     {
       title: `CD4 (${UNITES.CD4})`,
       dataIndex: "cd4_absolu",
@@ -55,8 +45,6 @@ const TableauSuivi = ({ data = [], loading, onApercu }) => {
       ),
       sorter: (a, b) => (a.cd4_absolu ?? 0) - (b.cd4_absolu ?? 0),
     },
-
-    // ── Charge virale ────────────────────────────────────────
     {
       title: `CV (${UNITES.CV})`,
       dataIndex: "charge_virale_valeur",
@@ -67,24 +55,19 @@ const TableauSuivi = ({ data = [], loading, onApercu }) => {
           {formatCV(val)}
         </span>
       ),
-      sorter: (a, b) =>
-        (a.charge_virale_valeur ?? 0) - (b.charge_virale_valeur ?? 0),
+      sorter: (a, b) => (a.charge_virale_valeur ?? 0) - (b.charge_virale_valeur ?? 0),
     },
-
-    // ── Hémoglobine ──────────────────────────────────────────
     {
-      title: `HGB (${UNITES.HGB})`,
-      dataIndex: "hemoglobine",
-      key: "hemoglobine",
-      width: 110,
+      title: `Créatinine (${UNITES.CREATININE})`,  // ✅
+      dataIndex: "creatinine",
+      key: "creatinine",
+      width: 130,
       render: (val) => (
-        <span style={{ color: `var(--ant-color-${getHGBAntColor(val)})` }}>
-          {formatHGB(val)}
+        <span style={{ color: `var(--ant-color-${getCreatinineAntColor(val)})` }}>
+          {formatCreatinine(val)}
         </span>
       ),
     },
-
-    // ── Traitement ───────────────────────────────────────────
     {
       title: "Traitement ARV",
       dataIndex: "traitement",
@@ -100,8 +83,6 @@ const TableauSuivi = ({ data = [], loading, onApercu }) => {
           <span style={{ color: "var(--color-text-tertiary)" }}>---</span>
         ),
     },
-
-    // ── Statut ───────────────────────────────────────────────
     {
       title: "Statut",
       dataIndex: "statut",
@@ -118,8 +99,6 @@ const TableauSuivi = ({ data = [], loading, onApercu }) => {
       ],
       onFilter: (value, record) => record.statut === value,
     },
-
-    // ── Type bilan ───────────────────────────────────────────
     {
       title: "Type",
       dataIndex: "type_bilan",
@@ -129,23 +108,17 @@ const TableauSuivi = ({ data = [], loading, onApercu }) => {
         <Tag color={COULEURS_TYPE_BILAN[val] ?? "default"}>{val}</Tag>
       ),
       filters: [
-        { text: "Initial", value: "Initial" },
-        { text: "Suivi",   value: "Suivi" },
+        { text: "Initial",  value: "Initial" },
+        { text: "Contrôle", value: "Contrôle" },  // ✅
       ],
       onFilter: (value, record) => record.type_bilan === value,
     },
-
-    // ── Action aperçu ────────────────────────────────────────
     {
       title: "",
       key: "action",
       width: 80,
       render: (_, row) => (
-        <Button
-          size="small"
-          type="link"
-          onClick={() => onApercu?.(row)}
-        >
+        <Button size="small" type="link" onClick={() => onApercu?.(row)}>
           Détail
         </Button>
       ),
@@ -169,9 +142,7 @@ const TableauSuivi = ({ data = [], loading, onApercu }) => {
       pagination={{ pageSize: 10, showSizeChanger: true }}
       locale={{ emptyText: <Empty description={MESSAGES_VIDES.tableau} /> }}
       scroll={{ x: 900 }}
-      rowClassName={(row) =>
-        row.statut === "Critique" ? "row-critique" : ""
-      }
+      rowClassName={(row) => row.statut === "Critique" ? "row-critique" : ""}
       style={{ marginTop: 8 }}
     />
   );

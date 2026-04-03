@@ -475,3 +475,5 @@ SELECT
 
 En résumé :
 VIEWPourquoi séparéevue_periodes_arvbase commune réutilisée partoutvue_points_cd4date propre CD4 pour Rechartsvue_points_cvdate propre CV pour Rechartsvue_suivi_patienttableau + KPIs, une ligne par bilan
+
+-----> 03/04/2026 amelioration fait dans logique check migration 

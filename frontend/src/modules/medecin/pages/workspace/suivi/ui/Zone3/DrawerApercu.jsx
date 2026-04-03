@@ -1,22 +1,11 @@
-// ============================================================
-//  DrawerApercu.jsx
-//  Zone 3 — Aperçu complet d'un bilan au clic de ligne
-//  Reçoit: row=object open=boolean onClose=()=>void
-// ============================================================
-
 import { Drawer, Descriptions, Tag, Divider } from "antd";
 import {
   formatDate,
-  formatCD4,
-  formatCV,
-  formatHGB,
-  getCD4AntColor,
-  getCVAntColor,
-  getHGBAntColor,
+  formatCreatinine,        // ✅
+  getCreatinineAntColor,   // ✅
   getDureeTraitement,
 } from "../../helpers/suiviHelpers";
 import {
-  COULEURS_STATUT,
   COULEURS_TYPE_BILAN,
   UNITES,
 } from "../../constants/suiviConstants";
@@ -32,56 +21,30 @@ const DrawerApercu = ({ row, open, onClose }) => {
       open={open}
       onClose={onClose}
     >
-      {/* ── En-tête statut ── */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
-        <Tag color={COULEURS_STATUT[row.statut] ?? "default"} style={{ fontSize: 14, padding: "4px 12px" }}>
-          {row.statut ?? "Inconnu"}
-        </Tag>
+      {/* ── Type bilan ── */}
+      <div style={{ marginBottom: 20 }}>
         <Tag color={COULEURS_TYPE_BILAN[row.type_bilan] ?? "default"}>
           {row.type_bilan}
         </Tag>
       </div>
 
-      {/* ── Biologie principale ── */}
+      {/* ── CD4 % + Créatinine ── */}
       <Divider orientation="left" orientationMargin={0} style={{ fontSize: 13 }}>
-        Biologie clé
+        Biologie complémentaire
       </Divider>
       <Descriptions column={2} size="small" bordered>
-        <Descriptions.Item label="Date CD4">
-          {formatDate(row.date_cd4)}
-        </Descriptions.Item>
-        <Descriptions.Item label="Date CV">
-          {formatDate(row.date_cv)}
-        </Descriptions.Item>
-        <Descriptions.Item label={`CD4 (${UNITES.CD4})`}>
-          <span style={{ color: `var(--ant-color-${getCD4AntColor(row.cd4_absolu)})`, fontWeight: 500 }}>
-            {formatCD4(row.cd4_absolu)}
-          </span>
-        </Descriptions.Item>
         <Descriptions.Item label="CD4 %">
           {row.cd4_pourcent ? `${row.cd4_pourcent} %` : "---"}
         </Descriptions.Item>
-        <Descriptions.Item label={`CV (${UNITES.CV})`}>
-          <span style={{ color: `var(--ant-color-${getCVAntColor(row.charge_virale_valeur)})`, fontWeight: 500 }}>
-            {formatCV(row.charge_virale_valeur)}
+        <Descriptions.Item label={`Créatinine (${UNITES.CREATININE})`}>
+          <span style={{ color: `var(--ant-color-${getCreatinineAntColor(row.creatinine)})` }}>
+            {formatCreatinine(row.creatinine)}
           </span>
         </Descriptions.Item>
-        <Descriptions.Item label={`HGB (${UNITES.HGB})`}>
-          <span style={{ color: `var(--ant-color-${getHGBAntColor(row.hemoglobine)})` }}>
-            {formatHGB(row.hemoglobine)}
-          </span>
-        </Descriptions.Item>
-      </Descriptions>
-
-      {/* ── Bilan complémentaire ── */}
-      <Divider orientation="left" orientationMargin={0} style={{ fontSize: 13, marginTop: 20 }}>
-        Bilan complémentaire
-      </Divider>
-      <Descriptions column={2} size="small" bordered>
         <Descriptions.Item label={`Plaquettes (${UNITES.PLAQUETTES})`}>
           {row.plaquettes ?? "---"}
         </Descriptions.Item>
-        <Descriptions.Item label={`Globules blancs`}>
+        <Descriptions.Item label="Globules blancs">
           {row.globules_blancs ?? "---"}
         </Descriptions.Item>
         <Descriptions.Item label={`Lymphocytes (${UNITES.LYMPHOCYTES})`}>
@@ -89,19 +52,53 @@ const DrawerApercu = ({ row, open, onClose }) => {
         </Descriptions.Item>
       </Descriptions>
 
-      {/* ── Traitement ARV ── */}
+      {/* ── Bilan sérologique ── */}
+      <Divider orientation="left" orientationMargin={0} style={{ fontSize: 13, marginTop: 20 }}>
+        Sérologie
+      </Divider>
+      <Descriptions column={2} size="small" bordered>
+        <Descriptions.Item label="VHB AgHBs">
+          {row.vhb_ag_hbs ?? "---"}
+        </Descriptions.Item>
+        <Descriptions.Item label="VHB Ac HBs">
+          {row.vhb_ac_hbs ?? "---"}
+        </Descriptions.Item>
+        <Descriptions.Item label="VHB Ac HBc">
+          {row.vhb_ac_hbc ?? "---"}
+        </Descriptions.Item>
+        <Descriptions.Item label="VHC">
+          {row.vhc ?? "---"}
+        </Descriptions.Item>
+        <Descriptions.Item label="VHA IgG">
+          {row.vha_igg ?? "---"}
+        </Descriptions.Item>
+        <Descriptions.Item label="Toxo IgG">
+          {row.toxo_igg ?? "---"}
+        </Descriptions.Item>
+        <Descriptions.Item label="Toxo IgM">
+          {row.toxo_igm ?? "---"}
+        </Descriptions.Item>
+        <Descriptions.Item label="CMV IgG">
+          {row.cmv_igg ?? "---"}
+        </Descriptions.Item>
+        <Descriptions.Item label="CMV IgM">
+          {row.cmv_igm ?? "---"}
+        </Descriptions.Item>
+        <Descriptions.Item label="VDRL">
+          {row.vdrl ?? "---"}
+        </Descriptions.Item>
+        <Descriptions.Item label="TPHA">
+          {row.tpha ?? "---"}
+        </Descriptions.Item>
+      </Descriptions>
+
+      {/* ── Traitement ARV durée uniquement ── */}
       {row.traitement && (
         <>
           <Divider orientation="left" orientationMargin={0} style={{ fontSize: 13, marginTop: 20 }}>
-            Traitement ARV
+            Durée traitement ARV
           </Divider>
           <Descriptions column={1} size="small" bordered>
-            <Descriptions.Item label="Médicament">
-              {row.traitement}
-            </Descriptions.Item>
-            <Descriptions.Item label="Code">
-              {row.traitement_code ?? "---"}
-            </Descriptions.Item>
             <Descriptions.Item label="Début">
               {formatDate(row.traitement_date_debut)}
             </Descriptions.Item>

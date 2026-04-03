@@ -1,18 +1,18 @@
 // ============================================================
 //  useSuiviKpis.js
 //  Hook Zone 1 — KPIs + alertes
-//  Fetch : dernier CD4, dernière CV, hémoglobine, statut global
+//  Fetch : dernier CD4, dernière CV, créatinine, statut global
 // ============================================================
 
 import { useState, useEffect } from "react";
 import { getKpisSuivi } from "../../../../services/suiviBiologiqueService";
 
 const INITIAL_STATE = {
-  cd4:         null,
-  cv:          null,
-  hemoglobine: null,
-  statut:      null,
-  alertes:     [],
+  cd4:        null,
+  cv:         null,
+  creatinine: null,  // ✅ remplace hemoglobine
+  statut:     null,
+  alertes:    [],
 };
 
 const useSuiviKpis = (patientId) => {
@@ -28,7 +28,6 @@ const useSuiviKpis = (patientId) => {
       setError(null);
       try {
         const res = await getKpisSuivi(patientId);
-        // res = { success, data: { cd4, cv, hemoglobine, statut, alertes } }
         if (res.success) {
           setKpis(res.data);
         }

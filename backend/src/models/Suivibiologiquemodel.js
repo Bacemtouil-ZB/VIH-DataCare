@@ -1,18 +1,17 @@
 import pool from "../config/db.js";
 
-// ── Sous-requête réutilisable : numero → patient_id ───────────────────────────
-// Utilisée dans toutes les requêtes pour éviter la répétition
 const SUBQUERY_PATIENT_ID = `(SELECT id FROM patients WHERE numero = $1)`;
 
-// ── Zone 1 — KPIs : dernier CD4 + dernière CV + hémoglobine ─────────────────
+// ── Zone 1 — KPIs : dernier CD4 + dernière CV + créatinine ──────────────────
 export const getKpisByNumero = async (numero) => {
+
   const queryCD4 = `
     SELECT
       cd4_absolu,
       cd4_pourcent,
       date_cd4        AS date_cd4,
       traitement,
-      statut
+      traitement_code
     FROM vue_suivi_patient
     WHERE patient_id = ${SUBQUERY_PATIENT_ID}
       AND cd4_absolu IS NOT NULL
@@ -25,7 +24,7 @@ export const getKpisByNumero = async (numero) => {
       charge_virale_valeur,
       date_cv         AS date_cv,
       traitement,
-      statut
+      traitement_code
     FROM vue_suivi_patient
     WHERE patient_id = ${SUBQUERY_PATIENT_ID}
       AND charge_virale_valeur IS NOT NULL
@@ -33,27 +32,61 @@ export const getKpisByNumero = async (numero) => {
     LIMIT 1
   `;
 
-  const queryHGB = `
+  const queryCreatinine = `
     SELECT
-      hemoglobine,
-      date_tri        AS date_reference
+      creatinine,
+      date_bilan_biochimique  AS date_reference
     FROM vue_suivi_patient
     WHERE patient_id = ${SUBQUERY_PATIENT_ID}
-      AND hemoglobine IS NOT NULL
-    ORDER BY date_tri DESC
+      AND creatinine IS NOT NULL
+    ORDER BY date_bilan_biochimique DESC
     LIMIT 1
   `;
 
-  const [cd4Result, cvResult, hgbResult] = await Promise.all([
-    pool.query(queryCD4, [numero]),
-    pool.query(queryCV,  [numero]),
-    pool.query(queryHGB, [numero]),
+  // ── Deux derniers CD4 pour comparaison alerte ────────────────────────────
+  const queryCD4Precedent = `
+    SELECT
+      cd4_absolu,
+      date_cd4
+    FROM vue_suivi_patient
+    WHERE patient_id = ${SUBQUERY_PATIENT_ID}
+      AND cd4_absolu IS NOT NULL
+    ORDER BY date_cd4 DESC
+    LIMIT 2
+  `;
+
+  // ── Deux dernières CV pour comparaison alerte ────────────────────────────
+  const queryCVPrecedent = `
+    SELECT
+      charge_virale_valeur,
+      date_cv
+    FROM vue_suivi_patient
+    WHERE patient_id = ${SUBQUERY_PATIENT_ID}
+      AND charge_virale_valeur IS NOT NULL
+    ORDER BY date_cv DESC
+    LIMIT 2
+  `;
+
+  const [
+    cd4Result,
+    cvResult,
+    creatinineResult,
+    cd4PrecedentResult,
+    cvPrecedentResult,
+  ] = await Promise.all([
+    pool.query(queryCD4,          [numero]),
+    pool.query(queryCV,           [numero]),
+    pool.query(queryCreatinine,   [numero]),
+    pool.query(queryCD4Precedent, [numero]),
+    pool.query(queryCVPrecedent,  [numero]),
   ]);
 
   return {
-    cd4:         cd4Result.rows[0] || null,
-    cv:          cvResult.rows[0]  || null,
-    hemoglobine: hgbResult.rows[0] || null,
+    cd4:               cd4Result.rows[0]          || null,
+    cv:                cvResult.rows[0]           || null,
+    creatinine:        creatinineResult.rows[0]   || null,
+    cd4Historique:     cd4PrecedentResult.rows,
+    cvHistorique:      cvPrecedentResult.rows,
   };
 };
 
@@ -65,6 +98,7 @@ export const getPointsCD4ByNumero = async (numero) => {
       date_point,
       cd4_absolu,
       cd4_pourcent,
+      type_bilan,
       traitement,
       traitement_code,
       traitement_date_debut,
@@ -84,6 +118,7 @@ export const getPointsCVByNumero = async (numero) => {
       resultat_id,
       date_point,
       charge_virale_valeur,
+      type_bilan,
       traitement,
       traitement_code,
       traitement_date_debut,
@@ -125,7 +160,7 @@ export const getTableauByNumero = async (numero) => {
       cd4_absolu,
       cd4_pourcent,
       charge_virale_valeur,
-      hemoglobine,
+      creatinine,
       plaquettes,
       globules_blancs,
       lymphocytes,
@@ -134,7 +169,6 @@ export const getTableauByNumero = async (numero) => {
       traitement_date_debut,
       traitement_date_fin,
       type_bilan,
-      statut,
       observations
     FROM vue_suivi_patient
     WHERE patient_id = ${SUBQUERY_PATIENT_ID}

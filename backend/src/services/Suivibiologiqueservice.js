@@ -6,52 +6,125 @@ import {
   getTableauByNumero,
 } from "../models/Suivibiologiquemodel.js";
 
-// ── Helpers statut ────────────────────────────────────────────────────────────
+/// ── Seuils et critères d'alerte ───────────────────────────────────────────────
+export const SEUILS = {
+  // CD4
+  cd4_critique_max:     200,   // < 200 → Critique
+  cd4_moyen_min:        200,   // 200-500 → Moyen
+  cd4_moyen_max:        500,   // > 500 → Bon
+
+  // Charge virale
+  cv_critique_min:      1000,  // > 1000 → Critique
+
+  // Alertes variation significative
+  cd4_baisse_pourcent:  20,    // baisse > 20% → alerte
+  cv_hausse_pourcent:   50,    // hausse > 50% → alerte
+
+  // Créatinine
+  creatinine_max:       120,   // > 120 µmol/L → alerte
+};
+
+// ── Helper : calcul statut ────────────────────────────────────────────────────
 const computeStatut = (cd4, cv) => {
-  if (!cd4 && !cv)              return "Inconnu";
-  if (cd4 < 200 || cv > 1000)  return "Critique";
-  if (cd4 >= 200 && cd4 <= 500) return "Moyen";
-  if (cd4 > 500)                return "Bon";
+  if (!cd4 && !cv)                                    return "Inconnu";
+  if (cd4 < SEUILS.cd4_critique_max ||
+      cv  > SEUILS.cv_critique_min)                   return "Critique";
+  if (cd4 >= SEUILS.cd4_moyen_min &&
+      cd4 <= SEUILS.cd4_moyen_max)                    return "Moyen";
+  if (cd4 > SEUILS.cd4_moyen_max)                     return "Bon";
   return "Inconnu";
 };
 
-const computeAlertes = (cd4, cv, hemoglobine) => {
+// ── Helper : calcul alertes ───────────────────────────────────────────────────
+const computeAlertes = (cd4Actuel, cvActuel, cd4Precedent, cvPrecedent, creatinine) => {
   const alertes = [];
-  if (cd4 !== null && cd4 < 200)
-    alertes.push({ type: "danger",  message: `CD4 critique : ${cd4} cell/mm³ (< 200)` });
-  if (cv !== null && cv > 1000)
-    alertes.push({ type: "danger",  message: `Charge virale élevée : ${cv} copies/mL (> 1 000)` });
-  if (hemoglobine !== null && hemoglobine < 10)
-    alertes.push({ type: "warning", message: `Hémoglobine basse : ${hemoglobine} g/dL (< 10)` });
+
+  // ── Alerte seuil absolu CD4 ──────────────────────────────────────────────
+  if (cd4Actuel !== null && cd4Actuel < SEUILS.cd4_critique_max) {
+    alertes.push({
+      type:    "danger",
+      message: `CD4 critique : ${cd4Actuel} cell/mm³ (< ${SEUILS.cd4_critique_max})`,
+    });
+  }
+
+  // ── Alerte seuil absolu CV ───────────────────────────────────────────────
+  if (cvActuel !== null && cvActuel > SEUILS.cv_critique_min) {
+    alertes.push({
+      type:    "danger",
+      message: `Charge virale élevée : ${cvActuel} copies/mL (> ${SEUILS.cv_critique_min})`,
+    });
+  }
+
+  // ── Alerte variation CD4 (comparaison 2 derniers résultats) ─────────────
+  if (cd4Actuel !== null && cd4Precedent !== null) {
+    const baissePourcent = ((cd4Precedent - cd4Actuel) / cd4Precedent) * 100;
+    if (baissePourcent >= SEUILS.cd4_baisse_pourcent) {
+      alertes.push({
+        type:    "warning",
+        message: `CD4 en baisse significative : -${baissePourcent.toFixed(1)}% par rapport au dernier résultat`,
+      });
+    }
+  }
+
+  // ── Alerte variation CV (comparaison 2 derniers résultats) ──────────────
+  if (cvActuel !== null && cvPrecedent !== null) {
+    const haussePourcent = ((cvActuel - cvPrecedent) / cvPrecedent) * 100;
+    if (haussePourcent >= SEUILS.cv_hausse_pourcent) {
+      alertes.push({
+        type:    "warning",
+        message: `Charge virale en hausse significative : +${haussePourcent.toFixed(1)}% par rapport au dernier résultat`,
+      });
+    }
+  }
+
+  // ── Alerte créatinine ────────────────────────────────────────────────────
+  if (creatinine !== null && creatinine > SEUILS.creatinine_max) {
+    alertes.push({
+      type:    "warning",
+      message: `Créatinine élevée : ${creatinine} µmol/L (> ${SEUILS.creatinine_max})`,
+    });
+  }
+
   return alertes;
 };
 
 // ── Zone 1 — KPIs + alertes ──────────────────────────────────────────────────
 export const getKpis = async (numero) => {
-  const { cd4, cv, hemoglobine } = await getKpisByNumero(numero);
+  const { cd4, cv, creatinine, cd4Historique, cvHistorique } =
+    await getKpisByNumero(numero);
 
-  const cd4Valeur = cd4?.cd4_absolu          ?? null;
-  const cvValeur  = cv?.charge_virale_valeur  ?? null;
-  const hgbValeur = hemoglobine?.hemoglobine  ?? null;
+  const cd4Actuel    = cd4?.cd4_absolu           ?? null;
+  const cvActuel     = cv?.charge_virale_valeur   ?? null;
+  const creatValeur  = creatinine?.creatinine     ?? null;
+
+  // Valeur précédente pour comparaison (index 1 = avant-dernier)
+  const cd4Precedent = cd4Historique[1]?.cd4_absolu          ?? null;
+  const cvPrecedent  = cvHistorique[1]?.charge_virale_valeur  ?? null;
 
   return {
     cd4: {
-      valeur:     cd4Valeur,
-      pourcent:   cd4?.cd4_pourcent ?? null,
-      date:       cd4?.date_cd4     ?? null,
-      traitement: cd4?.traitement   ?? null,
+      valeur:     cd4Actuel,
+      pourcent:   cd4?.cd4_pourcent  ?? null,
+      date:       cd4?.date_cd4      ?? null,
+      traitement: cd4?.traitement    ?? null,
     },
     cv: {
-      valeur:     cvValeur,
-      date:       cv?.date_cv       ?? null,
-      traitement: cv?.traitement    ?? null,
+      valeur:     cvActuel,
+      date:       cv?.date_cv        ?? null,
+      traitement: cv?.traitement     ?? null,
     },
-    hemoglobine: {
-      valeur: hgbValeur,
-      date:   hemoglobine?.date_reference ?? null,
+    creatinine: {
+      valeur: creatValeur,
+      date:   creatinine?.date_reference ?? null,
     },
-    statut:  computeStatut(cd4Valeur, cvValeur),
-    alertes: computeAlertes(cd4Valeur, cvValeur, hgbValeur),
+    statut:  computeStatut(cd4Actuel, cvActuel),
+    alertes: computeAlertes(
+      cd4Actuel,
+      cvActuel,
+      cd4Precedent,
+      cvPrecedent,
+      creatValeur
+    ),
   };
 };
 
@@ -62,6 +135,7 @@ export const getGraphiqueCD4 = async (numero) => {
     date:                  p.date_point,
     cd4_absolu:            p.cd4_absolu,
     cd4_pourcent:          p.cd4_pourcent,
+    type_bilan:            p.type_bilan,
     traitement:            p.traitement,
     traitement_code:       p.traitement_code,
     traitement_date_debut: p.traitement_date_debut,
@@ -75,6 +149,7 @@ export const getGraphiqueCV = async (numero) => {
   return points.map((p) => ({
     date:                  p.date_point,
     charge_virale_valeur:  p.charge_virale_valeur,
+    type_bilan:            p.type_bilan,
     traitement:            p.traitement,
     traitement_code:       p.traitement_code,
     traitement_date_debut: p.traitement_date_debut,
@@ -107,7 +182,7 @@ export const getTableau = async (numero) => {
     cd4_absolu:            r.cd4_absolu            ?? null,
     cd4_pourcent:          r.cd4_pourcent          ?? null,
     charge_virale_valeur:  r.charge_virale_valeur  ?? null,
-    hemoglobine:           r.hemoglobine           ?? null,
+    creatinine:            r.creatinine            ?? null,  // ✅ remplace hemoglobine
     plaquettes:            r.plaquettes            ?? null,
     globules_blancs:       r.globules_blancs       ?? null,
     lymphocytes:           r.lymphocytes           ?? null,
@@ -116,7 +191,10 @@ export const getTableau = async (numero) => {
     traitement_date_debut: r.traitement_date_debut ?? null,
     traitement_date_fin:   r.traitement_date_fin   ?? null,
     type_bilan:            r.type_bilan,
-    statut:                r.statut,
+    statut:                computeStatut(          // ✅ calculé backend
+      r.cd4_absolu ?? null,
+      r.charge_virale_valeur ?? null
+    ),
     observations:          r.observations          ?? null,
   }));
 };
