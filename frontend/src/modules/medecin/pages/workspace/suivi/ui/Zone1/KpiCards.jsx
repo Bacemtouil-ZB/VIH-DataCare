@@ -1,8 +1,8 @@
 // ============================================================
-//  KpiCards.jsx
+//  KpiCards.jsx — VERSION FINALE CORRIGÉE
 // ============================================================
 
-import { Row, Col, Spin, Empty, Tag } from "antd";
+import { Spin, Empty, Tag } from "antd";
 import {
   RiseOutlined,
   FallOutlined,
@@ -13,7 +13,9 @@ import {
   SafetyOutlined,
   CalendarOutlined,
   LineChartOutlined,
+  MedicineBoxOutlined,
 } from "@ant-design/icons";
+
 import {
   formatCD4,
   formatCV,
@@ -22,7 +24,9 @@ import {
   getCD4HexColor,
   getCreatinineAntColor,
   getCVAntColor,
+  getHBVHexColor,
 } from "../../helpers/suiviHelpers";
+
 import {
   COULEURS_STATUT,
   COULEURS_STATUT_HEX,
@@ -31,270 +35,308 @@ import {
   MESSAGES_VIDES,
 } from "../../constants/suiviConstants";
 
-// ── Tendance ──────────────────────────────────────────────────
+// ============================================================
+//  Tendance
+// ============================================================
 const Tendance = ({ actuel, precedent, inverse = false }) => {
   if (actuel == null || precedent == null) return null;
   if (actuel === precedent)
-    return <MinusOutlined style={{ fontSize: 11, color: "#aaa" }} />;
-  const hausse  = actuel > precedent;
+    return <MinusOutlined style={{ fontSize: 10, color: "#aaa" }} />;
+
+  const hausse = actuel > precedent;
   const positif = inverse ? !hausse : hausse;
+
   return positif
-    ? <RiseOutlined style={{ fontSize: 11, color: COULEURS_STATUT_HEX[STATUTS.BON] }} />
-    : <FallOutlined  style={{ fontSize: 11, color: COULEURS_STATUT_HEX[STATUTS.CRITIQUE] }} />;
+    ? <RiseOutlined style={{ fontSize: 10, color: COULEURS_STATUT_HEX[STATUTS.BON] }} />
+    : <FallOutlined style={{ fontSize: 10, color: COULEURS_STATUT_HEX[STATUTS.CRITIQUE] }} />;
 };
 
-// ── Composant card partagé ────────────────────────────────────
-const KpiCard = ({ icon, iconBg, label, value, valueColor, unite, pourcent, rows, tag }) => (
+
+// ============================================================
+//  KpiCard MINI CLEAN 
+// ============================================================
+// ============================================================
+//  KpiCard RESPONSIVE
+// ============================================================
+const KpiCard = ({ icon, iconBg, label, value, unite, pourcent, rows, tag }) => (
   <div style={{
+    width: "100%",              // ✔ responsive
+    height: 110,
     background: "#fff",
-    border: "1px solid #EBEBEB",
-    borderRadius: 12,
-    padding: "14px 18px",
-    height: "100%",
+    border: "1px solid #E5E7EB",
+    borderRadius: 10,
+    padding: "8px 10px",
     display: "flex",
     flexDirection: "column",
+    justifyContent: "space-between",
     boxSizing: "border-box",
   }}>
 
-    {/* ── Header : icône + label ── */}
-    <div style={{
-      display: "flex",
-      alignItems: "center",
-      gap: 10,
-      marginBottom: 10,
-    }}>
+    {/* HEADER */}
+    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
       <div style={{
-        width: 32, height: 32,
-        borderRadius: 8,
+        width: 22,
+        height: 22,
+        borderRadius: 6,
         background: iconBg,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        flexShrink: 0,
       }}>
         {icon}
       </div>
-      <span style={{ fontSize: 12, fontWeight: 500, color: "#777", letterSpacing: "0.02em" }}>
+
+      <span style={{
+        fontSize: 10,
+        fontWeight: 600,
+        color: "#6B7280",
+      }}>
         {label}
       </span>
     </div>
 
-    {/* ── Valeur principale + % inline ── */}
-    <div style={{
-      display: "flex",
-      alignItems: "baseline",
-      gap: 8,
-      marginBottom: 10,
-      flexWrap: "wrap",
-    }}>
+    {/* VALUE */}
+    <div>
       {tag ? tag : (
-        <>
-          <span style={{ fontSize: 24, fontWeight: 700, color: valueColor, lineHeight: 1 }}>
+        <div style={{ display: "flex", alignItems: "baseline", gap: 3 }}>
+          <span style={{
+            fontSize: 15,
+            fontWeight: 700,
+            color: "#111827",
+          }}>
             {value}
           </span>
+
           {unite && (
-            <span style={{ fontSize: 11, color: "#bbb" }}>{unite}</span>
-          )}
-          {pourcent != null && (
-            <span style={{
-              fontSize: 11,
-              fontWeight: 600,
-              color: valueColor,
-              background: "#F0F7FF",
-              border: "1px solid #D6EAFF",
-              borderRadius: 4,
-              padding: "1px 6px",
-              marginLeft: 2,
-            }}>
-              {pourcent} %
+            <span style={{ fontSize: 9, color: "#9CA3AF" }}>
+              {unite}
             </span>
           )}
-        </>
+
+          {pourcent != null && (
+            <span style={{
+                fontSize: 11,
+                fontWeight: 700,
+                color: "#111827",
+                background: "#3B82F615", // bleu avec transparence
+                border: "1px solid #3B82F640",
+                borderRadius: 6,
+                padding: "2px 6px",
+                marginLeft: 4,
+                display: "flex",
+                alignItems: "center",
+                gap: 3,
+              }}>
+                 {pourcent} %
+            </span>
+          )}
+        </div>
       )}
     </div>
 
-    {/* ── Lignes infos ── */}
+    {/* INFOS */}
     <div style={{
+      borderTop: "1px solid #F3F4F6",
+      paddingTop: 4,
       display: "flex",
       flexDirection: "column",
-      gap: 6,
-      paddingTop: 10,
-      borderTop: "1px solid #F5F5F5",
-      flex: 1,
+      gap: 2,
     }}>
       {rows.map((row, i) =>
         row ? (
           <div key={i} style={{
             display: "flex",
-            alignItems: "center",
             justifyContent: "space-between",
-            gap: 8,
+            fontSize: 9,
           }}>
-            {/* icône + label */}
-            <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-              <span style={{ color: "#C8C8C8", fontSize: 12, display: "flex" }}>
-                {row.icon}
-              </span>
-              <span style={{ fontSize: 12, color: "#AAA" }}>{row.label}</span>
-            </div>
-            {/* valeur */}
-            <span style={{
-              fontSize: 12,
-              fontWeight: 500,
-              color: row.color ?? "#555",
-              display: "flex",
-              alignItems: "center",
-              gap: 4,
-            }}>
+            <span style={{ color: "#9CA3AF" }}>
+              {row.icon} {row.label}
+            </span>
+
+            <span style={{ color: "#374151", fontWeight: 500 }}>
               {row.extra}{row.value}
             </span>
           </div>
-        ) : (
-          <div key={i} style={{ height: 16 }} />
-        )
+        ) : null
       )}
     </div>
-
   </div>
 );
-
-// ── Composant principal ───────────────────────────────────────
+// ============================================================
+//  MAIN COMPONENT
+// ============================================================
 const KpiCards = ({ kpis, loading }) => {
-  if (loading) return (
-    <div style={{ textAlign: "center", padding: "32px 0" }}>
-      <Spin size="large" />
-    </div>
-  );
 
-  if (!kpis || (!kpis.cd4?.valeur && !kpis.cv?.valeur && !kpis.creatinine?.valeur))
+  if (loading) {
+    return <div style={{ textAlign: "center", padding: 30 }}><Spin /></div>;
+  }
+
+  if (!kpis) {
     return <Empty description={MESSAGES_VIDES.kpis} />;
+  }
 
-  // ── Couleurs dynamiques ───────────────────────────────────
   const cd4Color = getCD4HexColor(kpis.cd4?.valeur);
 
-  const cvKey    = getCVAntColor(kpis.cv?.valeur);
-  const cvColor  = cvKey === "success" ? COULEURS_STATUT_HEX[STATUTS.BON]
-                 : cvKey === "warning" ? COULEURS_STATUT_HEX[STATUTS.MOYEN]
-                 : cvKey === "error"   ? COULEURS_STATUT_HEX[STATUTS.CRITIQUE]
-                 : COULEURS_STATUT_HEX[STATUTS.INCONNU];
+  const cvKey = getCVAntColor(kpis.cv?.valeur);
+  const cvColor =
+    cvKey === "success" ? COULEURS_STATUT_HEX[STATUTS.BON] :
+    cvKey === "warning" ? COULEURS_STATUT_HEX[STATUTS.MOYEN] :
+    cvKey === "error"   ? COULEURS_STATUT_HEX[STATUTS.CRITIQUE] :
+    COULEURS_STATUT_HEX[STATUTS.INCONNU];
 
-  const creatKey   = getCreatinineAntColor(kpis.creatinine?.valeur);
-  const creatColor = creatKey === "success" ? COULEURS_STATUT_HEX[STATUTS.BON]
-                   : creatKey === "warning" ? COULEURS_STATUT_HEX[STATUTS.MOYEN]
-                   : creatKey === "error"   ? COULEURS_STATUT_HEX[STATUTS.CRITIQUE]
-                   : COULEURS_STATUT_HEX[STATUTS.INCONNU];
+  const creatKey = getCreatinineAntColor(kpis.creatinine?.valeur);
+  const creatColor =
+    creatKey === "success" ? COULEURS_STATUT_HEX[STATUTS.BON] :
+    creatKey === "warning" ? COULEURS_STATUT_HEX[STATUTS.MOYEN] :
+    creatKey === "error"   ? COULEURS_STATUT_HEX[STATUTS.CRITIQUE] :
+    COULEURS_STATUT_HEX[STATUTS.INCONNU];
+
+  const hbv = kpis.serologie_hbv;
 
   return (
-    <Row gutter={[12, 12]} style={{ marginBottom: 16 }} align="stretch">
+    <div style={{ marginBottom: 16 }}>
+      <div style={{
+        display: "flex",
+        gap: 12,
+        overflowX: "auto",
+        paddingBottom: 4,
+      }}>
 
-      {/* ── CD4 ── */}
-      <Col xs={24} sm={12} lg={6} style={{ display: "flex" }}>
+        {/* CD4 */}
         <KpiCard
-          icon={<HeartOutlined style={{ color: "#378ADD", fontSize: 15 }} />}
-          iconBg="#E6F1FB"
-          label="CD4 absolu"
+          icon={<HeartOutlined style={{ color: "#2563EB" }} />}
+          iconBg="#DBEAFE"
+          label="CD4"
           value={formatCD4(kpis.cd4?.valeur)}
           valueColor={cd4Color}
           unite={UNITES.CD4}
-          pourcent={kpis.cd4?.pourcent ?? null}
+          pourcent={kpis.cd4?.pourcent}
           rows={[
-            kpis.cd4?.date ? {
-              icon:  <CalendarOutlined />,
-              label: "Dernière mesure",
+            kpis.cd4?.date && {
+              icon: <CalendarOutlined />,
+              label: "Mesure",
               value: formatDate(kpis.cd4.date),
-            } : null,
-            kpis.cd4?.precedent != null ? {
-              icon:  <LineChartOutlined />,
-              label: "Précédent",
+            },
+            kpis.cd4?.precedent && {
+              icon: <LineChartOutlined />,
+              label: "Préc.",
               value: formatCD4(kpis.cd4.precedent),
               extra: <Tendance actuel={kpis.cd4.valeur} precedent={kpis.cd4.precedent} />,
-            } : null,
-            null,
+            }
           ]}
         />
-      </Col>
 
-      {/* ── Charge virale ── */}
-      <Col xs={24} sm={12} lg={6} style={{ display: "flex" }}>
+        {/* CV */}
         <KpiCard
-          icon={<ThunderboltOutlined style={{ color: "#E24B4A", fontSize: 15 }} />}
-          iconBg="#FCEBEB"
+          icon={<ThunderboltOutlined style={{ color: "#DC2626" }} />}
+          iconBg="#FEE2E2"
           label="Charge virale"
           value={formatCV(kpis.cv?.valeur)}
           valueColor={cvColor}
           unite={kpis.cv?.valeur >= 200 ? UNITES.CV : ""}
           rows={[
-            kpis.cv?.date ? {
-              icon:  <CalendarOutlined />,
-              label: "Dernière mesure",
+            kpis.cv?.date && {
+              icon: <CalendarOutlined />,
+              label: "Mesure",
               value: formatDate(kpis.cv.date),
-            } : null,
-            kpis.cv?.precedent != null ? {
-              icon:  <LineChartOutlined />,
-              label: "Précédent",
+            },
+            kpis.cv?.precedent && {
+              icon: <LineChartOutlined />,
+              label: "Préc.",
               value: formatCV(kpis.cv.precedent),
               extra: <Tendance actuel={kpis.cv.valeur} precedent={kpis.cv.precedent} inverse />,
-            } : null,
-            null,
+            }
           ]}
         />
-      </Col>
 
-      {/* ── Créatinine ── */}
-      <Col xs={24} sm={12} lg={6} style={{ display: "flex" }}>
+        {/* Créatinine */}
         <KpiCard
-          icon={<ExperimentOutlined style={{ color: "#1D9E75", fontSize: 15 }} />}
-          iconBg="#E1F5EE"
+          icon={<ExperimentOutlined style={{ color: "#059669" }} />}
+          iconBg="#D1FAE5"
           label="Créatinine"
           value={formatCreatinine(kpis.creatinine?.valeur)}
           valueColor={creatColor}
           unite={UNITES.CREATININE}
           rows={[
-            kpis.creatinine?.date ? {
-              icon:  <CalendarOutlined />,
-              label: "Dernière mesure",
+            kpis.creatinine?.date && {
+              icon: <CalendarOutlined />,
+              label: "Mesure",
               value: formatDate(kpis.creatinine.date),
-            } : null,
-            null,
-            null,
+            }
           ]}
         />
-      </Col>
 
-      {/* ── Statut global ── */}
-      <Col xs={24} sm={12} lg={6} style={{ display: "flex" }}>
+        {/* HBV (SIMPLIFIÉ) */}
+        {hbv && (
+          <>
+            <KpiCard
+              icon={<MedicineBoxOutlined style={{ color: "#DC2626" }} />}
+              iconBg="#FEE2E2"
+              label="AgHBs"
+              value={hbv.ag_hbs ?? "—"}
+              valueColor={getHBVHexColor("ag_hbs", hbv.ag_hbs)}
+              rows={[
+                hbv.date && {
+                  icon: <CalendarOutlined />,
+                  label: "Mesure",
+                  value: formatDate(hbv.date),
+                }
+              ]}
+            />
+
+            <KpiCard
+              icon={<MedicineBoxOutlined style={{ color: "#059669" }} />}
+              iconBg="#D1FAE5"
+              label="Anti-HBs"
+              value={hbv.anti_hbs ?? "—"}
+              valueColor={getHBVHexColor("anti_hbs", hbv.anti_hbs)}
+              rows={[
+                hbv.date && {
+                  icon: <CalendarOutlined />,
+                  label: "Mesure",
+                  value: formatDate(hbv.date),
+                }
+              ]}
+            />
+
+            <KpiCard
+              icon={<MedicineBoxOutlined style={{ color: "#D97706" }} />}
+              iconBg="#FEF3C7"
+              label="Anti-HBc"
+              value={hbv.anti_hbc ?? "—"}
+              valueColor={getHBVHexColor("anti_hbc", hbv.anti_hbc)}
+              rows={[
+                hbv.date && {
+                  icon: <CalendarOutlined />,
+                  label: "Mesure",
+                  value: formatDate(hbv.date),
+                }
+              ]}
+            />
+          </>
+        )}
+
+        {/* STATUT */}
         <KpiCard
-          icon={<SafetyOutlined style={{ color: "#7F77DD", fontSize: 15 }} />}
-          iconBg="#EEEDFE"
-          label="Statut global"
+          icon={<SafetyOutlined style={{ color: "#7C3AED" }} />}
+          iconBg="#EDE9FE"
+          label="Statut"
           tag={
-            <Tag
-              color={COULEURS_STATUT[kpis.statut] ?? "default"}
-              style={{
-                fontSize: 15,
-                padding: "4px 14px",
-                borderRadius: 6,
-                fontWeight: 600,
-                margin: 0,
-              }}
-            >
+            <Tag color={COULEURS_STATUT[kpis.statut]}>
               {kpis.statut ?? "Inconnu"}
             </Tag>
           }
           rows={[
-            kpis.cd4?.traitement ? {
-              icon:  <SafetyOutlined />,
-              label: "ARV actuel",
+            kpis.cd4?.traitement && {
+              icon: <MedicineBoxOutlined />,
+              label: "ARV",
               value: kpis.cd4.traitement,
-              color: "#7F77DD",
-            } : null,
-            null,
-            null,
+            }
           ]}
         />
-      </Col>
 
-    </Row>
+      </div>
+    </div>
   );
 };
 

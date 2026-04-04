@@ -112,3 +112,31 @@ export const MESSAGES_VIDES = {
   graphique: "Aucune mesure enregistrée",
   tableau:   "Aucun bilan enregistré pour ce patient",
 };
+
+
+// ── Sérologie HBV — couleurs par marqueur et résultat ────────
+// AgHBs+  = mauvais (infection active)
+// Anti-HBs+ = bon (immunité acquise)
+// Anti-HBc+ = contact passé (surveiller co-infection)
+export const COULEURS_HBV = {
+  ag_hbs: {
+    Positif: "#EF4444",   // rouge  — infection active
+    Négatif: "#22C55E",   // vert   — pas d'infection active
+  },
+  anti_hbs: {
+    Positif: "#22C55E",   // vert   — immunisé
+    Négatif: "#F59E0B",   // ambre  — non immunisé
+  },
+  anti_hbc: {
+    Positif: "#F59E0B",   // ambre  — contact antérieur
+    Négatif: "#22C55E",   // vert   — jamais exposé
+  },
+};
+
+export const COULEUR_HBV_INCONNU = "#9CA3AF"; // gris — non déterminé
+
+// Seuil protecteur anti-HBs (UI/mL) — utilisé si valeur quantitative dispo
+export const SEUIL_ANTI_HBS_PROTECTEUR = 10;
+
+
+

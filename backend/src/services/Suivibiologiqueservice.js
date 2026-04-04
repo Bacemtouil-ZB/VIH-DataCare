@@ -24,6 +24,20 @@ export const SEUILS = {
   creatinine_max:       120,   // > 120 µmol/L → alerte
 };
 
+// ── Helper : normaliser un résultat sérologique ───────────────────────────────
+// PostgreSQL peut retourner : true/false (bool), "t"/"f" (pg shorthand),
+// "Positif"/"Négatif", 1/0, ou des strings brutes du labo
+const normaliserSerologie = (valeur) => {
+  if (valeur == null) return null;
+  if (valeur === true  || valeur === "t" || valeur === 1)    return "Positif";
+  if (valeur === false || valeur === "f" || valeur === 0)    return "Négatif";
+  const v = String(valeur).toLowerCase().trim();
+  if (["positif", "reactif", "réactif", "oui"].includes(v)) return "Positif";
+  if (["negatif", "négatif", "non reactif", "non réactif", "non"].includes(v))
+                                                             return "Négatif";
+  return null;
+};
+
 // ── Helper : calcul statut ────────────────────────────────────────────────────
 const computeStatut = (cd4, cv) => {
   if (!cd4 && !cv)                                    return "Inconnu";
@@ -90,16 +104,26 @@ const computeAlertes = (cd4Actuel, cvActuel, cd4Precedent, cvPrecedent, creatini
 
 // ── Zone 1 — KPIs + alertes ──────────────────────────────────────────────────
 export const getKpis = async (numero) => {
-  const { cd4, cv, creatinine, cd4Historique, cvHistorique } =
+  const { cd4, cv, creatinine, cd4Historique, cvHistorique, serologie_hbv } =
     await getKpisByNumero(numero);
 
-  const cd4Actuel    = cd4?.cd4_absolu           ?? null;
-  const cvActuel     = cv?.charge_virale_valeur   ?? null;
-  const creatValeur  = creatinine?.creatinine     ?? null;
+  const cd4Actuel   = cd4?.cd4_absolu          ?? null;
+  const cvActuel    = cv?.charge_virale_valeur  ?? null;
+  const creatValeur = creatinine?.creatinine    ?? null;
 
   // Valeur précédente pour comparaison (index 1 = avant-dernier)
-  const cd4Precedent = cd4Historique[1]?.cd4_absolu          ?? null;
-  const cvPrecedent  = cvHistorique[1]?.charge_virale_valeur  ?? null;
+  const cd4Precedent = cd4Historique[1]?.cd4_absolu         ?? null;
+  const cvPrecedent  = cvHistorique[1]?.charge_virale_valeur ?? null;
+
+  // ── Sérologie HBV : normaliser chaque marqueur ───────────────────────────
+  const hbv = serologie_hbv
+    ? {
+        ag_hbs:   normaliserSerologie(serologie_hbv.ag_hbs),
+        anti_hbs: normaliserSerologie(serologie_hbv.anti_hbs),
+        anti_hbc: normaliserSerologie(serologie_hbv.anti_hbc),
+        date:     serologie_hbv.date ?? null,
+      }
+    : null;
 
   return {
     cd4: {
@@ -117,14 +141,15 @@ export const getKpis = async (numero) => {
       valeur: creatValeur,
       date:   creatinine?.date_reference ?? null,
     },
-    statut:  computeStatut(cd4Actuel, cvActuel),
-    alertes: computeAlertes(
+    statut:        computeStatut(cd4Actuel, cvActuel),
+    alertes:       computeAlertes(
       cd4Actuel,
       cvActuel,
       cd4Precedent,
       cvPrecedent,
       creatValeur
     ),
+    serologie_hbv: hbv,   // ✅ { ag_hbs, anti_hbs, anti_hbc, date } | null
   };
 };
 
@@ -182,7 +207,7 @@ export const getTableau = async (numero) => {
     cd4_absolu:            r.cd4_absolu            ?? null,
     cd4_pourcent:          r.cd4_pourcent          ?? null,
     charge_virale_valeur:  r.charge_virale_valeur  ?? null,
-    creatinine:            r.creatinine            ?? null,  // ✅ remplace hemoglobine
+    creatinine:            r.creatinine            ?? null,
     plaquettes:            r.plaquettes            ?? null,
     globules_blancs:       r.globules_blancs       ?? null,
     lymphocytes:           r.lymphocytes           ?? null,

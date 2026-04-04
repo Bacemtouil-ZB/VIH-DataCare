@@ -2,7 +2,7 @@ import pool from "../config/db.js";
 
 const SUBQUERY_PATIENT_ID = `(SELECT id FROM patients WHERE numero = $1)`;
 
-// ── Zone 1 — KPIs : dernier CD4 + dernière CV + créatinine ──────────────────
+// ── Zone 1 — KPIs : dernier CD4 + dernière CV + créatinine + sérologie HBV ──
 export const getKpisByNumero = async (numero) => {
 
   const queryCD4 = `
@@ -67,26 +67,48 @@ export const getKpisByNumero = async (numero) => {
     LIMIT 2
   `;
 
+  // ── Sérologie HBV — ligne la plus récente avec au moins un marqueur ──────
+  const queryHBV = `
+    SELECT
+      vhb_ag_hbs         AS ag_hbs,
+      vhb_ac_hbs         AS anti_hbs,
+      vhb_ac_hbc         AS anti_hbc,
+      date_serologie_vhb AS date
+    FROM vue_suivi_patient
+    WHERE patient_id = ${SUBQUERY_PATIENT_ID}
+      AND date_serologie_vhb IS NOT NULL
+      AND (
+        vhb_ag_hbs  IS NOT NULL OR
+        vhb_ac_hbs  IS NOT NULL OR
+        vhb_ac_hbc  IS NOT NULL
+      )
+    ORDER BY date_serologie_vhb DESC
+    LIMIT 1
+  `;
+
   const [
     cd4Result,
     cvResult,
     creatinineResult,
     cd4PrecedentResult,
     cvPrecedentResult,
+    hbvResult,
   ] = await Promise.all([
     pool.query(queryCD4,          [numero]),
     pool.query(queryCV,           [numero]),
     pool.query(queryCreatinine,   [numero]),
     pool.query(queryCD4Precedent, [numero]),
     pool.query(queryCVPrecedent,  [numero]),
+    pool.query(queryHBV,          [numero]),
   ]);
 
   return {
-    cd4:               cd4Result.rows[0]          || null,
-    cv:                cvResult.rows[0]           || null,
-    creatinine:        creatinineResult.rows[0]   || null,
-    cd4Historique:     cd4PrecedentResult.rows,
-    cvHistorique:      cvPrecedentResult.rows,
+    cd4:           cd4Result.rows[0]        || null,
+    cv:            cvResult.rows[0]         || null,
+    creatinine:    creatinineResult.rows[0] || null,
+    cd4Historique: cd4PrecedentResult.rows,
+    cvHistorique:  cvPrecedentResult.rows,
+    serologie_hbv: hbvResult.rows[0]        || null,  // ✅ { ag_hbs, anti_hbs, anti_hbc, date }
   };
 };
 

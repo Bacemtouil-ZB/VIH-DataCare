@@ -1,12 +1,7 @@
-// ============================================================
-//  GraphiqueCD4.jsx — Ligne unique + label au point de changement
-//  Axe Y linéaire
-// ============================================================
-
 import { Card, Spin, Empty } from "antd";
 import { useMemo } from "react";
 import {
-  ComposedChart, Line, XAxis, YAxis, CartesianGrid,
+  LineChart, Line, XAxis, YAxis, CartesianGrid,
   Tooltip, ReferenceLine, ResponsiveContainer, LabelList,
 } from "recharts";
 import {
@@ -16,51 +11,77 @@ import {
 } from "../../constants/suiviConstants";
 import { formatTooltipCD4, formatDate } from "../../helpers/suiviHelpers";
 
+const SEUIL_CRITIQUE  = 200;
+const SEUIL_OBJECTIF  = 500;
+const COULEUR_OK      = "#22C55E";
+const COULEUR_CRIT    = "#EF4444";
+const COULEUR_OBJ     = "#F59E0B";
+
 // ── Tooltip ───────────────────────────────────────────────────
 const TooltipCD4 = ({ active, payload }) => {
   if (!active || !payload?.length) return null;
-  const point = payload[0]?.payload;
+  const point   = payload[0]?.payload;
+  const estCrit = (point?.cd4_absolu ?? Infinity) < SEUIL_CRITIQUE;
+
   return (
     <div style={{
-      background: "#fff",
-      border: "1px solid #E8E8E8",
+      background:   "#1E293B",
+      border:       "1px solid #334155",
       borderRadius: 8,
-      padding: "10px 14px",
-      fontSize: 13,
-      boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-      minWidth: 190,
+      padding:      "10px 14px",
+      fontSize:     13,
+      boxShadow:    "0 4px 20px rgba(0,0,0,0.4)",
+      minWidth:     200,
     }}>
       <div style={{
-        fontWeight: 600, marginBottom: 8, color: "#333",
-        borderBottom: "1px solid #F0F0F0", paddingBottom: 6,
+        fontWeight: 600, marginBottom: 8, color: "#F1F5F9",
+        borderBottom: "1px solid #334155", paddingBottom: 6,
       }}>
         {formatDate(point?.date)}
       </div>
+
       <div style={{ display: "flex", justifyContent: "space-between", gap: 16, marginBottom: 4 }}>
-        <span style={{ color: "#888" }}>CD4</span>
-        <span style={{ color: CONFIG_GRAPHIQUE.couleur_cd4, fontWeight: 600 }}>
-          {formatTooltipCD4(point?.cd4_absolu)}
+        <span style={{ color: "#94A3B8" }}>CD4</span>
+        <span style={{ color: estCrit ? COULEUR_CRIT : COULEUR_OK, fontWeight: 700 }}>
+          {formatTooltipCD4(point?.cd4_absolu)} cell/mm³
         </span>
       </div>
+
       {point?.cd4_pourcent && (
         <div style={{ display: "flex", justifyContent: "space-between", gap: 16, marginBottom: 4 }}>
-          <span style={{ color: "#888" }}>Pourcentage</span>
-          <span style={{ color: "#555", fontWeight: 500 }}>{point.cd4_pourcent} %</span>
+          <span style={{ color: "#94A3B8" }}>Pourcentage</span>
+          <span style={{ color: "#CBD5E1", fontWeight: 500 }}>{point.cd4_pourcent} %</span>
         </div>
       )}
+
+      <div style={{
+        marginTop: 8, paddingTop: 6,
+        borderTop: "1px solid #334155",
+        display: "flex", alignItems: "center", gap: 6,
+      }}>
+        <div style={{
+          width: 8, height: 8, borderRadius: "50%",
+          background: estCrit ? COULEUR_CRIT : COULEUR_OK,
+        }} />
+        <span style={{ fontSize: 11, fontWeight: 600, color: estCrit ? COULEUR_CRIT : COULEUR_OK }}>
+          {estCrit ? "Zone critique" : "Normal"}
+        </span>
+      </div>
+
       {point?.traitement && (
         <div style={{
           marginTop: 8, paddingTop: 6,
-          borderTop: "1px solid #F0F0F0",
-          fontSize: 11, color: "#555",
+          borderTop: "1px solid #334155",
+          fontSize: 11, color: "#94A3B8",
           display: "flex", alignItems: "center", gap: 4,
         }}>
           <span>💊</span>
-          <span style={{ fontWeight: 500 }}>{point.traitement}</span>
+          <span style={{ fontWeight: 500, color: "#CBD5E1" }}>{point.traitement}</span>
         </div>
       )}
+
       {point?.type_bilan && (
-        <div style={{ fontSize: 11, color: "#AAA", marginTop: 2 }}>
+        <div style={{ fontSize: 11, color: "#64748B", marginTop: 2 }}>
           Bilan {point.type_bilan}
         </div>
       )}
@@ -68,60 +89,63 @@ const TooltipCD4 = ({ active, payload }) => {
   );
 };
 
-// ── Tick axe X date complète ──────────────────────────────────
-const TickX = ({ x, y, payload }) => {
-  if (!payload?.value) return null;
-  return (
-    <text x={x} y={y + 14} textAnchor="middle" fontSize={11} fill="#AAA">
-      {payload.value}
-    </text>
-  );
-};
-
-// ── Label valeur au-dessus de chaque point ────────────────────
-const LabelValeur = ({ x, y, value }) => {
+// ── Label valeur alternée ─────────────────────────────────────
+const LabelValeur = ({ x, y, value, index }) => {
   if (value == null) return null;
+  const estCrit  = value < SEUIL_CRITIQUE;
+  const decalage = index % 2 === 0 ? -14 : 18;
   return (
-    <text x={x} y={y - 10} textAnchor="middle" fontSize={10} fontWeight={600} fill="#555">
+    <text
+      x={x} y={y + decalage}
+      textAnchor="middle"
+      fontSize={10}
+      fontWeight={700}
+      fill={estCrit ? COULEUR_CRIT : COULEUR_OK}
+    >
       {value.toLocaleString("fr-FR")}
     </text>
   );
 };
 
-// ── Label traitement au point de changement ───────────────────
-const LabelTraitement = ({ x, y, value, index, data }) => {
-  if (!value) return null;
-  const estChangement =
-    index === 0 || data[index - 1]?.traitement !== value;
-  if (!estChangement) return null;
+// ── Dot coloré ───────────────────────────────────────────────
+const DotCD4 = (props) => {
+  const { cx, cy, payload } = props;
+  if (!cx || !cy) return null;
+  const estCrit = (payload?.cd4_absolu ?? Infinity) < SEUIL_CRITIQUE;
+  return (
+    <circle
+      key={`dot-${payload.date}`}
+      cx={cx} cy={cy} r={4.5}
+      fill="#0F172A"
+      stroke={estCrit ? COULEUR_CRIT : COULEUR_OK}
+      strokeWidth={2.5}
+    />
+  );
+};
 
-  const mots  = value.split("/");
-  const ligne1 = mots.slice(0, 2).join("/");
-  const ligne2 = mots.slice(2).join("/");
-
+// ── Segments colorés ──────────────────────────────────────────
+const LigneCD4 = ({ points, data }) => {
+  if (!points || points.length < 2) return null;
   return (
     <g>
-      <line
-        x1={x} y1={y - 8}
-        x2={x} y2={y + 30}
-        stroke="#CBD5E1"
-        strokeWidth={1}
-        strokeDasharray="3 2"
-      />
-      <rect
-        x={x - 28} y={y - 38}
-        width={56} height={ligne2 ? 28 : 16}
-        rx={4} fill="#F8FAFC"
-        stroke="#CBD5E1" strokeWidth={0.8}
-      />
-      <text x={x} y={y - 26} textAnchor="middle" fontSize={9} fontWeight={600} fill="#1E40AF">
-        {ligne1}
-      </text>
-      {ligne2 && (
-        <text x={x} y={y - 14} textAnchor="middle" fontSize={9} fontWeight={600} fill="#1E40AF">
-          {ligne2}
-        </text>
-      )}
+      {points.slice(0, -1).map((p1, i) => {
+        const p2 = points[i + 1];
+        if (!p1 || !p2 || p1.x == null || p2.x == null) return null;
+        const v1   = data[i]?.cd4_absolu;
+        const v2   = data[i + 1]?.cd4_absolu;
+        if (v1 == null || v2 == null) return null;
+        const crit = v1 < SEUIL_CRITIQUE || v2 < SEUIL_CRITIQUE;
+        return (
+          <line
+            key={`seg-${i}`}
+            x1={p1.x} y1={p1.y}
+            x2={p2.x} y2={p2.y}
+            stroke={crit ? COULEUR_CRIT : COULEUR_OK}
+            strokeWidth={2.5}
+            strokeLinecap="round"
+          />
+        );
+      })}
     </g>
   );
 };
@@ -161,127 +185,132 @@ const GraphiqueCD4 = ({ data = [], periodes = [], loading }) => {
     <Card
       style={{ marginBottom: 16 }}
       title={
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+          {/* Titre */}
           <div style={{
             width: 10, height: 10, borderRadius: "50%",
-            background: CONFIG_GRAPHIQUE.couleur_cd4,
+            background: CONFIG_GRAPHIQUE.couleur_cd4, flexShrink: 0,
           }} />
           <span>Évolution CD4</span>
           <span style={{ fontSize: 12, color: "#AAA", fontWeight: 400 }}>cell/mm³</span>
+
+          {/* Séparateur */}
+          <div style={{ width: 1, height: 16, background: "#E5E7EB", margin: "0 4px" }} />
+
+          {/* Badges légende */}
+          <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+
+            {/* Normal */}
+            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              <div style={{ width: 20, height: 3, background: COULEUR_OK, borderRadius: 2 }} />
+              <span style={{ fontSize: 11, color: "#555", fontWeight: 500 }}>Normal</span>
+            </div>
+
+            {/* Critique */}
+            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              <div style={{ width: 20, height: 3, background: COULEUR_CRIT, borderRadius: 2 }} />
+              <span style={{ fontSize: 11, color: "#555", fontWeight: 500 }}>
+                Critique
+                <span style={{ color: "#AAA", fontWeight: 400 }}> (&lt;{SEUIL_CRITIQUE})</span>
+              </span>
+            </div>
+
+            {/* Objectif */}
+            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              <div style={{
+                width: 20, height: 3,
+                background: `repeating-linear-gradient(90deg, ${COULEUR_OBJ} 0px, ${COULEUR_OBJ} 4px, transparent 4px, transparent 7px)`,
+                borderRadius: 2,
+              }} />
+              <span style={{ fontSize: 11, color: "#555", fontWeight: 500 }}>
+                Objectif
+                <span style={{ color: "#AAA", fontWeight: 400 }}> (≥{SEUIL_OBJECTIF})</span>
+              </span>
+            </div>
+
+          </div>
         </div>
       }
     >
-      <ResponsiveContainer width="100%" height={CONFIG_GRAPHIQUE.hauteur}>
-        <ComposedChart
-          data={dataAvecTraitement}
-          margin={{ top: 50, right: 24, left: 10, bottom: 0 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" stroke="#F0F0F0" vertical={false} />
-
-          <XAxis
-            dataKey="dateAffichee"
-            tick={<TickX />}
-            tickLine={false}
-            axisLine={{ stroke: "#F0F0F0" }}
-            height={30}
-          />
-
-          <YAxis
-            tick={{ fontSize: 11, fill: "#AAA" }}
-            tickLine={false}
-            axisLine={false}
-            width={45}
-            domain={[0, "auto"]}
-          />
-
-          {/* ── Lignes de référence depuis constantes ── */}
-          {LIGNES_REF_CD4.map((ligne) => (
-            <ReferenceLine
-              key={ligne.valeur}
-              y={ligne.valeur}
-              stroke={ligne.couleur}
-              strokeDasharray={ligne.dash}
-              strokeWidth={1.5}
-              label={{
-                value:    ligne.label,
-                position: "insideTopRight",
-                fontSize: 11,
-                fontWeight: 600,
-                fill:     ligne.couleur,
-              }}
-            />
-          ))}
-
-          <Tooltip content={<TooltipCD4 />} />
-
-          <Line
-            type="monotone"
-            dataKey="cd4_absolu"
-            stroke={CONFIG_GRAPHIQUE.couleur_cd4}
-            strokeWidth={2.5}
-            dot={(props) => {
-              const { cx, cy, payload } = props;
-              return (
-                <circle
-                  key={payload.date}
-                  cx={cx} cy={cy} r={4}
-                  fill="#fff"
-                  stroke={CONFIG_GRAPHIQUE.couleur_cd4}
-                  strokeWidth={2}
-                />
-              );
-            }}
-            activeDot={{ r: 6 }}
-            connectNulls={false}
+      {/* Zone graphique avec fond sombre */}
+      <div style={{
+        background:   "#0F172A",
+        borderRadius: 10,
+        padding:      "16px 12px 12px 4px",
+        overflow:     "hidden",
+      }}>
+        <ResponsiveContainer width="100%" height={CONFIG_GRAPHIQUE.hauteur ?? 300}>
+          <LineChart
+            data={dataAvecTraitement}
+            margin={{ top: 22, right: 28, left: 0, bottom: 4 }}
           >
-            <LabelList
-              dataKey="cd4_absolu"
-              content={(props) => <LabelValeur {...props} />}
+            <CartesianGrid
+              strokeDasharray="3 3"
+              stroke="#1E293B"
+              vertical={false}
             />
-            <LabelList
-              dataKey="traitement"
-              content={(props) => (
-                <LabelTraitement {...props} data={dataAvecTraitement} />
-              )}
-            />
-          </Line>
-        </ComposedChart>
-      </ResponsiveContainer>
 
-      {/* ── Légende traitements ── */}
-      {periodes.length > 0 && (
-        <div style={{
-          display: "flex", flexWrap: "wrap", gap: 16,
-          marginTop: 12, paddingTop: 12,
-          borderTop: "1px solid #F5F5F5",
-        }}>
-          {periodes.map((periode, i) => (
-            <div key={periode.medicament_id ?? i}
-              style={{ display: "flex", alignItems: "center", gap: 6 }}>
-              <div style={{
-                width: 6, height: 6, borderRadius: "50%",
-                background: "#1E40AF", flexShrink: 0,
-              }} />
-              <span style={{ fontSize: 12, color: "#555", fontWeight: 500 }}>
-                {periode.nom_medicament ?? periode.code_medicament}
-              </span>
-              {!periode.date_fin && (
-                <span style={{
-                  fontSize: 10, color: "#fff",
-                  background: "#2E7D32",
-                  borderRadius: 4, padding: "1px 6px", fontWeight: 500,
-                }}>
-                  en cours
-                </span>
+            <XAxis
+              dataKey="dateAffichee"
+              stroke="#475569"
+              tick={{ fontSize: 11, fill: "#94A3B8" }}
+              tickLine={{ stroke: "#334155" }}
+              axisLine={{ stroke: "#334155" }}
+              height={32}
+            />
+
+            <YAxis
+              width={52}
+              stroke="#475569"
+              tick={{ fontSize: 11, fill: "#94A3B8" }}
+              tickLine={false}
+              axisLine={{ stroke: "#334155" }}
+              domain={[0, "auto"]}
+              tickFormatter={(v) => v.toLocaleString("fr-FR")}
+            />
+
+            <Tooltip
+              cursor={{ stroke: "#475569", strokeWidth: 1, strokeDasharray: "4 2" }}
+              content={<TooltipCD4 />}
+            />
+
+            {/* Lignes de référence sans label — titre dans le header */}
+            {LIGNES_REF_CD4.map((ligne) => (
+              <ReferenceLine
+                key={ligne.valeur}
+                y={ligne.valeur}
+                stroke={ligne.couleur}
+                strokeDasharray="6 3"
+                strokeWidth={1.5}
+              />
+            ))}
+
+            {/* Ligne principale multicolore */}
+            <Line
+              type="monotone"
+              dataKey="cd4_absolu"
+              stroke="transparent"
+              strokeWidth={0}
+              dot={<DotCD4 />}
+              activeDot={{
+                r: 6,
+                fill: "#0F172A",
+                stroke: "#94A3B8",
+                strokeWidth: 2,
+              }}
+              connectNulls={false}
+              shape={(props) => (
+                <LigneCD4 points={props.points} data={dataAvecTraitement} />
               )}
-              <span style={{ fontSize: 11, color: "#BBB" }}>
-                {formatDate(periode.date_debut)}
-                {periode.date_fin ? ` → ${formatDate(periode.date_fin)}` : " → aujourd'hui"}
-              </span>
-            </div>
-          ))}
-        </div>
-      )}
+            >
+              <LabelList
+                dataKey="cd4_absolu"
+                content={<LabelValeur />}
+              />
+            </Line>
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </Card>
   );
 };

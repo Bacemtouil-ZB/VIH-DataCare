@@ -44,7 +44,7 @@ export const formatCD4 = (valeur) => {
   return valeur.toLocaleString("fr-FR");
 };
 
-export const formatCreatinine = (valeur) => {  // ✅ remplace formatHGB
+export const formatCreatinine = (valeur) => {  
   if (valeur === null || valeur === undefined) return "---";
   const num = parseFloat(valeur);
   if (isNaN(num)) return "---";
@@ -73,7 +73,7 @@ export const getCVAntColor = (valeur) => {
   return COULEURS_STATUT[STATUTS.BON];
 };
 
-export const getCreatinineAntColor = (valeur) => {  // ✅ remplace getHGBAntColor
+export const getCreatinineAntColor = (valeur) => { 
   if (valeur === null || valeur === undefined) return COULEURS_STATUT[STATUTS.INCONNU];
   if (valeur > SEUILS_CREATININE.CRITIQUE) return COULEURS_STATUT[STATUTS.CRITIQUE];
   if (valeur > SEUILS_CREATININE.NORMAL)   return COULEURS_STATUT[STATUTS.MOYEN];
@@ -103,7 +103,7 @@ export const getCouleurARV = (index) => {
 
 export const formatTooltipCV = (valeur) => {
   if (valeur === null || valeur === undefined) return "---";
-  if (valeur < SEUILS_CV.INDETECTABLE) return "Indétectable";
+  //if (valeur < SEUILS_CV.INDETECTABLE) return "Indétectable";
   return `${valeur.toLocaleString("fr-FR")} copies/mL`;
 };
 
@@ -121,3 +121,34 @@ export const getDureeTraitement = (dateDebut, dateFin) => {
   if (!dateFin) return `${mois} mois (en cours)`;
   return `${mois} mois`;
 };
+
+// cards de serologie VHB
+import { COULEURS_HBV, COULEUR_HBV_INCONNU } from "../constants/suiviConstants";
+
+
+export const getHBVHexColor = (marqueur, valeur) => {
+  if (!valeur) return COULEUR_HBV_INCONNU;
+  return COULEURS_HBV[marqueur]?.[valeur] ?? COULEUR_HBV_INCONNU;
+};
+
+
+export const getHBVSignification = (marqueur, valeur) => {
+  if (!valeur) return "Non déterminé";
+  const map = {
+    ag_hbs: {
+      Positif: "Infection active",
+      Négatif: "Pas d'infection active",
+    },
+    anti_hbs: {
+      Positif: "Immunisé",
+      Négatif: "Non immunisé — vaccination à envisager",
+    },
+    anti_hbc: {
+      Positif: "Contact antérieur VHB",
+      Négatif: "Jamais exposé au VHB",
+    },
+  };
+  return map[marqueur]?.[valeur] ?? "Non déterminé";
+
+};
+
