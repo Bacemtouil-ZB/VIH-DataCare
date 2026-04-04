@@ -10,12 +10,14 @@ export const getPatientsWithPrescriptions = async () => {
       p.birthdate                   AS date_naissance,
       pe.id                         AS prescription_id,
       pe.date                       AS date_debut_traitement,
-      pe.quantite                   AS quantite_prescrite,
+      pe.posologie,
+      pe.periode                    AS periode_prescrite,
+      pe.periode_modifiee,
       pe.statut                     AS statut_prescription,
       pe.date_delivrance,
       -- Traitement : code du médicament depuis stock_medicaments
       COALESCE(sm.code, sm.composition, 'Aucun') AS nom_traitement,
-      -- Prochaine prise : depuis suivi_therapeutique
+      -- Suivi thérapeutique
       st.statut_patient,
       st.date_prochaine_prise,
       st.date_ecart                 AS suivi_date_ecart,

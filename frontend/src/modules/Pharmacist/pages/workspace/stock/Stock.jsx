@@ -17,6 +17,7 @@ export default function Stock() {
         addForm={logic.addForm}
         setAddForm={logic.setAddForm}
         editingId={logic.editingId}
+        editingMode={logic.editingMode}
         editingQuantity={logic.editingQuantity}
         setEditingQuantity={logic.setEditingQuantity}
         showHistory={logic.showHistory}
@@ -28,7 +29,8 @@ export default function Stock() {
         handleAddMedication={logic.handleAddMedication}
         cancelAddForm={logic.cancelAddForm}
         handleDeleteMedication={logic.handleDeleteMedication}
-        beginEditQuantity={logic.beginEditQuantity}
+        beginIncrement={logic.beginIncrement}
+        beginDecrement={logic.beginDecrement}
         cancelEditQuantity={logic.cancelEditQuantity}
         saveQuantity={logic.saveQuantity}
       />

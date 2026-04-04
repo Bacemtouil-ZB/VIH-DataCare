@@ -2,7 +2,12 @@ import { useEffect } from "react";
 import { formatDateFr } from "../../../../shared/utils/logiqueTableHistory.js";
 import { calculatePreviewDate } from "./../../pages/workspace/prescriptionMedicale/PrescriptionsPharmahelpers.js";
 
-
+/**
+ * ModalValidationPrescription — Scénario 1
+ * Le pharmacien valide la prescription sans modification.
+ * Date de délivrance = date système (aujourd'hui).
+ * Date prochaine prise = date système + periodePrescrite (jours médecin).
+ */
 export default function ModalValidationPrescription({ item, saving, onClose, onConfirm }) {
   // Fermeture sur Escape (désactivée si saving)
   useEffect(() => {
@@ -14,7 +19,12 @@ export default function ModalValidationPrescription({ item, saving, onClose, onC
 
   if (!item) return null;
 
-  const previewDate = calculatePreviewDate(item.quantitePrescrite);
+  // Période prescrite par le médecin (en jours) — jamais periode_modifiee ici
+  const periodeJours = Number(item.periodePrescrite ?? item.periode ?? 0);
+
+  // Calcul : date système (délivrance) + periode prescrite médecin
+  const today       = new Date();
+  const previewDate = calculatePreviewDate(periodeJours, today);
 
   return (
     <div
@@ -67,7 +77,7 @@ export default function ModalValidationPrescription({ item, saving, onClose, onC
               <div className="d-flex justify-content-between mb-1">
                 <span className="text-muted" style={{ fontSize: "0.82rem" }}>Dossier</span>
                 <span className="fw-semibold" style={{ fontSize: "0.9rem" }}>
-                  {item.numeroDossier}
+                  {item.numeroDossier ?? "-"}
                 </span>
               </div>
               <div className="d-flex justify-content-between mb-1">
@@ -77,21 +87,34 @@ export default function ModalValidationPrescription({ item, saving, onClose, onC
                 </span>
               </div>
               <div className="d-flex justify-content-between mb-1">
-                <span className="text-muted" style={{ fontSize: "0.82rem" }}>Quantité</span>
+                <span className="text-muted" style={{ fontSize: "0.82rem" }}>
+                  Période prescrite (médecin)
+                </span>
                 <span className="fw-semibold" style={{ fontSize: "0.9rem" }}>
-                  {item.quantitePrescrite} mois
+                  {periodeJours > 0 ? `${periodeJours} jours` : "-"}
+                </span>
+              </div>
+              <div className="d-flex justify-content-between">
+                <span className="text-muted" style={{ fontSize: "0.82rem" }}>
+                  Date de délivrance
+                </span>
+                <span className="fw-semibold" style={{ fontSize: "0.9rem" }}>
+                  {today.toLocaleDateString("fr-FR")} <em className="text-muted">(aujourd'hui)</em>
                 </span>
               </div>
             </div>
 
-            {/* Prochaine prise estimée */}
+            {/* Prochaine prise calculée */}
             <div className="p-3 rounded-2"
                  style={{ background: "#f0fdf4", border: "1px solid #bbf7d0" }}>
               <p className="mb-1 text-muted" style={{ fontSize: "0.78rem" }}>
-                Prochaine prise estimée après validation
+                Date de prochaine prise estimée
+                <span className="ms-1 text-success fw-semibold">
+                  (délivrance + {periodeJours} j)
+                </span>
               </p>
               <p className="mb-0 fw-bold" style={{ color: "#166534", fontSize: "1rem" }}>
-                {formatDateFr(previewDate, "-")}
+                {previewDate ? formatDateFr(previewDate, "-") : "—"}
               </p>
             </div>
           </div>

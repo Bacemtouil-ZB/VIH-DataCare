@@ -15,7 +15,7 @@
   border-left: 4px solid #ffffff;
   border-radius: 8px;
   padding: 12px 16px;
-  color: #6b7280;
+  color: black;
   font-size: 0.88rem;
   margin-bottom: 16px;
 }
@@ -57,7 +57,7 @@
 /* Date inline dans l'en-tête de section */
 .rb-section-date {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 6px;
   flex-shrink: 0;
 }
@@ -93,12 +93,6 @@
   cursor: not-allowed;
 }
 
-.rb-date-control {
-  display: flex;
-  flex-direction: column;
-  min-width: 150px;
-}
-
 /* ── Grille champs : 3 champs par ligne ─────────────────────────────────────── */
 .rb-champs-grid {
   display: grid;
@@ -107,11 +101,11 @@
   padding: 12px 14px;
 }
 
-/* ── Champ : label + input sur la même ligne ────────────────────────────────── */
+/* ── Champ : label au-dessus, input + erreur en dessous ────────────────────── */
 .rb-champ {
   display: flex;
-  align-items: flex-start;
-  gap: 8px;
+  flex-direction: column;
+  gap: 4px;
   min-width: 0;
 }
 
@@ -119,25 +113,15 @@
   font-size: 0.8rem;
   font-weight: 500;
   color: #374151;
-  white-space: nowrap;
-  flex-shrink: 0;
-  min-width: 90px;
-  max-width: 130px;
+  white-space: normal;
   margin: 0;
 }
 
-/* ── Wrapper input + unité ──────────────────────────────────────────────────── */
+/* ── Wrapper input + unité (reste horizontal) ──────────────────────────────── */
 .rb-input-unit {
   display: flex;
   align-items: center;
   gap: 4px;
-  flex: 1;
-  min-width: 0;
-}
-
-.rb-field-control {
-  display: flex;
-  flex-direction: column;
   flex: 1;
   min-width: 0;
 }
@@ -153,6 +137,12 @@
   border: 1px solid #d1d5db;
   border-radius: 6px;
   background: #fff;
+}
+
+.rb-input-unit .form-control.is-invalid,
+.rb-champ .form-control.is-invalid {
+  border-color: #dc2626;
+  background: #fef2f2;
 }
 
 .rb-champ .form-select {
@@ -207,4 +197,69 @@
   .rb-section-header { flex-direction: column; align-items: flex-start; }
   .rb-champ { flex-direction: column; align-items: flex-start; }
   .rb-champ > label { min-width: unset; max-width: unset; }
+}
+/* ── RadioGroup dans les sections biologiques ───────────────────────────────── */
+.rb-radio-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.rb-radio-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.rb-radio-input {
+  width: 14px;
+  height: 14px;
+  accent-color: #1a7a5e;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.rb-radio-label {
+  font-size: 0.78rem;
+  color: #374151;
+  white-space: nowrap;
+}
+
+.rb-radio-item:has(.rb-radio-input:disabled) {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+/* Champ radio prend toute la largeur disponible (pas de min-width label fixe) */
+.rb-champ:has(.rb-radio-group) > label {
+  min-width: 80px;
+}
+/* ── Date en lecture seule dans l'en-tête de section (mode détail) ──────────── */
+.rb-date-readonly {
+  font-size: 0.82rem;
+  color: #1a7a5e;
+  font-weight: 600;
+  padding: 3px 8px;
+  background: #f0f9f5;
+  border: 1px solid #a7d7c0;
+  border-radius: 6px;
+  min-width: 100px;
+  display: inline-block;
+}
+
+/* ── Section IDR : forcer 1 colonne pour que les 3 radios restent inline ─────── */
+.rb-section[data-section="idr_tuberculine"] .rb-champs-grid {
+  grid-template-columns: 1fr;
+}
+
+/* ── Genotypage : bouton choisir fichier aligné dans l'en-tête ───────────────── */
+.rb-genotypage-upload-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
 }

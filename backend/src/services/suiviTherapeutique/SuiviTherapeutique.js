@@ -13,6 +13,7 @@ export class SuiviTherapeutique {
     }
     const next = new Date(this.dateProchainePrise);
     next.setHours(0, 0, 0, 0);
+    // Positif = patient en retard (date prochaine prise dépassée)
     return Math.floor((this.referenceDate - next) / MS_PER_DAY);
   }
 
@@ -27,22 +28,38 @@ export class SuiviTherapeutique {
   toJSON() {
     return {
       statut_patient: this.statutPatient,
-      ecart_jours: this.ecartJours,
-      date_ecart: this.dateEcart,
+      ecart_jours:    this.ecartJours,
+      date_ecart:     this.dateEcart,
     };
   }
 
-  static calculerDateProchainePrise(dateDepart, quantiteMois) {
-    const baseDate = new Date(dateDepart);
-    baseDate.setHours(0, 0, 0, 0);
+  /**
+   * Calcule la date de prochaine prise.
+   *
+   * Scénario 1 (validation sans modification) :
+   *   periodeJours = periode prescrite par le médecin
+   *
+   * Scénario 2 (validation avec modification) :
+   *   periodeJours = periode_modifiee insérée par le pharmacien
+   *                  (TOUJOURS prioritaire sur la période du médecin)
+   *
+   * @param {Date|string} dateDelivrance  - Date de délivrance (date système au moment de la validation)
+   * @param {number}      periodeJours    - Nombre de jours (période effective retenue)
+   * @returns {Date}
+   */
+  static calculerDateProchainePrise(dateDelivrance, periodeJours) {
+    const base = new Date(dateDelivrance);
+    base.setHours(0, 0, 0, 0);
 
-    const months = Number.parseInt(quantiteMois, 10);
-    if (!months || months <= 0) {
-      throw new Error("Quantite prescrite invalide pour calculer la prochaine prise");
+    const jours = Number.parseInt(periodeJours, 10);
+    if (!jours || jours <= 0) {
+      throw new Error(
+        `Période invalide pour calculer la prochaine prise : "${periodeJours}"`,
+      );
     }
 
-    const prochaine = new Date(baseDate);
-    prochaine.setMonth(prochaine.getMonth() + months);
+    const prochaine = new Date(base);
+    prochaine.setDate(prochaine.getDate() + jours);
     return prochaine;
   }
 }

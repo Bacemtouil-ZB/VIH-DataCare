@@ -61,7 +61,7 @@ export default function ConfirmPrescriptionModal({
             { label: "Patient",     value: data.patient    || "—" },
             { label: "Dossier",     value: data.dossier    || "—" },
             { label: "Traitement",  value: data.traitement || "—" },
-            { label: "Quantité",    value: data.quantite ? `${data.quantite} ` : "—" },
+            { label: "Période",    value: data.periode ? `${data.periode} ` : "—" },
           ].map(({ label, value }) => (
             <div
               key={label}

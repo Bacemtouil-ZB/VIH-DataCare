@@ -166,7 +166,7 @@ export default function ProfileForme({
         </div>
 
         <div className="form-group">
-          <FieldLabel>Code postal naissance</FieldLabel>
+          <FieldLabel>Délégation de naissance</FieldLabel>
           <select
             name="birth_postal_code_id"
             value={formData.birth_postal_code_id || ""}
@@ -195,7 +195,7 @@ export default function ProfileForme({
         </div>
 
         <div className="form-group">
-          <FieldLabel >Code postal résidence</FieldLabel>
+          <FieldLabel >Délégation de résidence</FieldLabel>
           <select
             name="residence_postal_code_id"
             value={formData.residence_postal_code_id || ""}
@@ -209,18 +209,6 @@ export default function ProfileForme({
             {renderPostalOptions(filteredResidencePostalCodes)}
           </select>
           {errors.residence_postal_code_id && <FieldError error={errors.residence_postal_code_id} />}
-        </div>
-
-        <div className="form-group full-width">
-          <FieldLabel>Adresse exacte</FieldLabel>
-          <Input
-            name="exact_address"
-            value={formData.exact_address || ""}
-            onChange={handleChange}
-            disabled={!isEditing}
-            placeholder="Rue, immeuble, étage, numéro..."
-          />
-          {errors.exact_address && <FieldError error={errors.exact_address} />}
         </div>
 
         <div className="form-group ">

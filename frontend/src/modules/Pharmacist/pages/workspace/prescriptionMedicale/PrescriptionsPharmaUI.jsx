@@ -3,39 +3,71 @@ import {
   HistoriqueActions,
   HistoriqueTable,
   SearchBar,
+  Badge
 } from "../../../../../shared/components";
 import { MESSAGES, TABLE_HEADERS }         from "./prescriptionsPharmaConstants";
 import {
   resolveSuiviBadge,
   resolvePrescriptionBadge,
   isValidateDisabled,
+  isModifyDisabled,
   daysUntil,
   getRdvBarWidth,
   getDaysLabel,
 } from "./PrescriptionsPharmahelpers";
 import ModalDetailPrescription             from "../../../components/modal/Modaldetailprescription";
 import ModalValidationPrescription         from "../../../components/modal/ModalValidationPrescription";
-import { formatDateFr }                       from "../../../../../shared/utils/logiqueTableHistory";
-// ── Badges ────────────────────────────────────────────────────
+import ModalModifierPeriode                from "../../../components/modal/ModalModifierPeriode";
+import { formatDateFr }                    from "../../../../../shared/utils/logiqueTableHistory";
+
+// ── Palette de couleurs centralisée ──────────────────────────
+const BADGE_COLORS = {
+  // Statut prescription
+  delivree: { bg: "#dcfce7", color: "#166534" },
+  modifie:  { bg: "#ffedd5", color: "#9a3412" },
+  envoyee:  { bg: "#fef9c3", color: "#854d0e" },
+  // Statut suivi thérapeutique
+  actif:    { bg: "#dbeafe", color: "#1e40af" },
+  attente:  { bg: "#f1f5f9", color: "#475569" },
+  perdu:    { bg: "#fee2e2", color: "#991b1b" },
+};
+
+// ── SuiviBadge — utilise <Badge> ─────────────────────────────
 function SuiviBadge({ statutPatient, ecartJours }) {
-  const { badgeClass, badgeText, showEcart } = resolveSuiviBadge(statutPatient, ecartJours);
+  const { badgeText, showEcart } = resolveSuiviBadge(statutPatient, ecartJours);
+
+  const key     = (statutPatient || "").toLowerCase();
+  const isPerdu = key.includes("perdu");
+  const isAtt   = key.includes("attente");
+  const palette = isPerdu
+    ? BADGE_COLORS.perdu
+    : isAtt
+      ? BADGE_COLORS.attente
+      : BADGE_COLORS.actif;
+
   return (
-    <div className="statut-wrapper">
-      <span className={`statut-badge ${badgeClass}`}>{badgeText}</span>
-      {showEcart && <span className="ecart-badge">+{ecartJours}j</span>}
+    <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", alignItems: "flex-start" }}>
+      <Badge bg={palette.bg} color={palette.color}>{badgeText}</Badge>
+      {showEcart && (
+        <Badge bg="#fef2f2" color="#dc2626">+{ecartJours}j</Badge>
+      )}
     </div>
   );
 }
 
+// ── PrescriptionBadge — utilise <Badge> ──────────────────────
 function PrescriptionBadge({ statutPrescription }) {
-  const { badgeClass, badgeText } = resolvePrescriptionBadge(statutPrescription);
-  return <span className={`statut-badge ${badgeClass}`}>{badgeText}</span>;
+  const { badgeText } = resolvePrescriptionBadge(statutPrescription);
+  const key     = (statutPrescription || "envoyee").toLowerCase();
+  const palette = BADGE_COLORS[key] ?? BADGE_COLORS.envoyee;
+
+  return <Badge bg={palette.bg} color={palette.color}>{badgeText}</Badge>;
 }
 
 // ── RdvCell ───────────────────────────────────────────────────
 function RdvCell({ rdv }) {
   if (!rdv?.date) {
-    return <span className="badge rdv-none">Aucun RDV</span>;
+    return <Badge bg="#f8fafc" color="#94a3b8">Aucun RDV</Badge>;
   }
   const days    = daysUntil(rdv.date);
   const label   = getDaysLabel(days);
@@ -55,6 +87,34 @@ function RdvCell({ rdv }) {
   );
 }
 
+// ── ActionButtons — boutons mutuellement bloquants ────────────
+function ActionButtons({ p, openDetail, openValidation, openModification, activeAction }) {
+  const statut = p.statutPrescription;
+
+  const validateBlocked = isValidateDisabled(statut) || activeAction === "modify";
+  const modifyBlocked   = isModifyDisabled(statut)   || activeAction === "validate";
+
+  return (
+    <HistoriqueActions
+      onDetails={() => openDetail(p)}
+      onValidate={() => openValidation(p)}
+      validateProps={{
+        disabled: validateBlocked,
+        title: validateBlocked ? "Action non disponible" : undefined,
+      }}
+      onEdit={
+        typeof openModification === "function" && !modifyBlocked
+          ? () => openModification(p)
+          : undefined
+      }
+      editProps={{
+        disabled: modifyBlocked,
+        title: modifyBlocked ? "Action non disponible" : undefined,
+      }}
+    />
+  );
+}
+
 // ── Composant principal ───────────────────────────────────────
 export default function PrescriptionsUI({
   search,
@@ -62,6 +122,7 @@ export default function PrescriptionsUI({
   filtered,
   detailItem,
   validationItem,
+  modificationItem,
   savingValidation,
   setSearch,
   setShowHistory,
@@ -69,8 +130,17 @@ export default function PrescriptionsUI({
   closeDetail,
   openValidation,
   closeValidation,
+  openModification,
+  closeModification,
   handleValidate,
+  handleValidateAvecModification,
 }) {
+  const activeAction = validationItem
+    ? "validate"
+    : modificationItem
+      ? "modify"
+      : null;
+
   return (
     <div className="prescriptions-page-container">
 
@@ -83,7 +153,7 @@ export default function PrescriptionsUI({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           label=""
-          placeholder="Rechercher par nom, prenom ou traitement"
+          placeholder="Rechercher par nom, prénom ou traitement"
           wrapperClassName="prescription-search"
           inputClassName="search-input"
         />
@@ -105,15 +175,23 @@ export default function PrescriptionsUI({
           emptyMessage={search ? MESSAGES.aucunResultat : MESSAGES.aucunePrescription}
           renderRow={(p) => (
             <tr key={p.prescriptionId || `${p.numeroDossier}-${p.nomTraitement}`}>
-             <td className="td-date">
+
+              {/* Date naissance */}
+              <td className="td-date">
                 {p.dateNaissance
                   ? new Date(p.dateNaissance).toLocaleDateString("fr-FR")
                   : "-"}
               </td>
+
+              {/* Patient */}
               <td className="td-patient">
                 {`${p.patientSurname} ${p.patientName}`.trim()}
               </td>
+
+              {/* Traitement */}
               <td className="td-traitement">{p.nomTraitement}</td>
+
+              {/* Date prochaine prise */}
               <td className="td-date">
                 {p.dateProchainePrise ? (
                   <span className={p.ecartJours > 0 ? "date-retard" : "date-future"}>
@@ -121,21 +199,30 @@ export default function PrescriptionsUI({
                   </span>
                 ) : "-"}
               </td>
-              <td className="td-quantite">{p.quantitePrescrite}</td>
+
+              {/* Statut prescription */}
               <td className="td-statut">
                 <PrescriptionBadge statutPrescription={p.statutPrescription} />
               </td>
+
+              {/* Suivi thérapeutique */}
               <td className="td-statut">
                 <SuiviBadge statutPatient={p.statutPatient} ecartJours={p.ecartJours} />
               </td>
+
+              {/* RDV */}
               <td className="td-rdv">
                 <RdvCell rdv={p.rdv} />
               </td>
+
+              {/* Action */}
               <td className="td-action">
-                <HistoriqueActions
-                  onDetails={() => openDetail(p)}
-                  onValidate={() => openValidation(p)}
-                  validateProps={{ disabled: isValidateDisabled(p.statutPrescription) }}
+                <ActionButtons
+                  p={p}
+                  openDetail={openDetail}
+                  openValidation={openValidation}
+                  openModification={openModification}
+                  activeAction={activeAction}
                 />
               </td>
             </tr>
@@ -150,6 +237,12 @@ export default function PrescriptionsUI({
         saving={savingValidation}
         onClose={closeValidation}
         onConfirm={handleValidate}
+      />
+      <ModalModifierPeriode
+        item={modificationItem}
+        saving={savingValidation}
+        onClose={closeModification}
+        onConfirm={handleValidateAvecModification}
       />
     </div>
   );

@@ -12,23 +12,87 @@ import {
 } from "../../../../../shared/components";
 import { formatDateTimeFr } from "../../../../../shared/utils/logiqueTableHistory";
 
+// ── Boutons + / - inline ──────────────────────────────────────
+function QuantityEditPanel({ item, editingMode, editingQuantity, setEditingQuantity, saving, saveQuantity, cancelEditQuantity }) {
+  const isDecrement = editingMode === "decrement";
+  const accentBg    = isDecrement ? "#fee2e2" : "#dcfce7";
+  const accentColor = isDecrement ? "#991b1b" : "#166534";
+  const label       = isDecrement ? "Retirer du stock" : "Ajouter au stock";
+  const verb        = isDecrement ? "−" : "+";
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", minWidth: "180px" }}>
+      {/* Label contextuel */}
+      <span style={{ fontSize: "0.72rem", fontWeight: 700, color: accentColor, letterSpacing: "0.04em" }}>
+        {verb} {label}
+      </span>
+
+      {/* Quantité actuelle → aperçu */}
+      <span style={{ fontSize: "0.78rem", color: "#64748b" }}>
+        Stock actuel :&nbsp;
+        <strong style={{ color: "#0f172a" }}>{item.quantity}</strong>
+        {editingQuantity !== "" && Number(editingQuantity) > 0 && (
+          <span style={{ color: accentColor, fontWeight: 700 }}>
+            &nbsp;{isDecrement ? "→" : "→"}&nbsp;
+            {isDecrement
+              ? Math.max(0, item.quantity - Number(editingQuantity))
+              : item.quantity + Number(editingQuantity)}
+          </span>
+        )}
+      </span>
+
+      {/* Input delta */}
+      <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+        <Input
+          type="number"
+          min="1"
+          className="form-control form-control-sm ph-qty-input"
+          style={{ width: "80px", borderColor: accentColor }}
+          value={editingQuantity}
+          onChange={(e) => setEditingQuantity(e.target.value)}
+          placeholder="Qté"
+          disabled={saving}
+          autoFocus
+        />
+        <ActionButton
+          action="save"
+          label={saving ? "..." : "OK"}
+          onClick={() => saveQuantity(item)}
+          size="sm"
+          showIcon={false}
+          disabled={saving}
+        />
+        <ActionButton
+          action="annuler"
+          label="✕"
+          onClick={cancelEditQuantity}
+          size="sm"
+          showIcon={false}
+          disabled={saving}
+        />
+      </div>
+    </div>
+  );
+}
+
+// ── Composant principal ───────────────────────────────────────
 export default function StockUI({
-  // états
   search,          setSearch,
   showAddForm,     setShowAddForm,
   addForm,         setAddForm,
   editingId,
+  editingMode,
   editingQuantity, setEditingQuantity,
   showHistory,     setShowHistory,
   loading,
   saving,
   error,
   filteredItems,
-  // actions
   handleAddMedication,
   cancelAddForm,
   handleDeleteMedication,
-  beginEditQuantity,
+  beginIncrement,
+  beginDecrement,
   cancelEditQuantity,
   saveQuantity,
 }) {
@@ -42,7 +106,7 @@ export default function StockUI({
           </div>
           <ActionButton
             action="add"
-            label={"Ajouter au stock"}
+            label="Ajouter au stock"
             onClick={() => setShowAddForm((v) => !v)}
             disabled={loading}
             size="md"
@@ -54,7 +118,7 @@ export default function StockUI({
       {/* ── Erreur ─────────────────────────────────────────────────────────── */}
       {error && <p className="ph-stock-error">{error}</p>}
 
-      {/* ── Formulaire ajout collapsible ────────────────────────────────────── */}
+      {/* ── Formulaire ajout ────────────────────────────────────────────────── */}
       {showAddForm && (
         <div className="ph-stock-add-card">
           <div className="ph-stock-add-grid">
@@ -69,7 +133,6 @@ export default function StockUI({
                 disabled={saving}
               />
             </div>
-
             <div className="ph-comp-field">
               <FieldLabel required>Médicament</FieldLabel>
               <Input
@@ -81,7 +144,6 @@ export default function StockUI({
                 disabled={saving}
               />
             </div>
-
             <div className="ph-qty-field">
               <FieldLabel required>Quantité initiale</FieldLabel>
               <Input
@@ -94,24 +156,9 @@ export default function StockUI({
                 disabled={saving}
               />
             </div>
-
             <div className="ph-stock-add-actions">
-              <ActionButton
-                action="save"
-                label={saving ? "Enregistrement..." : "Enregistrer"}
-                onClick={handleAddMedication}
-                disabled={saving || loading}
-                size="sm"
-                showIcon={false}
-              />
-              <ActionButton
-                action="annuler"
-                label="Annuler"
-                onClick={cancelAddForm}
-                size="sm"
-                showIcon={false}
-                disabled={saving}
-              />
+              <ActionButton action="save" label={saving ? "Enregistrement..." : "Enregistrer"} onClick={handleAddMedication} disabled={saving || loading} size="sm" showIcon={false} />
+              <ActionButton action="annuler" label="Annuler" onClick={cancelAddForm} size="sm" showIcon={false} disabled={saving} />
             </div>
           </div>
         </div>
@@ -147,55 +194,94 @@ export default function StockUI({
               const isEditing = editingId === item.id;
               return (
                 <tr key={item.id}>
+                  {/* Code */}
                   <td>
                     <Badge bg="#dbeafe" color="#1e40af">{item.code}</Badge>
                   </td>
+
+                  {/* Médicament */}
                   <td className="ph-comp-col">{item.composition}</td>
+
+                  {/* Quantité — affiche le panel d'édition ou la valeur */}
                   <td>
                     {isEditing ? (
-                      <Input
-                        type="number"
-                        min="0"
-                        className="form-control form-control-sm ph-qty-input"
-                        value={editingQuantity}
-                        onChange={(e) => setEditingQuantity(e.target.value)}
+                      <QuantityEditPanel
+                        item={item}
+                        editingMode={editingMode}
+                        editingQuantity={editingQuantity}
+                        setEditingQuantity={setEditingQuantity}
+                        saving={saving}
+                        saveQuantity={saveQuantity}
+                        cancelEditQuantity={cancelEditQuantity}
                       />
                     ) : (
-                      <span>{item.quantity}</span>
+                      <span style={{ fontWeight: 700, fontSize: "1rem", color: "#0f172a" }}>
+                        {item.quantity}
+                      </span>
                     )}
                   </td>
+
+                  {/* Dernière maj */}
                   <td>{formatDateTimeFr(item.updatedAt, "-")}</td>
+
+                  {/* Alerte stock */}
                   <td>
                     <StockAlert quantity={item.quantity} />
                   </td>
+
+                  {/* Actions */}
                   <td>
-                    <div className="ph-actions">
-                      {isEditing ? (
-                        <>
-                          <ActionButton
-                            action="save"
-                            label={saving ? "Enregistrement..." : "Enregistrer"}
-                            onClick={() => saveQuantity(item)}
-                            size="sm"
-                            showIcon={false}
-                            disabled={saving}
-                          />
-                          <ActionButton
-                            action="annuler"
-                            label="Annuler"
-                            onClick={cancelEditQuantity}
-                            size="sm"
-                            showIcon={false}
-                            disabled={saving}
-                          />
-                        </>
-                      ) : (
+                    {isEditing ? null : (
+                      <div className="ph-actions" style={{ display: "flex", alignItems: "center", gap: "0.4rem", flexWrap: "nowrap" }}>
+
+                        {/* Bouton + */}
+                        <button
+                          type="button"
+                          className="btn btn-sm"
+                          title="Augmenter le stock"
+                          disabled={saving}
+                          onClick={() => beginIncrement(item)}
+                          style={{
+                            background: "#dcfce7",
+                            color: "#166534",
+                            border: "1px solid #86efac",
+                            borderRadius: "6px",
+                            fontWeight: 800,
+                            fontSize: "1rem",
+                            lineHeight: 1,
+                            padding: "0.3rem 0.65rem",
+                          }}
+                        >
+                          +
+                        </button>
+
+                        {/* Bouton − */}
+                        <button
+                          type="button"
+                          className="btn btn-sm"
+                          title="Diminuer le stock"
+                          disabled={saving}
+                          onClick={() => beginDecrement(item)}
+                          style={{
+                            background: "#fee2e2",
+                            color: "#991b1b",
+                            border: "1px solid #fca5a5",
+                            borderRadius: "6px",
+                            fontWeight: 800,
+                            fontSize: "1rem",
+                            lineHeight: 1,
+                            padding: "0.3rem 0.65rem",
+                          }}
+                        >
+                          −
+                        </button>
+
+                        {/* Supprimer */}
                         <HistoriqueActions
-                          onEdit={() => beginEditQuantity(item)}
                           onDelete={() => handleDeleteMedication(item.id)}
                         />
-                      )}
-                    </div>
+                      </div>
+                    )}
                   </td>
                 </tr>
               );

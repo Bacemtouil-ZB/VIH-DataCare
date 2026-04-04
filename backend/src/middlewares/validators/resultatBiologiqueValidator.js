@@ -24,21 +24,21 @@ const NUMERIC_LIMITS = {
 };
 
 const SELECT_LIMITS = {
-  serologie_vih: ["positif", "negatif"],
-  vhb_ag_hbs: ["positif", "negatif"],
-  vhb_ac_hbs: ["positif", "negatif"],
-  vhb_ac_hbc: ["positif", "negatif"],
-  vha_igg: ["positif", "negatif"],
-  vhc: ["positif", "negatif"],
-  vdrl: ["positif", "negatif"],
-  tpha: ["positif", "negatif"],
-  toxo_igm: ["positif", "negatif"],
-  toxo_igg: ["positif", "negatif"],
-  cmv_igm: ["positif", "negatif"],
-  cmv_igg: ["positif", "negatif"],
-  leishmania_ac: ["positif", "negatif"],
-  idr_tuberculine: ["negatif", "positif"],
-  radio_resultat: ["negatif", "positif"],
+  serologie_vih: ["positif", "negatif", "NF"],
+  vhb_ag_hbs: ["positif", "negatif", "NF"],
+  vhb_ac_hbs: ["positif", "negatif", "NF"],
+  vhb_ac_hbc: ["positif", "negatif", "NF"],
+  vha_igg: ["positif", "negatif", "NF"],
+  vhc: ["positif", "negatif", "NF"],
+  vdrl: ["positif", "negatif", "NF"],
+  tpha: ["positif", "negatif", "NF"],
+  toxo_igm: ["positif", "negatif", "NF"],
+  toxo_igg: ["positif", "negatif", "NF"],
+  cmv_igm: ["positif", "negatif", "NF"],
+  cmv_igg: ["positif", "negatif", "NF"],
+  leishmania_ac: ["positif", "negatif", "NF"],
+  idr_tuberculine: ["negatif", "positif" ,"NF"],
+  radio_resultat: ["negatif", "positif" ,"NF"],
 };
 
 const DATE_FIELDS = [
@@ -64,7 +64,8 @@ const DATE_FIELDS = [
 const TEXT_FIELDS = {
   observations: { max: 4000, label: "Observations" },
   radio_description: { max: 4000, label: "Description radio" },
-  genotypage_file_url: { max: 5000000, label: "Fichier genotypage" },
+  // Taille maximale du champ genotypage_file_url : 50MB environ en base64
+  genotypage_file_url: { max: 50000000, label: "Fichier genotypage" },
 };
 
 const RESULT_VALUE_FIELDS = [
@@ -138,13 +139,64 @@ const validateTexts = Object.entries(TEXT_FIELDS).map(([field, meta]) =>
 const validateGenotypageFile = body("genotypage_file_url")
   .optional({ nullable: true, checkFalsy: true })
   .custom((value) => {
-    const normalized = String(value || "").trim().toLowerCase();
-    const isDataImage = normalized.startsWith("data:image/");
-    const isDataPdf = normalized.startsWith("data:application/pdf");
-    const isHttpUrl = normalized.startsWith("http://") || normalized.startsWith("https://");
+    if (!value) return true;
 
-    if (!isDataImage && !isDataPdf && !isHttpUrl) {
+    const textValue = String(value).trim();
+
+    const isDataUri = (uri) => {
+      if (!uri || typeof uri !== "string") return false;
+      const normalized = uri.toLowerCase();
+      return normalized.startsWith("data:image/") || normalized.startsWith("data:application/pdf");
+    };
+
+    const isHttpUrl = (uri) => {
+      if (!uri || typeof uri !== "string") return false;
+      const normalized = uri.toLowerCase();
+      return normalized.startsWith("http://") || normalized.startsWith("https://");
+    };
+
+    const validateSingleValue = (v) => {
+      if (!v || typeof v !== "string") return false;
+      const trimmed = v.trim();
+      return isDataUri(trimmed) || isHttpUrl(trimmed);
+    };
+
+    // Si c'est un tableau JSON (plusieurs fichiers)
+    if (textValue.startsWith("[") && textValue.endsWith("]")) {
+      let parsed;
+      try {
+        parsed = JSON.parse(textValue);
+      } catch {
+        throw new Error("Le fichier genotypage doit etre un tableau JSON de dataURL ou d'URLs valide");
+      }
+
+      if (!Array.isArray(parsed) || parsed.length === 0) {
+        throw new Error("Le fichier genotypage doit contenir au moins un fichier");
+      }
+
+      parsed.forEach((entry) => {
+        if (!validateSingleValue(entry)) {
+          throw new Error("Chaque élément de genotypage_file_url doit etre une image, un PDF ou une URL valide");
+        }
+      });
+
+      // vérification de la taille
+      const MAX_GENOTYPAGE_LENGTH = 50000000; // 50MB de texte
+      if (textValue.length > MAX_GENOTYPAGE_LENGTH) {
+        throw new Error("Le fichier genotypage est trop volumineux (max 50MB). Utilisez moins de fichiers ou des fichiers plus petits.");
+      }
+
+      return true;
+    }
+
+    // Cas simple fichier unique
+    if (!validateSingleValue(textValue)) {
       throw new Error("Le fichier genotypage doit etre une image, un PDF ou une URL valide");
+    }
+
+    const MAX_GENOTYPAGE_LENGTH = 50000000; // 50MB de texte
+    if (textValue.length > MAX_GENOTYPAGE_LENGTH) {
+      throw new Error("Le fichier genotypage est trop volumineux (max 50MB). Utilisez moins de fichiers ou des fichiers plus petits.");
     }
 
     return true;

@@ -15,7 +15,11 @@ export function useStockLogic(numero) {
   const [stockItems,       setStockItems]        = useState([]);
   const [showAddForm,      setShowAddForm]       = useState(false);
   const [addForm,          setAddForm]           = useState(INITIAL_ADD_FORM);
+  // editingId    : id de la ligne en cours d'édition
+  // editingMode  : "increment" | "decrement"
+  // editingQuantity : valeur saisie (delta à appliquer)
   const [editingId,        setEditingId]         = useState(null);
+  const [editingMode,      setEditingMode]       = useState(null);
   const [editingQuantity,  setEditingQuantity]   = useState("");
   const [showHistory,      setShowHistory]       = useState(true);
   const [loading,          setLoading]           = useState(true);
@@ -63,34 +67,18 @@ export function useStockLogic(numero) {
   // ── Ajouter médicament ─────────────────────────────────────────────────────
   const handleAddMedication = async () => {
     const { medicamentCode, medicamentComposition, quantityToAdd } = addForm;
-
-    if (!medicamentCode.trim()) {
-      toast.error("Veuillez saisir un code de médicament.");
-      return;
-    }
-    if (!medicamentComposition.trim()) {
-      toast.error("Veuillez saisir la composition du médicament.");
-      return;
-    }
+    if (!medicamentCode.trim()) { toast.error("Veuillez saisir un code de médicament."); return; }
+    if (!medicamentComposition.trim()) { toast.error("Veuillez saisir la composition du médicament."); return; }
     const q = Number(quantityToAdd);
-    if (!Number.isInteger(q) || q < 0) {
-      toast.error("La quantité doit être un entier positif.");
-      return;
-    }
-
+    if (!Number.isInteger(q) || q < 0) { toast.error("La quantité doit être un entier positif."); return; }
     try {
       setSaving(true);
-      await createStockItemApi({
-        code:        medicamentCode.trim().toUpperCase(),
-        composition: medicamentComposition.trim(),
-        quantite:    q,
-      });
+      await createStockItemApi({ code: medicamentCode.trim().toUpperCase(), composition: medicamentComposition.trim(), quantite: q });
       await refreshStock();
       cancelAddForm();
       toast.success("Médicament ajouté avec succès");
     } catch (err) {
-      const msg = err?.response?.data?.message || err?.message || "Erreur lors de l'ajout au stock.";
-      toast.error(msg);
+      toast.error(err?.response?.data?.message || err?.message || "Erreur lors de l'ajout au stock.");
     } finally {
       setSaving(false);
     }
@@ -103,58 +91,65 @@ export function useStockLogic(numero) {
 
   // ── Supprimer médicament ───────────────────────────────────────────────────
   const handleDeleteMedication = async (id) => {
-    const confirmed = await confirmDelete(
-      "Supprimer ce médicament ?",
-      "Êtes-vous sûr de vouloir supprimer ce médicament du stock ?"
-    );
+    const confirmed = await confirmDelete("Supprimer ce médicament ?", "Êtes-vous sûr de vouloir supprimer ce médicament du stock ?");
     if (!confirmed) return;
-
     try {
       setSaving(true);
       await deleteStockItemApi(id);
       await refreshStock();
       toast.success("Médicament supprimé avec succès");
-      if (editingId === id) {
-        setEditingId(null);
-        setEditingQuantity("");
-      }
+      if (editingId === id) cancelEditQuantity();
     } catch (err) {
-      const msg = err?.response?.data?.message || err?.message || "Erreur lors de la suppression.";
-      toast.error(msg);
+      toast.error(err?.response?.data?.message || err?.message || "Erreur lors de la suppression.");
     } finally {
       setSaving(false);
     }
   };
 
-  // ── Modifier quantité ──────────────────────────────────────────────────────
-  const beginEditQuantity = (item) => {
+  // ── Ouvrir édition + / - ───────────────────────────────────────────────────
+  const beginIncrement = (item) => {
     setEditingId(item.id);
-    setEditingQuantity(String(item.quantity));
+    setEditingMode("increment");
+    setEditingQuantity("");
+  };
+
+  const beginDecrement = (item) => {
+    setEditingId(item.id);
+    setEditingMode("decrement");
+    setEditingQuantity("");
   };
 
   const cancelEditQuantity = () => {
     setEditingId(null);
+    setEditingMode(null);
     setEditingQuantity("");
   };
 
+  // ── Sauvegarder la quantité ────────────────────────────────────────────────
   const saveQuantity = async (item) => {
     const delta = Number(editingQuantity);
-    if (!Number.isInteger(delta) || delta < 0) {
-      toast.error("La quantité doit être un entier positif.");
+    if (!Number.isInteger(delta) || delta <= 0) {
+      toast.error("Veuillez saisir un entier strictement positif.");
       return;
     }
-    const current = Number(item?.quantity);
-    const base = Number.isFinite(current) ? current : 0;
-    const newQuantity = base + delta;
+
+    const current     = Number.isFinite(Number(item?.quantity)) ? Number(item.quantity) : 0;
+    const newQuantity = editingMode === "decrement"
+      ? Math.max(0, current - delta)   // jamais négatif
+      : current + delta;
+
     try {
       setSaving(true);
       await updateStockQuantityApi(item.id, newQuantity);
       await refreshStock();
       cancelEditQuantity();
-      toast.success("Quantité mise à jour avec succès");
+      toast.success(
+        editingMode === "decrement"
+          ? `Stock diminué de ${delta} unité(s)`
+          : `Stock augmenté de ${delta} unité(s)`
+      );
     } catch (err) {
-      const msg = err?.response?.data?.message || err?.message || "Erreur lors de la mise à jour.";
-      toast.error(msg);
+      toast.error(err?.response?.data?.message || err?.message || "Erreur lors de la mise à jour.");
     } finally {
       setSaving(false);
     }
@@ -165,6 +160,7 @@ export function useStockLogic(numero) {
     showAddForm,     setShowAddForm,
     addForm,         setAddForm,
     editingId,
+    editingMode,
     editingQuantity, setEditingQuantity,
     showHistory,     setShowHistory,
     loading,
@@ -174,7 +170,8 @@ export function useStockLogic(numero) {
     handleAddMedication,
     cancelAddForm,
     handleDeleteMedication,
-    beginEditQuantity,
+    beginIncrement,
+    beginDecrement,
     cancelEditQuantity,
     saveQuantity,
   };
