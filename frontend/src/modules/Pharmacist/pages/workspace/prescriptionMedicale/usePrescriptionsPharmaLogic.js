@@ -1,21 +1,28 @@
-import { useEffect, useMemo, useState }        from "react";
+// =====================================================
+// LOGIC - usePrescriptionsPharmaLogic.js (UPDATED)
+// =====================================================
+
+import { useEffect, useMemo, useState } from "react";
 import {
   getPatientsWithPrescriptions,
-  getNextRendezVousPerPatient,               // ← NOUVEAU import
+  getNextRendezVousPerPatient,
 } from "../../../services/patientPrescriptionService";
-import { validatePrescription }              from "../../../../../shared/services/prescriptionWorkflowService";
-import { toUiPrescriptionItem, MESSAGES }    from "./prescriptionsPharmaConstants";
-import { filterPrescriptions }               from "./PrescriptionsPharmahelpers";
+import {
+  validatePrescription,
+  validatePrescriptionAvecModification,
+} from "../../../../../shared/services/prescriptionWorkflowService";
+import { toUiPrescriptionItem, MESSAGES } from "./prescriptionsPharmaConstants";
+import { filterPrescriptions } from "./PrescriptionsPharmahelpers";
 
 export function usePrescriptionsLogic() {
-
-  const [patients,         setPatients]         = useState([]);
-  const [search,           setSearch]           = useState("");
-  const [loading,          setLoading]          = useState(true);
-  const [error,            setError]            = useState(null);
-  const [showHistory,      setShowHistory]      = useState(true);
-  const [detailItem,       setDetailItem]       = useState(null);
-  const [validationItem,   setValidationItem]   = useState(null);
+  const [patients, setPatients] = useState([]);
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showHistory, setShowHistory] = useState(true);
+  const [detailItem, setDetailItem] = useState(null);
+  const [validationItem, setValidationItem] = useState(null);
+  const [modificationItem, setModificationItem] = useState(null); // ← NOUVEAU
   const [savingValidation, setSavingValidation] = useState(false);
 
   const loadPatients = async () => {
@@ -23,12 +30,10 @@ export function usePrescriptionsLogic() {
       setLoading(true);
       setError(null);
 
-      // ── MODIFIÉ : fetch en parallèle ──────────────────────
       const [data, rdvMap] = await Promise.all([
         getPatientsWithPrescriptions(),
-        getNextRendezVousPerPatient(),   // { [patient_id]: { date, heure, type, statut } }
+        getNextRendezVousPerPatient(),
       ]);
-
 
       const rows = Array.isArray(data?.patients) ? data.patients : [];
       setPatients(
@@ -36,9 +41,9 @@ export function usePrescriptionsLogic() {
           const rdv = rdvMap?.[row.patient_id] ?? null;
           return toUiPrescriptionItem({
             ...row,
-            rdv_date:   rdv?.date   ?? null,
-            rdv_heure:  rdv?.heure  ?? null,
-            rdv_type:   rdv?.type   ?? null,
+            rdv_date: rdv?.date ?? null,
+            rdv_heure: rdv?.heure ?? null,
+            rdv_type: rdv?.type ?? null,
             rdv_statut: rdv?.statut ?? null,
           });
         }),
@@ -51,19 +56,30 @@ export function usePrescriptionsLogic() {
     }
   };
 
-  useEffect(() => { loadPatients(); }, []);
+  useEffect(() => {
+    loadPatients();
+  }, []);
 
   const filtered = useMemo(
     () => filterPrescriptions(patients, search),
     [patients, search],
   );
 
-  const openDetail  = (item) => setDetailItem(item);
-  const closeDetail = ()     => setDetailItem(null);
+  const openDetail = (item) => setDetailItem(item);
+  const closeDetail = () => setDetailItem(null);
 
-  const openValidation  = (item) => setValidationItem(item);
-  const closeValidation = ()     => { if (!savingValidation) setValidationItem(null); };
+  const openValidation = (item) => setValidationItem(item);
+  const closeValidation = () => {
+    if (!savingValidation) setValidationItem(null);
+  };
 
+  // ── NOUVEAU : Gestion modification ────────────────────────────
+  const openModification = (item) => setModificationItem(item);
+  const closeModification = () => {
+    if (!savingValidation) setModificationItem(null);
+  };
+
+  // ── Validation SANS modification (Scénario 1) ─────────────────
   const handleValidate = async () => {
     if (!validationItem?.prescriptionId) return;
     setSavingValidation(true);
@@ -78,11 +94,44 @@ export function usePrescriptionsLogic() {
     }
   };
 
+  // ── Validation AVEC modification (Scénario 2) ─────────────────
+  const handleValidateAvecModification = async (periodeModifiee) => {
+    if (!modificationItem?.prescriptionId) return;
+    setSavingValidation(true);
+    try {
+      await validatePrescriptionAvecModification(
+        modificationItem.prescriptionId,
+        periodeModifiee,
+      );
+      setModificationItem(null);
+      await loadPatients();
+    } catch (err) {
+      alert(err?.message || err?.error || MESSAGES.erreurValidation);
+    } finally {
+      setSavingValidation(false);
+    }
+  };
+
   return {
-    search, showHistory, loading, error, filtered,
-    detailItem, validationItem, savingValidation,
-    setSearch, setShowHistory,
-    loadPatients, openDetail, closeDetail,
-    openValidation, closeValidation, handleValidate,
+    search,
+    showHistory,
+    loading,
+    error,
+    filtered,
+    detailItem,
+    validationItem,
+    modificationItem, // ← NOUVEAU
+    savingValidation,
+    setSearch,
+    setShowHistory,
+    loadPatients,
+    openDetail,
+    closeDetail,
+    openValidation,
+    closeValidation,
+    openModification, // ← NOUVEAU
+    closeModification, // ← NOUVEAU
+    handleValidate,
+    handleValidateAvecModification, // ← NOUVEAU
   };
 }

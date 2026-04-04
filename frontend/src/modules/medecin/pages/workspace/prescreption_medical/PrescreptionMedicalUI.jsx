@@ -120,21 +120,21 @@ export default function PrescreptionMedicalUI({
               </div>
 
               <div>
-                <FieldLabel>Dosage</FieldLabel>
+                <FieldLabel>Posologie</FieldLabel>
                 <Input
-                  value={formData.dosage}
-                  onChange={field("dosage")}
+                  value={formData.posologie}
+                  onChange={field("posologie")}
                   placeholder="Ex : 500 mg"
                 />
               </div>
 
               <div>
-                <FieldLabel required>Quantite prescrite</FieldLabel>
+                <FieldLabel required>Durée (jours)</FieldLabel>
                 <Input
                   type="number"
                   min="1"
-                  value={formData.quantite}
-                  onChange={field("quantite")}
+                  value={formData.periode}
+                  onChange={field("periode")}
                 />
               </div>
 
@@ -176,15 +176,15 @@ export default function PrescreptionMedicalUI({
           : filtered.length === 0 ?
             <EmptyState message="Aucune prescription enregistree." />
             : <HistoriqueTable
-              headers={["Date", "Medicament","Dosage", "Qte", "Statut", "Action"]}
+              headers={["Date", "Medicament","Posologie", "Durée (j)", "Statut", "Action"]}
               items={filtered}
               emptyMessage="Aucune prescription enregistree."
               renderRow={(p) => (
                 <tr key={p.id}>
                   <td>{toFrDate(p.date)}</td>
                   <td className="fw-semibold">{p.traitement || "-"}</td>
-                  <td>{p.dosage || "-"}</td>
-                  <td>{p.quantite || "-"}</td>
+                  <td>{p.posologie|| "-"}</td>
+                  <td>{p.periode || "-"}</td>
                   <td>
                     <Badge bg={getStatutStyle(p.statut).bg} color={getStatutStyle(p.statut).color}>
                       {STATUT_LABELS[p.statut] || p.statut || "-"}
@@ -216,12 +216,12 @@ export default function PrescreptionMedicalUI({
               <Input value={toFrDate(detailItem.date)} disabled />
             </div>
             <div>
-              <FieldLabel>Dosage</FieldLabel>
-              <Input value={detailItem.dosage || "-"} disabled />
+              <FieldLabel>Posologie</FieldLabel>
+              <Input value={detailItem.posologie|| "-"} disabled />
             </div>
             <div>
-              <FieldLabel>Quantite prescrite</FieldLabel>
-              <Input value={detailItem.quantite || "-"} disabled />
+              <FieldLabel>Durée (jours)</FieldLabel>
+              <Input value={detailItem.periode || "-"} disabled />
             </div>
             <div>
               <FieldLabel>Statut</FieldLabel>

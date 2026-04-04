@@ -1,5 +1,17 @@
 import { SUIVI_BADGE_MAP, PRESCRIPTION_BADGE_MAP } from "./prescriptionsPharmaConstants";
 
+// ── Preview date prochaine prise (scénario 1 : validation sans modif) ────────
+// periodeJours = période prescrite par le médecin (en jours)
+// dateDelivrance = date système au moment de la validation (par défaut aujourd'hui)
+export const calculatePreviewDate = (periodeJours, dateDelivrance = new Date()) => {
+  const jours = Number.parseInt(periodeJours, 10);
+  if (!jours || jours <= 0) return null;
+  const base = new Date(dateDelivrance);
+  base.setHours(0, 0, 0, 0);
+  base.setDate(base.getDate() + jours);
+  return base;
+};
+
 // ── Helpers RDV ───────────────────────────────────────────────
 export const daysUntil = (dateStr) => {
   const today = new Date();
@@ -10,12 +22,12 @@ export const daysUntil = (dateStr) => {
 };
 
 export const getRdvBarWidth = (days) => {
-  if (days < 0)  return { width: 100, cls: "bar-past"  };
-  if (days <= 1) return { width: 100, cls: "bar-soon"  };
-  if (days <= 7) return { width: 75,  cls: "bar-soon"  };
-  if (days <= 14)return { width: 45,  cls: "bar-next"  };
-  if (days <= 30)return { width: 20,  cls: "bar-later" };
-  return             { width: 8,   cls: "bar-later" };
+  if (days < 0)   return { width: 100, cls: "bar-past"  };
+  if (days <= 1)  return { width: 100, cls: "bar-soon"  };
+  if (days <= 7)  return { width: 75,  cls: "bar-soon"  };
+  if (days <= 14) return { width: 45,  cls: "bar-next"  };
+  if (days <= 30) return { width: 20,  cls: "bar-later" };
+  return              { width: 8,   cls: "bar-later" };
 };
 
 export const getDaysLabel = (days) => {
@@ -25,20 +37,12 @@ export const getDaysLabel = (days) => {
   return `dans ${days}j`;
 };
 
-// ── Helpers existants (inchangés) ─────────────────────────────
-export const calculatePreviewDate = (quantite) => {
-  const months = Number.parseInt(quantite, 10);
-  if (!months || months <= 0) return null;
-  const next = new Date();
-  next.setMonth(next.getMonth() + months);
-  return next;
-};
-
+// ── Helpers badges ────────────────────────────────────────────
 export const resolveSuiviBadge = (statutPatient, ecartJours) => {
-  const key = (statutPatient || "").toLowerCase();
+  const key       = (statutPatient || "").toLowerCase();
   const isPerdu   = key.includes("perdue") || key.includes("perdu");
   const isAttente = key.includes("attente");
-  const entry = isPerdu
+  const entry     = isPerdu
     ? SUIVI_BADGE_MAP.perdu
     : isAttente
       ? SUIVI_BADGE_MAP.attente
@@ -48,9 +52,9 @@ export const resolveSuiviBadge = (statutPatient, ecartJours) => {
 
 export const resolvePrescriptionBadge = (statutPrescription) => {
   const key = (statutPrescription || "envoyee").toLowerCase();
-  return key === "delivree"
-    ? PRESCRIPTION_BADGE_MAP.delivree
-    : PRESCRIPTION_BADGE_MAP.envoyee;
+  if (key === "delivree") return PRESCRIPTION_BADGE_MAP.delivree;
+  if (key === "modifie")  return PRESCRIPTION_BADGE_MAP.modifie;
+  return PRESCRIPTION_BADGE_MAP.envoyee;
 };
 
 export const filterPrescriptions = (patients, search) => {
@@ -66,5 +70,15 @@ export const filterPrescriptions = (patients, search) => {
   );
 };
 
-export const isValidateDisabled = (statutPrescription) =>
-  (statutPrescription || "").toLowerCase() === "delivree";
+// ── Verrouillage des boutons ──────────────────────────────────
+// Valider : bloqué si prescription déjà délivrée OU modifiée
+export const isValidateDisabled = (statutPrescription) => {
+  const s = (statutPrescription || "").toLowerCase();
+  return s === "delivree" || s === "modifie";
+};
+
+// Modifier : bloqué si prescription déjà délivrée OU modifiée
+export const isModifyDisabled = (statutPrescription) => {
+  const s = (statutPrescription || "").toLowerCase();
+  return s === "delivree" || s === "modifie";
+};

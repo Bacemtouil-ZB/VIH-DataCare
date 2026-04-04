@@ -40,13 +40,13 @@ const validateTraitement = body("traitement")
   });
 
 
-// ─── Dosage (optionnel) ───────────────────────────────────────────────────────
+// ─── Posologie (optionnel) ───────────────────────────────────────────────────
 
-const validateDosage = body("dosage")
+const validatePosologie = body("posologie")
   .optional({ nullable: true, checkFalsy: true })
   .trim()
   .isLength({ max: 255 })
-  .withMessage("Le dosage ne peut pas dépasser 255 caractères")
+  .withMessage("La posologie ne peut pas dépasser 255 caractères")
   .custom((value) => {
     if (!value) return true;
     if (/\u0000|%00/.test(value)) throw new Error("Caractère interdit détecté");
@@ -87,28 +87,28 @@ const validateDate = body("date")
     return true;
   });
 
-// ─── Quantité (requis) ────────────────────────────────────────────────────────
+// ─── Periode (requis) ────────────────────────────────────────────────────────
 
-const validateQuantite = body("quantite")
+const validatePeriode = body("periode")
   .notEmpty()
-  .withMessage("La quantité est requise")
+  .withMessage("La periode est requise")
   .custom((value) => {
     // String non numérique
     if (isNaN(value)) {
-      throw new Error("La quantité doit être un nombre");
+      throw new Error("La periode doit être un nombre");
     }
     const num = Number(value);
     // Float
     if (!Number.isInteger(num)) {
-      throw new Error("La quantité doit être un entier");
+      throw new Error("La periode doit être un entier");
     }
     // Négatif ou zéro
     if (num <= 0) {
-      throw new Error("La quantité doit être supérieure à 0");
+      throw new Error("La periode doit être supérieure à 0");
     }
     // Valeur irréaliste
     if (num > 9999) {
-      throw new Error("Quantité trop élevée (max 9999)");
+      throw new Error("Periode trop élevée (max 9999)");
     }
     return true;
   });
@@ -135,9 +135,9 @@ export const validateCreatePrescription = [
   validateMedicamentId,
   validateTraitement,
   validatePosologie,
-  validateDosage,
+  validatePosologie,
   validateDate,
-  validateQuantite,
+  validatePeriode,
   validateRemarque,
   handleValidation,
 ];
@@ -146,9 +146,9 @@ export const validateUpdatePrescription = [
   validateMedicamentId,
   validateTraitement,
   validatePosologie,
-  validateDosage,
+  validatePosologie,
   validateDate,
-  validateQuantite,
+  validatePeriode,
   validateRemarque,
   handleValidation,
 ];

@@ -19,9 +19,15 @@ export default function ModalDetailPrescription({ item, onClose }) {
 
   if (!item) return null;
 
+  // Déterminer la période effective affichée
+  const periodeEffective = item.periodeModifiee
+    ? Number(item.periodeModifiee)
+    : Number(item.periodePrescrite ?? item.periode ?? 0);
+
+  const estModifiee = Boolean(item.periodeModifiee && Number(item.periodeModifiee) > 0);
+
   return (
     <>
-      {/* Backdrop Bootstrap */}
       <div
         className="modal fade show"
         style={{ display: "block", background: "rgba(15,23,42,0.5)" }}
@@ -62,9 +68,9 @@ export default function ModalDetailPrescription({ item, onClose }) {
                 Informations patient
               </p>
               <div className="row g-3 mb-4">
-                <InfoField label="Numéro dossier"  value={item.numeroDossier} />
-                <InfoField label="Nom"             value={item.patientSurname} />
-                <InfoField label="Prénom"          value={item.patientName} />
+                <InfoField label="Numéro dossier"    value={item.numeroDossier} />
+                <InfoField label="Nom"               value={item.patientSurname} />
+                <InfoField label="Prénom"            value={item.patientName} />
                 <InfoField label="Date de naissance"
                            value={item.dateNaissance ? formatDateFr(item.dateNaissance, "-") : "-"} />
               </div>
@@ -77,16 +83,43 @@ export default function ModalDetailPrescription({ item, onClose }) {
                 Prescription médicale
               </p>
               <div className="row g-3 mb-4">
-                <InfoField label="Traitement"         value={item.nomTraitement} />
-                <InfoField label="Composition"        value={item.compositionMedicament} />
-                <InfoField label="Dosage"             value={item.dosage} />
-                <InfoField label="Quantité prescrite" value={item.quantitePrescrite} />
-                <InfoField label="Statut prescription"
-                           value={item.statutPrescription}
-                           badge
-                           badgeClass={item.statutPrescription === "delivree"
-                             ? "bg-success-subtle text-success"
-                             : "bg-warning-subtle text-warning"} />
+                <InfoField label="Traitement"   value={item.nomTraitement} />
+                <InfoField label="Composition"  value={item.compositionMedicament} />
+                <InfoField label="Posologie"    value={item.posologie} />
+
+                {/* Période prescrite par le médecin */}
+                <InfoField
+                  label="Période prescrite (médecin)"
+                  value={item.periodePrescrite != null ? `${item.periodePrescrite} jours` : "-"}
+                />
+
+                {/* Période modifiée par le pharmacien — affichée seulement si présente */}
+                {estModifiee && (
+                  <InfoField
+                    label="Période modifiée (pharmacien)"
+                    value={`${item.periodeModifiee} jours`}
+                    highlight
+                  />
+                )}
+
+                {/* Période effective retenue */}
+                <InfoField
+                  label="Période effective retenue"
+                  value={periodeEffective > 0 ? `${periodeEffective} jours` : "-"}
+                />
+
+                <InfoField
+                  label="Statut prescription"
+                  value={item.statutPrescription}
+                  badge
+                  badgeClass={
+                    item.statutPrescription === "delivree"
+                      ? "bg-success-subtle text-success"
+                      : item.statutPrescription === "modifie"
+                        ? "bg-warning-subtle text-warning"
+                        : "bg-secondary-subtle text-secondary"
+                  }
+                />
               </div>
 
               <hr className="my-3" />
@@ -97,27 +130,28 @@ export default function ModalDetailPrescription({ item, onClose }) {
                 Suivi thérapeutique
               </p>
               <div className="row g-3">
-                <InfoField label="Date délivrance"
+                <InfoField label="Date de délivrance"
                            value={formatDateFr(item.dateDelivrance, "-")} />
-                <InfoField label="Prochaine prise"
+                <InfoField label="Date prochaine prise"
                            value={formatDateFr(item.dateProchainePrise, "-")} />
-                <InfoField label="Prochain rendez-vous"
-                           value={formatDateFr(item.prochainRendezVous || item.dateProchainePrise, "-")}
-                           highlight={false} />
-                <InfoField label="Statut patient"
-                           value={item.statutPatient || "-"}
-                           badge
-                           badgeClass={
-                             item.statutPatient === "perdue de vue"
-                               ? "bg-danger-subtle text-danger"
-                               : item.statutPatient === "actif"
-                               ? "bg-success-subtle text-success"
-                               : "bg-warning-subtle text-warning"
-                           } />
+                <InfoField
+                  label="Statut patient"
+                  value={item.statutPatient || "-"}
+                  badge
+                  badgeClass={
+                    item.statutPatient === "perdue de vue"
+                      ? "bg-danger-subtle text-danger"
+                      : item.statutPatient === "actif"
+                        ? "bg-success-subtle text-success"
+                        : "bg-warning-subtle text-warning"
+                  }
+                />
                 {item.ecartJours > 0 && (
-                  <InfoField label="Écart de retard"
-                             value={`+${item.ecartJours} jour(s)`}
-                             highlight={true} />
+                  <InfoField
+                    label="Écart de retard"
+                    value={`+${item.ecartJours} jour(s)`}
+                    highlight
+                  />
                 )}
               </div>
             </div>

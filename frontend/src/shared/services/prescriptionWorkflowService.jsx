@@ -1,28 +1,32 @@
+// =====================================================
+// FRONTEND SERVICE - prescriptionWorkflowService.jsx
+// =====================================================
+
 import API from "../utils/api.js";
 import { getStockItems } from "../../modules/Pharmacist/services/stockService.jsx";
 
 // ── Normalizers ───────────────────────────────────────────────
 const normalizePrescriptions = (payload) => {
-  if (Array.isArray(payload))                              return payload;
-  if (Array.isArray(payload?.prescriptions))               return payload.prescriptions;
-  if (Array.isArray(payload?.prescriptions?.prescriptions)) return payload.prescriptions.prescriptions;
-  if (Array.isArray(payload?.data))                        return payload.data;
+  if (Array.isArray(payload)) return payload;
+  if (Array.isArray(payload?.prescriptions)) return payload.prescriptions;
+  if (Array.isArray(payload?.prescriptions?.prescriptions))
+    return payload.prescriptions.prescriptions;
+  if (Array.isArray(payload?.data)) return payload.data;
   return [];
 };
 
-
 // ── GET prescriptions par numéro de dossier ───────────────────
-// Utilisé par : médecin (usePrescreptionMedicalLogic) + pharmacien
 export const getPrescriptionsByNumeroDossier = async (numeroDossier) => {
-  const response = await API.get(`/prescription-medicale/numero-dossier/${numeroDossier}`);
-  const payload  = response.data;
+  const response = await API.get(
+    `/prescription-medicale/numero-dossier/${numeroDossier}`,
+  );
+  const payload = response.data;
   return {
-    success:       true,
+    success: true,
     prescriptions: normalizePrescriptions(payload),
-    patient:       payload?.patient || payload?.prescriptions?.patient || null,
+    patient: payload?.patient || payload?.prescriptions?.patient || null,
   };
 };
-
 
 // ── GET prescription par ID ───────────────────────────────────
 export const getPrescriptionById = async (id) => {
@@ -31,7 +35,6 @@ export const getPrescriptionById = async (id) => {
 };
 
 // ── GET médicaments du stock (dropdown médecin) ───────────────
-// Réutilise getStockItems pour éviter le 403 sur /stock
 export const getStockMedicaments = async () => {
   const items = await getStockItems();
   return { items };
@@ -43,31 +46,33 @@ export const createPrescription = async (treatmentData) => {
   return response.data;
 };
 
-// ── PATCH valider une prescription (pharmacien) ───────────────
+// ── PATCH valider une prescription SANS modification (pharmacien) ─────
 export const validatePrescription = async (id) => {
   const response = await API.patch(`/prescription-medicale/${id}/valider`);
   return response.data;
 };
 
-
-// ── PATCH date prochaine prise ────────────────────────────────
-export const updateDateProchainePrise = async (id, dateProchainePrise) => {
-  const response = await API.patch(`/prescription-medicale/${id}/date-prochaine-prise`, {
-    date_prochaine_prise: dateProchainePrise,
-  });
+// ── PATCH valider une prescription AVEC modification (pharmacien) ─────
+export const validatePrescriptionAvecModification = async (id, periodeModifiee) => {
+  const response = await API.patch(
+    `/prescription-medicale/${id}/valider-modifiee`,
+    { periode_modifiee: periodeModifiee },
+  );
   return response.data;
 };
+
+// ── GET dernière prescription par patient ─────────────────────
 export const getLastPrescriptionPerPatient = async () => {
   const response = await API.get("/prescription-medicale/last-per-patient");
   return response.data?.data || {};
 };
- 
+
 export default {
   getPrescriptionsByNumeroDossier,
   getPrescriptionById,
   getStockMedicaments,
   createPrescription,
   validatePrescription,
-  updateDateProchainePrise,
+  validatePrescriptionAvecModification,
   getLastPrescriptionPerPatient,
 };

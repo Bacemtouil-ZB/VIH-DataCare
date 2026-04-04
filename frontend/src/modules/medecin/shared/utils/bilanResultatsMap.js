@@ -122,11 +122,19 @@ export const BILAN_RESULTATS_MAP = {
     ],
   },
 
+  // ── IDR tuberculine : 3 options sur la même ligne (type "select" → radio) ─
   idr_tuberculine: {
     label: "IDR à la tuberculine",
     hasDate: true,
+    // gridCols force la section sur 1 colonne pour que les 3 radios restent inline
+    gridCols: 1,
     champs: [
-      { key: "idr_tuberculine", label: "IDR à la tuberculine", type: "select", options: ["Positif", "Negatif"] },
+      {
+        key: "idr_tuberculine",
+        label: "IDR à la tuberculine",
+        type: "select",
+        options: ["Négatif", "Positif"],
+      },
     ],
   },
 
@@ -134,7 +142,13 @@ export const BILAN_RESULTATS_MAP = {
     label: "Test de génotypage",
     hasDate: true,
     champs: [
-      { key: "genotypage_file_url", label: "Fichier scanné", type: "file", accept: "image/*,application/pdf" },
+      {
+        key: "genotypage_file_url",
+        label: "Fichier(s) scanné(s)",
+        type: "file",
+        accept: "image/*,application/pdf",
+        multiple: true,
+      },
     ],
   },
 
@@ -142,7 +156,7 @@ export const BILAN_RESULTATS_MAP = {
     label: "Radio thorax",
     hasDate: true,
     champs: [
-      { key: "radio_resultat", label: "Résultat radio", type: "select", options: ["Positif", "Negatif"] },
+      { key: "radio_resultat", label: "Résultat radio", type: "select", options: ["Positif", "Négatif"] },
       { key: "radio_description", label: "Description", type: "textarea" },
     ],
   },
@@ -184,7 +198,11 @@ export const buildInitialForm = (bilanPrescrit) => {
 
   sections.forEach(({ _key, champs }) => {
     champs.forEach((champ) => {
-      form[champ.key] = getDefaultToggleValue(champ);
+      if (champ.type === "file") {
+        form[champ.key] = [];   // multi-fichiers : tableau vide
+      } else {
+        form[champ.key] = getDefaultToggleValue(champ);
+      }
     });
 
     const dateKey = `date_${_key}`;

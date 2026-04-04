@@ -497,3 +497,84 @@
   font-size: 0.78rem;
   font-weight: 600;
 }
+/*
+ * PatientsPharmaPrescriptions.css — patch colonnes
+ * Après suppression de la colonne "Quantité", on redistribue l'espace
+ * sur les 8 colonnes restantes :
+ *   Date naissance | Patient | Traitement | Date prochaine prise
+ *   Statut prescription | S.thérapeutique | RDV | Action
+ */
+
+/* Supprimer toute référence à td-quantite */
+.td-quantite { display: none; }
+
+/* ── Largeurs des colonnes ────────────────────────────────── */
+.td-date         { width: 9%;  white-space: nowrap; }
+.td-patient      { width: 16%; font-weight: 500; }
+.td-traitement   { width: 18%; }
+.td-statut       { width: 11%; text-align: center; }
+.td-rdv          { width: 18%; }
+.td-action       { width: 10%; text-align: center; white-space: nowrap; }
+
+/* ── Tableau général ─────────────────────────────────────── */
+.prescriptions-page-container {
+  padding: 1.25rem;
+}
+
+.prescriptions-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.page-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+/* ── Badges ─────────────────────────────────────────────── */
+.statut-wrapper    { display: flex; flex-direction: column; gap: 0.2rem; align-items: flex-start; }
+.statut-badge      { border-radius: 999px; padding: 0.2rem 0.65rem; font-size: 0.72rem; font-weight: 600; white-space: nowrap; }
+.statut-actif      { background: #dcfce7; color: #166534; }
+.statut-avenir     { background: #fef9c3; color: #854d0e; }
+.statut-modifie    { background: #ffedd5; color: #9a3412; }
+.statut-perdu      { background: #fee2e2; color: #991b1b; }
+.statut-leger      { background: #f1f5f9; color: #475569; }
+.ecart-badge       { font-size: 0.68rem; color: #dc2626; font-weight: 700; }
+
+/* ── Dates ───────────────────────────────────────────────── */
+.date-retard  { color: #dc2626; font-weight: 600; }
+.date-future  { color: #0f172a; }
+
+/* ── RDV bar ─────────────────────────────────────────────── */
+.rdv-bar-cell   { display: flex; flex-direction: column; gap: 4px; min-width: 120px; }
+.rdv-bar-top    { display: flex; justify-content: space-between; align-items: center; }
+.rdv-bar-date   { font-size: 0.75rem; font-weight: 500; color: #334155; }
+.rdv-bar-days   { font-size: 0.7rem;  font-weight: 600; }
+.rdv-bar-track  { height: 5px; border-radius: 999px; background: #e2e8f0; overflow: hidden; }
+.rdv-bar-fill   { height: 100%; border-radius: 999px; transition: width 0.3s; }
+
+.rdv-days-bar-past  { color: #dc2626; }
+.rdv-days-bar-soon  { color: #f59e0b; }
+.rdv-days-bar-next  { color: #3b82f6; }
+.rdv-days-bar-later { color: #64748b; }
+
+.rdv-fill-bar-past  { background: #dc2626; }
+.rdv-fill-bar-soon  { background: #f59e0b; }
+.rdv-fill-bar-next  { background: #3b82f6; }
+.rdv-fill-bar-later { background: #94a3b8; }
+
+.rdv-none { background: #f1f5f9; color: #94a3b8; font-size: 0.72rem; border-radius: 999px; padding: 0.2rem 0.55rem; }
+
+/* ── États loading / error ───────────────────────────────── */
+.loading-state,
+.error-state   { display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 3rem; }
+.spinner       { width: 2rem; height: 2rem; border: 3px solid #e2e8f0; border-top-color: #3b82f6; border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.error-message { color: #dc2626; font-weight: 500; }
+.btn-retry     { padding: 0.4rem 1.2rem; background: #3b82f6; color: #fff; border: none; border-radius: 6px; cursor: pointer; }

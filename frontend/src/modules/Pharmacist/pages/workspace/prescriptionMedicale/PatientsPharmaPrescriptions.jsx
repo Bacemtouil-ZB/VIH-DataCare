@@ -40,6 +40,7 @@ export default function PatientsPrescriptions() {
       filtered={logic.filtered}
       detailItem={logic.detailItem}
       validationItem={logic.validationItem}
+      modificationItem={logic.modificationItem}
       savingValidation={logic.savingValidation}
       // setters
       setSearch={logic.setSearch}
@@ -49,7 +50,10 @@ export default function PatientsPrescriptions() {
       closeDetail={logic.closeDetail}
       openValidation={logic.openValidation}
       closeValidation={logic.closeValidation}
+      openModification={logic.openModification}
+      closeModification={logic.closeModification}
       handleValidate={logic.handleValidate}
+      handleValidateAvecModification={logic.handleValidateAvecModification}
     />
   );
 }

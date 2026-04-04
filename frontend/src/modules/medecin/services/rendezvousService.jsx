@@ -36,22 +36,25 @@ export const updateRendezvous = async (id, data) => {
   }
 };
 
-// New function to get next rendezvous per patient
-  
+// ── GET prochain rendez-vous par patient ──────────────────────
+// Retourne { [patient_id]: { date, heure, type, statut } }
 export const getNextRendezVousPerPatient = async () => {
-  const response = await API.get("/rendezVous/next-all");
-  const rows = response.data || [];
- 
-  const map = {};
-  rows.forEach((rdv) => {
-    map[rdv.patient_id] = {
-      date:   rdv.date,
-      heure:  rdv.heure,
-      type:   rdv.type,
-      statut: rdv.statut,
-    };
-  });
-  return map; // { [patient_id]: { date, heure, type, statut } }
+  try {
+    // ✅ minuscule — cohérent avec app.use("/api/rendezvous", ...) dans server.js
+    const response = await API.get("/rendezvous/next-all");
+    const rows = Array.isArray(response.data) ? response.data : [];
+    return rows.reduce((map, rdv) => {
+      map[rdv.patient_id] = {
+        date:   rdv.date,
+        heure:  rdv.heure,
+        type:   rdv.type,
+        statut: rdv.statut,
+      };
+      return map;
+    }, {});
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
 };
 
 export default {

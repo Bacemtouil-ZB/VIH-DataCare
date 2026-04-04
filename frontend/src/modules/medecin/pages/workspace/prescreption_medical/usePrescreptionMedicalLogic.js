@@ -123,8 +123,8 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
       return;
     }
 
-    if (!formData.quantite || Number(formData.quantite) <= 0) {
-      toast.warning("La quantite prescrite doit etre superieure a 0.");
+    if (!formData.periode || Number(formData.periode) <= 0) {
+      toast.warning("La duree prescrite doit etre superieure a 0.");
       return;
     }
     setConfirmationModal({
@@ -134,8 +134,8 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
                       : "-",
         dossier:    numero || "-",
         traitement: formData.traitement || selectedMed?.code || selectedMed?.composition || "-",
-        dosage:     formData.dosage     || "-",
-        quantite:   formData.quantite   || "-",
+        posologie:  formData.posologie  || "-",
+        periode:    formData.periode ? `${formData.periode} jours` : "-",
         remarque:   formData.remarque   || "-",
       },
     });
@@ -150,11 +150,12 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
     try {
       setSaving(true);
       const res = await createPrescription({
-        traitement:     formData.traitement || selectedMed?.composition || "",
+        traitement:     formData.traitement || selectedMed?.composition || selectedMed?.code || "",
         numero_dossier: numero,
         medicament_id:  Number(formData.medicament_id),
-        dosage:         formData.dosage    || null,
-        quantite:       Number(formData.quantite),
+        posologie:      formData.posologie || null,
+        periode:        Number(formData.periode),
+        date:           new Date().toISOString().split("T")[0],   // requis par le validator backend
         remarque:       formData.remarque  || null,
       });
       setPrescriptions((prev) => [res.prescription, ...prev]);

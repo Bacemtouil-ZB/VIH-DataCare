@@ -1,6 +1,7 @@
 export const toUiPrescriptionItem = (row) => ({
   prescriptionId:        row?.prescription_id        ?? row?.id           ?? null,
   suiviId:               row?.id                     ?? null,
+  numeroDossier:         row?.numero_dossier          ?? row?.numeroDossier ?? null,
   dateNaissance:         row?.date_naissance         ?? null,
   patientName:           row?.patient_name            ?? "",
   patientSurname:        row?.patient_surname         ?? "-",
@@ -9,14 +10,15 @@ export const toUiPrescriptionItem = (row) => ({
   dateProchainePrise:    row?.date_prochaine_prise    ?? null,
   dateDebutTraitement:   row?.date_debut_traitement   ?? null,
   dateDelivrance:        row?.date_delivrance         ?? null,
-  quantitePrescrite:     row?.quantite_prescrite      ?? row?.quantite ?? "-",
+  // Période effective retenue (jours) — pharmacien prioritaire sur médecin
+  periode:               row?.periode                 ?? null,
+  periodePrescrite:      row?.periode_prescrite       ?? null,
+  periodeModifiee:       row?.periode_modifiee        ?? null,
   posologie:             row?.posologie               ?? "-",
-  dosage:                row?.dosage                  ?? "-",
   statutPrescription:    row?.statut_prescription     ?? row?.statut  ?? "envoyee",
   statutPatient:         row?.statut_patient          ?? "",
   ecartJours:            Number(row?.ecart_jours      ?? 0),
 
-  // ── NOUVEAU ──────────────────────────────────────────────
   rdv: row?.rdv_date
     ? {
         date:   row.rdv_date,
@@ -36,30 +38,30 @@ export const SUIVI_BADGE_MAP = {
 
 // ── Badges statut prescription ────────────────────────────────
 export const PRESCRIPTION_BADGE_MAP = {
-  delivree: { badgeClass: "statut-actif",  badgeText: "Delivree" },
-  envoyee:  { badgeClass: "statut-avenir", badgeText: "Envoyee"  },
+  delivree: { badgeClass: "statut-actif",   badgeText: "Delivrée"  },
+  modifie:  { badgeClass: "statut-modifie", badgeText: "Modifiée"  },
+  envoyee:  { badgeClass: "statut-avenir",  badgeText: "Envoyée"   },
 };
 
 // ── Messages UI ───────────────────────────────────────────────
 export const MESSAGES = {
-  loading:            "Chargement des prescriptions medicales...",
+  loading:            "Chargement des prescriptions médicales...",
   erreurChargement:   "Erreur lors du chargement",
   erreurValidation:   "Erreur lors de la validation.",
-  reessayer:          "Reessayer",
-  aucunResultat:      "Aucun resultat trouve",
-  aucunePrescription: "Aucune prescription enregistree",
+  reessayer:          "Réessayer",
+  aucunResultat:      "Aucun résultat trouvé",
+  aucunePrescription: "Aucune prescription enregistrée",
   titrePage:          "Liste des prescriptions VIH",
 };
 
-// ── En-têtes tableau ──────────────────────────────────────────
+// ── En-têtes tableau (sans colonne Quantité) ──────────────────
 export const TABLE_HEADERS = [
   "Date naissance",
   "Patient",
   "Traitement",
   "Date prochaine prise",
-  "Quantite",
   "Statut prescription",
-  "S.therapeutique",
+  "S.thérapeutique",
   "RDV",
   "Action",
-]; 
+];

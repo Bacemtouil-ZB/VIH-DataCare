@@ -37,7 +37,10 @@ import { startScheduler } from './src/services/mobile/mobileScheduler.js';
 dotenv.config();
 
 const app = express();
-app.use(express.json());
+
+// Configuration des middlewares avec limites augmentées pour les fichiers
+app.use(express.json({ limit: '100mb' }));
+app.use(express.urlencoded({ limit: '100mb', extended: true }));
 app.use(cookieParser());
 app.use(helmet());
 

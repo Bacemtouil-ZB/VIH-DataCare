@@ -1,10 +1,9 @@
 export const INITIAL_FORM = {
   medicament_id: "",
-  traitement: "",
-  posologie: "",
-  quantite: "",
-  dosage: "",
-  remarque: "",
+  traitement:    "",
+  posologie:     "",   
+  periode:       "",   
+  remarque:      "",
 };
 
 export const STATUT_LABELS = {

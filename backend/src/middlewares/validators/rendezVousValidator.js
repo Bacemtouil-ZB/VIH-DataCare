@@ -39,26 +39,6 @@ const validateDate = body("date")
     return true;
   });
 
-// ─── Heure (requis) ───────────────────────────────────────────────────────────
-const validateHeure = body("heure")
-  .optional({ nullable: true, checkFalsy: true })
-  .custom((value) => {
-    // Si vide → OK
-    if (!value || value === "" || value === null) {
-      return true;
-    }
-    // Si fourni, vérifier format HH:MM
-    const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
-    if (!timeRegex.test(value)) {
-      throw new Error("Format heure invalide (attendu: HH:MM)");
-    }
-    // Vérifier heure raisonnable
-    const [h] = value.split(":").map(Number);
-    if (h >= 0 && h < 5) {
-      throw new Error("Heure inhabituelle (entre 00h et 05h)");
-    }
-    return true;
-  });
 
 // ─── Type (optionnel avec défaut) ─────────────────────────────────────────────
 
