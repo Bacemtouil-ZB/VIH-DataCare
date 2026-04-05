@@ -51,47 +51,26 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
     return fullName || "Medecin";
   }, [currentUser]);
 
-  // ── Filtered avec groupement ──────────────────────────────────
+  // ── Filtered — plus de groupement, backend renvoie 1 ligne par ordonnance ──
   const filtered = useMemo(() => {
     const q     = searchTerm.trim().toLowerCase();
     const dateQ = searchDate.trim();
 
-    // 1. Grouper par (minute + posologie + periode)
-    const grouped = new Map();
+    return prescriptions.filter((p) => {
+      // les noms viennent depuis medicaments[]
+      const nomsStr = (p.medicaments || [])
+        .map((m) => m.medicament_nom_snapshot || "")
+        .join(", ")
+        .toLowerCase();
 
-    prescriptions.forEach((p) => {
-      const raw    = p.created_at || p.date || "";
-      const minute = raw
-        ? String(raw).substring(0, 16)
-        : String(p.date || "");
-
-      const key = `${minute}__${p.posologie || ""}__${p.periode || ""}`;
-
-      if (!grouped.has(key)) {
-        grouped.set(key, {
-          ...p,
-          traitement: p.traitement || "",
-          _ids: [p.id],
-        });
-      } else {
-        const existing = grouped.get(key);
-        existing.traitement = existing.traitement
-          ? `${existing.traitement}, ${p.traitement || ""}`
-          : (p.traitement || "");
-        existing._ids.push(p.id);
-      }
-    });
-
-    const groupedList = Array.from(grouped.values());
-
-    // 2. Filtrer
-    return groupedList.filter((p) => {
       const matchesText =
         !q ||
-        p.traitement?.toLowerCase().includes(q) ||
-        p.statut?.toLowerCase().includes(q);
+        nomsStr.includes(q) ||
+        (p.statut || "").toLowerCase().includes(q);
+
       if (!matchesText) return false;
       if (!dateQ) return true;
+
       const raw = p.date || p.created_at || "";
       if (!raw) return false;
       const iso = raw instanceof Date
@@ -151,61 +130,51 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
     );
 
     const traitementsLabel = selectedMeds
-      .map((m) => m.code || m.composition || "Médicament")
+      .map((m) => m.code || m.composition || "Medicament")
       .join(", ");
 
     setConfirmationModal({
       data: {
         patient:    patient
-                      ? `${patient.surname || ""} ${patient.name || ""}`.trim()
-                      : "-",
+          ? `${patient.surname || ""} ${patient.name || ""}`.trim()
+          : "-",
         dossier:    numero || "-",
         traitement: traitementsLabel || "-",
         posologie:  formData.posologie || "-",
         periode:    formData.periode ? `${formData.periode} jours` : "-",
         remarque:   formData.remarque || "-",
         _medicament_ids: formData.medicament_ids,
-        _posologie:      formData.posologie  || null,
+        _posologie:      formData.posologie || null,
         _periode:        Number(formData.periode),
         _remarque:       formData.remarque   || null,
       },
     });
   };
 
-  // ── Confirmation → un POST par médicament (parallel) ─────────
+  // ── Confirmation → UN SEUL POST avec tableau de médicaments ──
   const confirmPrescription = async () => {
     if (!confirmationModal) return;
-    const { _medicament_ids, _posologie, _periode, _remarque } = confirmationModal.data;
+    const { _medicament_ids, _posologie, _periode, _remarque } =
+      confirmationModal.data;
 
     try {
       setSaving(true);
 
-      // timestamp partagé pour que le groupement fonctionne
-      const sharedDate = new Date().toISOString().split("T")[0];
+      const result = await createPrescription({
+        numero_dossier:  numero,
+        medicament_ids:  _medicament_ids.map(Number),
+        posologie:       _posologie,
+        periode:         _periode,
+        remarque:        _remarque,
+      });
 
-      const results = await Promise.all(
-        _medicament_ids.map((medicament_id) => {
-          const med = stockItems.find((s) => String(s.id) === String(medicament_id));
-          return createPrescription({
-            traitement:     med?.composition || med?.code || "",
-            numero_dossier: numero,
-            medicament_id:  Number(medicament_id),
-            posologie:      _posologie,
-            periode:        _periode,
-            date:           sharedDate,
-            remarque:       _remarque,
-          });
-        })
-      );
+      // backend renvoie 1 prescription avec medicaments[]
+      const newPrescription = result.prescription;
+      if (newPrescription) {
+        setPrescriptions((prev) => [newPrescription, ...prev]);
+      }
 
-      const newRows = results.map((r) => r.prescription).filter(Boolean);
-      setPrescriptions((prev) => [...newRows, ...prev]);
-
-      toast.success(
-        newRows.length > 1
-          ? `${newRows.length} prescriptions envoyées à la pharmacie.`
-          : "Prescription envoyée à la pharmacie."
-      );
+      toast.success("Prescription envoyee a la pharmacie.");
       setConfirmationModal(null);
       closeForm();
     } catch (err) {
@@ -243,7 +212,7 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
     confirmationModal,
     medecinDisplayName,
     field,
-    openCreate,
+      openCreate,
     closeForm,
     handleShowDetails,
     handleSubmit,

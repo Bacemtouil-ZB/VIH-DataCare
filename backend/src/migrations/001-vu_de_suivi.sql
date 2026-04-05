@@ -167,26 +167,42 @@ WITH prescriptions_ordonnees AS (
   SELECT
     pm.patient_id,
     pm.date                          AS date_prescription,
-    pm.medicament_id,
-    sm.composition                   AS nom_medicament,
-    sm.code                          AS code_medicament,
-    LAG(pm.medicament_id) OVER (
+    pm.id                            AS prescription_id,
+    -- Regrouper tous les médicaments de l'ordonnance
+    STRING_AGG(
+      COALESCE(sm.composition, pl.medicament_nom_snapshot),
+      ' + ' ORDER BY pl.id
+    )                                AS nom_medicament,
+    STRING_AGG(
+      COALESCE(sm.code, pl.medicament_nom_snapshot),
+      ' + ' ORDER BY pl.id
+    )                                AS code_medicament,
+    -- Pour détecter un vrai changement de protocole
+    STRING_AGG(
+      pl.medicament_id::TEXT,
+      ',' ORDER BY pl.medicament_id
+    )                                AS combo_ids,
+    LAG(
+      STRING_AGG(pl.medicament_id::TEXT, ',' ORDER BY pl.medicament_id)
+    ) OVER (
       PARTITION BY pm.patient_id
       ORDER BY pm.date, pm.id
-    )                                AS medicament_precedent
+    )                                AS combo_precedent
   FROM prescription_medicale pm
-  LEFT JOIN stock_medicaments sm ON sm.id = pm.medicament_id
+  INNER JOIN prescription_lignes   pl ON pl.prescription_id = pm.id
+  LEFT  JOIN stock_medicaments     sm ON sm.id = pl.medicament_id
+  GROUP BY pm.patient_id, pm.date, pm.id
 ),
 changements_reels AS (
   SELECT *
   FROM prescriptions_ordonnees
   WHERE
-    medicament_precedent IS NULL
-    OR medicament_id != medicament_precedent
+    combo_precedent IS NULL
+    OR combo_ids != combo_precedent
 )
 SELECT
   patient_id,
-  medicament_id,
+  prescription_id,
   nom_medicament,
   code_medicament,
   date_prescription                  AS date_debut,
@@ -195,7 +211,6 @@ SELECT
     ORDER BY date_prescription
   ) - INTERVAL '1 day'              AS date_fin
 FROM changements_reels;
-
 
 -- ══════════════════════════════════════════════════════════════════════════════
 -- VUE 2 : vue_points_cd4 (améliorée ✅)

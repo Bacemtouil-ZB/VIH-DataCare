@@ -43,7 +43,6 @@ export const getKpisByNumero = async (numero) => {
     LIMIT 1
   `;
 
-  // ── Deux derniers CD4 pour comparaison alerte ────────────────────────────
   const queryCD4Precedent = `
     SELECT
       cd4_absolu,
@@ -55,7 +54,6 @@ export const getKpisByNumero = async (numero) => {
     LIMIT 2
   `;
 
-  // ── Deux dernières CV pour comparaison alerte ────────────────────────────
   const queryCVPrecedent = `
     SELECT
       charge_virale_valeur,
@@ -67,7 +65,6 @@ export const getKpisByNumero = async (numero) => {
     LIMIT 2
   `;
 
-  // ── Sérologie HBV — ligne la plus récente avec au moins un marqueur ──────
   const queryHBV = `
     SELECT
       vhb_ag_hbs         AS ag_hbs,
@@ -108,7 +105,7 @@ export const getKpisByNumero = async (numero) => {
     creatinine:    creatinineResult.rows[0] || null,
     cd4Historique: cd4PrecedentResult.rows,
     cvHistorique:  cvPrecedentResult.rows,
-    serologie_hbv: hbvResult.rows[0]        || null,  // ✅ { ag_hbs, anti_hbs, anti_hbc, date }
+    serologie_hbv: hbvResult.rows[0]        || null,
   };
 };
 
@@ -157,7 +154,7 @@ export const getPointsCVByNumero = async (numero) => {
 export const getPeriodesARVByNumero = async (numero) => {
   const query = `
     SELECT
-      medicament_id,
+      prescription_id,
       nom_medicament,
       code_medicament,
       date_debut,

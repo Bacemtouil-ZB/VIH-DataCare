@@ -1,4 +1,40 @@
-﻿import pool from "../config/db.js";
+﻿// import pool from "../config/db.js";
+
+// export const getPatientsWithPrescriptions = async () => {
+//   const query = `
+//     SELECT
+//       p.id                          AS patient_id,
+//       p.numero                      AS numero_dossier,
+//       p.name                        AS patient_name,
+//       p.surname                     AS patient_surname,
+//       p.birthdate                   AS date_naissance,
+//       pe.id                         AS prescription_id,
+//       pe.date                       AS date_debut_traitement,
+//       pe.posologie,
+//       pe.periode                    AS periode_prescrite,
+//       pe.periode_modifiee,
+//       pe.statut                     AS statut_prescription,
+//       pe.date_delivrance,
+//       -- Traitement : code du médicament depuis stock_medicaments
+//       COALESCE(sm.code, sm.composition, 'Aucun') AS nom_traitement,
+//       -- Suivi thérapeutique
+//       st.statut_patient,
+//       st.date_prochaine_prise,
+//       st.date_ecart                 AS suivi_date_ecart,
+//       pe.created_at                 AS prescription_created_at
+//     FROM prescription_medicale pe
+//     INNER JOIN patients          p  ON p.id  = pe.patient_id
+//     LEFT  JOIN stock_medicaments sm ON sm.id = pe.medicament_id
+//     LEFT  JOIN suivi_therapeutique st ON st.prescription_id = pe.id
+//     ORDER BY pe.created_at DESC;
+//   `;
+
+//   const result = await pool.query(query);
+//   return result.rows;
+// };
+
+
+import pool from "../config/db.js";
 
 export const getPatientsWithPrescriptions = async () => {
   const query = `
@@ -15,17 +51,32 @@ export const getPatientsWithPrescriptions = async () => {
       pe.periode_modifiee,
       pe.statut                     AS statut_prescription,
       pe.date_delivrance,
-      -- Traitement : code du médicament depuis stock_medicaments
-      COALESCE(sm.code, sm.composition, 'Aucun') AS nom_traitement,
+      pe.remarque,
+      pe.medecin_id,
+      -- Médicaments regroupés depuis prescription_lignes
+      COALESCE(
+        STRING_AGG(
+          COALESCE(sm.code, sm.composition, pl.medicament_nom_snapshot),
+          ', ' ORDER BY pl.id
+        ),
+        'Aucun'
+      )                             AS nom_traitement,
       -- Suivi thérapeutique
       st.statut_patient,
       st.date_prochaine_prise,
       st.date_ecart                 AS suivi_date_ecart,
       pe.created_at                 AS prescription_created_at
     FROM prescription_medicale pe
-    INNER JOIN patients          p  ON p.id  = pe.patient_id
-    LEFT  JOIN stock_medicaments sm ON sm.id = pe.medicament_id
-    LEFT  JOIN suivi_therapeutique st ON st.prescription_id = pe.id
+    INNER JOIN patients              p  ON p.id  = pe.patient_id
+    LEFT  JOIN prescription_lignes   pl ON pl.prescription_id = pe.id
+    LEFT  JOIN stock_medicaments     sm ON sm.id = pl.medicament_id
+    LEFT  JOIN suivi_therapeutique   st ON st.prescription_id = pe.id
+    GROUP BY
+      p.id, p.numero, p.name, p.surname, p.birthdate,
+      pe.id, pe.date, pe.posologie, pe.periode, pe.periode_modifiee,
+      pe.statut, pe.date_delivrance, pe.remarque, pe.medecin_id,
+      st.statut_patient, st.date_prochaine_prise, st.date_ecart,
+      pe.created_at
     ORDER BY pe.created_at DESC;
   `;
 

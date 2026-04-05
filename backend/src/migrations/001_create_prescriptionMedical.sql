@@ -75,3 +75,40 @@ COMMENT ON COLUMN prescription_medicale.periode IS 'Période prescrite par le m�
 COMMENT ON COLUMN prescription_medicale.periode_modifiee IS 'Période modifiée par le pharmacien si stock insuffisant (en mois)';
 COMMENT ON COLUMN prescription_medicale.statut IS 'envoyee: en attente validation | delivree: validée sans modification | modifie: validée avec modification période | non_validee: expirée après 48h';
 COMMENT ON COLUMN prescription_medicale.date_delivrance IS 'Date de délivrance par le pharmacien';
+
+
+
+
+////// changement applique au bd 05-04/2026
+-- ============================================================
+-- TABLE PRINCIPALE : en-tête de l'ordonnance
+-- ============================================================
+CREATE TABLE IF NOT EXISTS prescription_medicale (
+  id                SERIAL PRIMARY KEY,
+  patient_id        INTEGER NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+  medecin_id        INTEGER REFERENCES users(id) ON DELETE SET NULL,
+  posologie         VARCHAR(255),
+  date              DATE NOT NULL DEFAULT CURRENT_DATE,
+  periode           INTEGER NOT NULL CHECK (periode > 0),
+  periode_modifiee  INTEGER CHECK (periode_modifiee > 0 AND periode_modifiee <= periode),
+  statut            VARCHAR(20) NOT NULL DEFAULT 'envoyee'
+                    CHECK (statut IN ('envoyee', 'delivree', 'modifie', 'non_validee')),
+  date_delivrance   DATE,
+  remarque          TEXT,
+  created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- ============================================================
+-- TABLE LIGNES : médicaments de l'ordonnance
+-- ============================================================
+CREATE TABLE IF NOT EXISTS prescription_lignes (
+  id                       SERIAL PRIMARY KEY,
+  prescription_id          INTEGER NOT NULL 
+                           REFERENCES prescription_medicale(id) ON DELETE CASCADE,
+  medicament_id            INTEGER 
+                           REFERENCES stock_medicaments(id) ON DELETE SET NULL,
+  medicament_nom_snapshot  VARCHAR(255) NOT NULL,
+  created_at               TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
