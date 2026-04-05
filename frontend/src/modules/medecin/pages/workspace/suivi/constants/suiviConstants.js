@@ -138,5 +138,11 @@ export const COULEUR_HBV_INCONNU = "#9CA3AF"; // gris — non déterminé
 // Seuil protecteur anti-HBs (UI/mL) — utilisé si valeur quantitative dispo
 export const SEUIL_ANTI_HBS_PROTECTEUR = 10;
 
+export const COULEURS_GRAPHIQUE = {
+  OK: "#22C55E", // vert — normal / indétectable
+  MID: "#F59E0B", // ambre — zone intermédiaire (CV uniquement)
+  CRIT: "#EF4444", // rouge — critique
+  OBJ: "#F59E0B", // ambre — ligne objectif CD4
+};
 
 

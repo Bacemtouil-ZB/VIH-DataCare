@@ -1,21 +1,20 @@
-import { Table, Tag, Button, Spin, Empty } from "antd";
+import { Table, Tag, Spin, Empty } from "antd";
 import {
   formatDate,
   formatCD4,
   formatCV,
-  formatCreatinine,        // ✅
+  formatCreatinine,
   getCD4AntColor,
   getCVAntColor,
-  getCreatinineAntColor,   // ✅
+  getCreatinineAntColor,
 } from "../../helpers/suiviHelpers";
 import {
-  COULEURS_STATUT,
   COULEURS_TYPE_BILAN,
   UNITES,
   MESSAGES_VIDES,
 } from "../../constants/suiviConstants";
 
-const TableauSuivi = ({ data = [], loading, onApercu }) => {
+const TableauSuivi = ({ data = [], loading }) => {
   const columns = [
     {
       title: "Date CD4",
@@ -58,7 +57,7 @@ const TableauSuivi = ({ data = [], loading, onApercu }) => {
       sorter: (a, b) => (a.charge_virale_valeur ?? 0) - (b.charge_virale_valeur ?? 0),
     },
     {
-      title: `Créatinine (${UNITES.CREATININE})`,  // ✅
+      title: `Créatinine (${UNITES.CREATININE})`,
       dataIndex: "creatinine",
       key: "creatinine",
       width: 130,
@@ -84,44 +83,20 @@ const TableauSuivi = ({ data = [], loading, onApercu }) => {
         ),
     },
     {
-      title: "Statut",
-      dataIndex: "statut",
-      key: "statut",
-      width: 100,
-      render: (val) => (
-        <Tag color={COULEURS_STATUT[val] ?? "default"}>{val ?? "Inconnu"}</Tag>
-      ),
-      filters: [
-        { text: "Bon",      value: "Bon" },
-        { text: "Moyen",    value: "Moyen" },
-        { text: "Critique", value: "Critique" },
-        { text: "Inconnu",  value: "Inconnu" },
-      ],
-      onFilter: (value, record) => record.statut === value,
-    },
-    {
       title: "Type",
       dataIndex: "type_bilan",
       key: "type_bilan",
       width: 90,
       render: (val) => (
-        <Tag color={COULEURS_TYPE_BILAN[val] ?? "default"}>{val}</Tag>
+        <Tag color={COULEURS_TYPE_BILAN[val] ?? "default"}>
+          {val}
+        </Tag>
       ),
       filters: [
-        { text: "Initial",  value: "Initial" },
-        { text: "Contrôle", value: "Contrôle" },  // ✅
+        { text: "Initial", value: "Initial" },
+        { text: "Contrôle", value: "Contrôle" },
       ],
       onFilter: (value, record) => record.type_bilan === value,
-    },
-    {
-      title: "",
-      key: "action",
-      width: 80,
-      render: (_, row) => (
-        <Button size="small" type="link" onClick={() => onApercu?.(row)}>
-          Détail
-        </Button>
-      ),
     },
   ];
 
@@ -142,7 +117,6 @@ const TableauSuivi = ({ data = [], loading, onApercu }) => {
       pagination={{ pageSize: 10, showSizeChanger: true }}
       locale={{ emptyText: <Empty description={MESSAGES_VIDES.tableau} /> }}
       scroll={{ x: 900 }}
-      rowClassName={(row) => row.statut === "Critique" ? "row-critique" : ""}
       style={{ marginTop: 8 }}
     />
   );

@@ -1,10 +1,3 @@
-// ============================================================
-//  SuiviDashboard.jsx
-//  Orchestrateur principal — Zone 1 + Zone 2 + Zone 3
-//  Aucune logique métier ici — branche hooks + composants
-// ============================================================
-
-import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { Row, Col, Typography, Divider } from "antd";
 
@@ -23,32 +16,16 @@ import GraphiqueCV  from "../ui/Zone2/GraphiqueCV";
 
 // ── Composants Zone 3 ────────────────────────────────────────
 import TableauSuivi from "../ui/Zone3/TableauSuivi";
-import DrawerApercu from "../ui/Zone3/DrawerApercu";
 
 const { Title } = Typography;
 
 const SuiviDashboard = () => {
   const { numero } = useParams();
 
-  // ── State drawer ─────────────────────────────────────────
-  const [selectedRow, setSelectedRow] = useState(null);
-  const [drawerOpen,  setDrawerOpen]  = useState(false);
-
   // ── Hooks ────────────────────────────────────────────────
   const { kpis,       loading: l1 } = useSuiviKpis(numero);
   const { graphiques, loading: l2 } = useSuiviGraphiques(numero);
   const { tableau,    loading: l3 } = useSuiviTableau(numero);
-
-  // ── Handlers ─────────────────────────────────────────────
-  const handleApercu = (row) => {
-    setSelectedRow(row);
-    setDrawerOpen(true);
-  };
-
-  const handleCloseDrawer = () => {
-    setDrawerOpen(false);
-    setSelectedRow(null);
-  };
 
   return (
     <div style={{ padding: "24px" }}>
@@ -65,7 +42,7 @@ const SuiviDashboard = () => {
       </Title>
 
       <Row gutter={[16, 16]}>
-        <Col xs={24} >
+        <Col xs={24}>
           <GraphiqueCD4
             data={graphiques.cd4}
             periodes={graphiques.periodes}
@@ -83,7 +60,7 @@ const SuiviDashboard = () => {
 
       <Divider style={{ margin: "8px 0 20px" }} />
 
-      {/* ── Zone 3 — Tableau + Drawer ── */}
+      {/* ── Zone 3 — Tableau ── */}
       <Title level={5} style={{ marginBottom: 16 }}>
         Historique des bilans
       </Title>
@@ -91,13 +68,6 @@ const SuiviDashboard = () => {
       <TableauSuivi
         data={tableau}
         loading={l3}
-        onApercu={handleApercu}
-      />
-
-      <DrawerApercu
-        row={selectedRow}
-        open={drawerOpen}
-        onClose={handleCloseDrawer}
       />
 
     </div>

@@ -10,11 +10,6 @@ export default function SuiviLayout() {
         <NavLink to="Dashbord" className="tab-link">
             Patient Overview
         </NavLink>
-
-        <NavLink to="controleTherapeutique" className="tab-link">
-          Controle Therapeutique
-        </NavLink>
-
       </div>
 
       {/* Tab Content */}

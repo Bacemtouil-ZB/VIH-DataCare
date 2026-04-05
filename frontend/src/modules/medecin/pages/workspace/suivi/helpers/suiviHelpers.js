@@ -35,7 +35,6 @@ export const formatDateRecharts = (dateStr) => {
 // ── Formatage valeurs médicales ───────────────────────────────
 export const formatCV = (valeur) => {
   if (valeur === null || valeur === undefined) return "---";
-  if (valeur < SEUILS_CV.INDETECTABLE) return "Indétectable";
   return valeur.toLocaleString("fr-FR");
 };
 

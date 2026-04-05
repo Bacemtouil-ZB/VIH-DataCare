@@ -8,20 +8,34 @@ import {
   LIGNES_REF_CD4,
   CONFIG_GRAPHIQUE,
   MESSAGES_VIDES,
+  SEUILS_CD4,
+  COULEURS_GRAPHIQUE,
 } from "../../constants/suiviConstants";
 import { formatTooltipCD4, formatDate } from "../../helpers/suiviHelpers";
+import {
+  LigneMulticolore,
+  DotColore,
+  LabelValeurAlternee,
+} from "./GraphiqueShared";
 
-const SEUIL_CRITIQUE  = 200;
-const SEUIL_OBJECTIF  = 500;
-const COULEUR_OK      = "#22C55E";
-const COULEUR_CRIT    = "#EF4444";
-const COULEUR_OBJ     = "#F59E0B";
+// ── Logique couleur CD4 (2 zones) ────────────────────────────
+const getCouleurCD4 = (valeur) => {
+  if (valeur == null)                      return COULEURS_GRAPHIQUE.OK;
+  if (valeur < SEUILS_CD4.CRITIQUE)        return COULEURS_GRAPHIQUE.CRIT;
+  return COULEURS_GRAPHIQUE.OK;
+};
+
+// ── Formateur label ───────────────────────────────────────────
+const formaterCD4 = (valeur) => {
+  if (valeur == null) return "";
+  return valeur.toLocaleString("fr-FR");
+};
 
 // ── Tooltip ───────────────────────────────────────────────────
 const TooltipCD4 = ({ active, payload }) => {
   if (!active || !payload?.length) return null;
   const point   = payload[0]?.payload;
-  const estCrit = (point?.cd4_absolu ?? Infinity) < SEUIL_CRITIQUE;
+  const couleur = getCouleurCD4(point?.cd4_absolu);
 
   return (
     <div style={{
@@ -42,8 +56,8 @@ const TooltipCD4 = ({ active, payload }) => {
 
       <div style={{ display: "flex", justifyContent: "space-between", gap: 16, marginBottom: 4 }}>
         <span style={{ color: "#94A3B8" }}>CD4</span>
-        <span style={{ color: estCrit ? COULEUR_CRIT : COULEUR_OK, fontWeight: 700 }}>
-          {formatTooltipCD4(point?.cd4_absolu)} cell/mm³
+        <span style={{ color: couleur, fontWeight: 700 }}>
+          {formatTooltipCD4(point?.cd4_absolu)}
         </span>
       </div>
 
@@ -59,12 +73,9 @@ const TooltipCD4 = ({ active, payload }) => {
         borderTop: "1px solid #334155",
         display: "flex", alignItems: "center", gap: 6,
       }}>
-        <div style={{
-          width: 8, height: 8, borderRadius: "50%",
-          background: estCrit ? COULEUR_CRIT : COULEUR_OK,
-        }} />
-        <span style={{ fontSize: 11, fontWeight: 600, color: estCrit ? COULEUR_CRIT : COULEUR_OK }}>
-          {estCrit ? "Zone critique" : "Normal"}
+        <div style={{ width: 8, height: 8, borderRadius: "50%", background: couleur }} />
+        <span style={{ fontSize: 11, fontWeight: 600, color: couleur }}>
+          {point?.cd4_absolu < SEUILS_CD4.CRITIQUE ? "Zone critique" : "Normal"}
         </span>
       </div>
 
@@ -86,67 +97,6 @@ const TooltipCD4 = ({ active, payload }) => {
         </div>
       )}
     </div>
-  );
-};
-
-// ── Label valeur alternée ─────────────────────────────────────
-const LabelValeur = ({ x, y, value, index }) => {
-  if (value == null) return null;
-  const estCrit  = value < SEUIL_CRITIQUE;
-  const decalage = index % 2 === 0 ? -14 : 18;
-  return (
-    <text
-      x={x} y={y + decalage}
-      textAnchor="middle"
-      fontSize={10}
-      fontWeight={700}
-      fill={estCrit ? COULEUR_CRIT : COULEUR_OK}
-    >
-      {value.toLocaleString("fr-FR")}
-    </text>
-  );
-};
-
-// ── Dot coloré ───────────────────────────────────────────────
-const DotCD4 = (props) => {
-  const { cx, cy, payload } = props;
-  if (!cx || !cy) return null;
-  const estCrit = (payload?.cd4_absolu ?? Infinity) < SEUIL_CRITIQUE;
-  return (
-    <circle
-      key={`dot-${payload.date}`}
-      cx={cx} cy={cy} r={4.5}
-      fill="#0F172A"
-      stroke={estCrit ? COULEUR_CRIT : COULEUR_OK}
-      strokeWidth={2.5}
-    />
-  );
-};
-
-// ── Segments colorés ──────────────────────────────────────────
-const LigneCD4 = ({ points, data }) => {
-  if (!points || points.length < 2) return null;
-  return (
-    <g>
-      {points.slice(0, -1).map((p1, i) => {
-        const p2 = points[i + 1];
-        if (!p1 || !p2 || p1.x == null || p2.x == null) return null;
-        const v1   = data[i]?.cd4_absolu;
-        const v2   = data[i + 1]?.cd4_absolu;
-        if (v1 == null || v2 == null) return null;
-        const crit = v1 < SEUIL_CRITIQUE || v2 < SEUIL_CRITIQUE;
-        return (
-          <line
-            key={`seg-${i}`}
-            x1={p1.x} y1={p1.y}
-            x2={p2.x} y2={p2.y}
-            stroke={crit ? COULEUR_CRIT : COULEUR_OK}
-            strokeWidth={2.5}
-            strokeLinecap="round"
-          />
-        );
-      })}
-    </g>
   );
 };
 
@@ -186,7 +136,6 @@ const GraphiqueCD4 = ({ data = [], periodes = [], loading }) => {
       style={{ marginBottom: 16 }}
       title={
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-          {/* Titre */}
           <div style={{
             width: 10, height: 10, borderRadius: "50%",
             background: CONFIG_GRAPHIQUE.couleur_cd4, flexShrink: 0,
@@ -194,61 +143,44 @@ const GraphiqueCD4 = ({ data = [], periodes = [], loading }) => {
           <span>Évolution CD4</span>
           <span style={{ fontSize: 12, color: "#AAA", fontWeight: 400 }}>cell/mm³</span>
 
-          {/* Séparateur */}
           <div style={{ width: 1, height: 16, background: "#E5E7EB", margin: "0 4px" }} />
 
-          {/* Badges légende */}
           <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-
-            {/* Normal */}
             <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              <div style={{ width: 20, height: 3, background: COULEUR_OK, borderRadius: 2 }} />
+              <div style={{ width: 20, height: 3, background: COULEURS_GRAPHIQUE.OK, borderRadius: 2 }} />
               <span style={{ fontSize: 11, color: "#555", fontWeight: 500 }}>Normal</span>
             </div>
-
-            {/* Critique */}
             <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              <div style={{ width: 20, height: 3, background: COULEUR_CRIT, borderRadius: 2 }} />
+              <div style={{ width: 20, height: 3, background: COULEURS_GRAPHIQUE.CRIT, borderRadius: 2 }} />
               <span style={{ fontSize: 11, color: "#555", fontWeight: 500 }}>
                 Critique
-                <span style={{ color: "#AAA", fontWeight: 400 }}> (&lt;{SEUIL_CRITIQUE})</span>
+                <span style={{ color: "#AAA", fontWeight: 400 }}> (&lt;{SEUILS_CD4.CRITIQUE})</span>
               </span>
             </div>
-
-            {/* Objectif */}
             <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
               <div style={{
-                width: 20, height: 3,
-                background: `repeating-linear-gradient(90deg, ${COULEUR_OBJ} 0px, ${COULEUR_OBJ} 4px, transparent 4px, transparent 7px)`,
-                borderRadius: 2,
+                width: 20, height: 3, borderRadius: 2,
+                background: `repeating-linear-gradient(90deg, ${COULEURS_GRAPHIQUE.OBJ} 0px, ${COULEURS_GRAPHIQUE.OBJ} 4px, transparent 4px, transparent 7px)`,
               }} />
               <span style={{ fontSize: 11, color: "#555", fontWeight: 500 }}>
                 Objectif
-                <span style={{ color: "#AAA", fontWeight: 400 }}> (≥{SEUIL_OBJECTIF})</span>
+                <span style={{ color: "#AAA", fontWeight: 400 }}> (≥{SEUILS_CD4.MOYEN_MAX})</span>
               </span>
             </div>
-
           </div>
         </div>
       }
     >
-      {/* Zone graphique avec fond sombre */}
       <div style={{
-        background:   "#0F172A",
-        borderRadius: 10,
-        padding:      "16px 12px 12px 4px",
-        overflow:     "hidden",
+        background: "#0F172A", borderRadius: 10,
+        padding: "16px 12px 12px 4px", overflow: "hidden",
       }}>
         <ResponsiveContainer width="100%" height={CONFIG_GRAPHIQUE.hauteur ?? 300}>
           <LineChart
             data={dataAvecTraitement}
             margin={{ top: 22, right: 28, left: 0, bottom: 4 }}
           >
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke="#1E293B"
-              vertical={false}
-            />
+            <CartesianGrid strokeDasharray="3 3" stroke="#1E293B" vertical={false} />
 
             <XAxis
               dataKey="dateAffichee"
@@ -274,7 +206,6 @@ const GraphiqueCD4 = ({ data = [], periodes = [], loading }) => {
               content={<TooltipCD4 />}
             />
 
-            {/* Lignes de référence sans label — titre dans le header */}
             {LIGNES_REF_CD4.map((ligne) => (
               <ReferenceLine
                 key={ligne.valeur}
@@ -285,27 +216,38 @@ const GraphiqueCD4 = ({ data = [], periodes = [], loading }) => {
               />
             ))}
 
-            {/* Ligne principale multicolore */}
             <Line
               type="monotone"
               dataKey="cd4_absolu"
               stroke="transparent"
               strokeWidth={0}
-              dot={<DotCD4 />}
-              activeDot={{
-                r: 6,
-                fill: "#0F172A",
-                stroke: "#94A3B8",
-                strokeWidth: 2,
-              }}
+              dot={(props) => (
+                <DotColore
+                  {...props}
+                  dataKey="cd4_absolu"
+                  getCouleur={getCouleurCD4}
+                />
+              )}
+              activeDot={{ r: 6, fill: "#0F172A", stroke: "#94A3B8", strokeWidth: 2 }}
               connectNulls={false}
               shape={(props) => (
-                <LigneCD4 points={props.points} data={dataAvecTraitement} />
+                <LigneMulticolore
+                  points={props.points}
+                  data={dataAvecTraitement}
+                  getCouleur={getCouleurCD4}
+                  dataKey="cd4_absolu"
+                />
               )}
             >
               <LabelList
                 dataKey="cd4_absolu"
-                content={<LabelValeur />}
+                content={(props) => (
+                  <LabelValeurAlternee
+                    {...props}
+                    getCouleur={getCouleurCD4}
+                    formater={formaterCD4}
+                  />
+                )}
               />
             </Line>
           </LineChart>

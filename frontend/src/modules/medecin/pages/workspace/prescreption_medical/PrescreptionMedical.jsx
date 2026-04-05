@@ -6,8 +6,8 @@ import "./PrescreptionMedical.css";
 
 export default function PrescriptionMedical() {
   const { numero } = useParams();
-  const { user } = useAuth();
-  const logic = usePrescreptionMedicalLogic(numero, user);
+  const { user }   = useAuth();
+  const logic      = usePrescreptionMedicalLogic(numero, user);
 
   return (
     <PrescreptionMedicalUI
@@ -16,15 +16,13 @@ export default function PrescriptionMedical() {
       showHistory={logic.showHistory}
       setShowHistory={logic.setShowHistory}
       handleShowDetails={logic.handleShowDetails}
-      openEdit={logic.openEdit}
       detailItem={logic.detailItem}
       setDetailItem={logic.setDetailItem}
       showForm={logic.showForm}
       formData={logic.formData}
       field={logic.field}
-      handleMedSelect={logic.handleMedSelect}
       stockItems={logic.stockItems}
-      selectedMed={logic.selectedMed}
+      setMedicamentIds={logic.setMedicamentIds}
       isModifying={logic.isModifying}
       saving={logic.saving}
       closeForm={logic.closeForm}

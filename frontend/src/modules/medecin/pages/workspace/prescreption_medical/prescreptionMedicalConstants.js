@@ -1,5 +1,5 @@
 export const INITIAL_FORM = {
-  medicament_id: "",
+   medicament_ids: [],  
   traitement:    "",
   posologie:     "",   
   periode:       "",   

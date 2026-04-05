@@ -7,8 +7,8 @@ import "./ExamenLayout.css";
 const TABS = [
   { to: "signesCliniques", label: "Signes Cliniques" },
   { to: "signesFonctionnels", label: "Signes Fonctionnels" },
-  { to: "habitudes", label: "Habitudes de Vie" },
-  { to: "observation", label: "Observation" },
+  { to: "habitudes", label: "observation" },
+  { to: "observation", label: "Remarque" },
 ];
 
 export default function ExamenLayout() {

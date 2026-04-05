@@ -29,7 +29,6 @@ import PrescreptionMedical from "../pages/workspace/prescreption_medical/Prescre
 import Conclusion from "../pages/workspace/conclusion/Conclusion";
 import SuiviLayout from "../pages/workspace/suivi/SuiviLayout";
 import SuiviDashboard from "../pages/workspace/suivi/orchestrer/SuiviDashboard.jsx";
-import ControleTherapeutique from "../pages/workspace/suivi/controleTherapitique";
 import RendezVous from "../pages/workspace/Rendez_vous/RendezVous.jsx";
 
 const medecinRoutes = [
@@ -128,10 +127,9 @@ const medecinRoutes = [
       path: "suivi",
       element: <NewPatientGuard><SuiviLayout /></NewPatientGuard>,
       children: [
-        { index: true, element: <Navigate to="Dashbord" replace /> },
-        { path: "Dashbord", element: <SuiviDashboard /> },
-        { path: "controleTherapeutique", element: <ControleTherapeutique /> },
-        { path: "habitudes", element: <HabitudesPage /> },
+        { index: true, element: <Navigate to="SuiviDashboard" replace /> },
+        { path: "SuiviDashboard", element: <SuiviDashboard /> }
+       
       ],
     },
   ],

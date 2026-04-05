@@ -1,4 +1,3 @@
-
 import { Modal, Button } from "react-bootstrap";
 
 export default function ConfirmPrescriptionModal({
@@ -10,6 +9,7 @@ export default function ConfirmPrescriptionModal({
 }) {
   if (!data) return null;
 
+  const traitements = data.traitement ? data.traitement.split(", ") : [];
 
   return (
     <Modal
@@ -21,7 +21,7 @@ export default function ConfirmPrescriptionModal({
       keyboard={!saving}
       dialogClassName="confirm-prescription-dialog"
     >
-      {/* ── Header — fond vert clair ───────────────────────── */}
+      {/* ── Header ───────────────────────────────────────────── */}
       <Modal.Header
         closeButton={!saving}
         style={{
@@ -30,21 +30,14 @@ export default function ConfirmPrescriptionModal({
           padding:      "1.1rem 1.5rem 0.85rem",
         }}
       >
-        <div>
-          <Modal.Title
-            style={{
-              fontSize:   "1.15rem",
-              fontWeight: 700,
-              color:      "#1a5c35",
-            }}
-          >
-            Confirmer la prescription
-          </Modal.Title>
-        
-        </div>
+        <Modal.Title
+          style={{ fontSize: "1.15rem", fontWeight: 700, color: "#1a5c35" }}
+        >
+          Confirmer la prescription
+        </Modal.Title>
       </Modal.Header>
 
-      {/* ── Body ──────────────────────────────────────────── */}
+      {/* ── Body ─────────────────────────────────────────────── */}
       <Modal.Body style={{ padding: "1.5rem" }}>
 
         {/* Carte info grise */}
@@ -57,11 +50,11 @@ export default function ConfirmPrescriptionModal({
             marginBottom: "1.1rem",
           }}
         >
+          {/* Lignes fixes */}
           {[
-            { label: "Patient",     value: data.patient    || "—" },
-            { label: "Dossier",     value: data.dossier    || "—" },
-            { label: "Traitement",  value: data.traitement || "—" },
-            { label: "Période",    value: data.periode ? `${data.periode} ` : "—" },
+            { label: "Patient",  value: data.patient  || "—" },
+            { label: "Dossier",  value: data.dossier  || "—" },
+            { label: "Période",  value: data.periode  || "—" },
           ].map(({ label, value }) => (
             <div
               key={label}
@@ -77,7 +70,50 @@ export default function ConfirmPrescriptionModal({
             </div>
           ))}
 
-          {/* Ligne posologie — optionnelle */}
+          {/* Traitement — pills (1 par médicament) */}
+          <div
+            style={{
+              padding:      "0.5rem 0",
+              borderBottom: "1px solid #eaecef",
+              fontSize:     "0.92rem",
+            }}
+          >
+            <div className="d-flex justify-content-between align-items-start">
+              <span style={{ color: "#6c757d", flexShrink: 0, marginRight: "1rem" }}>
+                Traitement
+              </span>
+              <div
+                style={{
+                  display:        "flex",
+                  flexWrap:       "wrap",
+                  gap:            "0.35rem",
+                  justifyContent: "flex-end",
+                }}
+              >
+                {traitements.length > 0 ? traitements.map((t, i) => (
+                  <span
+                    key={i}
+                    style={{
+                      background:   "#e8f5e9",
+                      color:        "#1a5c35",
+                      border:       "1px solid #a7d7b0",
+                      borderRadius: "999px",
+                      padding:      "2px 10px",
+                      fontWeight:   600,
+                      fontSize:     "0.82rem",
+                      whiteSpace:   "nowrap",
+                    }}
+                  >
+                    {t}
+                  </span>
+                )) : (
+                  <span style={{ fontWeight: 700, color: "#1a1a2e" }}>—</span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Posologie — optionnelle */}
           {data.posologie && data.posologie !== "-" && (
             <div
               className="d-flex justify-content-between align-items-center"
@@ -89,7 +125,7 @@ export default function ConfirmPrescriptionModal({
           )}
         </div>
 
-        {/* Section prochaine prise — fond vert très clair */}
+        {/* Remarque — fond vert très clair */}
         {data.remarque && data.remarque !== "-" && (
           <div
             style={{
@@ -99,29 +135,20 @@ export default function ConfirmPrescriptionModal({
               padding:      "1rem 1.4rem",
             }}
           >
-            <p
-              className="mb-1"
-              style={{ fontSize: "0.82rem", color: "#4a7c5e" }}
-            >
-              remarque : 
+            <p className="mb-1" style={{ fontSize: "0.82rem", color: "#4a7c5e" }}>
+              Remarque :
             </p>
             <p
               className="mb-0"
-              style={{
-                fontSize:   "1.25rem",
-                fontWeight: 700,
-                color:      "#1a5c35",
-              }}
+              style={{ fontSize: "1rem", fontWeight: 600, color: "#1a5c35" }}
             >
               {data.remarque}
             </p>
           </div>
         )}
-
-       
       </Modal.Body>
 
-      {/* ── Footer ────────────────────────────────────────── */}
+      {/* ── Footer ───────────────────────────────────────────── */}
       <Modal.Footer
         style={{
           borderTop: "1px solid #e9ecef",

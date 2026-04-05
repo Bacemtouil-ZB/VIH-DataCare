@@ -1,11 +1,9 @@
 // ============================================================
-//  GraphiqueCV.jsx — Style sombre identique à GraphiqueCD4
-//  - Fond sombre pour la zone graphique
-//  - Ligne unique colorée (indétectable = vert, détectable = orange/rouge)
-//  - Légende complète dans le header
-//  - Dots colorés selon seuil
-//  - Valeurs alternées haut/bas
-//  - Axe Y logarithmique
+//  GraphiqueCV.jsx
+//  - Courbe multicolore : vert < 50, ambre 50–1000, rouge ≥ 1000
+//  - Tooltip : toujours afficher le chiffre réel (+ mention indétectable)
+//  - Composants partagés depuis GraphiqueShared
+//  - Couleurs et seuils depuis suiviConstants
 // ============================================================
 
 import { Card, Spin, Empty } from "antd";
@@ -19,33 +17,54 @@ import {
   CONFIG_GRAPHIQUE,
   MESSAGES_VIDES,
   SEUILS_CV,
+  COULEURS_GRAPHIQUE,
 } from "../../constants/suiviConstants";
-import { formatTooltipCV, formatDate } from "../../helpers/suiviHelpers";
+import { formatDate } from "../../helpers/suiviHelpers";
+import {
+  LigneMulticolore,
+  DotColore,
+  LabelValeurAlternee,
+} from "./GraphiqueShared";
 
-const SEUIL_INDETECTABLE = SEUILS_CV?.INDETECTABLE ?? 50;
-const SEUIL_ELEVE        = 1000;
-const COULEUR_OK         = "#22C55E";   // vert  — indétectable
-const COULEUR_MID        = "#F59E0B";   // ambre — détectable mais bas
-const COULEUR_CRIT       = "#EF4444";   // rouge — charge élevée
-
+// ── Logique couleur CV (2 zones) ─────────────────────────────
+// Vert  : < SEUILS_CV.INDETECTABLE (200)
+// Rouge : ≥ SEUILS_CV.INDETECTABLE (200)
 const getCouleurCV = (valeur) => {
-  if (valeur == null)             return COULEUR_OK;
-  if (valeur < SEUIL_INDETECTABLE) return COULEUR_OK;
-  if (valeur < SEUIL_ELEVE)        return COULEUR_MID;
-  return COULEUR_CRIT;
+  if (valeur == null)                  return COULEURS_GRAPHIQUE.OK;
+  if (valeur < SEUILS_CV.INDETECTABLE) return COULEURS_GRAPHIQUE.OK;
+  return COULEURS_GRAPHIQUE.CRIT;
 };
 
-// ── Tooltip sombre ────────────────────────────────────────────
+// ── Formateur label CV ────────────────────────────────────────
+const formaterCV = (valeur) => {
+  if (valeur == null) return "";
+  if (valeur >= 1_000_000) return `${(valeur / 1_000_000).toFixed(1)}M`;
+  if (valeur >= 1_000)     return `${Math.round(valeur / 1_000)}k`;
+  return valeur.toLocaleString("fr-FR");
+};
+
+// ── Tooltip ───────────────────────────────────────────────────
+// Règle : toujours afficher le chiffre réel.
+// Si < seuil indétectable → chiffre + badge "Indétectable"
+// Sinon → chiffre + copies/mL
 const TooltipCV = ({ active, payload }) => {
   if (!active || !payload?.length) return null;
   const point   = payload[0]?.payload;
   const valeur  = point?.charge_virale_valeur;
   const couleur = getCouleurCV(valeur);
 
-  const affiche =
-    valeur == null          ? "—"
-    : valeur < SEUIL_INDETECTABLE ? "Indétectable"
-    : formatTooltipCV(valeur);
+  const estIndetectable = valeur != null && valeur < SEUILS_CV.INDETECTABLE;
+
+  // Affichage du chiffre — toujours présent si valeur existe
+  const chiffreAffiche = valeur == null
+    ? "—"
+    : `${valeur.toLocaleString("fr-FR")} copies/mL`;
+
+  const statutLabel = valeur == null
+    ? "—"
+    : valeur < SEUILS_CV.INDETECTABLE
+      ? "Indétectable"
+      : "Détectable";
 
   return (
     <div style={{
@@ -55,8 +74,9 @@ const TooltipCV = ({ active, payload }) => {
       padding:      "10px 14px",
       fontSize:     13,
       boxShadow:    "0 4px 20px rgba(0,0,0,0.4)",
-      minWidth:     200,
+      minWidth:     210,
     }}>
+      {/* Date */}
       <div style={{
         fontWeight: 600, marginBottom: 8, color: "#F1F5F9",
         borderBottom: "1px solid #334155", paddingBottom: 6,
@@ -64,30 +84,30 @@ const TooltipCV = ({ active, payload }) => {
         {formatDate(point?.date)}
       </div>
 
+      {/* Chiffre — toujours affiché */}
       <div style={{ display: "flex", justifyContent: "space-between", gap: 16, marginBottom: 4 }}>
         <span style={{ color: "#94A3B8" }}>Charge virale</span>
-        <span style={{ color: couleur, fontWeight: 700 }}>
-          {affiche}{valeur >= SEUIL_INDETECTABLE && " copies/mL"}
-        </span>
+        <span style={{ color: couleur, fontWeight: 700 }}>{chiffreAffiche}</span>
       </div>
 
+      {/* Badge statut + mention indétectable si applicable */}
       <div style={{
         marginTop: 8, paddingTop: 6,
         borderTop: "1px solid #334155",
         display: "flex", alignItems: "center", gap: 6,
       }}>
-        <div style={{
-          width: 8, height: 8, borderRadius: "50%",
-          background: couleur,
-        }} />
+        <div style={{ width: 8, height: 8, borderRadius: "50%", background: couleur }} />
         <span style={{ fontSize: 11, fontWeight: 600, color: couleur }}>
-          {valeur == null            ? "—"
-           : valeur < SEUIL_INDETECTABLE ? "Indétectable"
-           : valeur < SEUIL_ELEVE        ? "Détectable"
-           : "Charge élevée"}
+          {statutLabel}
         </span>
+        {estIndetectable && (
+          <span style={{ fontSize: 10, color: "#64748B", fontStyle: "italic" }}>
+            (seuil &lt;{SEUILS_CV.INDETECTABLE})
+          </span>
+        )}
       </div>
 
+      {/* Traitement */}
       {point?.traitement && (
         <div style={{
           marginTop: 8, paddingTop: 6,
@@ -100,6 +120,7 @@ const TooltipCV = ({ active, payload }) => {
         </div>
       )}
 
+      {/* Type bilan */}
       {point?.type_bilan && (
         <div style={{ fontSize: 11, color: "#64748B", marginTop: 2 }}>
           Bilan {point.type_bilan}
@@ -109,7 +130,7 @@ const TooltipCV = ({ active, payload }) => {
   );
 };
 
-// ── Tick axe X ────────────────────────────────────────────────
+// ── Ticks axes ────────────────────────────────────────────────
 const TickX = ({ x, y, payload }) => {
   if (!payload?.value) return null;
   return (
@@ -119,93 +140,17 @@ const TickX = ({ x, y, payload }) => {
   );
 };
 
-// ── Tick axe Y logarithmique ──────────────────────────────────
 const TickY = ({ x, y, payload }) => {
   const v = payload?.value;
   if (!v) return null;
-  let label;
-  if (v >= 1_000_000) label = `${v / 1_000_000}M`;
-  else if (v >= 1_000) label = `${v / 1_000}k`;
-  else label = `${v}`;
+  const label =
+    v >= 1_000_000 ? `${v / 1_000_000}M`
+    : v >= 1_000   ? `${v / 1_000}k`
+    : `${v}`;
   return (
     <text x={x - 4} y={y + 4} textAnchor="end" fontSize={11} fill="#94A3B8">
       {label}
     </text>
-  );
-};
-
-// ── Label valeur alternée ─────────────────────────────────────
-const LabelValeur = ({ x, y, index, data }) => {
-  const valeurReelle = data?.[index]?.charge_virale_valeur;
-  if (valeurReelle == null) return null;
-
-  const couleur  = getCouleurCV(valeurReelle);
-  const affiche  = valeurReelle < SEUIL_INDETECTABLE
-    ? "Indét."
-    : valeurReelle >= 1_000_000
-      ? `${(valeurReelle / 1_000_000).toFixed(1)}M`
-      : valeurReelle >= 1_000
-        ? `${Math.round(valeurReelle / 1_000)}k`
-        : valeurReelle.toLocaleString("fr-FR");
-
-  const decalage = index % 2 === 0 ? -14 : 18;
-
-  return (
-    <text
-      x={x} y={y + decalage}
-      textAnchor="middle"
-      fontSize={10}
-      fontWeight={700}
-      fill={couleur}
-    >
-      {affiche}
-    </text>
-  );
-};
-
-// ── Dot coloré ───────────────────────────────────────────────
-const DotCV = (props) => {
-  const { cx, cy, payload } = props;
-  if (!cx || !cy) return null;
-  const couleur = getCouleurCV(payload?.charge_virale_valeur);
-  return (
-    <circle
-      key={`dot-${payload.date}`}
-      cx={cx} cy={cy} r={4.5}
-      fill="#0F172A"
-      stroke={couleur}
-      strokeWidth={2.5}
-    />
-  );
-};
-
-// ── Segments colorés ──────────────────────────────────────────
-const LigneCV = ({ points, data }) => {
-  if (!points || points.length < 2) return null;
-  return (
-    <g>
-      {points.slice(0, -1).map((p1, i) => {
-        const p2 = points[i + 1];
-        if (!p1 || !p2 || p1.x == null || p2.x == null) return null;
-        const v1 = data[i]?.charge_virale_valeur;
-        const v2 = data[i + 1]?.charge_virale_valeur;
-        if (v1 == null || v2 == null) return null;
-        const couleur =
-          v1 >= SEUIL_ELEVE || v2 >= SEUIL_ELEVE     ? COULEUR_CRIT
-          : v1 >= SEUIL_INDETECTABLE || v2 >= SEUIL_INDETECTABLE ? COULEUR_MID
-          : COULEUR_OK;
-        return (
-          <line
-            key={`seg-${i}`}
-            x1={p1.x} y1={p1.y}
-            x2={p2.x} y2={p2.y}
-            stroke={couleur}
-            strokeWidth={2.5}
-            strokeLinecap="round"
-          />
-        );
-      })}
-    </g>
   );
 };
 
@@ -224,6 +169,7 @@ const GraphiqueCV = ({ data = [], periodes = [], loading }) => {
         ...p,
         dateAffichee: formatDate(p.date),
         traitement:   periode?.nom_medicament ?? periode?.code_medicament ?? null,
+        // valeurLog : toujours > 0 pour l'axe logarithmique
         valeurLog:    p.charge_virale_valeur > 0 ? p.charge_virale_valeur : 1,
       };
     });
@@ -248,7 +194,6 @@ const GraphiqueCV = ({ data = [], periodes = [], loading }) => {
       style={{ marginBottom: 16 }}
       title={
         <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-          {/* Titre */}
           <div style={{
             width: 10, height: 10, borderRadius: "50%",
             background: CONFIG_GRAPHIQUE.couleur_cv, flexShrink: 0,
@@ -256,60 +201,37 @@ const GraphiqueCV = ({ data = [], periodes = [], loading }) => {
           <span>Évolution charge virale</span>
           <span style={{ fontSize: 12, color: "#AAA", fontWeight: 400 }}>copies/mL</span>
 
-          {/* Séparateur */}
           <div style={{ width: 1, height: 16, background: "#E5E7EB", margin: "0 4px" }} />
 
-          {/* Badges légende */}
           <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-
-            {/* Indétectable */}
             <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              <div style={{ width: 20, height: 3, background: COULEUR_OK, borderRadius: 2 }} />
+              <div style={{ width: 20, height: 3, background: COULEURS_GRAPHIQUE.OK, borderRadius: 2 }} />
               <span style={{ fontSize: 11, color: "#555", fontWeight: 500 }}>
                 Indétectable
-                <span style={{ color: "#AAA", fontWeight: 400 }}> (&lt;{SEUIL_INDETECTABLE})</span>
+                <span style={{ color: "#AAA", fontWeight: 400 }}> (&lt;{SEUILS_CV.INDETECTABLE})</span>
               </span>
             </div>
-
-            {/* Détectable */}
             <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              <div style={{ width: 20, height: 3, background: COULEUR_MID, borderRadius: 2 }} />
+              <div style={{ width: 20, height: 3, background: COULEURS_GRAPHIQUE.CRIT, borderRadius: 2 }} />
               <span style={{ fontSize: 11, color: "#555", fontWeight: 500 }}>
                 Détectable
-                <span style={{ color: "#AAA", fontWeight: 400 }}> (&lt;{SEUIL_ELEVE})</span>
+                <span style={{ color: "#AAA", fontWeight: 400 }}> (≥{SEUILS_CV.INDETECTABLE})</span>
               </span>
             </div>
-
-            {/* Charge élevée */}
-            <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              <div style={{ width: 20, height: 3, background: COULEUR_CRIT, borderRadius: 2 }} />
-              <span style={{ fontSize: 11, color: "#555", fontWeight: 500 }}>
-                Charge élevée
-                <span style={{ color: "#AAA", fontWeight: 400 }}> (≥{SEUIL_ELEVE})</span>
-              </span>
-            </div>
-
           </div>
         </div>
       }
     >
-      {/* Zone graphique avec fond sombre */}
       <div style={{
-        background:   "#0F172A",
-        borderRadius: 10,
-        padding:      "16px 12px 12px 4px",
-        overflow:     "hidden",
+        background: "#0F172A", borderRadius: 10,
+        padding: "16px 12px 12px 4px", overflow: "hidden",
       }}>
         <ResponsiveContainer width="100%" height={CONFIG_GRAPHIQUE.hauteur ?? 300}>
           <ComposedChart
             data={dataAvecTraitement}
             margin={{ top: 22, right: 28, left: 0, bottom: 4 }}
           >
-            <CartesianGrid
-              strokeDasharray="3 3"
-              stroke="#1E293B"
-              vertical={false}
-            />
+            <CartesianGrid strokeDasharray="3 3" stroke="#1E293B" vertical={false} />
 
             <XAxis
               dataKey="dateAffichee"
@@ -335,7 +257,6 @@ const GraphiqueCV = ({ data = [], periodes = [], loading }) => {
               content={<TooltipCV />}
             />
 
-            {/* Lignes de référence sans label — légende dans le header */}
             {LIGNES_REF_CV.map((ligne) => (
               <ReferenceLine
                 key={ligne.valeur}
@@ -346,28 +267,41 @@ const GraphiqueCV = ({ data = [], periodes = [], loading }) => {
               />
             ))}
 
-            {/* Ligne principale multicolore */}
+            {/* dataKey="valeurLog" pour l'axe log, mais on passe dataKeyReel
+                pour que LigneMulticolore et DotColore utilisent la vraie valeur */}
             <Line
               type="monotone"
               dataKey="valeurLog"
               stroke="transparent"
               strokeWidth={0}
-              dot={<DotCV />}
-              activeDot={{
-                r: 6,
-                fill: "#0F172A",
-                stroke: "#94A3B8",
-                strokeWidth: 2,
-              }}
+              dot={(props) => (
+                <DotColore
+                  {...props}
+                  dataKey="charge_virale_valeur"
+                  getCouleur={getCouleurCV}
+                />
+              )}
+              activeDot={{ r: 6, fill: "#0F172A", stroke: "#94A3B8", strokeWidth: 2 }}
               connectNulls={false}
               shape={(props) => (
-                <LigneCV points={props.points} data={dataAvecTraitement} />
+                <LigneMulticolore
+                  points={props.points}
+                  data={dataAvecTraitement}
+                  getCouleur={getCouleurCV}
+                  dataKey="charge_virale_valeur"
+                />
               )}
             >
               <LabelList
                 dataKey="valeurLog"
                 content={(props) => (
-                  <LabelValeur {...props} data={dataAvecTraitement} />
+                  <LabelValeurAlternee
+                    {...props}
+                    getCouleur={getCouleurCV}
+                    formater={formaterCV}
+                    data={dataAvecTraitement}
+                    dataKeyReel="charge_virale_valeur"
+                  />
                 )}
               />
             </Line>
