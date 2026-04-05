@@ -1,5 +1,5 @@
 import AuditLogsPageUI from "./AuditLogsPageUI";
-import { useAuditLogsPageLogic } from "./useAuditLogsPageLogic";
+import {useAuditLogsPageLogic} from "./useAuditLogsPageLogic";
 import "./auditLogsPage.css";
 
 const AuditLogsPage = () => {

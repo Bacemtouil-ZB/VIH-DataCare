@@ -1,39 +1,156 @@
-﻿// PatientsPage.jsx — UI only
-
-import { NavLink } from "react-router-dom";
+﻿import { NavLink }                          from "react-router-dom";
+import { useRef, useState, useEffect }      from "react";
 import {
-  ActionButton,
-  PageTitle,
-  FilterToolbar,
-  Spinner,
+  ActionButton, PageTitle, FilterToolbar, Spinner,
 } from "../../../../shared/components/index.js";
 
-import usePatientsPage                           from "./usePatientsPage.js";
+import usePatientsPage    from "./usePatientsPage.js";
+import useNotifications   from "./notification/useNotifications.js";
+
 import { daysUntil, getRdvBarWidth, getDaysLabel } from "./patientsPageHelpers.js";
 import {
-  HOSPITALISATION_OPTIONS,
-  RDV_FILTER_OPTIONS,
-  TABLE_COLUMNS,
-}                                                from "./patientsPageConstants.js";
+  HOSPITALISATION_OPTIONS, RDV_FILTER_OPTIONS, TABLE_COLUMNS,
+} from "./patientsPageConstants.js";
+import { NOTIF_ICON_MAP } from "./notification/notificationConstants.js";
 
 import "./PatientsPage.css";
 
+/* ── NotificationBell ────────────────────────────────────────────────────── */
+function NotificationBell({
+  notifications,
+  unreadCount,
+  hasNew,
+  onMarkOne,
+  onMarkAll,
+  onOpen,
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef();
+
+  // Fermer si clic dehors
+  useEffect(() => {
+    const handler = (e) => {
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const handleOpen = () => {
+    setOpen((o) => {
+      if (!o) onOpen?.();   // marquer comme vu → point rouge disparait
+      return !o;
+    });
+  };
+
+  return (
+    <div ref={ref} className="notif-wrapper">
+
+      {/* ── Cloche ── */}
+      <button
+        className={`notif-bell-btn ${open ? "active" : ""}`}
+        onClick={handleOpen}
+      >
+        <i className={`bi ${open ? "bi-bell-fill" : "bi-bell"}`} />
+
+        {/* Badge nombre non lus */}
+        {unreadCount > 0 && (
+          <span className="notif-badge">
+            {unreadCount > 9 ? "9+" : unreadCount}
+          </span>
+        )}
+
+        {/* Point rouge nouvelle notification */}
+        {hasNew && unreadCount === 0 && (
+          <span className="notif-dot-new" />
+        )}
+      </button>
+
+      {/* ── Dropdown ── */}
+      {open && (
+        <div className="notif-dropdown">
+
+          {/* Header */}
+          <div className="notif-header">
+            <span className="notif-header-title">
+              <i className="bi bi-bell-fill me-2" />
+              Notifications
+              {unreadCount > 0 && (
+                <span className="notif-header-count">{unreadCount}</span>
+              )}
+            </span>
+            {unreadCount > 0 && (
+              <button className="notif-mark-all" onClick={onMarkAll}>
+                <i className="bi bi-check2-all me-1" />
+                Tout lu
+              </button>
+            )}
+          </div>
+
+          {/* Liste */}
+          <div className="notif-list">
+            {notifications.length === 0 ? (
+              <div className="notif-empty">
+                <i className="bi bi-bell-slash" />
+                <span>Aucune notification</span>
+              </div>
+            ) : (
+              notifications.map((notif) => (
+                <div
+                  key={notif.id}
+                  className={`notif-item ${notif.isRead ? "read" : "unread"}`}
+                  onClick={() => onMarkOne(notif.id)}
+                >
+                  <div className={`notif-icon-wrap type-${notif.type}`}>
+                    <i className={NOTIF_ICON_MAP[notif.type] ?? "bi bi-info-circle"} />
+                  </div>
+
+                  <div className="notif-content">
+                    <div className="notif-title">{notif.title}</div>
+                    <div className="notif-message">{notif.message}</div>
+                    <NavLink
+                      to={notif.rdv_url}
+                      className="notif-link"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      Fixer le rendez-vous
+                      <i className="bi bi-arrow-right ms-1" />
+                    </NavLink>
+                  </div>
+
+                  {!notif.isRead && <span className="notif-dot" />}
+                </div>
+              ))
+            )}
+          </div>
+
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── PatientsPage ────────────────────────────────────────────────────────── */
 export default function PatientsPage() {
   const {
-    filteredPatients,
-    prescMap,
-    rdvMap,
-    loading,
-    search,    setSearch,
-    filter,    setFilter,
-    rdvFilter, setRdvFilter,
-    handleNewPatient,
+    filteredPatients, prescMap, rdvMap, loading,
+    search, setSearch, filter, setFilter,
+    rdvFilter, setRdvFilter, handleNewPatient,
   } = usePatientsPage();
+
+  const {
+    notifications,
+    unreadCount,
+    hasNew,
+    markOne,
+    markAll,
+    markAllSeen,
+  } = useNotifications();
 
   return (
     <div className="patients-page">
 
-      {/* ── Toolbar ────────────────────────────────────────────────────────── */}
+      {/* ── Toolbar ── */}
       <div className="patients-toolbar">
         <div className="toolbar-left">
           <PageTitle title="Patients" className="mb-0" />
@@ -45,60 +162,53 @@ export default function PatientsPage() {
             className="toolbar-search"
             items={[
               {
-                type: "search",
-                value: search,
+                type: "search", value: search,
                 onChange: (e) => setSearch(e.target.value),
                 placeholder: "Rechercher patient...",
-                wrapperClassName: "search-box mb-0",
-                height: "40px",
-                width: "520px",
+                wrapperClassName: "search-box mb-0", height: "40px", width: "520px",
               },
               {
-                type: "select",
-                value: filter,
+                type: "select", value: filter,
                 onChange: (e) => setFilter(e.target.value),
-                className: "filter-select",
-                options: HOSPITALISATION_OPTIONS,
+                className: "filter-select", options: HOSPITALISATION_OPTIONS,
               },
               {
-                type: "select",
-                value: rdvFilter,
+                type: "select", value: rdvFilter,
                 onChange: (e) => setRdvFilter(e.target.value),
-                className: "filter-select",
-                options: RDV_FILTER_OPTIONS,
+                className: "filter-select", options: RDV_FILTER_OPTIONS,
               },
             ]}
           />
 
-          <FilterToolbar
-            className="toolbar-right"
-            actions={[
-              <ActionButton
-                key="add"
-                action="add"
-                label="Nouveau patient"
-                onClick={handleNewPatient}
-                height="40px"
-              />,
-            ]}
-          />
+          <div className="toolbar-actions">
+            <NotificationBell
+              notifications={notifications}
+              unreadCount={unreadCount}
+              hasNew={hasNew}
+              onMarkOne={markOne}
+              onMarkAll={markAll}
+              onOpen={markAllSeen}
+            />
+            <FilterToolbar
+              className="toolbar-right"
+              actions={[
+                <ActionButton
+                  key="add" action="add" label="Nouveau patient"
+                  onClick={handleNewPatient} height="40px"
+                />,
+              ]}
+            />
+          </div>
         </div>
       </div>
 
-      {/* ── Table ──────────────────────────────────────────────────────────── */}
+      {/* ── Table ── */}
       <div className="table-wrapper">
-        {loading ? (
-          <Spinner />
-        ) : (
+        {loading ? <Spinner /> : (
           <table>
             <thead>
-              <tr>
-                {TABLE_COLUMNS.map((col) => (
-                  <th key={col}>{col}</th>
-                ))}
-              </tr>
+              <tr>{TABLE_COLUMNS.map((col) => <th key={col}>{col}</th>)}</tr>
             </thead>
-
             <tbody>
               {filteredPatients.length === 0 ? (
                 <tr>
@@ -109,8 +219,7 @@ export default function PatientsPage() {
               ) : (
                 filteredPatients.map((patient) => (
                   <PatientRow
-                    key={patient.numero}
-                    patient={patient}
+                    key={patient.numero} patient={patient}
                     traitement={prescMap[patient.id]?.traitement ?? null}
                     rdv={rdvMap[patient.id] ?? null}
                   />
@@ -124,50 +233,36 @@ export default function PatientsPage() {
   );
 }
 
-/* ── PatientRow ──────────────────────────────────────────────────────────── */
+/* ── PatientRow ── */
 function PatientRow({ patient, traitement, rdv }) {
   const days      = rdv ? daysUntil(rdv.date) : null;
   const daysLabel = days !== null ? getDaysLabel(days) : null;
   const rdvDate   = rdv ? new Date(rdv.date).toLocaleDateString("fr-FR") : null;
-  const bar       = rdv ? getRdvBarWidth(days) : null; // { width, cls }
+  const bar       = rdv ? getRdvBarWidth(days) : null;
 
   return (
     <tr>
-      {/* Dossier */}
       <td>
-        <NavLink
-          to={`/medecin/patient/${patient.numero}/workspace`}
-          className="link"
-        >
+        <NavLink to={`/medecin/patient/${patient.numero}/workspace`} className="link">
           {patient.numero}
         </NavLink>
       </td>
-
-      {/* Patient */}
       <td>
         <div className="patient-cell">
           <div className="avatar">{patient.name?.charAt(0)}</div>
           <div className="name">{patient.name} {patient.surname}</div>
         </div>
       </td>
-
-      {/* Date naissance */}
       <td>
         {patient.birthdate
           ? new Date(patient.birthdate).toLocaleDateString("fr-FR")
           : "-"}
       </td>
-
-      {/* Traitement */}
       <td>
-        {traitement && traitement !== "Aucun" ? (
-          <span className="badge traitement-active">{traitement}</span>
-        ) : (
-          <span className="badge traitement-none">Aucun</span>
-        )}
+        {traitement && traitement !== "Aucun"
+          ? <span className="badge traitement-active">{traitement}</span>
+          : <span className="badge traitement-none">Aucun</span>}
       </td>
-
-      {/* Rendez-vous — Option D: progress bar */}
       <td>
         {rdv ? (
           <div className="rdv-bar-cell">
@@ -176,24 +271,13 @@ function PatientRow({ patient, traitement, rdv }) {
               <span className="rdv-bar-days">{daysLabel}</span>
             </div>
             <div className="rdv-bar-track">
-              <div
-                className={`rdv-bar-fill ${bar.cls}`}
-                style={{ width: `${bar.width}%` }}
-              />
+              <div className={`rdv-bar-fill ${bar.cls}`} style={{ width: `${bar.width}%` }} />
             </div>
           </div>
-        ) : (
-          <span className="badge rdv-none">Aucun RDV</span>
-        )}
+        ) : <span className="badge rdv-none">Aucun RDV</span>}
       </td>
-
-      {/* Statut */}
       <td>
-        <span
-          className={
-            patient.hospitalisation === "interne" ? "badge danger" : "badge success"
-          }
-        >
+        <span className={patient.hospitalisation === "interne" ? "badge danger" : "badge success"}>
           {patient.hospitalisation}
         </span>
       </td>

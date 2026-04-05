@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useBlocker } from "react-router-dom";
 import {
   getTransfusion,
   createTransfusion,
@@ -7,6 +8,7 @@ import {
 } from "../../../../services/antecedentsService.jsx";
 import { formatTransfusionFromApi, formatTransfusionForApi } from "./transfusionHelpers";
 import { TRANSFUSION_INITIAL_STATE } from "./transfusionConstants";
+import { confirmAction } from "../../../../../../shared/utils/uiAlerts";
 
 export default function useTransfusion(numero) {
   const [items, setItems] = useState([]);
@@ -18,6 +20,8 @@ export default function useTransfusion(numero) {
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState(null);
   const [accordeonOpen, setAccordeonOpen] = useState(true);
+
+  const isHandlingBlock = useRef(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,6 +37,34 @@ export default function useTransfusion(numero) {
     };
     fetchData();
   }, [numero]);
+
+  const isDirty =
+    showForm &&
+    JSON.stringify(form) !== JSON.stringify(TRANSFUSION_INITIAL_STATE);
+
+  const blocker = useBlocker(isDirty);
+
+  useEffect(() => {
+    if (blocker.state !== "blocked") return;
+    if (isHandlingBlock.current) return;
+    isHandlingBlock.current = true;
+
+    (async () => {
+      try {
+        const confirmed = await confirmAction(
+          "Formulaire non soumis",
+          "Vous avez des données non enregistrées. Voulez-vous quitter sans enregistrer ?"
+        );
+        if (confirmed) {
+          blocker.proceed();
+        } else {
+          blocker.reset();
+        }
+      } finally {
+        isHandlingBlock.current = false;
+      }
+    })();
+  }, [blocker.state, blocker]);
 
   const handleChange = (key, value) => {
     setForm((prev) => ({ ...prev, [key]: value }));

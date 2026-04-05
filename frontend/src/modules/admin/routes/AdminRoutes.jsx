@@ -2,7 +2,7 @@
 import { Navigate } from "react-router-dom";
 import UsersPage from "../pages/usersPages/UsersPage";
 import AuditLogsPage from "../pages/auditLogsPage/AuditLogsPage";
-import AdminDashboard from "../pages/AdminDashboard";
+import ProfilPage from "../../../pages/parametres/profile";
 
 import ProtectedRoute from "../../../routes/ProtectedRoute";
 import { DashboardLayout } from "../../../shared/components";
@@ -17,9 +17,10 @@ const adminRoutes = [
     ),
     children: [
       { index: true, element: <Navigate to="users" replace /> }, // default /admin
-      { path: "dashboard", element: <AdminDashboard /> },
       { path: "users", element: <UsersPage /> },
       { path: "audit-logs", element: <AuditLogsPage /> },
+      { path: "settings", element: <ProfilPage /> },
+
     ],
   },
 ];

@@ -30,6 +30,7 @@ import suiviTherapeutiqueRoute from "./src/routes/suiviTherapeutiqueRoute.js";
 import bilanExamenRoute from "./src/routes/bilanExamenRoute.js";
 import resultatBiologiqueRoute from "./src/routes/resultatBiologiqueRoute.js";
 import suiviBiologiqueRoute from "./src/routes/Suivibiologiqueroute.js";
+import suiviNotificationRoute from "./src/routes/suiviNotificationRoute.js";
 // Scheduler
 import { startScheduler } from './src/services/mobile/mobileScheduler.js';
 
@@ -78,6 +79,7 @@ app.use("/api/suivi-therapeutique", suiviTherapeutiqueRoute);
 app.use("/api/bilan-examens", bilanExamenRoute);
 app.use("/api/resultats-biologiques", resultatBiologiqueRoute);
 app.use("/api/suivi-biologique", suiviBiologiqueRoute);
+app.use("/api/suivi-notifications", suiviNotificationRoute);
 
 // 404 handler
 app.use((req, res) => {

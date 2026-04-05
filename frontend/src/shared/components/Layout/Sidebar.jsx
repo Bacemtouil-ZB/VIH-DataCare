@@ -23,13 +23,13 @@ const Sidebar = () => {
         label: 'Audit patient',
         end : true,
       },
-      {
-        to: 'dashboard',
-        icon: 'bi-speedometer2',
-        label: 'Dashboard',
-        end : true,   
-      },
-
+        {
+      to: "settings",
+      icon: "bi-person-gear",
+      label: "Gestion profil",
+      end: true,
+    },
+     
  
     ],
     

@@ -45,3 +45,23 @@ export const getAuditLogDetails = async (id) => {
     throw error.response?.data || error.message;
   }
 };
+
+
+// auditService.js (à compléter avec ce qui existe déjà)
+
+/**
+ * Global audit logs (admin)
+ * GET /audit/admin/logs
+ */
+export const getGlobalAuditLogs = async ({
+  module, action, user_id, anomaly, from, to, limit = 50, offset = 0
+} = {}) => {
+  try {
+    const res = await API.get('/audit/admin/logs', {
+      params: { module, action, user_id, anomaly, from, to, limit, offset }
+    });
+    return res.data; // { success, count, total, limit, offset, logs }
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};

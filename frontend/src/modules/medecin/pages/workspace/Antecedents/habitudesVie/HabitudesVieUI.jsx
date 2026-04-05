@@ -80,7 +80,7 @@ export default function HabitudesVieUI({
         )}
       </div>
 
-      {/* ── Compléments alimentaires ── */}
+{/* ── Compléments alimentaires ── */}
       <div className="mb-4">
         <SectionTitle>Compléments alimentaires / Vitamines</SectionTitle>
         <div className="d-flex flex-column gap-3">
@@ -132,38 +132,38 @@ export default function HabitudesVieUI({
         </div>
       </div>
 
-      {/* ── Autres consommations ── */}
-      <div className="mb-4">
-        <SectionTitle>Autres consommations</SectionTitle>
-        <div className="d-flex flex-column gap-3">
-          {DROGUES.map(({ key, label }) => (
-            <div key={key}>
-              {wrapLocked(
-                <Toggle
-                  label={label}
-                  checked={form[key]}
-                  onChange={() => onToggle(key)}
-                  disabled={readOnly}
-                />
-              )}
-              {form[key] && (
-                <div className="ms-4 mt-2" style={{ maxWidth: 220 }}>
-                  <FieldLabel>Date de début</FieldLabel>
-                  {wrapLocked(
-                    <input
-                      type="date"
-                      value={form[`${key}_date`] ?? ""}
-                      onChange={(e) => onChange(`${key}_date`, e.target.value)}
-                      disabled={readOnly}
-                      style={{ ...inputStyle, background: readOnly ? "#f3f4f6" : inputStyle.background }}
-                    />
-                  )}
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
+{/* ── Autres consommations ── */}
+<div className="mb-4">
+  <SectionTitle>Autres consommations</SectionTitle>
+  <div className="d-flex flex-wrap gap-3">
+    {DROGUES.map(({ key, label }) => (
+      <div key={key} style={{ minWidth: 200, flex: "1 1 200px" }}>
+        {wrapLocked(
+          <Toggle
+            label={label}
+            checked={form[key]}
+            onChange={() => onToggle(key)}
+            disabled={readOnly}
+          />
+        )}
+        {form[key] && (
+          <div className="mt-2 ms-2" style={{ maxWidth: 220 }}>
+            <FieldLabel>Date de début</FieldLabel>
+            {wrapLocked(
+              <input
+                type="date"
+                value={form[`${key}_date`] ?? ""}
+                onChange={(e) => onChange(`${key}_date`, e.target.value)}
+                disabled={readOnly}
+                style={{ ...inputStyle, background: readOnly ? "#f3f4f6" : inputStyle.background }}
+              />
+            )}
+          </div>
+        )}
       </div>
+    ))}
+  </div>
+</div>
 
       {/* ── Actions ── */}
       <div className="d-flex justify-content-end gap-2">

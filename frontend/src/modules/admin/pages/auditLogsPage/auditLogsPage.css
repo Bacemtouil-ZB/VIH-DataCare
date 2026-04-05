@@ -1,16 +1,15 @@
 :root {
-  --bg: #f3f4f6;                 /* page background */
-  --card: #ffffff;               /* cards/surfaces */
-  --line: #d1dbd3;               /* borders */
-  --text: #344054;               /* main text */
-  --muted: #475467;              /* secondary text */
-  --primary: #667085;            /* neutral action */
-  --success: #16a34a;            /* success */
-  --danger: #d92d20;             /* danger */
+  --bg: #f3f4f6;
+  --card: #ffffff;
+  --line: #d1dbd3;
+  --text: #344054;
+  --muted: #475467;
+  --primary: #667085;
+  --success: #16a34a;
+  --danger: #d92d20;
   --radius: 12px;
   --shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
 }
-
 
 .audit {
   padding: 16px;
@@ -37,7 +36,6 @@
 .auditContainer {
   max-width: 1200px;
   margin: 0 auto;
-  
 }
 
 .audit__card {
@@ -119,7 +117,6 @@
   cursor: pointer;
 }
 
-/* Ensure Rechercher button is visible */
 .audit__btn--primary {
   background: var(--primary);
   border-color: var(--primary2);
@@ -191,7 +188,6 @@
   color: var(--text);
 }
 
-/* Pagination always visible */
 .auditPager {
   background: #fff;
   border-top: 1px solid var(--line);
@@ -208,7 +204,7 @@
   gap: 8px;
 }
 
-/* Modal */
+/* Modal - rendue scrollable */
 .auditModal__overlay {
   position: fixed;
   inset: 0;
@@ -230,7 +226,6 @@
 }
 
 .auditModal--compact {
-  width: min(980px, 100%);
   max-height: min(86vh, 780px);
   display: flex;
   flex-direction: column;
@@ -244,6 +239,7 @@
   padding: 10px 12px;
   background: #f8fafc;
   border-bottom: 1px solid var(--line);
+  flex-shrink: 0;
 }
 
 .auditModal__title {
@@ -254,28 +250,38 @@
   gap: 8px;
 }
 
-.auditModal__headerActions {
-  display: inline-flex;
-  gap: 8px;
-  align-items: center;
-}
-
+/* Corps de la modale : défilement vertical si nécessaire */
 .auditModal__body {
   padding: 12px;
+  flex: 1;
+  overflow-y: auto;
 }
 
-.auditModal__body--scroll {
-  overflow: auto;
-  flex: 1 1 auto;
+/* Lignes de diff */
+.auditDiff__cell {
+  border-bottom: 1px solid #f1f5f9;
+  padding: 10px 12px;
+  font-size: 12px;
+  vertical-align: top;
 }
 
-.auditModal__meta2 {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 6px;
-  margin-bottom: 10px;
+.auditDiff__key {
+  font-weight: 900;
+  color: #0f172a;
+  white-space: nowrap;
 }
 
+.auditDiff__mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.auditDiff__row--changed td {
+  background: #fff0f0;  /* rouge très clair, plus agréable */
+}
+
+/* Optionnel : si vous utilisez des métadonnées dans la modale, gardez ces règles */
 .auditMetaRow {
   display: grid;
   grid-template-columns: 120px 1fr;
@@ -304,57 +310,4 @@
 .auditMetaRow__v--mono {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   font-size: 12px;
-}
-
-.auditModal__section {
-  font-weight: 900;
-  margin: 10px 0 8px;
-  color: var(--text);
-  font-size: 13px;
-}
-
-/* Diff table */
-.auditDiffTable {
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.auditDiffTable table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.auditDiffTable thead th {
-  background: #fcf8f8;
-  border-bottom: 1px solid var(--line);
-  font-size: 12px;
-  font-weight: 900;
-  color: #334155;
-  text-align: left;
-  padding: 10px 12px;
-  white-space: nowrap;
-}
-
-.auditDiff__cell {
-  border-bottom: 1px solid #f9f1f2;
-  padding: 10px 12px;
-  font-size: 12px;
-  vertical-align: top;
-}
-
-.auditDiff__key {
-  font-weight: 900;
-  color: #0f172a;
-  white-space: nowrap;
-}
-
-.auditDiff__mono {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  white-space: pre-wrap;
-  word-break: break-word;
-}
-
-.auditDiff__row--changed td {
-  background: #e21e1e !important;
 }

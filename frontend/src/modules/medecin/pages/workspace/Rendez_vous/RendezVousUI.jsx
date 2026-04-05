@@ -58,10 +58,6 @@ export default function RendezVousUI({
         <div className="rdv-prochaine-prise-banner">
           <span className="rdv-prochaine-label">Date prochaine prise thérapeutique :</span>
           <strong>{toFrDate(prochainePriseReference.date)}</strong>
-          <span className="rdv-prochaine-sep">|</span>
-          <span className="rdv-prochaine-traitement">
-            Traitement : {prochainePriseReference.traitement}
-          </span>
         </div>
       )}
 
