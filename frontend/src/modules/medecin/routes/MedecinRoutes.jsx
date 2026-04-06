@@ -30,6 +30,7 @@ import Conclusion from "../pages/workspace/conclusion/Conclusion";
 import SuiviLayout from "../pages/workspace/suivi/SuiviLayout";
 import SuiviDashboard from "../pages/workspace/suivi/orchestrer/SuiviDashboard.jsx";
 import RendezVous from "../pages/workspace/Rendez_vous/RendezVous.jsx";
+import PermissionOrchestrer from "../pages/workspace/suivi/permisssions/permissionOrchestrer.jsx";
 
 const medecinRoutes = [
   {
@@ -127,9 +128,9 @@ const medecinRoutes = [
       path: "suivi",
       element: <NewPatientGuard><SuiviLayout /></NewPatientGuard>,
       children: [
-        { index: true, element: <Navigate to="SuiviDashboard" replace /> },
-        { path: "SuiviDashboard", element: <SuiviDashboard /> }
-       
+        { index: true, element: <Navigate to="Dashboard" replace /> },
+        { path: "Dashboard", element: <SuiviDashboard /> },
+        { path: "Permissions",    element: <PermissionOrchestrer /> },       
       ],
     },
   ],
