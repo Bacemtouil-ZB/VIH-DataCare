@@ -19,8 +19,14 @@ const Sidebar = () => {
       },
       {
         to: 'audit-logs',
-        icon: 'bi-exclamation-triangle',
+        icon: 'bi-clipboard-data',
         label: 'Audit patient',
+        end: true,
+      },
+      {
+        to: 'contacts-urgence',
+        icon: 'bi-exclamation-triangle-fill',
+        label: 'Urgences',
         end : true,
       },
         {
