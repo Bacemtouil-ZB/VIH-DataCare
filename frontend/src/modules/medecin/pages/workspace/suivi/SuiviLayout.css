@@ -5,14 +5,6 @@
   padding: 20px;
 }
 
-/* Title */
-.suivi-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1f2937;
-  margin-bottom: 15px;
-}
-
 /* Tabs container */
 .tabs {
   display: flex;
@@ -25,7 +17,7 @@
 .tab-link {
   text-decoration: none;
   font-size: 14px;
-  color: #408d47; /*badaltou lel color bta3 hover 5ater 3ana wa7da barka */
+  color: #6b7280;
   padding-bottom: 6px;
   transition: all 0.2s ease;
   position: relative;

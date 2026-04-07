@@ -10,14 +10,16 @@ import { STATUT_LABELS } from "./prescreptionMedicalConstants";
 import ConfirmPrescriptionModal from "../../../components/UI/Confirmprescriptionmodal";
 
 // ── Helper : affiche une liste de traitements en pills ─────────────
-function TraitementPills({ value }) {
-  if (!value || value === "-") return <span className="text-muted">-</span>;
-  const list = value.split(",").map((t) => t.trim()).filter(Boolean);
-  if (list.length === 0) return <span className="text-muted">-</span>;
+function TraitementPills({ medicaments }) {
+  if (!medicaments || medicaments.length === 0)
+    return <span className="text-muted">-</span>;
+
   return (
     <div className="pe-traitement-pills">
-      {list.map((t, i) => (
-        <span key={i} className="pe-traitement-pill">{t}</span>
+      {medicaments.map((m, i) => (
+        <span key={i} className="pe-traitement-pill">
+          {m.medicament_nom_snapshot || "-"}
+        </span>
       ))}
     </div>
   );
@@ -270,8 +272,7 @@ export default function PrescreptionMedicalUI({
                       {toFrDate(p.date)}
                     </td>
                     <td>
-                      {/* ── Pills dans la table ── */}
-                      <TraitementPills value={p.traitement} />
+                      <TraitementPills medicaments={p.medicaments} />
                     </td>
                     <td>{p.posologie || "-"}</td>
                     <td>{p.periode || "-"}</td>
@@ -301,11 +302,10 @@ export default function PrescreptionMedicalUI({
         >
           <div className="pe-detail-grid">
 
-            {/* ── Médicaments en pills dans le détail ── */}
             <div className="pe-col-span-2">
               <FieldLabel>Médicaments</FieldLabel>
               <div className="pe-detail-pills-box">
-                <TraitementPills value={detailItem.traitement} />
+                <TraitementPills medicaments={detailItem.medicaments} />
               </div>
             </div>
 

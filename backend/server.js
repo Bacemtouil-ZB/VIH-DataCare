@@ -31,6 +31,7 @@ import bilanExamenRoute from "./src/routes/bilanExamenRoute.js";
 import resultatBiologiqueRoute from "./src/routes/resultatBiologiqueRoute.js";
 import suiviBiologiqueRoute from "./src/routes/Suivibiologiqueroute.js";
 import suiviNotificationRoute from "./src/routes/suiviNotificationRoute.js";
+import permissionRoutes from "./src/routes/permissionRoutes.js";
 // Scheduler
 import { startScheduler } from './src/services/mobile/mobileScheduler.js';
 
@@ -45,9 +46,28 @@ app.use(express.urlencoded({ limit: '100mb', extended: true }));
 app.use(cookieParser());
 app.use(helmet());
 
+// app.use(
+//   cors({
+//     origin: process.env.FRONTEND_URL,
+//     credentials: true,
+//   }),
+// );
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
+    origin: (origin, callback) => {
+      const allowedOrigins = [
+        process.env.FRONTEND_URL, // web
+      ];
+
+      // Mobile n'envoie pas d'origin → toujours autoriser
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   }),
 );
@@ -80,6 +100,7 @@ app.use("/api/bilan-examens", bilanExamenRoute);
 app.use("/api/resultats-biologiques", resultatBiologiqueRoute);
 app.use("/api/suivi-biologique", suiviBiologiqueRoute);
 app.use("/api/suivi-notifications", suiviNotificationRoute);
+app.use("/api/permissions", permissionRoutes);
 
 // 404 handler
 app.use((req, res) => {
@@ -89,7 +110,9 @@ app.use((req, res) => {
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(err.status || 500).json({ message: err.message || "Server error" });
+
 });
+
 
 const startServer = async () => {
   try {

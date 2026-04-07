@@ -7,6 +7,8 @@ import {
   getTableauController,
 } from "../controllers/Suivibiologiquecontroller.js";
 import { protect } from "../middlewares/authMiddleware.js";
+import { checkPermission } from "../middlewares/permissionMiddleware.js";
+
 
 const router = express.Router();
 
@@ -16,11 +18,11 @@ router.get("/:numero/kpis",           protect, getKpisController);
 
 // Zone 2 — Graphiques
 // GET /api/suivi-biologique/2222-2026/graphique/cd4
-router.get("/:numero/graphique/cd4",  protect, getGraphiqueCD4Controller);
+router.get("/:numero/graphique/cd4",  protect, checkPermission("cd4"), getGraphiqueCD4Controller);
 // GET /api/suivi-biologique/2222-2026/graphique/cv
-router.get("/:numero/graphique/cv",   protect, getGraphiqueCVController);
+router.get("/:numero/graphique/cv",   protect, checkPermission("cv"), getGraphiqueCVController);
 // GET /api/suivi-biologique/2222-2026/periodes-arv
-router.get("/:numero/periodes-arv",   protect, getPeriodesARVController);
+router.get("/:numero/periodes-arv",   protect,  getPeriodesARVController);
 
 // Zone 3 — Tableau
 // GET /api/suivi-biologique/2222-2026/tableau

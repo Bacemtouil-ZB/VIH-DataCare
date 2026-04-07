@@ -4,7 +4,6 @@ import { toast }               from "react-toastify";
 import { confirmAction, alertError } from "../../../../../shared/utils/uiAlerts";
 import {
   getResultatsByNumeroDossier,
-  getDernierBilanPrescrit,
   createResultat,
   updateResultat,
 } from "../../../services/resultatBiologiqueService";
