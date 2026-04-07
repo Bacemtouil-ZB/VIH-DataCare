@@ -8,24 +8,25 @@ import {
 } from "../controllers/Suivibiologiquecontroller.js";
 import { protect } from "../middlewares/authMiddleware.js";
 import { checkPermission } from "../middlewares/permissionMiddleware.js";
+import { smartProtect } from "../middlewares/smartProtect.js";
 
 
 const router = express.Router();
 
 // Zone 1 — KPIs + alertes
 // GET /api/suivi-biologique/2222-2026/kpis
-router.get("/:numero/kpis",           protect, getKpisController);
+router.get("/:numero/kpis",protect, getKpisController);
 
 // Zone 2 — Graphiques
 // GET /api/suivi-biologique/2222-2026/graphique/cd4
-router.get("/:numero/graphique/cd4",  protect, checkPermission("cd4"), getGraphiqueCD4Controller);
+router.get("/:numero/graphique/cd4",  smartProtect ,checkPermission("cd4"), getGraphiqueCD4Controller);
 // GET /api/suivi-biologique/2222-2026/graphique/cv
-router.get("/:numero/graphique/cv",   protect, checkPermission("cv"), getGraphiqueCVController);
+router.get("/:numero/graphique/cv",smartProtect, checkPermission("cv"), getGraphiqueCVController);
 // GET /api/suivi-biologique/2222-2026/periodes-arv
-router.get("/:numero/periodes-arv",   protect,  getPeriodesARVController);
+router.get("/:numero/periodes-arv",smartProtect,  getPeriodesARVController);
 
 // Zone 3 — Tableau
 // GET /api/suivi-biologique/2222-2026/tableau
-router.get("/:numero/tableau",        protect, getTableauController);
+router.get("/:numero/tableau",  smartProtect, getTableauController);
 
 export default router;

@@ -7,6 +7,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
 import useAuthStore from '../../../store/authStore';
 import NextAppointmentBanner from '../components/nextAppointmentBanner';
 import TodayRemindersList from '../components/todayRemindersList';
@@ -23,7 +24,6 @@ const getGreeting = () => {
   return 'Bonsoir';
 };
 
-// Filter reminders for today
 const getTodayReminders = (reminders) => {
   const now = new Date();
   const currentHour = now.getHours();
@@ -32,18 +32,12 @@ const getTodayReminders = (reminders) => {
 
   return reminders.filter(reminder => {
     if (!reminder.isActive) return false;
-
     if (reminder.repeat === 'daily') return true;
-
-    if (reminder.repeat === 'weekly') {
-      return reminder.weekday === currentDay;
-    }
-
+    if (reminder.repeat === 'weekly') return reminder.weekday === currentDay;
     if (reminder.repeat === 'once') {
       const [h, m] = reminder.time.split(':').map(Number);
       return h > currentHour || (h === currentHour && m > currentMinute);
     }
-
     return true;
   });
 };
@@ -52,6 +46,7 @@ const HomeScreen = () => {
   useNotifications();
   const { user, logout } = useAuthStore();
   const { reminders } = useReminderStore();
+  const navigation = useNavigation();
   const [nextRendezvous, setNextRendezvous] = useState(null);
 
   const todayReminders = getTodayReminders(reminders);
@@ -69,9 +64,11 @@ const HomeScreen = () => {
             today.setHours(0, 0, 0, 0);
             return rdvDate >= today;
           })
-          .sort((a, b) => new Date(a.date.split('T')[0]) - new Date(b.date.split('T')[0]));
+          .sort((a, b) =>
+            new Date(a.date.split('T')[0]) - new Date(b.date.split('T')[0])
+          );
         setNextRendezvous(upcoming[0] || null);
-      } catch (error) {
+      } catch {
         setNextRendezvous(null);
       }
     };
@@ -98,6 +95,35 @@ const HomeScreen = () => {
             </TouchableOpacity>
           </View>
           <Text style={styles.numeroText}>N° {user?.numero}</Text>
+        </View>
+
+        {/* 2 Boutons actions */}
+        <View style={styles.actionsRow}>
+
+          {/* Dashboard */}
+          <TouchableOpacity
+            style={styles.actionButtonDashboard}
+            onPress={() => navigation.navigate('Suivi')}
+          >
+            <View style={styles.actionIcon}>
+              <Ionicons name="stats-chart-outline" size={22} color={colors.primary} />
+            </View>
+            <Text style={styles.actionButtonText}>Mon suivi</Text>
+            <Text style={styles.actionButtonSub}>Courbes & résultats</Text>
+          </TouchableOpacity>
+
+          {/* Urgence */}
+          <TouchableOpacity
+            style={styles.actionButtonUrgence}
+            onPress={() => navigation.navigate('Urgence')}
+          >
+            <View style={styles.actionIconUrgence}>
+              <Ionicons name="call-outline" size={22} color={colors.white} />
+            </View>
+            <Text style={styles.actionButtonTextUrgence}>Urgence</Text>
+            <Text style={styles.actionButtonSubUrgence}>Appel immédiat</Text>
+          </TouchableOpacity>
+
         </View>
 
         {/* Next Appointment */}

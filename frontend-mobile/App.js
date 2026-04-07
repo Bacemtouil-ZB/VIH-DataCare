@@ -1,3 +1,5 @@
+import 'react-native-reanimated';
+
 import React, { useEffect } from "react";
 import AppNavigator from "./src/navigation/appNavigator";
 import useReminderStore from "./src/store/reminderStore";
@@ -13,8 +15,8 @@ export default function App() {
 
   return (
     <>
-     <AppNavigator />
-     <Toast config={toastConfig} />
+      <AppNavigator />
+      <Toast config={toastConfig} />
     </>
   );
 }
