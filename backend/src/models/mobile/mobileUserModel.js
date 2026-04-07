@@ -58,7 +58,7 @@ export const savePushToken = async (userId, pushToken) => {
 // Get user by id — used by mobileAuthMiddleware to verify token
 export const findMobileUserById = async (id) => {
   const query = `
-    SELECT id, username, role, isactivated, must_change_password, expo_push_token
+    SELECT id, username, role, isactivated, must_change_password, expo_push_token 
     FROM users
     WHERE id = $1 AND role = 'patient'
   `;

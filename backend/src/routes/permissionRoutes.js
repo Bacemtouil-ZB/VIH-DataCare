@@ -11,9 +11,9 @@ import {
 const router = express.Router();
 
 // POST /api/permissions
-router.post("/",           protect, authorizeMedecin, setPermissionController);
+router.post("/",protect, authorizeMedecin, setPermissionController);
 
 // GET /api/permissions/:numero
-router.get("/:numero",     protect, authorizeMedecin, getPermissionController);
+router.get("/:numero", protect, authorizeMedecin, getPermissionController);
 
 export default router;

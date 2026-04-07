@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { ActivityIndicator, View } from 'react-native';
 import AuthStack from './authStack';
-import AppTabs from './appTabs';
+import AppStack from './AppStack'; 
 import useAuthStore from '../store/authStore';
 import colors from '../constants/colors';
 
@@ -28,7 +28,7 @@ const AppNavigator = () => {
 
   return (
     <NavigationContainer>
-      {isAuthenticated && !mustChangePassword ? <AppTabs /> : <AuthStack />}
+      {isAuthenticated && !mustChangePassword ? <AppStack /> : <AuthStack />}
     </NavigationContainer>
   );
 };

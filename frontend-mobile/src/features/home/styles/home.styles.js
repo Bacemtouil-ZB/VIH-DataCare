@@ -47,6 +47,76 @@ const styles = StyleSheet.create({
     marginTop: spacing.xs,
   },
 
+  // Actions row — 2 boutons
+  actionsRow: {
+    flexDirection: 'row',
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.lg,
+    gap: spacing.md,
+  },
+  actionButtonDashboard: {
+    flex: 1,
+    backgroundColor: colors.surface,
+    borderRadius: spacing.borderRadius.lg,
+    padding: spacing.md,
+    alignItems: 'flex-start',
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  actionButtonUrgence: {
+    flex: 1,
+    backgroundColor: colors.danger,
+    borderRadius: spacing.borderRadius.lg,
+    padding: spacing.md,
+    alignItems: 'flex-start',
+    shadowColor: colors.danger,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  actionIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: spacing.borderRadius.md,
+    backgroundColor: colors.primaryLight,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: spacing.sm,
+  },
+  actionIconUrgence: {
+    width: 40,
+    height: 40,
+    borderRadius: spacing.borderRadius.md,
+    backgroundColor: 'rgba(255,255,255,0.25)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: spacing.sm,
+  },
+  actionButtonText: {
+    fontSize: spacing.fontSize.md,
+    fontWeight: '700',
+    color: colors.textPrimary,
+  },
+  actionButtonSub: {
+    fontSize: spacing.fontSize.xs,
+    color: colors.textSecondary,
+    marginTop: 2,
+  },
+  actionButtonTextUrgence: {
+    fontSize: spacing.fontSize.md,
+    fontWeight: '700',
+    color: colors.white,
+  },
+  actionButtonSubUrgence: {
+    fontSize: spacing.fontSize.xs,
+    color: 'rgba(255,255,255,0.8)',
+    marginTop: 2,
+  },
+
   // Section
   section: {
     paddingHorizontal: spacing.lg,

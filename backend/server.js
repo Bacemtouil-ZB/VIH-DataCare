@@ -32,6 +32,7 @@ import resultatBiologiqueRoute from "./src/routes/resultatBiologiqueRoute.js";
 import suiviBiologiqueRoute from "./src/routes/Suivibiologiqueroute.js";
 import suiviNotificationRoute from "./src/routes/suiviNotificationRoute.js";
 import permissionRoutes from "./src/routes/permissionRoutes.js";
+import emergencyContactRoutes from "./src/routes/emergencyContactRoutes.js";
 // Scheduler
 import { startScheduler } from './src/services/mobile/mobileScheduler.js';
 
@@ -46,28 +47,9 @@ app.use(express.urlencoded({ limit: '100mb', extended: true }));
 app.use(cookieParser());
 app.use(helmet());
 
-// app.use(
-//   cors({
-//     origin: process.env.FRONTEND_URL,
-//     credentials: true,
-//   }),
-// );
 app.use(
   cors({
-    origin: (origin, callback) => {
-      const allowedOrigins = [
-        process.env.FRONTEND_URL, // web
-      ];
-
-      // Mobile n'envoie pas d'origin → toujours autoriser
-      if (!origin) return callback(null, true);
-
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
-      }
-
-      return callback(new Error("Not allowed by CORS"));
-    },
+    origin: process.env.FRONTEND_URL,
     credentials: true,
   }),
 );
@@ -101,7 +83,7 @@ app.use("/api/resultats-biologiques", resultatBiologiqueRoute);
 app.use("/api/suivi-biologique", suiviBiologiqueRoute);
 app.use("/api/suivi-notifications", suiviNotificationRoute);
 app.use("/api/permissions", permissionRoutes);
-
+app.use("/api/emergency-contacts", emergencyContactRoutes);
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
