@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../hooks/useAuth'; // adapte le chemin si besoin
+import { useAuth } from '../../hooks/useAuth';
 import './Header.css';
+import tnFlag from '../../../assets/images/tn.png';
 
 const Header = () => {
   const { user } = useAuth(); 
@@ -10,26 +11,16 @@ const Header = () => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
     }, 1000);
-
     return () => clearInterval(timer);
   }, []);
 
   const formatDate = (date) => {
-    const options = { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    };
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
     return date.toLocaleDateString('fr-FR', options);
   };
 
   const formatTime = (date) => {
-    return date.toLocaleTimeString('fr-FR', { 
-      hour: '2-digit', 
-      minute: '2-digit',
-      second: '2-digit'
-    });
+    return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   };
 
   const getGreeting = () => {
@@ -43,27 +34,27 @@ const Header = () => {
     <header className="header-custom">
       <div className="container-fluid px-4">
         <div className="row align-items-center">
-          <div className="col-12 d-flex justify-content-end">
-            <div className="header-right-content">
-              
-              {/* User Info */}
-              <div className="user-greeting">
-                <span className="text-muted">
-                  {getGreeting()},{" "}
-                  <strong>
-                     {user?.prenom || ""} {user?.nom || ""}
-                  </strong>
-                </span>
-              </div>
+          <div className="col-12 d-flex justify-content-between align-items-center">
 
-              {/* Time Display */}
-              <div className="time-badge">
-                <i className="bi bi-clock me-1"></i>
-                <span>{formatTime(currentTime)}</span>&nbsp;/&nbsp;
-                <span>{formatDate(currentTime)}</span>
-              </div>
-
+            {/* Greeting gauche */}
+            <div className="user-greeting">
+              <img
+                src={tnFlag}
+                alt="Drapeau Tunisie"
+                className="flag-img"
+              />
+              <span className="greeting-text">{getGreeting()},</span>{" "}
+              <strong>{user?.prenom || ""} {user?.nom || ""}</strong>
             </div>
+
+            {/* Timer droite */}
+            <div className="time-badge">
+              <i className="bi bi-clock"></i>
+              <span>{formatTime(currentTime)}</span>
+              <span className="time-sep">·</span>
+              <span>{formatDate(currentTime)}</span>
+            </div>
+
           </div>
         </div>
       </div>
