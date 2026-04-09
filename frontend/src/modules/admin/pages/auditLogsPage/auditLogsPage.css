@@ -311,3 +311,43 @@
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
   font-size: 12px;
 }
+
+.auditDetail__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 0;
+}
+
+.auditDetail__meta-row {
+  display: flex;
+  gap: 12px;
+  font-size: 0.875rem;
+}
+
+.auditDetail__meta-label {
+  font-weight: 600;
+  min-width: 80px;
+  color: var(--color-text-muted, #6b7280);
+}
+
+.auditDetail__meta-value {
+  color: var(--color-text, #111827);
+}
+
+.auditDetail__meta-muted {
+  color: var(--color-text-muted, #6b7280);
+  font-size: 0.8rem;
+}
+
+.auditDetail__separator {
+  border-top: 1px solid var(--color-border, #e5e7eb);
+  margin: 12px 0;
+}
+
+.auditDetail__no-diff {
+  text-align: center;
+  color: var(--color-text-muted, #6b7280);
+  font-size: 0.875rem;
+  padding: 20px 0;
+}

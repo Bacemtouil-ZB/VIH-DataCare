@@ -57,3 +57,4 @@ export const fetchActivePermission = async (patientId) => {
     throw new Error("Failed to fetch active permission");
   }
 };
+

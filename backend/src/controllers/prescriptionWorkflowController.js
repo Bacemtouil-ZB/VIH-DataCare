@@ -1,8 +1,4 @@
-﻿// =====================================================
-// CONTROLLER - prescriptionWorkflowController.js
-// =====================================================
-
-import {
+﻿import {
   getPrescriptions,
   addPrescription,
   valider,
@@ -10,17 +6,14 @@ import {
   supprimerPrescriptionsExpirees,
   getLastPrescriptionPerPatient,
 } from "../services/prescriptionWorkflowServices.js";
+import { logAction } from "../services/auditService.js";
+import { findById } from "../models/prescriptionWorkflowModel.js";
 
-// ── GET /numero-dossier/:numeroDossier ────────────────────────
 export const getController = async (req, res) => {
   try {
     const { numeroDossier } = req.params;
-    
-    // Supprime les prescriptions expirées avant de retourner les données
     await supprimerPrescriptionsExpirees();
-    
     const { prescriptions, patient } = await getPrescriptions(numeroDossier);
-    
     res.status(200).json({
       success: true,
       count: prescriptions.length,
@@ -32,10 +25,19 @@ export const getController = async (req, res) => {
   }
 };
 
-// ── POST /add ─────────────────────────────────────────────────
 export const addController = async (req, res) => {
   try {
     const prescription = await addPrescription(req.body, req.user.id);
+
+    await logAction(req, {
+      module: "PRESCRIPTION",
+      action: "PRESCRIPTION_CREATE",
+      patient_id: prescription.patient_id,
+      entity_id: prescription.id,
+      old_data: null,
+      new_data: prescription,
+    });
+
     res.status(201).json({
       success: true,
       message: "Prescription ajoutee avec succes",
@@ -46,11 +48,23 @@ export const addController = async (req, res) => {
   }
 };
 
-// ── PATCH /:id/valider — Scénario 1 : Validation sans modification ────
 export const validerController = async (req, res) => {
   try {
     const id = Number.parseInt(req.params.id, 10);
+
+    // Récupérer old_data AVANT validation
+    const old_data = await findById(id);
     const prescription = await valider(id);
+
+    await logAction(req, {
+      module: "PRESCRIPTION",
+      action: "PRESCRIPTION_VALIDER",
+      patient_id: prescription.patient_id,
+      entity_id: prescription.id,
+      old_data: old_data,
+      new_data: prescription,
+    });
+
     res.status(200).json({
       success: true,
       message: "Prescription delivree avec succes",
@@ -61,7 +75,6 @@ export const validerController = async (req, res) => {
   }
 };
 
-// ── PATCH /:id/valider-modifiee — Scénario 2 : Validation avec modification ────
 export const validerAvecModificationController = async (req, res) => {
   try {
     const id = Number.parseInt(req.params.id, 10);
@@ -74,8 +87,19 @@ export const validerAvecModificationController = async (req, res) => {
       });
     }
 
+    // Récupérer old_data AVANT modification
+    const old_data = await findById(id);
     const prescription = await validerAvecModification(id, periode_modifiee);
-    
+
+    await logAction(req, {
+      module: "PRESCRIPTION",
+      action: "PRESCRIPTION_VALIDER_MODIFIEE",
+      patient_id: prescription.patient_id,
+      entity_id: prescription.id,
+      old_data: old_data,
+      new_data: prescription,
+    });
+
     res.status(200).json({
       success: true,
       message: "Prescription validee avec periode modifiee",
@@ -86,7 +110,6 @@ export const validerAvecModificationController = async (req, res) => {
   }
 };
 
-// ── GET /last-per-patient ─────────────────────────────────────
 export const getLastPerPatientController = async (req, res) => {
   try {
     const data = await getLastPrescriptionPerPatient();
@@ -96,7 +119,6 @@ export const getLastPerPatientController = async (req, res) => {
   }
 };
 
-// ── POST /supprimer-expirees — Endpoint manuel (optionnel) ────
 export const supprimerExpireesController = async (req, res) => {
   try {
     const deleted = await supprimerPrescriptionsExpirees();

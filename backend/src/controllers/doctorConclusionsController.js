@@ -5,7 +5,9 @@ import {
   getConclusionDetailsService,
 } from "../services/doctorConclusionsService.js";
 
-const toStatusCode = (message = "") => {
+ // dosn't need audit logs because each doctor can only see and modify their own conclusions, so no risk of unauthorized access or modifications by other users.
+
+const toStatusCode = (message = "") => { 
   if (/invalide|introuvable|obligatoire/i.test(message)) return 400;
   return 500;
 };
