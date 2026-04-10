@@ -243,12 +243,16 @@ export function useProfileLogic() {
 
         await updatePatient(formData.id, formData);
         toast.success("Patient mis à jour avec succès");
-
+       
         // Sauvegarde les données mises à jour
         setSavedFormData(formData);
         setIsEditing(false);
 
         // Navigue vers le même profil (remplace l'URL pour éviter rechargement inutile)
+        navigate(
+    `/medecin/patient/${formData.numero}/workspace/profil`,
+    { replace: true },
+  );
       }
     } catch (err) {
       // Gestion des erreurs du backend

@@ -1,4 +1,5 @@
 import { fetchFamily, addFamily, editFamily } from "../../services/antecedents/familyService.js";
+import { logAction } from "../../services/auditService.js";
 
 export const getFamilyController = async (req, res) => {
   try {
@@ -15,6 +16,7 @@ export const createFamilyController = async (req, res) => {
     const userId = req.user.id;
     const { patientId } = req.params;
     const data = await addFamily(patientId, req.body, userId);
+    
     res.status(201).json(data);
   } catch (error) {
     res.status(500).json({ message: error.message || "Erreur création antécédent familial" });

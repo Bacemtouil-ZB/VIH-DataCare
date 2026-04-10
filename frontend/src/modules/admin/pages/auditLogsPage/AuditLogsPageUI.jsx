@@ -1,4 +1,5 @@
 ﻿import { fmt, prettyValue, txt } from "./helpers";
+import { getModuleLabel, getActionLabel } from "./constante";
 import PageHeader from "../../components/PageHeader";
 import {
   ActionButton,
@@ -48,7 +49,6 @@ const AuditLogsPageUI = ({
       : "";
 
   const renderLogRow = (l) => {
-   
     return (
       <tr key={l.id}>
         <td className="audit__cell">{fmt(l.created_at)}</td>
@@ -58,8 +58,8 @@ const AuditLogsPageUI = ({
           </div>
           <div className="audit__muted">{txt(l.user_email)}</div>
         </td>
-        <td className="audit__cell">{txt(l.module)}</td>
-        <td className="audit__cell">{txt(l.action)}</td>
+        <td className="audit__cell">{getModuleLabel(l.module)}</td>
+        <td className="audit__cell">{getActionLabel(l.action)}</td>
         <td className="audit__cell audit__cell--right">
           <HistoriqueActions onDetails={() => openDetails(l.id)} />
         </td>
@@ -81,6 +81,8 @@ const AuditLogsPageUI = ({
     </tr>
   );
 
+  const hasDiff = diffRows && diffRows.length > 0;
+
   return (
     <div className="audit audit--white">
       <header className="audit__header">
@@ -89,7 +91,6 @@ const AuditLogsPageUI = ({
 
       <div className="auditContainer">
         <section className="audit__card">
-          
           <FilterToolbar
             className="audit__row"
             items={[
@@ -103,7 +104,6 @@ const AuditLogsPageUI = ({
                 onChange: (e) => {
                   let value = e.target.value.toUpperCase();
                   value = value.replace(/[^\d-]/g, "");
-
                   if (value.length > 4 && !value.includes("-")) {
                     value = value.slice(0, 4) + "-" + value.slice(4);
                   }
@@ -118,8 +118,8 @@ const AuditLogsPageUI = ({
                 key="search"
                 action="add"
                 label="Rechercher"
-                type="button" 
-                onClick={onSearch} 
+                type="button"
+                onClick={onSearch}
                 showIcon={false}
                 disabled={!!numeroError}
               />,
@@ -138,12 +138,7 @@ const AuditLogsPageUI = ({
           {numeroError && (
             <div
               className="audit__error-message"
-              style={{
-                color: "red",
-                marginTop: 4,
-                marginLeft: 8,
-                fontSize: "0.75rem",
-              }}
+              style={{ color: "red", marginTop: 4, marginLeft: 8, fontSize: "0.75rem" }}
             >
               {numeroError}
             </div>
@@ -163,7 +158,6 @@ const AuditLogsPageUI = ({
                   setOffset(0);
                   const nextModule = e.target.value;
                   setModule(nextModule);
-
                   if (nextModule && action) {
                     const actionModule = action.split("_").slice(0, -1).join("_");
                     if (actionModule !== nextModule) setAction("");
@@ -171,7 +165,7 @@ const AuditLogsPageUI = ({
                 },
                 options: [
                   { value: "", label: "Tous" },
-                  ...modules.map((m) => ({ value: m, label: m })),
+                  ...modules.map((m) => ({ value: m, label: getModuleLabel(m) })),
                 ],
               },
               {
@@ -187,7 +181,7 @@ const AuditLogsPageUI = ({
                 },
                 options: [
                   { value: "", label: "Toutes" },
-                  ...actionsForModule.map((a) => ({ value: a, label: a })),
+                  ...actionsForModule.map((a) => ({ value: a, label: getActionLabel(a) })),
                 ],
               },
               {
@@ -198,10 +192,7 @@ const AuditLogsPageUI = ({
                 className: "audit__input",
                 inputType: "date",
                 value: from,
-                onChange: (e) => {
-                  setOffset(0);
-                  setFrom(e.target.value);
-                },
+                onChange: (e) => { setOffset(0); setFrom(e.target.value); },
               },
               {
                 type: "input",
@@ -211,10 +202,7 @@ const AuditLogsPageUI = ({
                 className: "audit__input",
                 inputType: "date",
                 value: to,
-                onChange: (e) => {
-                  setOffset(0);
-                  setTo(e.target.value);
-                },
+                onChange: (e) => { setOffset(0); setTo(e.target.value); },
               },
             ]}
           />
@@ -240,7 +228,6 @@ const AuditLogsPageUI = ({
             <div className="audit__muted">
               Total: <span className="audit__strong">{total}</span> • Page {page}/{totalPages}
             </div>
-
             <div className="auditPager__actions">
               <ActionButton
                 action="annuler"
@@ -271,10 +258,7 @@ const AuditLogsPageUI = ({
               onClick={(e) => e.stopPropagation()}
             >
               <div className="auditModal__header">
-                <div className="auditModal__title">
-                  Détails du log
-                </div>
-
+                <div className="auditModal__title">Détails du log</div>
                 <ActionButton
                   action="annuler"
                   label="Fermer"
@@ -291,11 +275,64 @@ const AuditLogsPageUI = ({
                 ) : !details ? (
                   <div>Aucun détail</div>
                 ) : (
-                  <HistoriqueTable
-                    headers={diffHeaders}
-                    items={diffRows}
-                    renderRow={renderDiffRow}
-                  />
+                  <>
+                    {/* ── Header informatif ── */}
+                    <div className="auditDetail__meta">
+                      <div className="auditDetail__meta-row">
+                        <span className="auditDetail__meta-label">Médecin</span>
+                        <span className="auditDetail__meta-value">
+                          {txt(details.user_nom)} {txt(details.user_prenom)}
+                          <span className="auditDetail__meta-muted">
+                            {" "}— {txt(details.user_email)}
+                          </span>
+                        </span>
+                      </div>
+                      <div className="auditDetail__meta-row">
+                        <span className="auditDetail__meta-label">Rôle</span>
+                        <span className="auditDetail__meta-value">{txt(details.user_role)}</span>
+                      </div>
+                      <div className="auditDetail__meta-row">
+                        <span className="auditDetail__meta-label">Date</span>
+                        <span className="auditDetail__meta-value">{fmt(details.created_at)}</span>
+                      </div>
+                      <div className="auditDetail__meta-row">
+                        <span className="auditDetail__meta-label">Module</span>
+                        <span className="auditDetail__meta-value">{getModuleLabel(details.module)}</span>
+                      </div>
+                      <div className="auditDetail__meta-row">
+                        <span className="auditDetail__meta-label">Action</span>
+                        <span className="auditDetail__meta-value">{getActionLabel(details.action)}</span>
+                      </div>
+                      {details.patient_numero && (
+                        <div className="auditDetail__meta-row">
+                          <span className="auditDetail__meta-label">Patient</span>
+                          <span className="auditDetail__meta-value">{details.patient_numero}</span>
+                        </div>
+                      )}
+                      {details.ip_address && (
+                        <div className="auditDetail__meta-row">
+                          <span className="auditDetail__meta-label">IP</span>
+                          <span className="auditDetail__meta-value auditDetail__meta-muted">{details.ip_address}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* ── Séparateur ── */}
+                    <div className="auditDetail__separator" />
+
+                    {/* ── Table diff old/new data ── */}
+                    {hasDiff ? (
+                      <HistoriqueTable
+                        headers={diffHeaders}
+                        items={diffRows}
+                        renderRow={renderDiffRow}
+                      />
+                    ) : (
+                      <div className="auditDetail__no-diff">
+                        Aucune modification de données enregistrée pour cette action.
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </div>

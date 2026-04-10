@@ -83,3 +83,6 @@ CREATE INDEX idx_audit_user ON audit_logs(user_id);
 CREATE INDEX idx_audit_patient ON audit_logs(patient_id);
 CREATE INDEX idx_audit_action ON audit_logs(action);
 CREATE INDEX idx_audit_date ON audit_logs(created_at);
+
+----09/04/2026
+ALTER TABLE public.audit_logs DROP COLUMN session_id;

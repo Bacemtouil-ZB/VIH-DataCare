@@ -49,9 +49,7 @@ const validateTypeDepistage = body("type_depistage")
   .withMessage("Type de dépistage trop long");
 
 const validateCirconstanceDecouverte = body("circonstance_decouverte")
-  .trim()
-  .notEmpty()
-  .withMessage("La circonstance de découverte est requise")
+.optional({ nullable: true, checkFalsy: true })
   .isIn(CIRCONSTANCES_DECOUVERTE)
   .withMessage("Circonstance de découverte invalide")
   .isLength({ max: 100 })

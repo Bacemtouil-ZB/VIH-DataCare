@@ -6,7 +6,7 @@ import { useAuth } from '../../hooks/useAuth.js';
 
 const Sidebar = () => {
   const { user } = useAuth();
-  const userRole = user?.role || 'medecin';
+  const userRole = user?.role ;
   
   // Configuration des liens par rÃ´le
   const roleLinks = {
@@ -105,13 +105,13 @@ const Sidebar = () => {
   ],
   };
 
-  // Utiliser les liens personnalisÃ©s ou ceux du rÃ´le
+  
   const links =  roleLinks[userRole] ;
 
   return (
     <div className="sidebar-custom d-flex flex-column" style={{ width: '240px', minHeight: '100vh' }}>
       {/* Logo / En-tÃªte avec cÅ“ur et VIHDataCare */}
-      <div className="sidebar-header py-3 px-4">
+      <div className="sidebar-header py-3 px-5">
         <div className="text-center sidebar-header-content">
           <div className="heart-icon-container mb-2">
             <i className="bi bi-heart-pulse-fill sidebar-heart-icon"></i>
@@ -145,7 +145,6 @@ const Sidebar = () => {
 
       {/* Section Footer */}
       <div className="sidebar-footer-section px-3 py-4 border-top">
-        {/* Bouton DÃ©connexion */}
         <AccountButton />
       </div>
     </div>

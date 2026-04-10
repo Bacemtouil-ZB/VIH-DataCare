@@ -51,6 +51,7 @@ export const listAllDoctors = async () => {
   return doctors; // renvoie tableau [{id, nom, prenom, email}, ...]
 };
 //gestion du profil : update user info (nom, prenom, email, password)
+
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import {
