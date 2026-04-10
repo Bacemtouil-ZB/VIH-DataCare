@@ -43,7 +43,9 @@ export default function UsersPageUI({
         <td>{user._index + 1}</td>
         <td className="cell-strong">{user.nom}</td>
         <td>{user.prenom}</td>
-        <td className="cell-email">{user.email}</td>
+       <td className="cell-email">
+          {user.email || <span style={{ color: "#9ca3af", fontStyle: "italic" }}>Aucun email</span>}
+        </td>
         <td>{user.role}</td>
 
         <td>
