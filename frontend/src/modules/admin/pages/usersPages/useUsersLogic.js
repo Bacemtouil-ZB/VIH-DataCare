@@ -1,6 +1,3 @@
-// ── useUsersLogic.js ─────────────────────────────────────────────────────────
-// Hook custom — toute la logique métier de UsersPage
-
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { confirmAction } from "../../../../shared/utils/uiAlerts.js";
