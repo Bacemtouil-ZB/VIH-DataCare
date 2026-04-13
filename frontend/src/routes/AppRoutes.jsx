@@ -7,7 +7,7 @@ import authRoutes from "./authRoutes";
 import medecinRoutes from "../modules/medecin/routes/MedecinRoutes";
 import AdminRoutes from "../modules/admin/routes/AdminRoutes";
 import PharmacienRoutes from "../modules/Pharmacist/routes/pharmaRoutes";
-// plus tard : analysteRoutes...
+import AnalysteRoutes from "../modules/scientist/routes/AnalysteRoutes";
 
 const router = createBrowserRouter([
   { path: "/", element: <Landing /> },
@@ -16,6 +16,7 @@ const router = createBrowserRouter([
   ...medecinRoutes,
   ...AdminRoutes,
   ...PharmacienRoutes,
+  ...AnalysteRoutes,
 ]);
 
 function AppRoutes() {
