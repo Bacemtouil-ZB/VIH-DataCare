@@ -28,11 +28,13 @@ export default function PatientConclusionPage() {
         <ConclusionEditor
           editorRef={logic.editorRef}
           editorValue={logic.editorValue}
-          onChange={logic.setEditorValue}
+    onChange={logic.handleEditorChange}          // ← utilise handleEditorChange
           isEditing={!!logic.editingId}
           saving={logic.saving}
           onSave={logic.onSave}
           onCancel={logic.cancelEditor}
+              error={logic.errors.content}                 // ← passe l'erreur content
+
         />
       )}
 

@@ -1,5 +1,5 @@
 ﻿import { ActionButton, Spinner } from "../../../../../shared/components";
-import { HistoriqueAccordeon, HistoriqueTable, HistoriqueActions } from "../../../../../shared/components";
+import { HistoriqueAccordeon, HistoriqueTable, HistoriqueActions, } from "../../../../../shared/components";
 import { TABLE_HEADERS, formatDate } from "./conclusionConstants.js";
 
 export default function ConclusionUI({

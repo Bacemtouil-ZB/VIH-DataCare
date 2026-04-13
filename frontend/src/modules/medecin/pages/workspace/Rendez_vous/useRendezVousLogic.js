@@ -20,6 +20,7 @@ import {
 } from "../../../../../shared/utils/dateHelpers";
 import { INITIAL_FORM }    from "./rendezVousConstants";
 import { getStatusStyle }  from "./rendezVousHelpers";  // ← pickProchainePriseReference supprimé
+import { clearFieldError } from "../../../shared/utils/clearFieldError.js";
 
 export function useRendezVousLogic(numero) {
   const [searchDate,  setSearchDate]  = useState("");
@@ -31,6 +32,7 @@ export function useRendezVousLogic(numero) {
   const [formData,    setFormData]    = useState(INITIAL_FORM);
   const [rendezVous,  setRendezVous]  = useState([]);
   const [loading,     setLoading]     = useState(true);
+const [errors, setErrors] = useState({});
 
   // ── Fetch RDV uniquement ──
   useEffect(() => {
@@ -116,9 +118,18 @@ export function useRendezVousLogic(numero) {
         toast.success("Rendez-vous enregistré");
       }
       closeForm();
-    } catch (err) {
-      await alertError(err?.message || "Erreur lors de l'enregistrement");
-    }
+} catch (err) {
+  // Gestion des erreurs de validation structurées (backend)
+  if (err?.errors && Array.isArray(err.errors)) {
+    const formattedErrors = {};
+    err.errors.forEach((e) => {
+      formattedErrors[e.field] = e.message;
+    });
+    setErrors(formattedErrors);
+  } else {
+    await alertError(err?.message || "Erreur lors de l'enregistrement");
+  }
+}
   };
 
   const handleShowDetails = (item) => {
@@ -143,5 +154,7 @@ export function useRendezVousLogic(numero) {
     handleSubmit,
     handleShowDetails,
     statusStyle: getStatusStyle,
+      errors,
+  setErrors,
   };
 }

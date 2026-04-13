@@ -4,7 +4,8 @@ import { toast } from "react-toastify";
 import { getTherapeutic, createTherapeutic, updateTherapeutic } from "../../../../services/antecedentsService.jsx";
 import { formatTherapeuticFromApi, formatTherapeuticForApi } from "./therapeuticHelpers";
 import { THERAPEUTIC_INITIAL_STATE } from "./therapeuticConstants";
-
+import { clearFieldError } from "../../../../shared/utils/clearFieldError.js";
+ 
 export default function useTherapeutic(numero) {
   const [form, setForm] = useState(THERAPEUTIC_INITIAL_STATE);
   const [savedForm, setSavedForm] = useState(THERAPEUTIC_INITIAL_STATE);
@@ -13,9 +14,10 @@ export default function useTherapeutic(numero) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
-
+  const [errors, setErrors] = useState({});
+ 
   const isHandlingBlock = useRef(false);
-
+ 
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -41,11 +43,9 @@ export default function useTherapeutic(numero) {
     };
     fetchData();
   }, [numero]);
-
-  const isDirty =
-    isEditing &&
-    JSON.stringify(form) !== JSON.stringify(savedForm);
-
+ 
+  const isDirty = isEditing && JSON.stringify(form) !== JSON.stringify(savedForm);
+ 
   const saveQuiet = useCallback(async () => {
     try {
       setSaving(true);
@@ -62,16 +62,16 @@ export default function useTherapeutic(numero) {
       setSaving(false);
     }
   }, [form, isExisting, numero]);
-
+ 
   const blocker = useBlocker(isDirty);
-
+ 
   useEffect(() => {
     if (blocker.state !== "blocked") return;
     if (isHandlingBlock.current) return;
     isHandlingBlock.current = true;
-
+ 
     const isAntecedentsNav = blocker.location.pathname.includes("/antecedents/");
-
+ 
     if (isAntecedentsNav) {
       (async () => {
         try {
@@ -107,19 +107,22 @@ export default function useTherapeutic(numero) {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [blocker.state]);
-
+ 
   const handleChange = (key, value) => {
     setForm((prev) => ({ ...prev, [key]: value }));
+    clearFieldError(key, setErrors);
   };
-
+ 
   const startEditing = () => setIsEditing(true);
-
+ 
   const cancelEditing = () => {
     setForm(savedForm);
+    setErrors({});
     setIsEditing(false);
   };
-
+ 
   const save = async () => {
+    setErrors({});
     try {
       setSaving(true);
       const payload = formatTherapeuticForApi(form);
@@ -131,11 +134,21 @@ export default function useTherapeutic(numero) {
       }
       setSavedForm(form);
       setIsEditing(false);
+    } catch (err) {
+      if (err?.errors && Array.isArray(err.errors)) {
+        const formattedErrors = {};
+        err.errors.forEach((e) => {
+          formattedErrors[e.field] = e.message;
+        });
+        setErrors(formattedErrors);
+      } else {
+        toast.error("Une erreur est survenue. Veuillez réessayer.");
+      }
     } finally {
       setSaving(false);
     }
   };
-
+ 
   return {
     form,
     isExisting,
@@ -143,9 +156,12 @@ export default function useTherapeutic(numero) {
     loading,
     saving,
     error,
+    errors,
+    setErrors,
     handleChange,
     startEditing,
     cancelEditing,
     save,
   };
 }
+ 

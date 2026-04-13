@@ -3,6 +3,7 @@ import {
   HistoriqueAccordeon,
   HistoriqueActions,
   HistoriqueTable,
+  FieldError,                                              // ← import ajouté
 } from "../../../../../../shared/components";
 import { ActionButton } from "../../../../../../shared/components";
 import { formatDateFr } from "../../../../../../shared/utils/logiqueTableHistory";
@@ -18,7 +19,8 @@ export default function ObservationUI({
   setDetailObservation,
   showForm,
   remarque,
-  setRemarque,
+  handleRemarqueChange,                                    // ← remplace setRemarque direct
+  errors,                                                  // ← erreurs par champ
   isModifying,
   saving,
   handleSave,
@@ -26,18 +28,25 @@ export default function ObservationUI({
   return (
     <>
       {showForm && (
-        <FormulaireWrapper isModifying={isModifying} labelCreate="Nouvelle observation" labelModify="Modifier l'observation">
+        <FormulaireWrapper
+          isModifying={isModifying}
+          labelCreate="Nouvelle observation"
+          labelModify="Modifier l'observation"
+        >
           <div className="mb-4">
             <label className={`${LABEL_CLS} ec-th-sm`}>Remarques observées</label>
             <textarea
-              className="form-control ec-observation-textarea"
+              className={`form-control ec-observation-textarea ${errors.remarque ? "is-invalid" : ""}`}
               rows={6}
               placeholder="Décrivez les observations médicales..."
               value={remarque}
-              onChange={(e) => setRemarque(e.target.value)}
+              onChange={handleRemarqueChange}              // ← clearFieldError automatique
             />
+            <FieldError error={errors.remarque} />         {/* ← affiché sous le textarea */}
             <div className="d-flex justify-content-end mt-1">
-              <small className="text-secondary">{remarque.length} caractère{remarque.length !== 1 ? "s" : ""}</small>
+              <small className="text-secondary">
+                {remarque.length} caractère{remarque.length !== 1 ? "s" : ""}
+              </small>
             </div>
           </div>
           <ActionButton
@@ -72,14 +81,23 @@ export default function ObservationUI({
                   </>
                 ) : obs.remarque}
               </td>
-              <td><HistoriqueActions onDetails={() => handleShowDetails(obs)} onEdit={() => handleEdit(obs)} /></td>
+              <td>
+                <HistoriqueActions
+                  onDetails={() => handleShowDetails(obs)}
+                  onEdit={() => handleEdit(obs)}
+                />
+              </td>
             </tr>
           )}
         />
       </HistoriqueAccordeon>
 
       {detailObservation && (
-        <FormulaireWrapper isModifying={false} labelCreate="Détails de l'observation" labelModify="Détails de l'observation">
+        <FormulaireWrapper
+          isModifying={false}
+          labelCreate="Détails de l'observation"
+          labelModify="Détails de l'observation"
+        >
           <div className="ec-readonly-block">
             <div className="mb-4">
               <label className={`${LABEL_CLS} ec-th-sm`}>Remarques observées</label>
@@ -93,11 +111,15 @@ export default function ObservationUI({
             </div>
           </div>
           <div className="d-flex justify-content-end">
-            <button className="btn btn-sm btn-outline-secondary" onClick={() => setDetailObservation(null)}>Fermer les détails</button>
+            <button
+              className="btn btn-sm btn-outline-secondary"
+              onClick={() => setDetailObservation(null)}
+            >
+              Fermer les détails
+            </button>
           </div>
         </FormulaireWrapper>
       )}
     </>
   );
 }
-

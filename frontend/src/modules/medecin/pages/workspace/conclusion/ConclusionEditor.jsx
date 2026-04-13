@@ -3,8 +3,8 @@ import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import { ActionButton } from "../../../../../shared/components";
 import { QUILL_MODULES, QUILL_FORMATS } from "./conclusionConstants.js";
-
-export default function ConclusionEditor({ editorRef, editorValue, onChange, isEditing, saving, onSave }) {
+import { FieldError } from "../../../../../shared/components";  
+export default function ConclusionEditor({ editorRef, editorValue, onChange, isEditing, saving, onSave ,error, }) {
   return (
     <div className="pcCard" ref={editorRef}>
       <div className="pcCardHeader">
@@ -23,6 +23,7 @@ export default function ConclusionEditor({ editorRef, editorValue, onChange, isE
         placeholder="Rédigez la conclusion médicale ici..."
         className="pcQuillLarge"
       />
+      <FieldError error={error} />   {/* ← affichage de l'erreur */}
 
       <div className="pcActions">
         <ActionButton

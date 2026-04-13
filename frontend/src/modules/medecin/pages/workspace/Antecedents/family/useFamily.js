@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { getFamily, createFamily, updateFamily } from "../../../../services/antecedentsService.jsx";
 import { formatFamilyFromApi, formatFamilyForApi } from "./familyHelpers";
 import { FAMILY_INITIAL_STATE } from "./familyConstants";
+import { clearFieldError } from "../../../../shared/utils/clearFieldError.js";
 
 export default function useFamily(numero) {
   const [form, setForm] = useState(FAMILY_INITIAL_STATE);
@@ -13,6 +14,7 @@ export default function useFamily(numero) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const [errors, setErrors] = useState({});
 
   const isHandlingBlock = useRef(false);
 
@@ -42,9 +44,7 @@ export default function useFamily(numero) {
     fetchData();
   }, [numero]);
 
-  const isDirty =
-    isEditing &&
-    JSON.stringify(form) !== JSON.stringify(savedForm);
+  const isDirty = isEditing && JSON.stringify(form) !== JSON.stringify(savedForm);
 
   const saveQuiet = useCallback(async () => {
     try {
@@ -110,20 +110,24 @@ export default function useFamily(numero) {
 
   const handleToggle = (key) => {
     setForm((prev) => ({ ...prev, [key]: !prev[key] }));
+    // Les toggles (booléens) n'ont pas d'erreur de validation → pas de clearFieldError
   };
 
   const handleChange = (key, value) => {
     setForm((prev) => ({ ...prev, [key]: value }));
+    clearFieldError(key, setErrors); // ← remplace setErrors((prev) => ({ ...prev, [key]: undefined }))
   };
 
   const startEditing = () => setIsEditing(true);
 
   const cancelEditing = () => {
     setForm(savedForm);
+    setErrors({});
     setIsEditing(false);
   };
 
   const save = async () => {
+    setErrors({});
     try {
       setSaving(true);
       const payload = formatFamilyForApi(form);
@@ -135,6 +139,18 @@ export default function useFamily(numero) {
       }
       setSavedForm(form);
       setIsEditing(false);
+    } catch (err) {
+      // Erreurs de validation champ-par-champ → FieldError (pas de toast)
+      if (err?.errors && Array.isArray(err.errors)) {
+        const formattedErrors = {};
+        err.errors.forEach((e) => {
+          formattedErrors[e.field] = e.message;
+        });
+        setErrors(formattedErrors);
+      } else {
+        // Erreur réseau / serveur → toast uniquement
+        toast.error("Une erreur est survenue. Veuillez réessayer.");
+      }
     } finally {
       setSaving(false);
     }
@@ -147,6 +163,8 @@ export default function useFamily(numero) {
     loading,
     saving,
     error,
+    errors,
+    setErrors,
     handleToggle,
     handleChange,
     startEditing,

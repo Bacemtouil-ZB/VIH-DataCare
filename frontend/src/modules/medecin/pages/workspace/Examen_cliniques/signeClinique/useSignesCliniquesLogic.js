@@ -1,6 +1,6 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
-import { confirmAction } from "../../../../../../shared/utils/uiAlerts";
+import { confirmAction, alertError } from "../../../../../../shared/utils/uiAlerts";
 import {
   createSigneClinique,
   updateSigneClinique,
@@ -16,15 +16,16 @@ import {
   handleCancelForm,
   openFormForCreate,
   showDetailMode,
-  formatDateFr,
 } from "../../../../../../shared/utils/logiqueTableHistory";
-import { parseApiError } from "../index";
+
+import { clearFieldError } from "../../../../shared/utils/clearFieldError";
 
 export function useSignesCliniquesLogic(numero, examenId) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [showHistory, setShowHistory] = useState(true);
+  const [errors, setErrors] = useState({});
 
   const [signeId, setSigneId] = useState(FORM_SC_INIT.signeId);
   const [isModifying, setIsModifying] = useState(FORM_SC_INIT.isModifying);
@@ -40,12 +41,13 @@ export function useSignesCliniquesLogic(numero, examenId) {
 
   const imc = useMemo(
     () =>
-      taille && poids && +taille > 0 && +poids > 0 ?
-        calcIMC(+taille, +poids)
-      : null,
+      taille && poids && +taille > 0 && +poids > 0
+        ? calcIMC(+taille, +poids)
+        : null,
     [taille, poids],
   );
 
+  // ====== Reset formulaire ======
   const resetForm = () => {
     setSigneId(FORM_SC_INIT.signeId);
     setIsModifying(FORM_SC_INIT.isModifying);
@@ -54,8 +56,10 @@ export function useSignesCliniquesLogic(numero, examenId) {
     setAutresSignes(FORM_SC_INIT.autresSignes);
     setAppareilSel(FORM_SC_INIT.appareilSel);
     setDescription(FORM_SC_INIT.description);
+    setErrors({});
   };
 
+  // ====== Chargement initial ======
   useEffect(() => {
     if (!numero) return;
     (async () => {
@@ -75,16 +79,29 @@ export function useSignesCliniquesLogic(numero, examenId) {
     })();
   }, [numero]);
 
+  // ====== Wrappers avec clearFieldError ======
+  const handleTailleChange = (e) => {
+    setTaille(e.target.value);
+    clearFieldError("taille", setErrors);
+  };
+
+  const handlePoidsChange = (e) => {
+    setPoids(e.target.value);
+    clearFieldError("poids", setErrors);
+  };
+
+  // ====== Cancel ======
   const handleCancel = () => {
     handleCancelForm(setShowForm, resetForm, toast);
   };
 
-  const openCreate = () =>
+  // ====== Ouvrir en mode création ======
+  const openCreate = () => {
     openFormForCreate(setDetailSigne, resetForm, setShowForm);
+  };
 
+  // ====== Ouvrir en mode modification ======
   const handleEdit = async (s) => {
-
-
     setDetailSigne(null);
     setSigneId(s.id);
     setIsModifying(true);
@@ -94,6 +111,7 @@ export function useSignesCliniquesLogic(numero, examenId) {
     setAppareilSel("");
     setDescription("");
     setShowForm(true);
+    setErrors({});
     toast.info("Mode modification activé");
   };
 
@@ -101,12 +119,9 @@ export function useSignesCliniquesLogic(numero, examenId) {
     showDetailMode(setShowForm, setDetailSigne, s);
   };
 
+  // ====== Autres signes ======
   const ajouterAutreSigne = () => {
-    const { error, item } = buildAutreSigneItem(
-      appareils,
-      appareilSel,
-      description,
-    );
+    const { error, item } = buildAutreSigneItem(appareils, appareilSel, description);
     if (error) return toast.error(error);
     setAutresSignes((prev) => [...prev, item]);
     setAppareilSel("");
@@ -114,35 +129,55 @@ export function useSignesCliniquesLogic(numero, examenId) {
   };
 
   const supprimerAutreSigne = async (id) => {
-    const ok = await confirmAction(
-      "Supprimer ce signe ?",
-      "Cette action est irréversible.",
-    );
+    const ok = await confirmAction("Supprimer ce signe ?", "Cette action est irréversible.");
     if (!ok) return;
     setAutresSignes((prev) => removeAutreSigneById(prev, id));
     toast.success("Signe supprimé");
   };
 
   const modifierDescription = (id, nouvelleDesc) => {
-    setAutresSignes((prev) =>
-      updateAutreSigneDescription(prev, id, nouvelleDesc),
-    );
+    setAutresSignes((prev) => updateAutreSigneDescription(prev, id, nouvelleDesc));
     toast.success("Description mise à jour");
   };
 
+  // ====== Soumission ======
   const handleSave = async () => {
-    
-    if (+taille > 250)
-      return toast.error("Taille invalide (1-250 cm)");
-    if ( +poids > 300)
-      return toast.error("Poids invalide (1-300 kg)");
+
+    // ── Validation frontend ──────────────────────────────────────────────────
+    // Règles miroir du backend — FieldError sous chaque champ, pas de toast
+    const fieldErrors = {};
+
+    // ❌ CORRIGÉ : vérification complète (valeurs négatives + > max)
+    // Avant : if (taille && +taille > 250) — ne vérifiait pas les valeurs < 1
+    if (taille !== "" && taille !== null) {
+      const t = +taille;
+      if (isNaN(t) || (t !== 0 && (t < 1 || t > 250))) {
+        fieldErrors.taille = "Taille invalide (1-250 cm)";
+      }
+    }
+    if (poids !== "" && poids !== null) {
+      const p = +poids;
+      if (isNaN(p) || (p !== 0 && (p < 1 || p > 300))) {
+        fieldErrors.poids = "Poids invalide (1-300 kg)";
+      }
+    }
+
+    if (Object.keys(fieldErrors).length > 0) {
+      setErrors(fieldErrors);
+      return;
+    }
 
     setSaving(true);
+    setErrors({});
+
     try {
       const payload = {
         examen_clinique_id: examenId,
-        taille: +taille,
-        poids: +poids,
+
+
+        taille: taille !== "" && taille !== null ? +taille : null,
+        poids:  poids  !== "" && poids  !== null ? +poids  : null,
+
         autres_signes: autresSignes.map(({ appareil_id, description: d }) => ({
           appareil_id,
           description: d,
@@ -162,8 +197,27 @@ export function useSignesCliniquesLogic(numero, examenId) {
       resetForm();
       const hr = await getSigneCliniqueByNumeroDossier(numero);
       setHistorique(hr?.signes || []);
+
     } catch (e) {
-      toast.error(parseApiError(e));
+
+
+      if (e?.errors && Array.isArray(e.errors)) {
+        const errorObj = {};
+        e.errors.forEach((err) => {
+          errorObj[err.field] = err.message;
+        });
+        setErrors(errorObj);
+        return;
+      }
+
+      if (e?.message) {
+        setErrors({ _form: e.message });
+        return;
+      }
+
+      // Cas 3 — fallback inattendu (réseau, serveur indisponible)
+      alertError("Erreur lors de l'enregistrement");
+
     } finally {
       setSaving(false);
     }
@@ -178,8 +232,10 @@ export function useSignesCliniquesLogic(numero, examenId) {
     isModifying,
     taille,
     setTaille,
+    handleTailleChange,
     poids,
     setPoids,
+    handlePoidsChange,
     autresSignes,
     setAutresSignes,
     appareilSel,
@@ -191,6 +247,7 @@ export function useSignesCliniquesLogic(numero, examenId) {
     detailSigne,
     setDetailSigne,
     imc,
+    errors,
     openCreate,
     handleCancel,
     handleEdit,

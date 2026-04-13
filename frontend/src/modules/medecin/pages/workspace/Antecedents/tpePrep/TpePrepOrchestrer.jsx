@@ -4,58 +4,34 @@ import { confirmAction, alertError } from "../../../../../../shared/utils/uiAler
 import { Spinner } from "../../../../../../shared/components/UI/Loading/Spinner.jsx";
 import useTpePrep from "./useTpePrep";
 import TpePrepUI from "./TpePrepUI";
-
-export default function TpePrepOrchestreur() {
+ 
+export default function TpePrepOrchestrer() {
   const { numero } = useParams();
-
+ 
   const {
-    items,
-    form,
-    editingItem,
-    showForm,
-    loading,
-    saving,
-    deleting,
-    error,
-    accordeonOpen,
-    setAccordeonOpen,
-    handleChange,
-    openAddForm,
-    openEdit,
-    cancelForm,
-    save,
-    update,
-    remove,
+    items, form, errors, editingItem, showForm, loading, saving, deleting, error,
+    accordeonOpen, setAccordeonOpen,
+    handleChange, openAddForm, openEdit, cancelForm, save, update, remove,
   } = useTpePrep(numero);
-
+ 
   if (loading) return <Spinner />;
   if (error) {
     alertError("Erreur lors du chargement des antécédents TPE/PrEP.");
     return null;
   }
-
+ 
   const handleSave = async () => {
     const confirmed = await confirmAction("Confirmer l'ajout de cet antécédent TPE/PrEP ?");
     if (!confirmed) return;
-    try {
-      await save();
-      toast.success("Antécédent TPE/PrEP ajouté avec succès.");
-    } catch (err) {
-      toast.error(err || "Erreur lors de l'enregistrement.");
-    }
+    await save();
   };
-
+ 
   const handleUpdate = async () => {
     const confirmed = await confirmAction("Confirmer la mise à jour de cet antécédent TPE/PrEP ?");
     if (!confirmed) return;
-    try {
-      await update();
-      toast.success("Antécédent TPE/PrEP mis à jour avec succès.");
-    } catch (err) {
-      toast.error(err || "Erreur lors de la mise à jour.");
-    }
+    await update();
   };
-
+ 
   const handleDelete = async (id) => {
     const confirmed = await confirmAction(
       "Supprimer cet antécédent TPE/PrEP ? Cette action est irréversible."
@@ -64,15 +40,16 @@ export default function TpePrepOrchestreur() {
     try {
       await remove(id);
       toast.success("Antécédent TPE/PrEP supprimé.");
-    } catch (err) {
-      toast.error(err || "Erreur lors de la suppression.");
+    } catch {
+      toast.error("Erreur lors de la suppression.");
     }
   };
-
+ 
   return (
     <TpePrepUI
       items={items}
       form={form}
+      errors={errors}          // ← transmission des erreurs au composant UI
       editingItem={editingItem}
       showForm={showForm}
       saving={saving}

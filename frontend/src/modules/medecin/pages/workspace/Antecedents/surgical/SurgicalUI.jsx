@@ -1,6 +1,7 @@
 import {
   FormulaireWrapper,
   FieldLabel,
+  FieldError,
   ActionButton,
 } from "../../../../../../shared/components/index.js";
 import HistoriqueTable from "../../../../../../shared/components/UI/Table/HistoriqueTable.jsx";
@@ -32,6 +33,7 @@ const SectionTitle = ({ children }) => (
 export default function SurgicalUI({
   items,
   form,
+  errors = {},
   editingItem,
   showForm,
   saving,
@@ -118,6 +120,7 @@ export default function SurgicalUI({
                 placeholder="Description de l'intervention..."
                 style={{ ...inputStyle, resize: "vertical" }}
               />
+              <FieldError error={errors.description} />
             </div>
 
             {/* Date + Remarque */}
@@ -129,9 +132,9 @@ export default function SurgicalUI({
                   value={form.date_intervention}
                   onChange={(e) => onChange("date_intervention", e.target.value)}
                   style={inputStyle}
-                    max={new Date().toISOString().split('T')[0]}  // ← Ajouter ceci
-
+                  max={new Date().toISOString().split('T')[0]}
                 />
+                <FieldError error={errors.date_intervention} />
               </div>
               <div style={{ flex: 1 }}>
                 <FieldLabel>Remarque</FieldLabel>
@@ -142,6 +145,7 @@ export default function SurgicalUI({
                   placeholder="Remarque éventuelle..."
                   style={inputStyle}
                 />
+                <FieldError error={errors.remarque} />
               </div>
             </div>
 

@@ -1,4 +1,4 @@
-import { FormulaireWrapper, FieldLabel, ActionButton } from "../../../../../../shared/components/index.js";
+import { FormulaireWrapper, FieldLabel, FieldError, ActionButton } from "../../../../../../shared/components/index.js";
 import Toggle from "../../../../components/UI/Toggle.jsx";
 import Textarea from "../../../../components/UI/Textarea.jsx";
 import { FAMILY_FIELDS } from "./familyConstants";
@@ -7,6 +7,7 @@ const lockedFieldStyle = { cursor: "not-allowed", opacity: 0.75 };
 
 export default function FamilyUI({
   form,
+  errors = {},
   isExisting,
   isEditing,
   saving,
@@ -64,6 +65,7 @@ export default function FamilyUI({
           placeholder="Précisez d'autres antécédents familiaux..."
           disabled={readOnly}
         />
+        <FieldError error={errors.autres} />
       </div>
 
       <div className="mb-4" onClick={handleLockedClick} style={readOnly ? lockedFieldStyle : {}}>
@@ -74,6 +76,7 @@ export default function FamilyUI({
           placeholder="Remarque générale..."
           disabled={readOnly}
         />
+        <FieldError error={errors.remarque} />
       </div>
 
       <div className="d-flex justify-content-end gap-2">

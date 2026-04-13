@@ -53,6 +53,7 @@ export default function SignesFonctionnels() {
         ajouterAutreSigne={logic.ajouterAutreSigne}
         supprimerAutreSigne={logic.supprimerAutreSigne}
         modifierDescription={logic.modifierDescription}
+        errors={logic.errors}                              // ← erreurs pour <FieldError />
         handleSave={logic.handleSave}
       />
     </div>

@@ -1,6 +1,7 @@
 import {
   FormulaireWrapper,
   FieldLabel,
+  FieldError,
   ActionButton,
 } from "../../../../../../shared/components/index.js";
 import HistoriqueTable from "../../../../../../shared/components/UI/Table/HistoriqueTable.jsx";
@@ -32,6 +33,7 @@ const SectionTitle = ({ children }) => (
 export default function TpePrepUI({
   items,
   form,
+  errors = {},
   editingItem,
   showForm,
   saving,
@@ -134,6 +136,7 @@ export default function TpePrepUI({
                   placeholder="Nom du traitement TPE..."
                   style={inputStyle}
                 />
+                <FieldError error={errors.tpe_nom_traitement} />
               </div>
               <div style={{ flex: 1 }}>
                 <FieldLabel>Date</FieldLabel>
@@ -142,9 +145,9 @@ export default function TpePrepUI({
                   value={form.tpe_date}
                   onChange={(e) => onChange("tpe_date", e.target.value)}
                   style={inputStyle}
-                    max={new Date().toISOString().split('T')[0]}  // ← Ajouter ceci
-
+                  max={new Date().toISOString().split('T')[0]}
                 />
+                <FieldError error={errors.tpe_date} />
               </div>
             </div>
 
@@ -160,6 +163,7 @@ export default function TpePrepUI({
                   placeholder="Nom du traitement PrEP..."
                   style={inputStyle}
                 />
+                <FieldError error={errors.prep_nom_traitement} />
               </div>
               <div style={{ flex: 1 }}>
                 <FieldLabel>Date</FieldLabel>
@@ -168,9 +172,9 @@ export default function TpePrepUI({
                   value={form.prep_date}
                   onChange={(e) => onChange("prep_date", e.target.value)}
                   style={inputStyle}
-                    max={new Date().toISOString().split('T')[0]}  // ← Ajouter ceci
-
+                  max={new Date().toISOString().split('T')[0]}
                 />
+                <FieldError error={errors.prep_date} />
               </div>
             </div>
 
@@ -184,6 +188,7 @@ export default function TpePrepUI({
                 placeholder="Remarque éventuelle..."
                 style={{ ...inputStyle, resize: "vertical" }}
               />
+              <FieldError error={errors.remarque} />
             </div>
 
             {/* ── Actions ── */}
