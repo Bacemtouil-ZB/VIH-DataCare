@@ -39,6 +39,13 @@ const validateDatePast = (value, fieldName) => {
   return true;
 };
 
+const validateModeContamination = body("mode_contamination")
+  .trim()
+  .notEmpty()
+  .withMessage("Le mode de contamination est obligatoire")
+  .isLength({ max: 500 })
+  .withMessage("Mode de contamination trop long");
+
 const validateTypeDepistage = body("type_depistage")
   .trim()
   .notEmpty()
@@ -49,9 +56,7 @@ const validateTypeDepistage = body("type_depistage")
   .withMessage("Type de dépistage trop long");
 
 const validateCirconstanceDecouverte = body("circonstance_decouverte")
-  .trim()
-  .notEmpty()
-  .withMessage("La circonstance de découverte est requise")
+  .optional({ nullable: true, checkFalsy: true })
   .isIn(CIRCONSTANCES_DECOUVERTE)
   .withMessage("Circonstance de découverte invalide")
   .isLength({ max: 100 })
@@ -61,11 +66,7 @@ const validateDateDerniereNegative = body("date_derniere_negative")
   .optional({ nullable: true, checkFalsy: true })
   .isDate({ format: "YYYY-MM-DD", strictMode: true })
   .withMessage("Format invalide (attendu: YYYY-MM-DD)")
-  .custom((value) =>
-    validateDatePast(value, "La date du dernier test négatif"),
-  );
-
-
+  .custom((value) => validateDatePast(value, "La date du dernier test négatif"));
 
 const validateDateVihPositif = body("date_vih_positif")
   .trim()
@@ -75,15 +76,12 @@ const validateDateVihPositif = body("date_vih_positif")
   .withMessage("Format invalide (attendu: YYYY-MM-DD)")
   .custom((value) => validateDatePast(value, "La date du test VIH positif"));
 
-
-
 export const validateDateLogic = (req, res, next) => {
-  const { date_derniere_negative,  date_vih_positif } =
-    req.body;
+  const { date_derniere_negative, date_vih_positif } = req.body;
 
   const datePositif = date_vih_positif ? new Date(date_vih_positif) : null;
-  const dateNeg = date_derniere_negative ?
-      new Date(date_derniere_negative)
+  const dateNeg = date_derniere_negative
+    ? new Date(date_derniere_negative)
     : null;
 
   if (dateNeg && datePositif && dateNeg >= datePositif) {
@@ -94,12 +92,11 @@ export const validateDateLogic = (req, res, next) => {
     });
   }
 
-
-
   next();
 };
 
 export const validateCreateVih = [
+  validateModeContamination,
   validateTypeDepistage,
   validateCirconstanceDecouverte,
   validateDateDerniereNegative,
@@ -108,6 +105,7 @@ export const validateCreateVih = [
 ];
 
 export const validateUpdateVih = [
+  validateModeContamination,
   validateTypeDepistage,
   validateCirconstanceDecouverte,
   validateDateDerniereNegative,

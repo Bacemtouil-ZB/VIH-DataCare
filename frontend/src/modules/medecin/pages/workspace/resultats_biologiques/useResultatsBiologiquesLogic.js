@@ -13,6 +13,8 @@ import { MESSAGES, SECTION_DATE_KEY } from "./ResultatsbiologiquesConstants";
 import { clearFieldError } from "../../../shared/utils/clearFieldError.js";
 import {
   fileToBase64,
+  collectGenotypageUrls,
+  deduplicateGenotypageUrls,
   normalizeGenotypageUrls,
   formatGenotypageValue,
 } from "./resultatsBiologiquesHelpers";
@@ -133,12 +135,6 @@ export function useResultatsBiologiquesLogic() {
 
   // ── Ouvrir modification du résultat d'un bilan ───────────────────────────
   const openEdit = async (resultat, bilan) => {
-    const ok = await confirmAction(
-      MESSAGES.confirmerEdit,
-      `Date : ${new Date(resultat.date_resultat || resultat.created_at).toLocaleDateString("fr-FR")}`,
-    );
-    if (!ok) return;
-
     const actifs = getChampActifs(bilan);
     setBilanActif(bilan);
     setChampsActifs(actifs);
@@ -256,16 +252,23 @@ export function useResultatsBiologiquesLogic() {
 
   // Naviguer vers la page génotypage (toujours en lecture seule depuis ResultatsBiologiques)
   const openGenotypagePage = () => {
-    const urls = normalizeGenotypageUrls(formData.genotypage_file_url).length > 0
+    const currentUrls = normalizeGenotypageUrls(formData.genotypage_file_url).length > 0
       ? normalizeGenotypageUrls(formData.genotypage_file_url)
       : genotypageLocalUrls;
+    const urls = collectGenotypageUrls(resultats, currentUrls);
 
-    if (urls.length > 0) {
-      sessionStorage.setItem("resultatsBiologiquesGenotypage", formatGenotypageValue(urls));
+    if (currentUrls.length > 0) {
+      sessionStorage.setItem("resultatsBiologiquesGenotypage", formatGenotypageValue(currentUrls));
+    } else {
+      sessionStorage.removeItem("resultatsBiologiquesGenotypage");
     }
 
     navigate(`${basePath}/genotypage`, {
-      state: { fromBiologie: true, scanUrl: urls },
+      state: {
+        fromBiologie: true,
+        scanUrl: urls,
+        draftGenotypage: currentUrls,
+      },
     });
   };
 
@@ -294,7 +297,7 @@ export function useResultatsBiologiquesLogic() {
     try {
       const base64s    = await Promise.all(files.map(fileToBase64));
       const existing   = normalizeGenotypageUrls(formData.genotypage_file_url);
-      const allUrls    = [...existing, ...base64s];
+      const allUrls    = deduplicateGenotypageUrls([...existing, ...base64s]);
       setGenotypageLocalUrls(allUrls);
       setFormData((prev) => ({ ...prev, genotypage_file_url: formatGenotypageValue(allUrls) }));
       toast.success(`${files.length} fichier(s) génotypage ajouté(s).`);

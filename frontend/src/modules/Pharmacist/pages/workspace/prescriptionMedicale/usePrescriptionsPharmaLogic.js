@@ -8,6 +8,7 @@ import {
   getNextRendezVousPerPatient,
 } from "../../../services/patientPrescriptionService";
 import {
+  deleteExpiredPrescriptions,
   validatePrescription,
   validatePrescriptionAvecModification,
 } from "../../../../../shared/services/prescriptionWorkflowService";
@@ -29,6 +30,12 @@ export function usePrescriptionsLogic() {
     try {
       setLoading(true);
       setError(null);
+
+      try {
+        await deleteExpiredPrescriptions();
+      } catch (cleanupError) {
+        console.warn("Nettoyage des prescriptions expirees non execute:", cleanupError);
+      }
 
       const [data, rdvMap] = await Promise.all([
         getPatientsWithPrescriptions(),

@@ -27,8 +27,18 @@ export const createStockItem = async (payload, userId) => {
 
   if (!code) throw new Error("Le code du médicament est requis");
   if (!composition) throw new Error("La composition du médicament est requise");
+  if (quantite <= 0) {
+    throw new Error("La quantité initiale doit être strictement supérieure à 0");
+  }
 
-  return createStockItemModel({ code, composition, quantite, userId });
+  try {
+    return await createStockItemModel({ code, composition, quantite, userId });
+  } catch (error) {
+    if (error?.code === "23505") {
+      throw new Error(`Un médicament avec le code ${code} existe déjà dans le stock`);
+    }
+    throw error;
+  }
 };
 
 export const updateStockQuantity = async (id, quantite, userId) => {

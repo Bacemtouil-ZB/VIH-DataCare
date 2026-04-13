@@ -3,38 +3,40 @@ import { toast } from "react-toastify";
 import { confirmDelete } from "../../../../../shared/utils/uiAlerts.js";
 import {
   getStockItems,
-  createStockItem     as createStockItemApi,
+  createStockItem as createStockItemApi,
   updateStockQuantity as updateStockQuantityApi,
-  deleteStockItem     as deleteStockItemApi,
+  deleteStockItem as deleteStockItemApi,
 } from "../../../services/stockService.jsx";
 import { toUiStockItem, INITIAL_ADD_FORM } from "./stockConstants.js";
 
-export function useStockLogic(numero) {
-  // ── États ──────────────────────────────────────────────────────────────────
-  const [search,           setSearch]           = useState("");
-  const [stockItems,       setStockItems]        = useState([]);
-  const [showAddForm,      setShowAddForm]       = useState(false);
-  const [addForm,          setAddForm]           = useState(INITIAL_ADD_FORM);
-  // editingId    : id de la ligne en cours d'édition
-  // editingMode  : "increment" | "decrement"
-  // editingQuantity : valeur saisie (delta à appliquer)
-  const [editingId,        setEditingId]         = useState(null);
-  const [editingMode,      setEditingMode]       = useState(null);
-  const [editingQuantity,  setEditingQuantity]   = useState("");
-  const [showHistory,      setShowHistory]       = useState(true);
-  const [loading,          setLoading]           = useState(true);
-  const [saving,           setSaving]            = useState(false);
-  const [error,            setError]             = useState("");
+const getErrorMessage = (error, fallbackMessage) => {
+  if (typeof error === "string" && error.trim()) return error;
+  if (typeof error?.message === "string" && error.message.trim()) return error.message;
+  if (typeof error?.error === "string" && error.error.trim()) return error.error;
+  return fallbackMessage;
+};
 
-  // ── Refresh ────────────────────────────────────────────────────────────────
+export function useStockLogic(numero) {
+  const [search, setSearch] = useState("");
+  const [stockItems, setStockItems] = useState([]);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [addForm, setAddForm] = useState(INITIAL_ADD_FORM);
+  const [editingId, setEditingId] = useState(null);
+  const [editingMode, setEditingMode] = useState(null);
+  const [editingQuantity, setEditingQuantity] = useState("");
+  const [showHistory, setShowHistory] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
   const refreshStock = async () => {
     const rows = await getStockItems();
     setStockItems(Array.isArray(rows) ? rows.map(toUiStockItem) : []);
   };
 
-  // ── Chargement initial ─────────────────────────────────────────────────────
   useEffect(() => {
     let alive = true;
+
     const loadData = async () => {
       try {
         setLoading(true);
@@ -44,41 +46,60 @@ export function useStockLogic(numero) {
         setStockItems(Array.isArray(rows) ? rows.map(toUiStockItem) : []);
       } catch (err) {
         if (!alive) return;
-        setError(err?.message || "Erreur lors du chargement du stock.");
+        setError(getErrorMessage(err, "Erreur lors du chargement du stock."));
       } finally {
         if (alive) setLoading(false);
       }
     };
+
     loadData();
-    return () => { alive = false; };
+    return () => {
+      alive = false;
+    };
   }, [numero]);
 
-  // ── Filtrage ───────────────────────────────────────────────────────────────
   const filteredItems = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    if (!q) return stockItems;
+    const query = search.trim().toLowerCase();
+    if (!query) return stockItems;
+
     return stockItems.filter(
       (item) =>
-        item.code.toLowerCase().includes(q) ||
-        item.composition.toLowerCase().includes(q)
+        item.code.toLowerCase().includes(query) ||
+        item.composition.toLowerCase().includes(query)
     );
   }, [stockItems, search]);
 
-  // ── Ajouter médicament ─────────────────────────────────────────────────────
   const handleAddMedication = async () => {
     const { medicamentCode, medicamentComposition, quantityToAdd } = addForm;
-    if (!medicamentCode.trim()) { toast.error("Veuillez saisir un code de médicament."); return; }
-    if (!medicamentComposition.trim()) { toast.error("Veuillez saisir la composition du médicament."); return; }
-    const q = Number(quantityToAdd);
-    if (!Number.isInteger(q) || q < 0) { toast.error("La quantité doit être un entier positif."); return; }
+
+    if (!medicamentCode.trim()) {
+      toast.error("Veuillez saisir un code de medicament.");
+      return;
+    }
+
+    if (!medicamentComposition.trim()) {
+      toast.error("Veuillez saisir la composition du medicament.");
+      return;
+    }
+
+    const quantity = Number(quantityToAdd);
+    if (!Number.isInteger(quantity) || quantity <= 0) {
+      toast.error("La quantite initiale doit etre un entier strictement positif.");
+      return;
+    }
+
     try {
       setSaving(true);
-      await createStockItemApi({ code: medicamentCode.trim().toUpperCase(), composition: medicamentComposition.trim(), quantite: q });
+      await createStockItemApi({
+        code: medicamentCode.trim().toUpperCase(),
+        composition: medicamentComposition.trim(),
+        quantite: quantity,
+      });
       await refreshStock();
       cancelAddForm();
-      toast.success("Médicament ajouté avec succès");
+      toast.success("Medicament ajoute avec succes");
     } catch (err) {
-      toast.error(err?.response?.data?.message || err?.message || "Erreur lors de l'ajout au stock.");
+      toast.error(getErrorMessage(err, "Erreur lors de l'ajout au stock."));
     } finally {
       setSaving(false);
     }
@@ -89,24 +110,26 @@ export function useStockLogic(numero) {
     setAddForm(INITIAL_ADD_FORM);
   };
 
-  // ── Supprimer médicament ───────────────────────────────────────────────────
   const handleDeleteMedication = async (id) => {
-    const confirmed = await confirmDelete("Supprimer ce médicament ?", "Êtes-vous sûr de vouloir supprimer ce médicament du stock ?");
+    const confirmed = await confirmDelete(
+      "Supprimer ce medicament ?",
+      "Etes-vous sur de vouloir supprimer ce medicament du stock ?"
+    );
     if (!confirmed) return;
+
     try {
       setSaving(true);
       await deleteStockItemApi(id);
       await refreshStock();
-      toast.success("Médicament supprimé avec succès");
+      toast.success("Medicament supprime avec succes");
       if (editingId === id) cancelEditQuantity();
     } catch (err) {
-      toast.error(err?.response?.data?.message || err?.message || "Erreur lors de la suppression.");
+      toast.error(getErrorMessage(err, "Erreur lors de la suppression."));
     } finally {
       setSaving(false);
     }
   };
 
-  // ── Ouvrir édition + / - ───────────────────────────────────────────────────
   const beginIncrement = (item) => {
     setEditingId(item.id);
     setEditingMode("increment");
@@ -125,7 +148,6 @@ export function useStockLogic(numero) {
     setEditingQuantity("");
   };
 
-  // ── Sauvegarder la quantité ────────────────────────────────────────────────
   const saveQuantity = async (item) => {
     const delta = Number(editingQuantity);
     if (!Number.isInteger(delta) || delta <= 0) {
@@ -133,10 +155,13 @@ export function useStockLogic(numero) {
       return;
     }
 
-    const current     = Number.isFinite(Number(item?.quantity)) ? Number(item.quantity) : 0;
-    const newQuantity = editingMode === "decrement"
-      ? Math.max(0, current - delta)   // jamais négatif
-      : current + delta;
+    const current = Number.isFinite(Number(item?.quantity)) ? Number(item.quantity) : 0;
+    if (editingMode === "decrement" && delta > current) {
+      toast.error(`La quantite a retirer ne peut pas depasser le stock actuel (${current}).`);
+      return;
+    }
+
+    const newQuantity = editingMode === "decrement" ? current - delta : current + delta;
 
     try {
       setSaving(true);
@@ -145,24 +170,29 @@ export function useStockLogic(numero) {
       cancelEditQuantity();
       toast.success(
         editingMode === "decrement"
-          ? `Stock diminué de ${delta} unité(s)`
-          : `Stock augmenté de ${delta} unité(s)`
+          ? `Stock diminue de ${delta} unite(s)`
+          : `Stock augmente de ${delta} unite(s)`
       );
     } catch (err) {
-      toast.error(err?.response?.data?.message || err?.message || "Erreur lors de la mise à jour.");
+      toast.error(getErrorMessage(err, "Erreur lors de la mise a jour."));
     } finally {
       setSaving(false);
     }
   };
 
   return {
-    search,          setSearch,
-    showAddForm,     setShowAddForm,
-    addForm,         setAddForm,
+    search,
+    setSearch,
+    showAddForm,
+    setShowAddForm,
+    addForm,
+    setAddForm,
     editingId,
     editingMode,
-    editingQuantity, setEditingQuantity,
-    showHistory,     setShowHistory,
+    editingQuantity,
+    setEditingQuantity,
+    showHistory,
+    setShowHistory,
     loading,
     saving,
     error,

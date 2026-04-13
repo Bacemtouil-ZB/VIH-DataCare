@@ -74,12 +74,17 @@ export const validerAvecModification = async (id, periodeModifiee) => {
   }
 
   const pm = Number(periodeModifiee);
+  const prescribedPeriod = Number(prescription.periode);
   if (!Number.isInteger(pm) || pm <= 0) {
     throw new Error("La periode modifiee doit etre un entier superieur a 0");
   }
 
-  if (pm > prescription.periode) {
-    throw new Error("La periode modifiee ne peut pas depasser la periode prescrite");
+  if (!Number.isInteger(prescribedPeriod) || prescribedPeriod <= 1) {
+    throw new Error("La periode prescrite par le medecin ne permet pas de reduction");
+  }
+
+  if (pm >= prescribedPeriod) {
+    throw new Error("La periode modifiee doit etre strictement inferieure a la periode prescrite");
   }
 
   return validerAvecModificationModel(id, pm);

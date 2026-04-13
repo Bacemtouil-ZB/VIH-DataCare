@@ -121,6 +121,8 @@ export default function HabitudesVieUI({
                           onChange={(e) => onChange(`${key}_date`, e.target.value)}
                           disabled={readOnly}
                           style={{ ...inputStyle, background: readOnly ? "#f3f4f6" : inputStyle.background }}
+                          max={new Date().toISOString().split('T')[0]}  // ← Ajouter ceci
+
                         />
                       )}
                     </div>
@@ -156,6 +158,8 @@ export default function HabitudesVieUI({
                 onChange={(e) => onChange(`${key}_date`, e.target.value)}
                 disabled={readOnly}
                 style={{ ...inputStyle, background: readOnly ? "#f3f4f6" : inputStyle.background }}
+                max={new Date().toISOString().split('T')[0]}  // ← Ajouter ceci
+
               />
             )}
           </div>

@@ -1,20 +1,17 @@
-
--- Table principale
 CREATE TABLE IF NOT EXISTS prescription_medicale (
-  id SERIAL PRIMARY KEY,
-  patient_id INTEGER NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
-  medecin_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
-  medicament_id INTEGER REFERENCES stock_medicaments(id) ON DELETE SET NULL,
-  posologie VARCHAR(255),
-  date DATE NOT NULL DEFAULT CURRENT_DATE,
-  periode INTEGER NOT NULL CHECK (periode > 0),
-  periode_modifiee INTEGER CHECK (periode_modifiee > 0 AND periode_modifiee <= periode),
-  statut VARCHAR(20) NOT NULL DEFAULT 'envoyee'
-    CHECK (statut IN ('envoyee', 'delivree', 'modifie', 'non_validee')),
-  date_delivrance DATE,
-  remarque TEXT,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  id                SERIAL PRIMARY KEY,
+  patient_id        INTEGER NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
+  medecin_id        INTEGER REFERENCES users(id) ON DELETE SET NULL,
+  posologie         VARCHAR(255),
+  date              DATE NOT NULL DEFAULT CURRENT_DATE,
+  periode           INTEGER NOT NULL CHECK (periode > 0),
+  periode_modifiee  INTEGER CHECK (periode_modifiee > 0 AND periode_modifiee <= periode),
+  statut            VARCHAR(20) NOT NULL DEFAULT 'envoyee'
+                    CHECK (statut IN ('envoyee', 'delivree', 'modifie', 'non_validee')),
+  date_delivrance   DATE,
+  remarque          TEXT,
+  created_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at        TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Index

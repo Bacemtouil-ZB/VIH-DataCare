@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { alertError } from "../../../../../shared/utils/uiAlerts";
+import { toInputDate } from "../../../../../shared/utils/dateHelpers";
 import {
   createPrescription,
   getPrescriptionsByNumeroDossier,
@@ -73,10 +74,7 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
 
       const raw = p.date || p.created_at || "";
       if (!raw) return false;
-      const iso = raw instanceof Date
-        ? raw.toISOString().split("T")[0]
-        : String(raw).split("T")[0];
-      return iso === dateQ;
+      return toInputDate(raw) === dateQ;
     });
   }, [prescriptions, searchTerm, searchDate]);
 
