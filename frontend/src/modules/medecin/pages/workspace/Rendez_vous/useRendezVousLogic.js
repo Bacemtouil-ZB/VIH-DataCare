@@ -14,6 +14,7 @@ import {
   updateRendezvous,
 } from "../../../services/rendezvousService";
 import {
+  toFrDate,
   toInputDate,
   toInputTime,
 } from "../../../../../shared/utils/dateHelpers";
@@ -68,12 +69,7 @@ export function useRendezVousLogic(numero) {
   };
 
   const openEdit = async (item) => {
-    const ok = await confirmAction(
-      "Modifier ce rendez-vous ?",
-      `Date : ${new Date(item.date).toLocaleDateString("fr-FR")} - Heure : ${item.heure}`,
-    );
-    if (!ok) return;
-
+    
     setDetailRdv(null);
     setFormData({
       date:        toInputDate(item.date),

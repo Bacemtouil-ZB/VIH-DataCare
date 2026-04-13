@@ -49,11 +49,7 @@ export function useObservationLogic(patientNumero, examenId) {
   const openCreate = () => openFormForCreate(setDetailObservation, resetForm, setShowForm);
 
   const handleEdit = async (obs) => {
-    const ok = await confirmAction(
-      "Modifier cette observation ?",
-      `Date : ${formatDateFr(obs.date_examen)} - ${obs.remarque?.slice(0, 60)}${obs.remarque?.length > 60 ? "..." : ""}`
-    );
-    if (!ok) return;
+
     setDetailObservation(null);
     setObservationId(obs.id);
     setIsModifying(true);

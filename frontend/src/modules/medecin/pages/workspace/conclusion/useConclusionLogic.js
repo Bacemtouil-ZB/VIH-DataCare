@@ -72,15 +72,12 @@ export function useConclusionLogic(numero) {
       return;
     }
 
-    const confirmed = await confirmAction({
-      title: editingId ? "Modifier la conclusion" : "Enregistrer la conclusion",
-      message:
-        editingId ?
-          "Voulez-vous enregistrer les modifications de cette conclusion ?"
-        : "Voulez-vous enregistrer cette nouvelle conclusion ?",
-      confirmLabel: editingId ? "Modifier" : "Enregistrer",
-      cancelLabel: "Annuler",
-    });
+const confirmed = await confirmAction(
+  editingId ? "Modifier la conclusion" : "Enregistrer la conclusion",
+  editingId ?
+    "Voulez-vous enregistrer les modifications de cette conclusion ?"
+  : "Voulez-vous enregistrer cette nouvelle conclusion ?"
+);
 
     if (!confirmed) return;
 
@@ -105,15 +102,7 @@ export function useConclusionLogic(numero) {
   };
 
   const onEdit = async (c) => {
-    const confirmed = await confirmAction({
-      title: "Modifier la conclusion",
-      message: "Voulez-vous modifier cette conclusion ?",
-      confirmLabel: "Modifier",
-      cancelLabel: "Annuler",
-    });
-
-    if (!confirmed) return;
-
+    
     setEditorValue(c.content || "");
     setEditingId(c.id);
     setShowEditor(true);

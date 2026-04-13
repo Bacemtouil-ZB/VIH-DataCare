@@ -148,7 +148,7 @@ export default function StockUI({
               <FieldLabel required>Quantité initiale</FieldLabel>
               <Input
                 type="number"
-                min="0"
+                min="1"
                 className="form-control ph-add-qty-input"
                 value={addForm.quantityToAdd}
                 onChange={(e) => setAddForm((prev) => ({ ...prev, quantityToAdd: e.target.value }))}
@@ -260,7 +260,7 @@ export default function StockUI({
                           type="button"
                           className="btn btn-sm"
                           title="Diminuer le stock"
-                          disabled={saving}
+                          disabled={saving || Number(item.quantity) <= 0}
                           onClick={() => beginDecrement(item)}
                           style={{
                             background: "#fee2e2",

@@ -83,11 +83,7 @@ export function useSignesCliniquesLogic(numero, examenId) {
     openFormForCreate(setDetailSigne, resetForm, setShowForm);
 
   const handleEdit = async (s) => {
-    const ok = await confirmAction(
-      "Modifier ce signe clinique ?",
-      `Date : ${formatDateFr(s.date_examen)} - Taille : ${s.taille || 0} cm - Poids : ${s.poids || 0} kg`,
-    );
-    if (!ok) return;
+
 
     setDetailSigne(null);
     setSigneId(s.id);

@@ -142,6 +142,8 @@ export default function TpePrepUI({
                   value={form.tpe_date}
                   onChange={(e) => onChange("tpe_date", e.target.value)}
                   style={inputStyle}
+                    max={new Date().toISOString().split('T')[0]}  // ← Ajouter ceci
+
                 />
               </div>
             </div>
@@ -166,6 +168,8 @@ export default function TpePrepUI({
                   value={form.prep_date}
                   onChange={(e) => onChange("prep_date", e.target.value)}
                   style={inputStyle}
+                    max={new Date().toISOString().split('T')[0]}  // ← Ajouter ceci
+
                 />
               </div>
             </div>

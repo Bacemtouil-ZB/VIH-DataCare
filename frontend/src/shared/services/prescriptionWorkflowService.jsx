@@ -1,6 +1,3 @@
-// =====================================================
-// FRONTEND SERVICE - prescriptionWorkflowService.jsx
-// =====================================================
 
 import API from "../utils/api.js";
 import { getStockItems } from "../../modules/Pharmacist/services/stockService.jsx";
@@ -61,6 +58,12 @@ export const validatePrescriptionAvecModification = async (id, periodeModifiee) 
   return response.data;
 };
 
+// ── POST supprimer prescriptions expirées (> 48h, envoyées) ────────────────
+export const deleteExpiredPrescriptions = async () => {
+  const response = await API.post("/prescription-medicale/supprimer-expirees");
+  return response.data;
+};
+
 // ── GET dernière prescription par patient ─────────────────────
 export const getLastPrescriptionPerPatient = async () => {
   const response = await API.get("/prescription-medicale/last-per-patient");
@@ -74,5 +77,6 @@ export default {
   createPrescription,
   validatePrescription,
   validatePrescriptionAvecModification,
+  deleteExpiredPrescriptions,
   getLastPrescriptionPerPatient,
 };

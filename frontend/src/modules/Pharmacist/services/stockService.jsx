@@ -5,13 +5,23 @@ const normalizeItems = (payload) => {
   if (Array.isArray(payload?.items)) return payload.items;
   return [];
 };
+
+const buildServiceError = (error, fallbackMessage) => {
+  const message =
+    error?.response?.data?.message ||
+    error?.response?.data?.error ||
+    error?.message ||
+    fallbackMessage;
+
+  return new Error(message);
+};
 //getAll
 export const getStockItems = async () => {
   try {
     const response = await API.get("/stock");
     return normalizeItems(response.data);
   } catch (error) {
-    throw error.response?.data || error.message;
+    throw buildServiceError(error, "Erreur lors du chargement du stock.");
   }
 };
 
@@ -20,7 +30,7 @@ export const createStockItem = async (payload) => {
     const response = await API.post("/stock/add", payload);
     return response.data?.item || response.data;
   } catch (error) {
-    throw error.response?.data || error.message;
+    throw buildServiceError(error, "Erreur lors de l'ajout au stock.");
   }
 };
 
@@ -29,7 +39,7 @@ export const updateStockQuantity = async (id, quantite) => {
     const response = await API.patch(`/stock/${id}/quantity`, { quantite });
     return response.data?.item || response.data;
   } catch (error) {
-    throw error.response?.data || error.message;
+    throw buildServiceError(error, "Erreur lors de la mise a jour du stock.");
   }
 };
 
@@ -38,7 +48,7 @@ export const deleteStockItem = async (id) => {
     const response = await API.delete(`/stock/${id}`);
     return response.data?.item || response.data;
   } catch (error) {
-    throw error.response?.data || error.message;
+    throw buildServiceError(error, "Erreur lors de la suppression du stock.");
   }
 };
 
@@ -50,4 +60,3 @@ export default {
   updateStockQuantity,
   deleteStockItem,
 };
-

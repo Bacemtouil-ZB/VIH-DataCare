@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ActionButton, PageTitle, Spinner } from "../../../../../shared/components";
+import InfoBanner from "../../../components/UI/InfoBanner.jsx";
 import { getResultatsByNumeroDossier } from "../../../services/resultatBiologiqueService";
-import { isPdf } from "./resultatsBiologiquesHelpers";
+import { collectGenotypageUrls, isPdf } from "./resultatsBiologiquesHelpers";
 
 export default function GenotypagePage() {
   const { numero } = useParams();
@@ -18,9 +19,9 @@ export default function GenotypagePage() {
 
   // ── Chargement initial ────────────────────────────────────────────────────
   useEffect(() => {
-    const scanFromState = location.state?.scanUrl || "";
-    if (scanFromState) {
-      setExistingFiles(Array.isArray(scanFromState) ? scanFromState : [scanFromState]);
+    const scanFromState = collectGenotypageUrls([], location.state?.scanUrl || []);
+    if (scanFromState.length > 0) {
+      setExistingFiles(scanFromState);
       setLoading(false);
       return;
     }
@@ -31,16 +32,7 @@ export default function GenotypagePage() {
         setError("");
         const response = await getResultatsByNumeroDossier(numero);
         const items = response?.resultats || [];
-        const withScan = items.find((row) => row.genotypage_file_url);
-
-        if (withScan) {
-          try {
-            const parsed = JSON.parse(withScan.genotypage_file_url);
-            setExistingFiles(Array.isArray(parsed) ? parsed : [parsed]);
-          } catch {
-            setExistingFiles(withScan.genotypage_file_url ? [withScan.genotypage_file_url] : []);
-          }
-        }
+        setExistingFiles(collectGenotypageUrls(items));
       } catch (err) {
         setError(err?.message || "Erreur lors du chargement du génotypage");
       } finally {
@@ -70,6 +62,12 @@ export default function GenotypagePage() {
           <i className="bi bi-exclamation-circle me-2" />
           {error}
         </div>
+      )}
+      {!error && existingFiles.length === 0 && (
+        <InfoBanner variant="success">
+          <span className="alert-warning">Information :</span>
+          <span>Aucun fichier de génotypage importé.</span>
+        </InfoBanner>
       )}
 
       {/* ── Aperçu des fichiers enregistrés ──────────────────────────────── */}
@@ -110,11 +108,11 @@ export default function GenotypagePage() {
           label="Retour biologie"
           size="sm"
           onClick={() => {
-            const restoredFiles = location.state?.scanUrl || existingFiles;
+            const restoredFiles = collectGenotypageUrls([], location.state?.draftGenotypage || []);
             navigate(`/medecin/patient/${numero}/workspace/biologie`, {
               state: {
                 scrollToGenotypage: true,
-                restoredGenotypage: Array.isArray(restoredFiles) ? restoredFiles : [restoredFiles],
+                restoredGenotypage: restoredFiles,
               },
               replace: true,
             });

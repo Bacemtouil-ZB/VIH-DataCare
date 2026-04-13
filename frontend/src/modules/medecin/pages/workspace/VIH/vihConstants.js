@@ -49,6 +49,7 @@ export const TYPAGE_HLA_OPTIONS = [
 ];
 
 export const REQUIRED_FIELDS = [
+  { key: "mode_contamination", label: "Le mode de contamination" },
   { key: "type_depistage", label: "Le type de dépistage" },
   { key: "date_vih_positif", label: "La date du test VIH positif" },
 ];

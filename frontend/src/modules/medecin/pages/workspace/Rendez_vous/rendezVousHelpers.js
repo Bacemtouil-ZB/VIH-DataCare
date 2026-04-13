@@ -1,11 +1,13 @@
 import { STATUS_COLORS } from "./rendezVousConstants";
 
+import { parseDateValue } from "../../../../../shared/utils/dateHelpers";
+
 export const getStatusStyle = (status) =>
   STATUS_COLORS[status] || { bg: "#f1f5f9", color: "#334155" };
 
 const toDateOnly = (value) => {
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return null;
+  const date = parseDateValue(value);
+  if (!date) return null;
   date.setHours(0, 0, 0, 0);
   return date;
 };

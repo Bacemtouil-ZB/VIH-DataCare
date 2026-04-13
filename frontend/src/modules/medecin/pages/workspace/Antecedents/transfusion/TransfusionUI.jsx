@@ -113,6 +113,8 @@ export default function TransfusionUI({
                   value={form.date_transfusion}
                   onChange={(e) => onChange("date_transfusion", e.target.value)}
                   style={inputStyle}
+                    max={new Date().toISOString().split('T')[0]}  // ← Ajouter ceci
+
                 />
               </div>
               <div style={{ flex: 1 }}>

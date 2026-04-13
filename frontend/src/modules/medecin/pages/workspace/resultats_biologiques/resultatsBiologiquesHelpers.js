@@ -22,6 +22,29 @@ export const normalizeGenotypageUrls = (value) => {
   return [];
 };
 
+export const deduplicateGenotypageUrls = (urls = []) => {
+  const seen = new Set();
+
+  return normalizeGenotypageUrls(urls).filter((url) => {
+    const normalized = typeof url === "string" ? url.trim() : "";
+
+    if (!normalized || seen.has(normalized)) {
+      return false;
+    }
+
+    seen.add(normalized);
+    return true;
+  });
+};
+
+export const collectGenotypageUrls = (resultats = [], extraUrls = []) => {
+  const resultatsUrls = Array.isArray(resultats)
+    ? resultats.flatMap((item) => normalizeGenotypageUrls(item?.genotypage_file_url))
+    : [];
+
+  return deduplicateGenotypageUrls([...resultatsUrls, ...normalizeGenotypageUrls(extraUrls)]);
+};
+
 export const formatGenotypageValue = (files) => {
   if (!Array.isArray(files) || files.length === 0) return "";
   return files.length === 1 ? files[0] : JSON.stringify(files);

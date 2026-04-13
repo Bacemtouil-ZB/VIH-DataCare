@@ -74,12 +74,6 @@ export function useSignesFonctionnelsLogic(patientNumero, examenId) {
   const openCreate = () => openFormForCreate(setDetailSigne, resetForm, setShowForm);
 
   const handleEdit = async (signeRow) => {
-    const pos = getSignesPositifs(signeRow);
-    const ok = await confirmAction(
-      "Modifier ce signe fonctionnel ?",
-      `Date : ${formatDateFr(signeRow.date_examen)}${pos.length ? " - " + pos.slice(0, 4).join(", ") : ""}`
-    );
-    if (!ok) return;
 
     setDetailSigne(null);
     setSignesId(signeRow.id);

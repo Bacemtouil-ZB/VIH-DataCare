@@ -66,10 +66,6 @@ export function useBilanExamenLogic(numero) {
 
   // ── Ouvrir modification ───────────────────────────────────
   const openEdit = async (item) => {
-    const ok = await confirmAction(
-      "Modifier ce bilan ?",
-      formatBilanSummary(item),
-    );
 
     setDetailItem(null);
     setIsModifying(true);

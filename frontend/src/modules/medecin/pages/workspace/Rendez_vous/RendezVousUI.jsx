@@ -11,6 +11,7 @@ import {
   SearchBar,
   Spinner,
 } from "../../../../../shared/components";
+import InfoBanner from "../../../components/UI/InfoBanner.jsx";
 import { toFrDate, toInputDate } from "../../../../../shared/utils/dateHelpers";
 
 export default function RendezVousUI({
@@ -35,6 +36,7 @@ export default function RendezVousUI({
   handleSubmit,
 }) {
   const today = toInputDate(new Date());
+
   return (
     <>
       <PageTitle title="Gestion des rendez-vous" />
@@ -55,10 +57,10 @@ export default function RendezVousUI({
       </div>
 
       {prochainePriseReference && (
-        <div className="rdv-prochaine-prise-banner">
-          <span className="rdv-prochaine-label">Date prochain rendez-vous estimée:</span>
-          <strong>{toFrDate(prochainePriseReference.date)}</strong>
-        </div>
+        <InfoBanner variant="success">
+          <span className="info-banner__label">Date prochain rendez-vous estimée:</span>
+          <strong className="info-banner__value">{toFrDate(prochainePriseReference.date)}</strong>
+        </InfoBanner>
       )}
 
       {showForm && (
@@ -80,7 +82,7 @@ export default function RendezVousUI({
                 />
               </div>
               <div>
-                <FieldLabel >Heure</FieldLabel>
+                <FieldLabel>Heure</FieldLabel>
                 <Input
                   type="time"
                   className="form-control"
@@ -128,10 +130,10 @@ export default function RendezVousUI({
             <div className="rdv-form-actions">
               <ActionButton
                 action="save"
-                label={isModifying ? "Mettre é jour" : "Enregistrer"}
+                label={isModifying ? "Mettre à jour" : "Enregistrer"}
                 showIcon={false}
                 size="sm"
-                block={true}
+                block
               />
             </div>
           </form>
@@ -153,7 +155,7 @@ export default function RendezVousUI({
             emptyMessage="Aucun rendez-vous enregistré."
             renderRow={(r) => (
               <tr key={r.id}>
-                <td>{new Date(r.date).toLocaleDateString("fr-FR")}</td>
+                <td>{toFrDate(r.date)}</td>
                 <td>{r.heure}</td>
                 <td>{r.type}</td>
                 <td>
@@ -171,7 +173,11 @@ export default function RendezVousUI({
       </HistoriqueAccordeon>
 
       {detailRdv && (
-        <FormulaireWrapper isModifying={false} labelCreate="Détails du rendez-vous" labelModify="Détails du rendez-vous">
+        <FormulaireWrapper
+          isModifying={false}
+          labelCreate="Détails du rendez-vous"
+          labelModify="Détails du rendez-vous"
+        >
           <div className="ec-readonly-block">
             <div className="rdv-detail-grid">
               <div>
@@ -213,5 +219,3 @@ export default function RendezVousUI({
     </>
   );
 }
-
-
