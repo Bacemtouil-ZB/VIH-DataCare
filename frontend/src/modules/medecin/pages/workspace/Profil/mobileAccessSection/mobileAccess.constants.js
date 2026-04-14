@@ -10,15 +10,12 @@ export const MESSAGES = {
   INACTIVE: "Compte mobile désactivé.",
   CREATE_CONFIRM: "Créer un accès mobile pour ce patient ?",
   RESET_CONFIRM: "Réinitialiser le mot de passe mobile de ce patient ?",
-  DEACTIVATE_CONFIRM: "Désactiver l'accès mobile de ce patient ?",
   CREDENTIALS_WARNING: "Notez ces informations. Le mot de passe ne sera plus affiché après fermeture.",
 };
 
 export const LABELS = {
   CREATE: "Créer accès mobile",
   RESET: "Réinitialiser mot de passe",
-  DEACTIVATE: "Désactiver accès",
-  REACTIVATE: "Réactiver accès",
   PRINT: "Imprimer",
   CLOSE: "Fermer",
   SECTION_TITLE: "Accès Application Mobile",

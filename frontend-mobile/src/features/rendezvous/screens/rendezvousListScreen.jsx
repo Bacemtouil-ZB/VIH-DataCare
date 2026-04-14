@@ -10,7 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import useRendezvous from '../hooks/useRendezvous';
-import RendezvousCard from '../components/rendezvousCard';
+import RendezvousCard from '../components/RendezvousCard';
 import styles from '../styles/rendezvous.styles';
 import colors from '../../../constants/colors';
 

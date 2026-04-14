@@ -8,12 +8,12 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import useReminders from '../hooks/useReminders';
-import ReminderCard from '../components/reminderCard';
+import ReminderCard from '../components/ReminderCard';
 import styles from '../styles/reminders.styles';
 import colors from '../../../constants/colors';
 
 const RemindersListScreen = () => {
-  const { reminders, isLoading, handleAdd, handleToggle, handleDelete } = useReminders();
+  const { reminders, handleAdd, handleToggle, handleDelete } = useReminders();
 
   return (
     <SafeAreaView style={styles.container}>

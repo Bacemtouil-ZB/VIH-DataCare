@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useMobileAccess } from "./useMobileAccess.js";
 import CredentialsModal from "./credentialsModal.jsx";
@@ -20,7 +19,6 @@ export default function MobileAccessSection({ numero }) {
     status,
     handleCreate,
     handleReset,
-    handleDeactivate,
     handleCloseModal,
   } = useMobileAccess(numero);
 
@@ -143,17 +141,6 @@ export default function MobileAccessSection({ numero }) {
                 >
                   <i className="bi bi-key"></i>
                   {LABELS.RESET}
-                </button>
-              )}
-
-              {isActive && (
-                <button
-                  className="btn-mobile-deactivate"
-                  onClick={handleDeactivate}
-                  disabled={actionLoading}
-                >
-                  <i className="bi bi-person-dash"></i>
-                  {LABELS.DEACTIVATE}
                 </button>
               )}
             </div>

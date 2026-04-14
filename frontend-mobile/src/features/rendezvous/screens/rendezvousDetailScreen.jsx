@@ -10,7 +10,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import rendezvousApi from '../../../api/rendezvous.api';
-import RendezvousStatusBadge from '../components/rendezvousStatusBadge';
+import RendezvousStatusBadge from '../components/RendezvousStatusBadge';
 import styles from '../styles/rendezvous.styles';
 import colors from '../../../constants/colors';
 
