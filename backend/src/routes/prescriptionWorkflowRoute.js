@@ -1,15 +1,12 @@
-﻿// =====================================================
-// ROUTES - prescriptionWorkflowRoute.js
-// =====================================================
-
+﻿
 import express from "express";
 import {
   getController,
   addController,
   validerController,
   validerAvecModificationController,
-  supprimerExpireesController,
   getLastPerPatientController,
+  deleteExpiredController
 } from "../controllers/prescriptionWorkflowController.js";
 import {
   protect,
@@ -35,6 +32,6 @@ router.patch("/:id/valider-modifiee", protect, authorizePharmacien, validerAvecM
 router.get("/last-per-patient", protect, getLastPerPatientController);
 
 // POST — Supprimer prescriptions expirées (cron ou manuel)
-router.post("/supprimer-expirees", protect, authorizePharmacien, supprimerExpireesController);
+router.post("/supprimer-expirees", protect, authorizePharmacien,deleteExpiredController );
 
 export default router;
