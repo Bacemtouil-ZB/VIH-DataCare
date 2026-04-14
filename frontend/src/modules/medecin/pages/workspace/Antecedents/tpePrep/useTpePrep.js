@@ -5,7 +5,7 @@ import { getTpePrep, createTpePrep, updateTpePrep, deleteTpePrep } from "../../.
 import { formatTpePrepFromApi, formatTpePrepForApi } from "./tpePrepHelpers";
 import { TPE_PREP_INITIAL_STATE } from "./tpePrepConstants";
 import { confirmAction } from "../../../../../../shared/utils/uiAlerts";
-import { clearFieldError } from "../../../../shared/utils/clearFieldError.js";
+import { clearFieldError } from "../../../../../../shared/components/Forms/FieldLabel/clearFieldError";
  
 export default function useTpePrep(numero) {
   const [items, setItems] = useState([]);

@@ -11,7 +11,7 @@ import {
   openFormForCreate,
   showDetailMode,
 } from "../../../../../../shared/utils/logiqueTableHistory";
-import { clearFieldError } from "../../../../shared/utils/clearFieldError";
+import { clearFieldError } from "../../../../../../shared/components/Forms/FieldLabel/clearFieldError";
 
 export function useObservationLogic(patientNumero, examenId) {
   const [loading, setLoading] = useState(true);

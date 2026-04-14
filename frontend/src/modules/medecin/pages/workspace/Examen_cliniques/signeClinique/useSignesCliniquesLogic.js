@@ -18,7 +18,8 @@ import {
   showDetailMode,
 } from "../../../../../../shared/utils/logiqueTableHistory";
 
-import { clearFieldError } from "../../../../shared/utils/clearFieldError";
+import { clearFieldError } from "../../../../../../shared/components/Forms/FieldLabel/clearFieldError";
+
 
 export function useSignesCliniquesLogic(numero, examenId) {
   const [loading, setLoading] = useState(true);
@@ -143,21 +144,18 @@ export function useSignesCliniquesLogic(numero, examenId) {
   // ====== Soumission ======
   const handleSave = async () => {
 
-    // ── Validation frontend ──────────────────────────────────────────────────
-    // Règles miroir du backend — FieldError sous chaque champ, pas de toast
+    // ── Validation frontend (miroir exact du backend) ────────────────────────
     const fieldErrors = {};
 
-    // ❌ CORRIGÉ : vérification complète (valeurs négatives + > max)
-    // Avant : if (taille && +taille > 250) — ne vérifiait pas les valeurs < 1
     if (taille !== "" && taille !== null) {
       const t = +taille;
-      if (isNaN(t) || (t !== 0 && (t < 1 || t > 250))) {
+      if (isNaN(t) || t < 1 || t > 250) {
         fieldErrors.taille = "Taille invalide (1-250 cm)";
       }
     }
     if (poids !== "" && poids !== null) {
       const p = +poids;
-      if (isNaN(p) || (p !== 0 && (p < 1 || p > 300))) {
+      if (isNaN(p) || p < 1 || p > 300) {
         fieldErrors.poids = "Poids invalide (1-300 kg)";
       }
     }
@@ -174,9 +172,9 @@ export function useSignesCliniquesLogic(numero, examenId) {
       const payload = {
         examen_clinique_id: examenId,
 
-
-        taille: taille !== "" && taille !== null ? +taille : null,
-        poids:  poids  !== "" && poids  !== null ? +poids  : null,
+        // ← Omis si vide — évite d'envoyer null qui bypasse le validator backend
+        ...(taille !== "" && taille !== null && { taille: +taille }),
+        ...(poids  !== "" && poids  !== null && { poids:  +poids  }),
 
         autres_signes: autresSignes.map(({ appareil_id, description: d }) => ({
           appareil_id,

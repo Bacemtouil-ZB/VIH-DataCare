@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { getHabitudesVie, createHabitudesVie, updateHabitudesVie } from "../../../../services/antecedentsService.jsx";
 import { formatHabitudesVieFromApi, formatHabitudesVieForApi } from "./habitudesVieHelpers";
 import { HABITUDES_VIE_INITIAL_STATE } from "./habitudesVieConstants";
-import { clearFieldError } from "../../../../shared/utils/clearFieldError.js";
+import { clearFieldError } from "../../../../../../shared/components/Forms/FieldLabel/clearFieldError";
  
 export default function useHabitudesVie(numero) {
   const [form, setForm] = useState(HABITUDES_VIE_INITIAL_STATE);

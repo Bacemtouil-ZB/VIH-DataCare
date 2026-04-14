@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { getFamily, createFamily, updateFamily } from "../../../../services/antecedentsService.jsx";
 import { formatFamilyFromApi, formatFamilyForApi } from "./familyHelpers";
 import { FAMILY_INITIAL_STATE } from "./familyConstants";
-import { clearFieldError } from "../../../../shared/utils/clearFieldError.js";
+import { clearFieldError } from "../../../../../../shared/components/Forms/FieldLabel/clearFieldError";
 
 export default function useFamily(numero) {
   const [form, setForm] = useState(FAMILY_INITIAL_STATE);

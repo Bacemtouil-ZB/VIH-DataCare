@@ -8,7 +8,7 @@ import {
   updateSocial,
 } from "../../../services/socialServices.jsx";
 import { INITIAL_SOCIAL_FORM_DATA } from "./socialForm.constants.js";
-import { clearFieldError } from "../../../shared/utils/clearFieldError.js";
+import { clearFieldError } from "../../../../../shared/components/Forms/FieldLabel/clearFieldError";
 
 export function useSocialLogic() {
   const { numero } = useParams();

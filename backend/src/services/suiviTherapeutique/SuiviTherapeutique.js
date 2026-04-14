@@ -43,9 +43,6 @@ export class SuiviTherapeutique {
    *   periodeJours = periode_modifiee insérée par le pharmacien
    *                  (TOUJOURS prioritaire sur la période du médecin)
    *
-   * @param {Date|string} dateDelivrance  - Date de délivrance (date système au moment de la validation)
-   * @param {number}      periodeJours    - Nombre de jours (période effective retenue)
-   * @returns {Date}
    */
   static calculerDateProchainePrise(dateDelivrance, periodeJours) {
     const base = new Date(dateDelivrance);

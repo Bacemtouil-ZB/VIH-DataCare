@@ -63,29 +63,23 @@ export const validateUpdateObservation = [
 // ─── SIGNES CLINIQUES ─────────────────────────────────────────────────────────
 
 const validateTaille = body("taille")
-  .optional()
+  .optional({ nullable: true })          // ← null ET undefined sautent le validator
   .custom((value) => {
-    if (value === null || value === "" || value === undefined) return true;
+    if (value === "" || value === undefined) return true;
 
     const num = Number(value);
     if (isNaN(num)) throw new Error("La taille doit être un nombre");
-
-    if (num === 0) return true;
-
     if (num < 1 || num > 250) throw new Error("Taille invalide (1-250 cm)");
     return true;
   });
 
 const validatePoids = body("poids")
-  .optional()
+  .optional({ nullable: true })          // ← null ET undefined sautent le validator
   .custom((value) => {
-    if (value === null || value === "" || value === undefined) return true;
+    if (value === "" || value === undefined) return true;
 
     const num = Number(value);
     if (isNaN(num)) throw new Error("Le poids doit être un nombre");
-
-    if (num === 0) return true;
-
     if (num < 1 || num > 300) throw new Error("Poids invalide (1-300 kg)");
     return true;
   });

@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { getGyneco, createGyneco, updateGyneco } from "../../../../services/antecedentsService.jsx";
 import { formatGynecoFromApi, formatGynecoForApi } from "./gynecoHelpers";
 import { GYNECO_INITIAL_STATE } from "./gynecoConstants";
-import { clearFieldError } from "../../../../shared/utils/clearFieldError.js";
+import { clearFieldError } from "../../../../../../shared/components/Forms/FieldLabel/clearFieldError";
 
 export default function useGyneco(numero) {
   const [form, setForm] = useState(GYNECO_INITIAL_STATE);

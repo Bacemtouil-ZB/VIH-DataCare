@@ -5,7 +5,7 @@ import { getTransfusion, createTransfusion, updateTransfusion, deleteTransfusion
 import { formatTransfusionFromApi, formatTransfusionForApi } from "./transfusionHelpers";
 import { TRANSFUSION_INITIAL_STATE } from "./transfusionConstants";
 import { confirmAction } from "../../../../../../shared/utils/uiAlerts";
-import { clearFieldError } from "../../../../shared/utils/clearFieldError.js";
+import { clearFieldError } from "../../../../../../shared/components/Forms/FieldLabel/clearFieldError";
  
 export default function useTransfusion(numero) {
   const [items, setItems] = useState([]);

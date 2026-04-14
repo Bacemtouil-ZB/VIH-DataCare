@@ -5,7 +5,7 @@ import { getSurgical, createSurgical, updateSurgical, deleteSurgical } from "../
 import { formatSurgicalFromApi, formatSurgicalForApi } from "./surgicalHelpers";
 import { SURGICAL_INITIAL_STATE } from "./surgicalConstants";
 import { confirmAction } from "../../../../../../shared/utils/uiAlerts";
-import { clearFieldError } from "../../../../shared/utils/clearFieldError.js";
+import { clearFieldError } from "../../../../../../shared/components/Forms/FieldLabel/clearFieldError";
  
 export default function useSurgical(numero) {
   const [items, setItems] = useState([]);

@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { getMedical, createMedical, updateMedical } from "../../../../services/antecedentsService.jsx";
 import { formatMedicalFromApi, formatMedicalForApi } from "./medicalHelpers";
 import { MEDICAL_INITIAL_STATE } from "./medicalConstants";
-import { clearFieldError } from "../../../../shared/utils/clearFieldError.js";
+import { clearFieldError } from "../../../../../../shared/components/Forms/FieldLabel/clearFieldError";
  
 export default function useMedical(numero) {
   const [form, setForm] = useState(MEDICAL_INITIAL_STATE);

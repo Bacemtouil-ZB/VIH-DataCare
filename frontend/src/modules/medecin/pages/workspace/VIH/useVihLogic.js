@@ -11,9 +11,8 @@ import {
   buildFormFromVihData,
   serializeModesContamination,
 } from "./vihHelpers";
-// ↑ getVihValidationError retiré : on gère la validation en FieldError, pas en toast
 import { FORM_INIT, REQUIRED_FIELDS } from "./vihConstants";
-import { clearFieldError } from "../../../shared/utils/clearFieldError.js";
+import { clearFieldError } from "../../../../../shared/components/Forms/FieldLabel/clearFieldError";
 
 export function useVihLogic(numero) {
   const [patientId, setPatientId] = useState(null);

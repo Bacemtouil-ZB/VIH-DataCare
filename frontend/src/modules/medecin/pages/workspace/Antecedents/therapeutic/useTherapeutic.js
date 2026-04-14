@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { getTherapeutic, createTherapeutic, updateTherapeutic } from "../../../../services/antecedentsService.jsx";
 import { formatTherapeuticFromApi, formatTherapeuticForApi } from "./therapeuticHelpers";
 import { THERAPEUTIC_INITIAL_STATE } from "./therapeuticConstants";
-import { clearFieldError } from "../../../../shared/utils/clearFieldError.js";
+import { clearFieldError } from "../../../../../../shared/components/Forms/FieldLabel/clearFieldError";
  
 export default function useTherapeutic(numero) {
   const [form, setForm] = useState(THERAPEUTIC_INITIAL_STATE);

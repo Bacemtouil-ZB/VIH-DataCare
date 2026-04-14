@@ -6,11 +6,11 @@ import {
 } from "../../controllers/examenClinique/observationController.js";
 import { protect, authorizeMedecin } from "../../middlewares/authMiddleware.js";
 //link validators for observation not yet implemented
-// import { validateObservation } from "../../middlewares/validators/examenCliniqueValidator.js";
+import { validateUpdateObservation,validateCreateObservation} from "../../middlewares/validators/examenValidator.js";
 
 const router = express.Router();
 
-router.post("/add", protect, authorizeMedecin, createObservationController);
+router.post("/add", protect, authorizeMedecin,validateCreateObservation ,createObservationController);
 router.get(
   "/patient/:numeroDossier",
   protect,
@@ -20,7 +20,7 @@ router.get(
 router.put(
   "/update/:id",
   protect,
-  authorizeMedecin,
+  authorizeMedecin,validateUpdateObservation,
   updateObservationController,
 );
 

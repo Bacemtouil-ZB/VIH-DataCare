@@ -17,7 +17,7 @@ import {
   filterPostalCodesByGovernorate,
 } from "./profileHelpers.js";
 // Utilitaire pour effacer l'erreur d'un champ spécifique
-import { clearFieldError } from "../../../shared/utils/clearFieldError.js";
+import { clearFieldError } from "../../../../../shared/components/Forms/FieldLabel/clearFieldError";
 
 export function useProfileLogic() {
   const { numero } = useParams();

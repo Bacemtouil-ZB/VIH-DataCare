@@ -11,7 +11,7 @@ import {
   confirmAction,
   alertError,
 } from "../../../../../shared/utils/uiAlerts";
-import { clearFieldError } from "../../../shared/utils/clearFieldError.js";
+import { clearFieldError } from "../../../../../shared/components/Forms/FieldLabel/clearFieldError";
 
 export function useConclusionLogic(numero) {
   const { user } = useAuth();

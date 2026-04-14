@@ -2,21 +2,28 @@ import { useState } from "react";
 import { ActionButton }    from "../../../../shared/components/UI/Button/ActionButton";
 import HistoriqueTable     from "../../../../shared/components/UI/Table/HistoriqueTable";
 import HistoriqueActions   from "../../../../shared/components/UI/Button/HistoriqueActions";
+import { FieldError }      from "../../../../shared/components";           // ← import FieldError
 import { TABLE_HEADERS, FORM_VIDE } from "./constants";
-import { validerForm }     from "./helpers";
 
 // ── Modal Formulaire ─────────────────────────────────────────
-export const ModalForm = ({ mode, initial, onSave, onClose, saving }) => {
-  const [form,   setForm]   = useState(initial ?? FORM_VIDE);
-  const [erreur, setErreur] = useState(null);
+export const ModalForm = ({
+  mode,
+  initial,
+  onSave,
+  onClose,
+  saving,
+  errors = {},         // ← valeur par défaut : évite le crash si undefined
+  makeFieldHandler,
+}) => {
+  const [form, setForm] = useState(initial ?? FORM_VIDE);
 
-  const set = (k, v) => setForm((f) => ({ ...f, [k]: v }));
+  // Génère un onChange qui met à jour le form ET efface l'erreur du champ
+  const handle = (fieldName) => makeFieldHandler(fieldName, setForm);
 
   const handleSave = async () => {
-    const err = validerForm(form);
-    if (err) { setErreur(err); return; }
-    setErreur(null);
     await onSave(form);
+    // La validation (frontend + backend) est gérée dans useContacts
+    // → si errors non vides, le modal reste ouvert avec les FieldError affichés
   };
 
   return (
@@ -32,51 +39,92 @@ export const ModalForm = ({ mode, initial, onSave, onClose, saving }) => {
         </div>
 
         <div className="urg-modal-body">
-          {erreur && (
+
+          {/* Erreur générale backend (sans champ précis) */}
+          {errors._form && (
             <div className="urg-alert urg-alert-error mb-3">
-              <i className="bi bi-exclamation-circle me-2"></i>{erreur}
+              <i className="bi bi-exclamation-circle me-2"></i>
+              {errors._form}
             </div>
           )}
 
+          {/* Nom */}
           <div className="mb-3">
-            <label className="urg-form-label">Nom / Organisation <span style={{color:"#ef4444"}}>*</span></label>
+            <label className="urg-form-label">
+              Nom / Organisation <span style={{ color: "#ef4444" }}>*</span>
+            </label>
             <div className="urg-input-icon">
               <i className="bi bi-building"></i>
-              <input className="urg-form-control" placeholder="Ex: Service des urgences" value={form.nom} onChange={(e) => set("nom", e.target.value)} />
+              <input
+                className={`urg-form-control ${errors.nom ? "is-invalid" : ""}`}
+                placeholder="Ex: Service des urgences"
+                value={form.nom}
+                onChange={handle("nom")}          // ← clearFieldError automatique
+              />
             </div>
+            <FieldError error={errors.nom} />     {/* ← affiché sous le champ */}
           </div>
 
+          {/* Téléphone + WhatsApp */}
           <div className="row g-3 mb-3">
             <div className="col-6">
               <label className="urg-form-label">Téléphone</label>
               <div className="urg-input-icon">
                 <i className="bi bi-telephone"></i>
-                <input className="urg-form-control" placeholder="+216 XX XXX XXX" value={form.telephone} onChange={(e) => set("telephone", e.target.value)} />
+                <input
+                  className={`urg-form-control ${errors.telephone ? "is-invalid" : ""}`}
+                  placeholder="+216 XX XXX XXX"
+                  value={form.telephone}
+                  onChange={handle("telephone")}
+                />
               </div>
+              <FieldError error={errors.telephone} />
             </div>
             <div className="col-6">
               <label className="urg-form-label">WhatsApp</label>
               <div className="urg-input-icon">
                 <i className="bi bi-whatsapp"></i>
-                <input className="urg-form-control" placeholder="+216 XX XXX XXX" value={form.whatsapp} onChange={(e) => set("whatsapp", e.target.value)} />
+                <input
+                  className={`urg-form-control ${errors.whatsapp ? "is-invalid" : ""}`}
+                  placeholder="+216 XX XXX XXX"
+                  value={form.whatsapp}
+                  onChange={handle("whatsapp")}
+                />
               </div>
+              <FieldError error={errors.whatsapp} />
             </div>
           </div>
 
+          {/* Email */}
           <div className="mb-3">
             <label className="urg-form-label">Email</label>
             <div className="urg-input-icon">
               <i className="bi bi-envelope"></i>
-              <input className="urg-form-control" type="email" placeholder="contact@hopital.tn" value={form.email} onChange={(e) => set("email", e.target.value)} />
+              <input
+                className={`urg-form-control ${errors.email ? "is-invalid" : ""}`}
+                type="email"
+                placeholder="contact@hopital.tn"
+                value={form.email}
+                onChange={handle("email")}
+              />
             </div>
+            <FieldError error={errors.email} />
           </div>
 
+          {/* Description */}
           <div className="mb-4">
             <label className="urg-form-label">Description / Notes</label>
             <div className="urg-input-icon">
-              <i className="bi bi-chat-left-text" style={{top:"18px"}}></i>
-              <textarea className="urg-form-control" rows={3} placeholder="Ex: Disponible 24h/24 pour les urgences VIH" value={form.description} onChange={(e) => set("description", e.target.value)} />
+              <i className="bi bi-chat-left-text" style={{ top: "18px" }}></i>
+              <textarea
+                className={`urg-form-control ${errors.description ? "is-invalid" : ""}`}
+                rows={3}
+                placeholder="Ex: Disponible 24h/24 pour les urgences VIH"
+                value={form.description}
+                onChange={handle("description")}
+              />
             </div>
+            <FieldError error={errors.description} />
           </div>
 
           <div className="d-flex gap-2 justify-content-end">
@@ -115,8 +163,8 @@ export const LigneContact = ({ contact, index, onEdit, onDelete }) => (
         ? <span className="urg-badge-email"><i className="bi bi-envelope-fill"></i>{contact.email}</span>
         : <span className="text-muted">—</span>}
     </td>
-    <td style={{maxWidth: 200}}>
-      <span className="text-muted" style={{fontSize:"0.82rem"}}>{contact.description || "—"}</span>
+    <td style={{ maxWidth: 200 }}>
+      <span className="text-muted" style={{ fontSize: "0.82rem" }}>{contact.description || "—"}</span>
     </td>
     <td>
       <HistoriqueActions onEdit={onEdit} onDelete={onDelete} />

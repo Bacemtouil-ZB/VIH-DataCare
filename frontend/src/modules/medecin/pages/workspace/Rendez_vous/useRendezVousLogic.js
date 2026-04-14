@@ -20,7 +20,7 @@ import {
 } from "../../../../../shared/utils/dateHelpers";
 import { INITIAL_FORM }    from "./rendezVousConstants";
 import { getStatusStyle }  from "./rendezVousHelpers";  // ← pickProchainePriseReference supprimé
-import { clearFieldError } from "../../../shared/utils/clearFieldError.js";
+import { clearFieldError } from "../../../../../shared/components/Forms/FieldLabel/clearFieldError";
 
 export function useRendezVousLogic(numero) {
   const [searchDate,  setSearchDate]  = useState("");
