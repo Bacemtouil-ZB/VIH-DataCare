@@ -3,7 +3,7 @@
 export const NOTIF_STORAGE_KEY = "notif_read_ids";
 export const NOTIF_NEW_KEY     = "notif_seen_ids";   // pour le point rouge
 export const NOTIF_REFRESH_MS  = 5 * 60 * 1000;      // refresh 5min
-export const NOTIF_EXPIRY_DAYS = 7;                   // suppression auto 7j
+export const NOTIF_EXPIRY_DAYS = 21;                   // suppression auto 21j
 
 export const NOTIF_TYPES = {
   MISSED:    "missed",

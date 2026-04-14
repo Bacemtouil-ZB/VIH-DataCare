@@ -33,6 +33,7 @@ import suiviBiologiqueRoute from "./src/routes/Suivibiologiqueroute.js";
 import suiviNotificationRoute from "./src/routes/suiviNotificationRoute.js";
 import permissionRoutes from "./src/routes/permissionRoutes.js";
 import emergencyContactRoutes from "./src/routes/emergencyContactRoutes.js";
+import biRoutes from "./src/routes/biRoutes.js";
 // Scheduler
 import { startScheduler } from './src/services/mobile/mobileScheduler.js';
 
@@ -84,6 +85,9 @@ app.use("/api/suivi-biologique", suiviBiologiqueRoute);
 app.use("/api/suivi-notifications", suiviNotificationRoute);
 app.use("/api/permissions", permissionRoutes);
 app.use("/api/emergency-contacts", emergencyContactRoutes);
+app.use("/api/bi", biRoutes);
+import { startBiRefreshJob } from "./src/utils/biRefreshJob.js";
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({ message: "Route not found" });
@@ -110,6 +114,9 @@ const startServer = async () => {
     process.exit(1);
   }
 };
+
+// Démarrer le job de refresh BI
+startBiRefreshJob();
 
 startServer();
 

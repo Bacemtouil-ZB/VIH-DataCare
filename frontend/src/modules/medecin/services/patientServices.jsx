@@ -103,14 +103,6 @@ export const resetMobilePassword = async (numero) => {
   }
 };
 
-export const deactivateMobileAccount = async (numero) => {
-  try {
-    const response = await API.put(`/mobile/patient/deactivate/${numero}`);
-    return response.data;
-  } catch (error) {
-    throw error.response?.data || error.message;
-  }
-};
 
 // Export par défaut
 export default {
@@ -124,5 +116,4 @@ export default {
   getMobileAccountStatus,
   createMobileAccount,
   resetMobilePassword,
-  deactivateMobileAccount
 };

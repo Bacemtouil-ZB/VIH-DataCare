@@ -1,10 +1,3 @@
-// ============================================================
-//  GraphiqueCV.jsx
-//  - Courbe multicolore : vert < 50, ambre 50–1000, rouge ≥ 1000
-//  - Tooltip : toujours afficher le chiffre réel (+ mention indétectable)
-//  - Composants partagés depuis GraphiqueShared
-//  - Couleurs et seuils depuis suiviConstants
-// ============================================================
 
 import { Card, Spin, Empty } from "antd";
 import { useMemo } from "react";

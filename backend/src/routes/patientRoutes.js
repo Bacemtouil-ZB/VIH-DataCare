@@ -10,7 +10,6 @@ import {
 import {
   protect,
   authorizeMedecin,
-  authorizePharmacien,
 } from "../middlewares/authMiddleware.js";
 
 import {

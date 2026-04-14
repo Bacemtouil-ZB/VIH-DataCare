@@ -85,15 +85,15 @@ const Sidebar = () => {
       end : true,
     },
     {
+      to: "nouveaux-malades",
+      icon: "bi-speedometer2",
+      label: "nouveaux-malades",
+      end : true,
+    },
+     {
       to: "rapports",
       icon: "bi-file-earmark-text",
       label: "Rapports",
-      end : true,
-    },
-    {
-      to: "dashboard",
-      icon: "bi-speedometer2",
-      label: "Dashboard",
       end : true,
     },
     {

@@ -3,7 +3,6 @@ import {
   getMobileAccountStatus,
   createMobileAccount,
   resetMobilePassword,
-  deactivateMobileAccount,
 } from "../../../../services/patientServices.jsx";
 import { getAccountStatus } from "./mobileAccess.helpers.js";
 import { MOBILE_ACCESS_STATUS, MESSAGES } from "./mobileAccess.constants.js";
@@ -17,7 +16,6 @@ export const useMobileAccess = (numero) => {
   const [credentials, setCredentials] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
-  // Load account status on mount
   const fetchStatus = useCallback(async () => {
     if (!numero) return;
     try {
@@ -36,14 +34,12 @@ export const useMobileAccess = (numero) => {
     fetchStatus();
   }, [fetchStatus]);
 
-  // Create account
   const handleCreate = async () => {
     const confirmed = await confirmAction(
       MESSAGES.CREATE_CONFIRM,
       "Un identifiant et un mot de passe temporaire seront générés."
     );
     if (!confirmed) return;
-
     try {
       setActionLoading(true);
       setError(null);
@@ -58,14 +54,12 @@ export const useMobileAccess = (numero) => {
     }
   };
 
-  // Reset password
   const handleReset = async () => {
     const confirmed = await confirmAction(
       MESSAGES.RESET_CONFIRM,
       "Un nouveau mot de passe temporaire sera généré."
     );
     if (!confirmed) return;
-
     try {
       setActionLoading(true);
       setError(null);
@@ -74,26 +68,6 @@ export const useMobileAccess = (numero) => {
       setShowModal(true);
     } catch (err) {
       setError(err.message || "Erreur lors de la réinitialisation");
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
-  // Deactivate account
-  const handleDeactivate = async () => {
-    const confirmed = await confirmAction(
-      MESSAGES.DEACTIVATE_CONFIRM,
-      "Le patient ne pourra plus se connecter à l'application mobile."
-    );
-    if (!confirmed) return;
-
-    try {
-      setActionLoading(true);
-      setError(null);
-      await deactivateMobileAccount(numero);
-      await fetchStatus();
-    } catch (err) {
-      setError(err.message || "Erreur lors de la désactivation");
     } finally {
       setActionLoading(false);
     }
@@ -119,7 +93,6 @@ export const useMobileAccess = (numero) => {
     isInactive: accountStatus === MOBILE_ACCESS_STATUS.INACTIVE,
     handleCreate,
     handleReset,
-    handleDeactivate,
     handleCloseModal,
   };
 };
