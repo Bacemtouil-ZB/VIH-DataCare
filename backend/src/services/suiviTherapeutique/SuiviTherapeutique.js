@@ -33,20 +33,6 @@ export class SuiviTherapeutique {
     };
   }
 
-  /**
-   * Calcule la date de prochaine prise.
-   *
-   * Scénario 1 (validation sans modification) :
-   *   periodeJours = periode prescrite par le médecin
-   *
-   * Scénario 2 (validation avec modification) :
-   *   periodeJours = periode_modifiee insérée par le pharmacien
-   *                  (TOUJOURS prioritaire sur la période du médecin)
-   *
-   * @param {Date|string} dateDelivrance  - Date de délivrance (date système au moment de la validation)
-   * @param {number}      periodeJours    - Nombre de jours (période effective retenue)
-   * @returns {Date}
-   */
   static calculerDateProchainePrise(dateDelivrance, periodeJours) {
     const base = new Date(dateDelivrance);
     base.setHours(0, 0, 0, 0);

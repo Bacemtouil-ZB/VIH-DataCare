@@ -1,5 +1,5 @@
 import pool from "../config/db.js";
-
+//----------- get données de suivi thérapeutique------------------
 // ── GET suivi par patient_id ──────────────────────────────────
 export const getSuiviByPatientId = async (patientId) => {
   const query = `
