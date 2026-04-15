@@ -18,8 +18,18 @@ export const getSuiviByNumeroDossier = async (numeroDossier) => {
   }
 };
 
+// Déclenche la synchronisation manuelle des statuts en base
+export const syncSuiviStatuts = async () => {
+  try {
+    const response = await API.post("/suivi-therapeutique/sync");
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
 export default {
   getSuiviByPatientId,
   getSuiviByNumeroDossier,
-
+  syncSuiviStatuts,
 };

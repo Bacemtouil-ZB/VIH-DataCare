@@ -119,15 +119,15 @@ export const getLastPerPatientController = async (req, res) => {
   }
 };
 
-export const supprimerExpireesController = async (req, res) => {
+export const deleteExpiredController = async (req, res) => {
   try {
-    const deleted = await supprimerPrescriptionsExpirees();
+    const supprimees = await supprimerPrescriptionsExpirees();
     res.status(200).json({
       success: true,
-      message: `${deleted.length} prescription(s) expiree(s) supprimee(s)`,
-      deleted,
+      message: `${supprimees.length} prescription(s) expirée(s) supprimée(s)`,
+      supprimees,
     });
   } catch (error) {
-    res.status(400).json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: error.message });
   }
 };

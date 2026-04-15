@@ -9,6 +9,7 @@ import {
   validatePrescription,
 } from "../../../../../shared/services/prescriptionWorkflowService.jsx";
 import { INITIAL_FORM } from "./prescreptionMedicalConstants";
+import { clearFieldError } from "../../../../../shared/components/Forms/FieldLabel/clearFieldError";
 
 export function usePrescreptionMedicalLogic(numero, currentUser) {
   const [prescriptions,     setPrescriptions]    = useState([]);

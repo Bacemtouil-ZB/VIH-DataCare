@@ -1,10 +1,11 @@
-import { FormulaireWrapper, FieldLabel, ActionButton } from "../../../../../../shared/components/index.js";
+import { FormulaireWrapper, FieldLabel, FieldError, ActionButton } from "../../../../../../shared/components/index.js";
 import Textarea from "../../../../components/UI/Textarea.jsx";
 
 const lockedFieldStyle = { cursor: "not-allowed", opacity: 0.75 };
 
 export default function TherapeuticUI({
   form,
+  errors = {},
   isExisting,
   isEditing,
   saving,
@@ -46,6 +47,7 @@ export default function TherapeuticUI({
           placeholder="Liste des médicaments pris de façon chronique..."
           disabled={readOnly}
         />
+        <FieldError error={errors.medicaments_chroniques} />
       </div>
 
       <div
@@ -60,6 +62,7 @@ export default function TherapeuticUI({
           placeholder="Médicaments causant des allergies..."
           disabled={readOnly}
         />
+        <FieldError error={errors.allergies_medicaments} />
       </div>
 
       <div
@@ -74,6 +77,7 @@ export default function TherapeuticUI({
           placeholder="Remarque générale..."
           disabled={readOnly}
         />
+        <FieldError error={errors.remarque} />
       </div>
 
       <div className="d-flex justify-content-end gap-2">

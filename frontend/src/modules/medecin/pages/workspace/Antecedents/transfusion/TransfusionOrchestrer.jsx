@@ -4,58 +4,34 @@ import { confirmAction, alertError } from "../../../../../../shared/utils/uiAler
 import { Spinner } from "../../../../../../shared/components/UI/Loading/Spinner.jsx";
 import useTransfusion from "./useTransfusion";
 import TransfusionUI from "./TransfusionUI";
-
-export default function TransfusionOrchestreur() {
+ 
+export default function TransfusionOrchestrer() {
   const { numero } = useParams();
-
+ 
   const {
-    items,
-    form,
-    editingItem,
-    showForm,
-    loading,
-    saving,
-    deleting,
-    error,
-    accordeonOpen,
-    setAccordeonOpen,
-    handleChange,
-    openAddForm,
-    openEdit,
-    cancelForm,
-    save,
-    update,
-    remove,
+    items, form, errors, editingItem, showForm, loading, saving, deleting, error,
+    accordeonOpen, setAccordeonOpen,
+    handleChange, openAddForm, openEdit, cancelForm, save, update, remove,
   } = useTransfusion(numero);
-
+ 
   if (loading) return <Spinner />;
   if (error) {
     alertError("Erreur lors du chargement des antécédents de transfusion.");
     return null;
   }
-
+ 
   const handleSave = async () => {
     const confirmed = await confirmAction("Confirmer l'ajout de cet antécédent de transfusion ?");
     if (!confirmed) return;
-    try {
-      await save();
-      toast.success("Antécédent de transfusion ajouté avec succès.");
-    } catch (err) {
-      toast.error(err || "Erreur lors de l'enregistrement.");
-    }
+    await save();
   };
-
+ 
   const handleUpdate = async () => {
     const confirmed = await confirmAction("Confirmer la mise à jour de cet antécédent de transfusion ?");
     if (!confirmed) return;
-    try {
-      await update();
-      toast.success("Antécédent de transfusion mis à jour avec succès.");
-    } catch (err) {
-      toast.error(err || "Erreur lors de la mise à jour.");
-    }
+    await update();
   };
-
+ 
   const handleDelete = async (id) => {
     const confirmed = await confirmAction(
       "Supprimer cet antécédent de transfusion ? Cette action est irréversible."
@@ -64,15 +40,16 @@ export default function TransfusionOrchestreur() {
     try {
       await remove(id);
       toast.success("Antécédent de transfusion supprimé.");
-    } catch (err) {
-      toast.error(err || "Erreur lors de la suppression.");
+    } catch {
+      toast.error("Erreur lors de la suppression.");
     }
   };
-
+ 
   return (
     <TransfusionUI
       items={items}
       form={form}
+      errors={errors}          // ← transmission des erreurs au composant UI
       editingItem={editingItem}
       showForm={showForm}
       saving={saving}
@@ -89,3 +66,4 @@ export default function TransfusionOrchestreur() {
     />
   );
 }
+ 

@@ -31,6 +31,8 @@ export default function RendezVous() {
         setFormData={logic.setFormData}
         isModifying={logic.isModifying}
         handleSubmit={logic.handleSubmit}
+          errors={logic.errors}               
+      setErrors={logic.setErrors}   
       />
     </div>
   );

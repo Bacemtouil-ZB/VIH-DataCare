@@ -73,8 +73,8 @@ const validateStatut = body("statut")
 const validateCommentaire = body("commentaire")
   .optional({ nullable: true, checkFalsy: true })
   .trim()
-  .isLength({ max: 1000 })
-  .withMessage("Le commentaire ne peut pas dépasser 1000 caractères")
+  .isLength({ min: 1, })
+  .withMessage("Le commentaire ne peut pas être vide s'il est fourni")
   .custom((value) => {
     if (!value) return true;
     if (/\u0000|%00/.test(value)) throw new Error("Caractère interdit détecté");
@@ -88,7 +88,7 @@ const validateCommentaire = body("commentaire")
 
 export const validateCreateRendezVous = [
   validateDate,
-  validateHeure,
+  
   validateType,
   validateStatut,
   validateCommentaire,
@@ -97,7 +97,6 @@ export const validateCreateRendezVous = [
 
 export const validateUpdateRendezVous = [
   validateDate,
-  validateHeure,
   validateType,
   validateStatut,
   validateCommentaire,

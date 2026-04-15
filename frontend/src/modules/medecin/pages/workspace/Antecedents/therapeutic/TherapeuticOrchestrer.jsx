@@ -4,26 +4,26 @@ import { confirmAction, alertError } from "../../../../../../shared/utils/uiAler
 import { Spinner } from "../../../../../../shared/components/UI/Loading/Spinner.jsx";
 import useTherapeutic from "./useTherapeutic";
 import TherapeuticUI from "./TherapeuticUI";
-
+ 
 export default function TherapeuticOrchestrer() {
   const { numero } = useParams();
-
+ 
   const {
-    form, isExisting, isEditing, loading, saving, error,
+    form, errors, isExisting, isEditing, loading, saving, error,
     handleChange, startEditing, cancelEditing, save,
   } = useTherapeutic(numero);
-
+ 
   if (loading) return <Spinner />;
   if (error) {
     alertError("Erreur lors du chargement des données thérapeutiques.");
     return null;
   }
-
+ 
   const handleEdit = async () => {
     const confirmed = await confirmAction("Voulez-vous modifier l'antécédent thérapeutique ?");
     if (confirmed) startEditing();
   };
-
+ 
   const handleSave = async () => {
     const confirmed = await confirmAction(
       isExisting
@@ -31,21 +31,13 @@ export default function TherapeuticOrchestrer() {
         : "Confirmer l'enregistrement de l'antécédent thérapeutique ?"
     );
     if (!confirmed) return;
-    try {
-      await save();
-      toast.success(
-        isExisting
-          ? "Antécédent thérapeutique mis à jour avec succès."
-          : "Antécédent thérapeutique créé avec succès."
-      );
-    } catch (err) {
-      toast.error(err || "Erreur lors de l'enregistrement.");
-    }
+    await save();
   };
-
+ 
   return (
     <TherapeuticUI
       form={form}
+      errors={errors}          // ← transmission des erreurs au composant UI
       isExisting={isExisting}
       isEditing={isEditing}
       saving={saving}

@@ -1,9 +1,13 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// useGyneco.js
+// ─────────────────────────────────────────────────────────────────────────────
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useBlocker } from "react-router-dom";
 import { toast } from "react-toastify";
 import { getGyneco, createGyneco, updateGyneco } from "../../../../services/antecedentsService.jsx";
 import { formatGynecoFromApi, formatGynecoForApi } from "./gynecoHelpers";
 import { GYNECO_INITIAL_STATE } from "./gynecoConstants";
+import { clearFieldError } from "../../../../../../shared/components/Forms/FieldLabel/clearFieldError";
 
 export default function useGyneco(numero) {
   const [form, setForm] = useState(GYNECO_INITIAL_STATE);
@@ -13,6 +17,7 @@ export default function useGyneco(numero) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
+  const [errors, setErrors] = useState({});
 
   const isHandlingBlock = useRef(false);
 
@@ -42,9 +47,7 @@ export default function useGyneco(numero) {
     fetchData();
   }, [numero]);
 
-  const isDirty =
-    isEditing &&
-    JSON.stringify(form) !== JSON.stringify(savedForm);
+  const isDirty = isEditing && JSON.stringify(form) !== JSON.stringify(savedForm);
 
   const saveQuiet = useCallback(async () => {
     try {
@@ -110,16 +113,30 @@ export default function useGyneco(numero) {
 
   const handleChange = (key, value) => {
     setForm((prev) => ({ ...prev, [key]: value }));
+    clearFieldError(key, setErrors); // ← remplace setErrors((prev) => ({ ...prev, [key]: undefined }))
+
+    // Cas spécial gestité/parité/avortement :
+    // quand l'utilisateur corrige gestite, on efface aussi les erreurs croisées
+    // sur parite et avortement qui pourraient être devenues obsolètes
+    if (key === "gestite") {
+      clearFieldError("parite", setErrors);
+      clearFieldError("avortement", setErrors);
+    }
+    if (key === "parite") {
+      clearFieldError("avortement", setErrors);
+    }
   };
 
   const startEditing = () => setIsEditing(true);
 
   const cancelEditing = () => {
     setForm(savedForm);
+    setErrors({});
     setIsEditing(false);
   };
 
   const save = async () => {
+    setErrors({});
     try {
       setSaving(true);
       const payload = formatGynecoForApi(form);
@@ -131,6 +148,18 @@ export default function useGyneco(numero) {
       }
       setSavedForm(form);
       setIsEditing(false);
+    } catch (err) {
+      // Erreurs de validation champ-par-champ → FieldError (pas de toast)
+      // Les erreurs croisées gestite/parite/avortement remontent sur leur champ respectif
+      if (err?.errors && Array.isArray(err.errors)) {
+        const formattedErrors = {};
+        err.errors.forEach((e) => {
+          formattedErrors[e.field] = e.message;
+        });
+        setErrors(formattedErrors);
+      } else {
+        toast.error("Une erreur est survenue. Veuillez réessayer.");
+      }
     } finally {
       setSaving(false);
     }
@@ -143,6 +172,8 @@ export default function useGyneco(numero) {
     loading,
     saving,
     error,
+    errors,
+    setErrors,
     handleChange,
     startEditing,
     cancelEditing,

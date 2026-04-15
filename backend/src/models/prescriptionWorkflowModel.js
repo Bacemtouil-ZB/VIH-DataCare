@@ -236,18 +236,47 @@ export const validerAvecModification = async (id, periodeModifiee) => {
 
 // ── SUPPRIMER PRESCRIPTIONS EXPIRÉES > 48H ───────────────────
 export const supprimerPrescriptionsExpirees = async () => {
-  const query = `
-    UPDATE prescription_medicale
-    SET
-      statut     = 'non_validee',
-      updated_at = NOW()
-    WHERE
-      statut     = 'envoyee'
-      AND created_at < NOW() - INTERVAL '48 hours'
-    RETURNING id;
-  `;
-  const result = await pool.query(query);
-  return result.rows;
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+ 
+    // 1. Identifier les IDs à supprimer
+    const { rows: cibles } = await client.query(`
+      SELECT id
+      FROM prescription_medicale
+      WHERE statut = 'non_validee'
+        AND created_at < NOW() - INTERVAL '48 hours';
+    `);
+ 
+    if (cibles.length === 0) {
+      await client.query("COMMIT");
+      return [];
+    }
+ 
+    const ids = cibles.map((r) => r.id);
+ 
+    // 2. Supprimer les lignes liées (contrainte FK)
+    await client.query(
+      `DELETE FROM prescription_lignes WHERE prescription_id = ANY($1::int[]);`,
+      [ids]
+    );
+ 
+    // 3. Supprimer les prescriptions elles-mêmes
+    const { rows: supprimees } = await client.query(
+      `DELETE FROM prescription_medicale
+       WHERE id = ANY($1::int[])
+       RETURNING id, patient_id, created_at;`,
+      [ids]
+    );
+ 
+    await client.query("COMMIT");
+    return supprimees; // [{ id, patient_id, created_at }, ...]
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
 };
 
 // ── GET dernière prescription par patient ─────────────────────

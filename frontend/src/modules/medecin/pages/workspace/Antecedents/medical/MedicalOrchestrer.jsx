@@ -4,37 +4,26 @@ import { confirmAction, alertError } from "../../../../../../shared/utils/uiAler
 import { Spinner } from "../../../../../../shared/components/UI/Loading/Spinner.jsx";
 import useMedical from "./useMedical";
 import MedicalUI from "./MedicalUI";
-
+ 
 export default function MedicalOrchestrer() {
   const { numero } = useParams();
-
+ 
   const {
-    form,
-    isExisting,
-    isEditing,
-    loading,
-    saving,
-    error,
-    handleToggle,
-    handleChange,
-    startEditing,
-    cancelEditing,
-    save,
+    form, errors, isExisting, isEditing, loading, saving, error,
+    handleToggle, handleChange, startEditing, cancelEditing, save,
   } = useMedical(numero);
-
+ 
   if (loading) return <Spinner />;
   if (error) {
     alertError("Erreur lors du chargement des données médicales.");
     return null;
   }
-
+ 
   const handleEdit = async () => {
-    const confirmed = await confirmAction(
-      "Voulez-vous modifier l'antécédent médical ?"
-    );
+    const confirmed = await confirmAction("Voulez-vous modifier l'antécédent médical ?");
     if (confirmed) startEditing();
   };
-
+ 
   const handleSave = async () => {
     const confirmed = await confirmAction(
       isExisting
@@ -42,22 +31,13 @@ export default function MedicalOrchestrer() {
         : "Confirmer l'enregistrement de l'antécédent médical ?"
     );
     if (!confirmed) return;
-
-    try {
-      await save();
-      toast.success(
-        isExisting
-          ? "Antécédent médical mis à jour avec succès."
-          : "Antécédent médical créé avec succès."
-      );
-    } catch (err) {
-      toast.error(err || "Erreur lors de l'enregistrement.");
-    }
+    await save();
   };
-
+ 
   return (
     <MedicalUI
       form={form}
+      errors={errors}          // ← transmission des erreurs au composant UI
       isExisting={isExisting}
       isEditing={isEditing}
       saving={saving}

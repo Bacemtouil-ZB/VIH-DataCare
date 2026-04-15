@@ -39,7 +39,8 @@ export default function ObservationPage() {
         setDetailObservation={logic.setDetailObservation}
         showForm={logic.showForm}
         remarque={logic.remarque}
-        setRemarque={logic.setRemarque}
+        handleRemarqueChange={logic.handleRemarqueChange}  // ← wrapper clearFieldError
+        errors={logic.errors}                              // ← erreurs pour <FieldError />
         isModifying={logic.isModifying}
         saving={logic.saving}
         handleSave={logic.handleSave}

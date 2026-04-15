@@ -30,10 +30,14 @@ export const toUiPrescriptionItem = (row) => ({
 });
 
 // ── Badges suivi thérapeutique ────────────────────────────────
+// Couvre tous les statuts calculés par le SQL :
+//   "en attente" | "actif" | "en retard" | "perdue de vue" | "récupéré perdue de vue"
 export const SUIVI_BADGE_MAP = {
-  perdu:   { badgeClass: "statut-perdu",  badgeText: "Perdue de vue" },
-  attente: { badgeClass: "statut-leger",  badgeText: "En attente"    },
-  actif:   { badgeClass: "statut-actif",  badgeText: "Actif"         },
+  attente:   { badgeClass: "statut-leger",    badgeText: "En attente"              },
+  actif:     { badgeClass: "statut-actif",    badgeText: "Actif"                   },
+  retard:    { badgeClass: "statut-retard",   badgeText: "En retard"               },
+  perdu:     { badgeClass: "statut-perdu",    badgeText: "Perdue de vue"           },
+  recupere:  { badgeClass: "statut-recupere", badgeText: "Récupéré perdue de vue"  },
 };
 
 // ── Badges statut prescription ────────────────────────────────

@@ -1,4 +1,4 @@
-import { FormulaireWrapper, FieldLabel, ActionButton } from "../../../../../../shared/components/index.js";
+import { FormulaireWrapper, FieldLabel, FieldError, ActionButton } from "../../../../../../shared/components/index.js";
 import Textarea from "../../../../components/UI/Textarea.jsx";
 
 const lockedFieldStyle = { cursor: "not-allowed", opacity: 0.75 };
@@ -17,6 +17,7 @@ const inputStyle = {
 
 export default function GynecoUI({
   form,
+  errors = {},
   isExisting,
   isEditing,
   saving,
@@ -67,6 +68,7 @@ export default function GynecoUI({
               cursor: readOnly ? "not-allowed" : "text",
             }}
           />
+          <FieldError error={errors.gestite} />
         </div>
         <div className="col-md-4">
           <FieldLabel>Parité</FieldLabel>
@@ -83,6 +85,7 @@ export default function GynecoUI({
               cursor: readOnly ? "not-allowed" : "text",
             }}
           />
+          <FieldError error={errors.parite} />
         </div>
         <div className="col-md-4">
           <FieldLabel>Avortement</FieldLabel>
@@ -99,6 +102,7 @@ export default function GynecoUI({
               cursor: readOnly ? "not-allowed" : "text",
             }}
           />
+          <FieldError error={errors.avortement} />
         </div>
       </div>
 
@@ -115,6 +119,7 @@ export default function GynecoUI({
           placeholder="Complications obstétricales..."
           disabled={readOnly}
         />
+        <FieldError error={errors.complications} />
       </div>
 
       {/* Suivi gynécologique */}
@@ -130,6 +135,7 @@ export default function GynecoUI({
           placeholder="Détails du suivi gynécologique..."
           disabled={readOnly}
         />
+        <FieldError error={errors.suivi_gynecologique} />
       </div>
 
       {/* Dépistage cancer col */}
@@ -145,6 +151,7 @@ export default function GynecoUI({
           placeholder="Résultats du dépistage..."
           disabled={readOnly}
         />
+        <FieldError error={errors.depistage_cancer_col} />
       </div>
 
       {/* Remarque */}
@@ -160,6 +167,7 @@ export default function GynecoUI({
           placeholder="Remarque générale..."
           disabled={readOnly}
         />
+        <FieldError error={errors.remarque} />
       </div>
 
       <div className="d-flex justify-content-end gap-2">

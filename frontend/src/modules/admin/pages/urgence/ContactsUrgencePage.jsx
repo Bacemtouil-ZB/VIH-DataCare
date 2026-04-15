@@ -7,13 +7,30 @@ import { confirmDelete, confirmAction } from "../../../../shared/utils/uiAlerts.
 import "./contactsUrgence.css";
 
 export default function ContactsUrgencePage() {
-  const { contacts, loading, saving, error, ajouter, modifier, supprimer } = useContacts();
+  const {
+    contacts, loading, saving, error,
+    errors,           // ← erreurs par champ pour <FieldError />
+    resetErrors,      // ← reset à l'ouverture/fermeture du modal
+    makeFieldHandler, // ← factory onChange avec clearFieldError
+    ajouter, modifier, supprimer,
+  } = useContacts();
 
   const [modal, setModal] = useState(null);
 
-  const ouvrirAjout  = () => setModal({ type: "add" });
-  const ouvrirEdit   = (contact) => setModal({ type: "edit", contact });
-  const fermer       = () => setModal(null);
+  const ouvrirAjout = () => {
+    resetErrors();                       // ← reset avant ouverture
+    setModal({ type: "add" });
+  };
+
+  const ouvrirEdit = (contact) => {
+    resetErrors();                       // ← reset avant ouverture
+    setModal({ type: "edit", contact });
+  };
+
+  const fermer = () => {
+    resetErrors();                       // ← reset à la fermeture
+    setModal(null);
+  };
 
   const handleSave = async (form) => {
     if (modal.type === "edit") {
@@ -23,10 +40,13 @@ export default function ContactsUrgencePage() {
       );
       if (!confirmed) return;
     }
+
     let ok;
     if (modal.type === "add")  ok = await ajouter(form);
     if (modal.type === "edit") ok = await modifier(modal.contact.id, form);
+
     if (ok) fermer();
+    // Si !ok → errors est peuplé, le modal reste ouvert avec les FieldError affichés
   };
 
   const handleDelete = async (contact) => {
@@ -80,6 +100,8 @@ export default function ContactsUrgencePage() {
           onSave={handleSave}
           onClose={fermer}
           saving={saving}
+          errors={errors}                // ← câblage erreurs → <FieldError />
+          makeFieldHandler={makeFieldHandler} // ← câblage clearFieldError
         />
       )}
 

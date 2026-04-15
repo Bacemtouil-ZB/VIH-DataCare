@@ -7,67 +7,70 @@ import { getSurgicalController, createSurgicalController, updateSurgicalControll
 import { getTherapeuticController, createTherapeuticController, updateTherapeuticController } from "../controllers/antecedents/therapeuticController.js";
 import { getTpePrepController, createTpePrepController, updateTpePrepController, deleteTpePrepController } from "../controllers/antecedents/tpePrepController.js";
 import { getTransfusionController, createTransfusionController, updateTransfusionController, deleteTransfusionController } from "../controllers/antecedents/transfusionController.js";
-import { protect } from "../middlewares/authMiddleware.js";
+import { protect , authorizeMedecin} from "../middlewares/authMiddleware.js";
+import {validateCreateTpePrep,validateCreateTransfusion,validateFamily,validateGyneco,validateHabitudesVie,validateMedical,validateTherapeutic,validateUpdateSurgical,
+    validateUpdateTpePrep,validateUpdateTransfusion,validateCreateSurgical,} from "../middlewares/validators/antecedentsvalidator.js";
 
-const router = express.Router();
 
+   const router = express.Router();
+    
 // ─────────────────────────────────────────────
 // Antécédent Familial
 // ─────────────────────────────────────────────
-router.get("/family/:patientId",    protect, getFamilyController);
-router.post("/family/:patientId",   protect, createFamilyController);
-router.put("/family/:patientId",    protect, updateFamilyController);
+router.get("/family/:patientId",    protect,authorizeMedecin, getFamilyController);
+router.post("/family/:patientId",   protect,authorizeMedecin, validateFamily, createFamilyController);
+router.put("/family/:patientId",    protect,authorizeMedecin, updateFamilyController);
 
 // ─────────────────────────────────────────────
 // Antécédent Gynécologique
 // ─────────────────────────────────────────────
-router.get("/gyneco/:patientId",    protect, getGynecoController);
-router.post("/gyneco/:patientId",   protect, createGynecoController);
-router.put("/gyneco/:patientId",    protect, updateGynecoController);
+router.get("/gyneco/:patientId",    protect,authorizeMedecin, getGynecoController);
+router.post("/gyneco/:patientId",   protect,authorizeMedecin, validateGyneco, createGynecoController);
+router.put("/gyneco/:patientId",    protect,authorizeMedecin, updateGynecoController);
 
 // ─────────────────────────────────────────────
 // Habitudes de Vie
 // ─────────────────────────────────────────────
-router.get("/habitudes-vie/:patientId",   protect, getHabitudesVieController);
-router.post("/habitudes-vie/:patientId",  protect, createHabitudesVieController);
-router.put("/habitudes-vie/:patientId",   protect, updateHabitudesVieController);
+router.get("/habitudes-vie/:patientId",   protect,authorizeMedecin, getHabitudesVieController);
+router.post("/habitudes-vie/:patientId",  protect,authorizeMedecin, validateHabitudesVie, createHabitudesVieController);
+router.put("/habitudes-vie/:patientId",   protect,authorizeMedecin, updateHabitudesVieController);
 
 // ─────────────────────────────────────────────
 // Antécédent Médical
 // ─────────────────────────────────────────────
-router.get("/medical/:patientId",   protect, getMedicalController);
-router.post("/medical/:patientId",  protect, createMedicalController);
-router.put("/medical/:patientId",   protect, updateMedicalController);
+router.get("/medical/:patientId",   protect,authorizeMedecin, getMedicalController);
+router.post("/medical/:patientId",  protect,authorizeMedecin, validateMedical, createMedicalController);
+router.put("/medical/:patientId",   protect,authorizeMedecin, updateMedicalController);
 
 // ─────────────────────────────────────────────
 // Antécédent Chirurgical
 // ─────────────────────────────────────────────
-router.get("/surgical/:patientId",  protect, getSurgicalController);
-router.post("/surgical/:patientId", protect, createSurgicalController);
-router.put("/surgical/:id",         protect, updateSurgicalController);
-router.delete("/surgical/:id",      protect, deleteSurgicalController);
+router.get("/surgical/:patientId",  protect,authorizeMedecin, getSurgicalController);
+router.post("/surgical/:patientId", protect,authorizeMedecin, validateCreateSurgical, createSurgicalController);
+router.put("/surgical/:id",         protect,authorizeMedecin, validateUpdateSurgical, updateSurgicalController);
+router.delete("/surgical/:id",      protect,authorizeMedecin, deleteSurgicalController);
 
 // ─────────────────────────────────────────────
 // Antécédent Thérapeutique
 // ─────────────────────────────────────────────
-router.get("/therapeutic/:patientId",   protect, getTherapeuticController);
-router.post("/therapeutic/:patientId",  protect, createTherapeuticController);
-router.put("/therapeutic/:patientId",   protect, updateTherapeuticController);
+router.get("/therapeutic/:patientId",   protect,authorizeMedecin, getTherapeuticController);
+router.post("/therapeutic/:patientId",  protect,authorizeMedecin, validateTherapeutic, createTherapeuticController);
+router.put("/therapeutic/:patientId",   protect,authorizeMedecin,  updateTherapeuticController);
 
 // ─────────────────────────────────────────────
 // Antécédent TPE/PrEP
 // ─────────────────────────────────────────────
-router.get("/tpe-prep/:patientId",  protect, getTpePrepController);
-router.post("/tpe-prep/:patientId", protect, createTpePrepController);
-router.put("/tpe-prep/:id",         protect, updateTpePrepController);
-router.delete("/tpe-prep/:id",      protect , deleteTpePrepController);
+router.get("/tpe-prep/:patientId",  protect,authorizeMedecin, getTpePrepController);
+router.post("/tpe-prep/:patientId", protect,authorizeMedecin, validateCreateTpePrep, createTpePrepController);
+router.put("/tpe-prep/:id",         protect,authorizeMedecin, validateUpdateTpePrep, updateTpePrepController);
+router.delete("/tpe-prep/:id",      protect,authorizeMedecin , deleteTpePrepController);
 
 // ─────────────────────────────────────────────
 // Antécédent Transfusion
 // ─────────────────────────────────────────────
-router.get("/transfusion/:patientId",   protect, getTransfusionController);
-router.post("/transfusion/:patientId",  protect, createTransfusionController);
-router.put("/transfusion/:id",          protect, updateTransfusionController);
-router.delete("/transfusion/:id",       protect, deleteTransfusionController);
+router.get("/transfusion/:patientId",   protect,authorizeMedecin, getTransfusionController);
+router.post("/transfusion/:patientId",  protect,authorizeMedecin, validateCreateTransfusion, createTransfusionController);
+router.put("/transfusion/:id",          protect,authorizeMedecin, validateUpdateTransfusion, updateTransfusionController);
+router.delete("/transfusion/:id",       protect,authorizeMedecin, deleteTransfusionController);
 
 export default router;

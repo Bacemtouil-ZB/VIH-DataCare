@@ -1,6 +1,3 @@
-// =====================================================
-// LOGIC - usePrescriptionsPharmaLogic.js (UPDATED)
-// =====================================================
 
 import { useEffect, useMemo, useState } from "react";
 import {

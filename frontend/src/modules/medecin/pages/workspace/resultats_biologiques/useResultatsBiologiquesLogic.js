@@ -10,7 +10,7 @@ import {
 import { getBilansByNumeroDossier } from "../../../services/bilanExamenService";
 import { buildInitialForm, getChampActifs } from "../../../shared/utils/bilanResultatsMap";
 import { MESSAGES, SECTION_DATE_KEY } from "./ResultatsbiologiquesConstants";
-import { clearFieldError } from "../../../shared/utils/clearFieldError.js";
+import { clearFieldError } from "../../../../../shared/components/Forms/FieldLabel/clearFieldError";
 import {
   fileToBase64,
   collectGenotypageUrls,

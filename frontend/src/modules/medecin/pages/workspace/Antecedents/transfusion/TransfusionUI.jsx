@@ -1,6 +1,7 @@
 import {
   FormulaireWrapper,
   FieldLabel,
+  FieldError,
   ActionButton,
 } from "../../../../../../shared/components/index.js";
 import HistoriqueTable from "../../../../../../shared/components/UI/Table/HistoriqueTable.jsx";
@@ -32,6 +33,7 @@ const SectionTitle = ({ children }) => (
 export default function TransfusionUI({
   items,
   form,
+  errors = {},
   editingItem,
   showForm,
   saving,
@@ -113,9 +115,9 @@ export default function TransfusionUI({
                   value={form.date_transfusion}
                   onChange={(e) => onChange("date_transfusion", e.target.value)}
                   style={inputStyle}
-                    max={new Date().toISOString().split('T')[0]}  // ← Ajouter ceci
-
+                  max={new Date().toISOString().split('T')[0]}
                 />
+                <FieldError error={errors.date_transfusion} />
               </div>
               <div style={{ flex: 1 }}>
                 <FieldLabel>Remarque</FieldLabel>
@@ -126,6 +128,7 @@ export default function TransfusionUI({
                   placeholder="Remarque éventuelle..."
                   style={inputStyle}
                 />
+                <FieldError error={errors.remarque} />
               </div>
             </div>
 

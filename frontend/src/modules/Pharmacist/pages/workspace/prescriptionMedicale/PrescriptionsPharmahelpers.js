@@ -1,8 +1,6 @@
 import { SUIVI_BADGE_MAP, PRESCRIPTION_BADGE_MAP } from "./prescriptionsPharmaConstants";
 
 // ── Preview date prochaine prise (scénario 1 : validation sans modif) ────────
-// periodeJours = période prescrite par le médecin (en jours)
-// dateDelivrance = date système au moment de la validation (par défaut aujourd'hui)
 export const calculatePreviewDate = (periodeJours, dateDelivrance = new Date()) => {
   const jours = Number.parseInt(periodeJours, 10);
   if (!jours || jours <= 0) return null;
@@ -37,17 +35,26 @@ export const getDaysLabel = (days) => {
   return `dans ${days}j`;
 };
 
-// ── Helpers badges ────────────────────────────────────────────
+// ── resolveSuiviBadge ─────────────────────────────────────────
+// Couvre les 5 statuts SQL :
+//   "en attente" | "actif" | "en retard" | "perdue de vue" | "récupéré perdue de vue"
 export const resolveSuiviBadge = (statutPatient, ecartJours) => {
-  const key       = (statutPatient || "").toLowerCase();
-  const isPerdu   = key.includes("perdue") || key.includes("perdu");
-  const isAttente = key.includes("attente");
-  const entry     = isPerdu
-    ? SUIVI_BADGE_MAP.perdu
-    : isAttente
-      ? SUIVI_BADGE_MAP.attente
-      : SUIVI_BADGE_MAP.actif;
-  return { ...entry, showEcart: !isAttente && ecartJours > 0 };
+  const key = (statutPatient || "").toLowerCase().trim();
+
+  if (key.includes("récupéré") || key.includes("recupere")) {
+    return { ...SUIVI_BADGE_MAP.recupere, showEcart: ecartJours > 0 };
+  }
+  if (key.includes("perdue") || key.includes("perdu")) {
+    return { ...SUIVI_BADGE_MAP.perdu, showEcart: ecartJours > 0 };
+  }
+  if (key.includes("retard")) {
+    return { ...SUIVI_BADGE_MAP.retard, showEcart: ecartJours > 0 };
+  }
+  if (key.includes("attente")) {
+    return { ...SUIVI_BADGE_MAP.attente, showEcart: false };
+  }
+  // "actif" (ecart ≤ 0, showEcart inutile)
+  return { ...SUIVI_BADGE_MAP.actif, showEcart: false };
 };
 
 export const resolvePrescriptionBadge = (statutPrescription) => {
@@ -71,13 +78,11 @@ export const filterPrescriptions = (patients, search) => {
 };
 
 // ── Verrouillage des boutons ──────────────────────────────────
-// Valider : bloqué si prescription déjà délivrée OU modifiée
 export const isValidateDisabled = (statutPrescription) => {
   const s = (statutPrescription || "").toLowerCase();
   return s === "delivree" || s === "modifie";
 };
 
-// Modifier : bloqué si prescription déjà délivrée OU modifiée
 export const isModifyDisabled = (statutPrescription) => {
   const s = (statutPrescription || "").toLowerCase();
   return s === "delivree" || s === "modifie";

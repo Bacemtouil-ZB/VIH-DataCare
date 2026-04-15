@@ -11,6 +11,7 @@ import {
   confirmAction,
   alertError,
 } from "../../../../../shared/utils/uiAlerts";
+import { clearFieldError } from "../../../../../shared/components/Forms/FieldLabel/clearFieldError";
 
 export function useConclusionLogic(numero) {
   const { user } = useAuth();
@@ -20,6 +21,7 @@ export function useConclusionLogic(numero) {
   const [saving, setSaving] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
   const [previewItem, setPreviewItem] = useState(null);
+  const [errors, setErrors] = useState({});
 
   const [histOpen, setHistOpen] = useState(true);
   const [histLoading, setHistLoading] = useState(false);
@@ -36,6 +38,8 @@ export function useConclusionLogic(numero) {
     [total, limit],
   );
 
+  // ====== Chargement historique ======
+  // Erreur réseau / serveur → alertError (pas une erreur de champ)
   const loadHistory = async () => {
     setHistLoading(true);
     try {
@@ -54,10 +58,19 @@ export function useConclusionLogic(numero) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [numero, offset]);
 
+  // ====== handleEditorChange ======
+  // Efface l'erreur du champ "content" dès que l'utilisateur tape
+  const handleEditorChange = (value) => {
+    setEditorValue(value);
+    clearFieldError("content", setErrors);
+  };
+
+  // ====== Reset éditeur ======
   const resetEditor = () => {
     setEditorValue("");
     setEditingId(null);
     setShowEditor(false);
+    setErrors({});                    // ← efface les erreurs à la fermeture
   };
 
   const cancelEditor = () => {
@@ -65,23 +78,33 @@ export function useConclusionLogic(numero) {
     resetEditor();
   };
 
+  // ====== Soumission ======
   const onSave = async () => {
+
+    // ── Validation frontend ─────────────────────────────────────────────────
+    // → FieldError sous l'éditeur, jamais de toast pour les erreurs de champ
     const text = editorValue.replace(/<[^>]*>/g, "").trim();
+
+    if (!text) {
+      setErrors({ content: "Le contenu de la conclusion est requis" });
+      return;
+    }
     if (text.length < 5) {
-      toast.info("Veuillez saisir une conclusion (min 5 caractères).");
+      setErrors({ content: "La conclusion doit contenir au moins 5 caractères" });
       return;
     }
 
-const confirmed = await confirmAction(
-  editingId ? "Modifier la conclusion" : "Enregistrer la conclusion",
-  editingId ?
-    "Voulez-vous enregistrer les modifications de cette conclusion ?"
-  : "Voulez-vous enregistrer cette nouvelle conclusion ?"
-);
-
+    const confirmed = await confirmAction(
+      editingId ? "Modifier la conclusion" : "Enregistrer la conclusion",
+      editingId
+        ? "Voulez-vous enregistrer les modifications de cette conclusion ?"
+        : "Voulez-vous enregistrer cette nouvelle conclusion ?",
+    );
     if (!confirmed) return;
 
     setSaving(true);
+    setErrors({});
+
     try {
       if (editingId) {
         await updateConclusion(editingId, { content: editorValue });
@@ -94,26 +117,53 @@ const confirmed = await confirmAction(
       setOffset(0);
       await loadHistory();
       setHistOpen(true);
+
     } catch (e) {
-      alertError(e?.message || "Erreur enregistrement");
+
+      // Cas 1 — errors[] avec field (express-validator via handleValidation)
+      // → FieldError affiché sous l'éditeur pour chaque champ concerné
+      // CORRECTION : err.message (pas e.message) pour récupérer le message du champ
+      if (e?.errors && Array.isArray(e.errors)) {
+        const errorObj = {};
+        e.errors.forEach((err) => {
+          errorObj[err.field] = err.message;    // ← err.message, pas e.message
+        });
+        setErrors(errorObj);
+        return;
+      }
+
+      // Cas 2 — message simple sans tableau de champs (ex: erreur métier serveur)
+      // → FieldError sous "content" (seul champ du formulaire)
+      if (e?.message) {
+        setErrors({ content: e.message });
+        return;
+      }
+
+      // Cas 3 — fallback inattendu (erreur réseau, serveur indisponible…)
+      alertError("Une erreur s'est produite lors de l'enregistrement");
+
     } finally {
       setSaving(false);
     }
   };
 
+  // ====== Édition d'une conclusion existante ======
   const onEdit = async (c) => {
-    
     setEditorValue(c.content || "");
     setEditingId(c.id);
     setShowEditor(true);
+    setErrors({});                    // ← reset erreurs à chaque ouverture
     setTimeout(() => {
       editorRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 100);
   };
+
+  // ====== Nouvelle conclusion ======
   const openEditor = () => {
     setEditingId(null);
     setEditorValue("");
     setShowEditor(true);
+    setErrors({});                    // ← reset erreurs à chaque ouverture
     setTimeout(() => {
       editorRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 100);
@@ -124,6 +174,8 @@ const confirmed = await confirmAction(
     editorRef,
     editorValue,
     setEditorValue,
+    handleEditorChange,               // ← à brancher dans ConclusionEditor onChange
+    errors,                           // ← exposé pour <FieldError error={errors.content} />
     editingId,
     saving,
     showEditor,

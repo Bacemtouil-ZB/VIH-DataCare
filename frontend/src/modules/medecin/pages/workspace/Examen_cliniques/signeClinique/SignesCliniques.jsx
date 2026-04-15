@@ -42,9 +42,9 @@ export default function SignesCliniques() {
         isModifying={logic.isModifying}
         saving={logic.saving}
         taille={logic.taille}
-        setTaille={logic.setTaille}
+        handleTailleChange={logic.handleTailleChange}      // ← wrapper clearFieldError
         poids={logic.poids}
-        setPoids={logic.setPoids}
+        handlePoidsChange={logic.handlePoidsChange}        // ← wrapper clearFieldError
         imc={logic.imc}
         appareils={logic.appareils}
         autresSignes={logic.autresSignes}
@@ -55,6 +55,7 @@ export default function SignesCliniques() {
         ajouterAutreSigne={logic.ajouterAutreSigne}
         supprimerAutreSigne={logic.supprimerAutreSigne}
         modifierDescription={logic.modifierDescription}
+        errors={logic.errors}                              // ← erreurs pour <FieldError />
         handleSave={logic.handleSave}
       />
     </div>

@@ -1,4 +1,4 @@
-import { FormulaireWrapper, FieldLabel, ActionButton } from "../../../../../../shared/components/index.js";
+import { FormulaireWrapper, FieldLabel, FieldError, ActionButton } from "../../../../../../shared/components/index.js";
 import Toggle from "../../../../components/UI/Toggle.jsx";
 import Textarea from "../../../../components/UI/Textarea.jsx";
 import { MEDICAL_FIELDS } from "./medicalConstants";
@@ -10,6 +10,7 @@ const lockedFieldStyle = {
 
 export default function MedicalUI({
   form,
+  errors = {},
   isExisting,
   isEditing,
   saving,
@@ -85,6 +86,7 @@ export default function MedicalUI({
           placeholder="Précisez d'autres pathologies..."
           disabled={readOnly}
         />
+        <FieldError error={errors.autres} />
       </div>
 
       {/* Remarque */}
@@ -100,6 +102,7 @@ export default function MedicalUI({
           placeholder="Remarque générale..."
           disabled={readOnly}
         />
+        <FieldError error={errors.remarque} />
       </div>
 
       {/* Actions */}

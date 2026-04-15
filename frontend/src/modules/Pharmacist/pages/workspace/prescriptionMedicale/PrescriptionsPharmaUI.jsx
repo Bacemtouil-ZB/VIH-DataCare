@@ -21,29 +21,34 @@ import ModalModifierPeriode                from "../../../components/modal/Modal
 import { formatDateFr }                    from "../../../../../shared/utils/logiqueTableHistory";
 
 // ── Palette de couleurs centralisée ──────────────────────────
+// Couvre les 5 statuts SQL retournés par le modèle
 const BADGE_COLORS = {
   // Statut prescription
-  delivree: { bg: "#dcfce7", color: "#166534" },
-  modifie:  { bg: "#ffedd5", color: "#9a3412" },
-  envoyee:  { bg: "#fef9c3", color: "#854d0e" },
+  delivree:  { bg: "#dcfce7", color: "#166534" },
+  modifie:   { bg: "#ffedd5", color: "#9a3412" },
+  envoyee:   { bg: "#fef9c3", color: "#854d0e" },
   // Statut suivi thérapeutique
-  actif:    { bg: "#dbeafe", color: "#1e40af" },
-  attente:  { bg: "#f1f5f9", color: "#475569" },
-  perdu:    { bg: "#fee2e2", color: "#991b1b" },
+  actif:     { bg: "#dbeafe", color: "#1e40af" },
+  attente:   { bg: "#f1f5f9", color: "#475569" },
+  retard:    { bg: "#fff7ed", color: "#c2410c" },   // "en retard"
+  perdu:     { bg: "#fee2e2", color: "#991b1b" },   // "perdue de vue"
+  recupere:  { bg: "#f0fdf4", color: "#15803d" },   // "récupéré perdue de vue"
 };
 
-// ── SuiviBadge — utilise <Badge> ─────────────────────────────
+// ── Résolution de la palette suivi à partir du statut ────────
+const resolveSuiviPalette = (statutPatient) => {
+  const key = (statutPatient || "").toLowerCase().trim();
+  if (key.includes("récupéré") || key.includes("recupere")) return BADGE_COLORS.recupere;
+  if (key.includes("perdue") || key.includes("perdu"))       return BADGE_COLORS.perdu;
+  if (key.includes("retard"))                                 return BADGE_COLORS.retard;
+  if (key.includes("attente"))                                return BADGE_COLORS.attente;
+  return BADGE_COLORS.actif;
+};
+
+// ── SuiviBadge ───────────────────────────────────────────────
 function SuiviBadge({ statutPatient, ecartJours }) {
   const { badgeText, showEcart } = resolveSuiviBadge(statutPatient, ecartJours);
-
-  const key     = (statutPatient || "").toLowerCase();
-  const isPerdu = key.includes("perdu");
-  const isAtt   = key.includes("attente");
-  const palette = isPerdu
-    ? BADGE_COLORS.perdu
-    : isAtt
-      ? BADGE_COLORS.attente
-      : BADGE_COLORS.actif;
+  const palette = resolveSuiviPalette(statutPatient);
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", alignItems: "flex-start" }}>
@@ -55,7 +60,7 @@ function SuiviBadge({ statutPatient, ecartJours }) {
   );
 }
 
-// ── PrescriptionBadge — utilise <Badge> ──────────────────────
+// ── PrescriptionBadge ─────────────────────────────────────────
 function PrescriptionBadge({ statutPrescription }) {
   const { badgeText } = resolvePrescriptionBadge(statutPrescription);
   const key     = (statutPrescription || "envoyee").toLowerCase();
@@ -87,7 +92,7 @@ function RdvCell({ rdv }) {
   );
 }
 
-// ── ActionButtons — boutons mutuellement bloquants ────────────
+// ── ActionButtons ─────────────────────────────────────────────
 function ActionButtons({ p, openDetail, openValidation, openModification, activeAction }) {
   const statut = p.statutPrescription;
 

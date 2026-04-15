@@ -4,7 +4,8 @@ import { toast } from "react-toastify";
 import { getHabitudesVie, createHabitudesVie, updateHabitudesVie } from "../../../../services/antecedentsService.jsx";
 import { formatHabitudesVieFromApi, formatHabitudesVieForApi } from "./habitudesVieHelpers";
 import { HABITUDES_VIE_INITIAL_STATE } from "./habitudesVieConstants";
-
+import { clearFieldError } from "../../../../../../shared/components/Forms/FieldLabel/clearFieldError";
+ 
 export default function useHabitudesVie(numero) {
   const [form, setForm] = useState(HABITUDES_VIE_INITIAL_STATE);
   const [savedForm, setSavedForm] = useState(HABITUDES_VIE_INITIAL_STATE);
@@ -13,9 +14,10 @@ export default function useHabitudesVie(numero) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
-
+  const [errors, setErrors] = useState({});
+ 
   const isHandlingBlock = useRef(false);
-
+ 
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -41,11 +43,9 @@ export default function useHabitudesVie(numero) {
     };
     fetchData();
   }, [numero]);
-
-  const isDirty =
-    isEditing &&
-    JSON.stringify(form) !== JSON.stringify(savedForm);
-
+ 
+  const isDirty = isEditing && JSON.stringify(form) !== JSON.stringify(savedForm);
+ 
   const saveQuiet = useCallback(async () => {
     try {
       setSaving(true);
@@ -62,16 +62,16 @@ export default function useHabitudesVie(numero) {
       setSaving(false);
     }
   }, [form, isExisting, numero]);
-
+ 
   const blocker = useBlocker(isDirty);
-
+ 
   useEffect(() => {
     if (blocker.state !== "blocked") return;
     if (isHandlingBlock.current) return;
     isHandlingBlock.current = true;
-
+ 
     const isAntecedentsNav = blocker.location.pathname.includes("/antecedents/");
-
+ 
     if (isAntecedentsNav) {
       (async () => {
         try {
@@ -107,23 +107,27 @@ export default function useHabitudesVie(numero) {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [blocker.state]);
-
+ 
   const handleToggle = (key) => {
     setForm((prev) => ({ ...prev, [key]: !prev[key] }));
+    // Les toggles booléens n'ont pas de validation → pas de clearFieldError
   };
-
+ 
   const handleChange = (key, value) => {
     setForm((prev) => ({ ...prev, [key]: value }));
+    clearFieldError(key, setErrors); // ← champs _type et _date uniquement
   };
-
+ 
   const startEditing = () => setIsEditing(true);
-
+ 
   const cancelEditing = () => {
     setForm(savedForm);
+    setErrors({});
     setIsEditing(false);
   };
-
+ 
   const save = async () => {
+    setErrors({});
     try {
       setSaving(true);
       const payload = formatHabitudesVieForApi(form);
@@ -135,11 +139,21 @@ export default function useHabitudesVie(numero) {
       }
       setSavedForm(form);
       setIsEditing(false);
+    } catch (err) {
+      if (err?.errors && Array.isArray(err.errors)) {
+        const formattedErrors = {};
+        err.errors.forEach((e) => {
+          formattedErrors[e.field] = e.message;
+        });
+        setErrors(formattedErrors);
+      } else {
+        toast.error("Une erreur est survenue. Veuillez réessayer.");
+      }
     } finally {
       setSaving(false);
     }
   };
-
+ 
   return {
     form,
     isExisting,
@@ -147,6 +161,8 @@ export default function useHabitudesVie(numero) {
     loading,
     saving,
     error,
+    errors,
+    setErrors,
     handleToggle,
     handleChange,
     startEditing,
@@ -154,3 +170,4 @@ export default function useHabitudesVie(numero) {
     save,
   };
 }
+ 
