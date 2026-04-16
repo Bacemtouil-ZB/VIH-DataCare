@@ -1,6 +1,8 @@
+//cheked 15/04/2026
 import pool from "../config/db.js";
 import { createAddress, updateAddress } from "./addresseModel.js";
 
+// --------------------- GET PATIENT BY ID ---------------------
 export const getPatientById = async (id) => {
   const query = `
     SELECT
@@ -28,21 +30,20 @@ export const getPatientById = async (id) => {
   const result = await pool.query(query, [id]);
   return result.rows[0] || null;
 };
-
+// --------------------- GET PATIENT BY NUMERO ---------------------
 export const getPatientByNumero = async (numero) => {
   const query = `
     SELECT
       p.*,
 
-      -- Adresse IDs pour mise à jour
       p.birth_address_id,
       p.residence_address_id,
 
       -- Gouvernorat et code postal naissance
       bg.name AS birth_governorate,
-      bp.id AS birth_postal_code_id,    -- ID du code postal
-      bp.code AS birth_postal_code,     -- Code postal affichable
-      bp.place_name AS birth_place_name,--  (optional) name to display instead of code
+      bp.id AS birth_postal_code_id,    
+      bp.code AS birth_postal_code,    
+      bp.place_name AS birth_place_name,
 
       -- Gouvernorat et code postal résidence
       rg.name AS residence_governorate,
@@ -50,7 +51,7 @@ export const getPatientByNumero = async (numero) => {
       rp.code AS residence_postal_code,
       rp.place_name AS residence_place_name, -- (optional)
 
-      --  Exact address (résidence only, as you requested)
+      --  Exact address 
       r.exact_address AS exact_address,
 
       -- Créé et modifié par
@@ -88,6 +89,7 @@ export const getPatientByNumero = async (numero) => {
   const result = await pool.query(query, [numero]);
   return result.rows[0] || null;
 };
+
 // --------------------- GET ALL ---------------------
 export const getAllPatients = async (options = {}) => {
   const query = `
@@ -125,9 +127,7 @@ export const countPatients = async () => {
   return parseInt(result.rows[0].count);
 };
 
-// ✅ Goal (as you chose): ONE form input "exact_address" stored ONLY in addresses.exact_address
-// (residence address row), NOT in patients table.
-
+// --------------------- CREATE ---------------------
 export const createPatient = async (client, patientData, userId) => {
   const {
     numero,
@@ -137,7 +137,7 @@ export const createPatient = async (client, patientData, userId) => {
     gender,
     birth_postal_code_id,
     residence_postal_code_id,
-    exact_address, //  from form (residence exact address)
+    exact_address, 
     phone,
     hospitalisation,
     status,
@@ -148,14 +148,12 @@ export const createPatient = async (client, patientData, userId) => {
   } = patientData;
 
   // 1) Create addresses
-  // Birth: no exact_address stored
   const birth_address_id = await createAddress(
     client,
     birth_postal_code_id,
     null,
   );
 
-  // Residence: store exact_address in addresses.exact_address
   const residence_address_id = await createAddress(
     client,
     residence_postal_code_id,
@@ -163,7 +161,7 @@ export const createPatient = async (client, patientData, userId) => {
   );
 
   // 2) Create patient
-  //  Remove "exact_address" from patients insert (it belongs to addresses table now)
+  
   const patientResult = await client.query(
     `
       INSERT INTO patients (
@@ -229,12 +227,10 @@ export const updatePatient = async (id, patientData, updatedBy) => {
 
     // 1) Update addresses
     if (birth_address_id && birth_postal_code_id) {
-      // Birth: only update postal_code_id (no exact address)
       await updateAddress(client, birth_address_id, birth_postal_code_id, null);
     }
 
     if (residence_address_id && residence_postal_code_id) {
-      // Residence: update postal_code_id + exact_address
       await updateAddress(
         client,
         residence_address_id,
@@ -272,7 +268,7 @@ export const updatePatient = async (id, patientData, updatedBy) => {
         birthdate,
         gender,
         phone,
-        hospitalisation, //  fixed: correct placeholder index
+        hospitalisation, 
         status || "actif",
         remarks || null,
         email || null,

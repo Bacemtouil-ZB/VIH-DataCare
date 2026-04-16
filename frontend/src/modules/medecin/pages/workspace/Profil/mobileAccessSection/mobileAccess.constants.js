@@ -1,3 +1,4 @@
+// cheked 15/04/2026
 export const MOBILE_ACCESS_STATUS = {
   NO_ACCOUNT: "no_account",
   ACTIVE: "active",

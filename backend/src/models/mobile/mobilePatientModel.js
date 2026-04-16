@@ -1,6 +1,6 @@
 import pool from "../../config/db.js";
 
-// Used by mobileAuthService → login → get patient profile
+
 export const findPatientByUserId = async (userId) => {
   const query = `
     SELECT 
@@ -24,7 +24,7 @@ export const findPatientByUserId = async (userId) => {
   return result.rows[0] || null;
 };
 
-// Used by createMobileAccountService → quick check before creating account
+
 export const checkPatientHasMobileAccount = async (patientId) => {
   const query = `
     SELECT p.id, p.user_id, p.numero, p.name, p.surname
@@ -35,7 +35,7 @@ export const checkPatientHasMobileAccount = async (patientId) => {
   return result.rows[0] || null;
 };
 
-// Used by createMobileAccountService → links patient to user after account created
+
 export const linkPatientToUser = async (client, patientId, userId, doctorId) => {
   const query = `
     UPDATE patients 
@@ -47,7 +47,7 @@ export const linkPatientToUser = async (client, patientId, userId, doctorId) => 
   return result.rows[0];
 };
 
-// Used by getMobileAccountStatusService, resetMobilePasswordService, deactivateMobileAccountService
+
 export const getPatientWithMobileAccount = async (patientId) => {
   const query = `
     SELECT 
@@ -67,7 +67,7 @@ export const getPatientWithMobileAccount = async (patientId) => {
   return result.rows[0] || null;
 };
 
-// Find patient by numero — used by all mobile patient account services
+
 export const findPatientByNumero = async (numero) => {
   const query = `
     SELECT 

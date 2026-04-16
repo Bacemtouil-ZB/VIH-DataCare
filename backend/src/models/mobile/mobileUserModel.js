@@ -1,3 +1,4 @@
+// checked 15/04/2024 
 import pool from "../../config/db.js";
 
 // Find patient by username (numero) — used for mobile login

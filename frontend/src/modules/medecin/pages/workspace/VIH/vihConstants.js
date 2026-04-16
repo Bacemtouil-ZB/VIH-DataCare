@@ -1,3 +1,4 @@
+//
 export const PAGE_TITLE = "Fiche VIH du patient";
 
 export const FORM_INIT = {

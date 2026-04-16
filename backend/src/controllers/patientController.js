@@ -1,3 +1,4 @@
+// cheked 15/04/2026
 import {
   createPatient as createPatientService,
   getPatientByNumero as getPatientByNumeroService,
@@ -11,7 +12,6 @@ import { logAction } from "../services/auditService.js";
 export const createPatientController = async (req, res) => {
   try {
     const patientData = req.body;
-    console.log(req.body);
     const userId = req.user.id;
 
     const patient = await createPatientService(patientData, userId);

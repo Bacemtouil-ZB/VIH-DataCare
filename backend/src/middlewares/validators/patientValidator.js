@@ -281,19 +281,6 @@ const validateExactAddress = body("exact_address")
     return true;
   });
 
-// ─── Médecin traitant (requis) ────────────────────────────────────────────────
-
-const validateDoctorId = body("doctor_id")
-  .notEmpty()
-  .withMessage("Le médecin traitant est requis")
-  .custom((value) => {
-    if (isNaN(value) || !Number.isInteger(Number(value))) {
-      throw new Error("Identifiant médecin invalide");
-    }
-    if (Number(value) <= 0) throw new Error("Identifiant médecin invalide");
-    return true;
-  });
-
 // ─── Remarques (optionnel) ────────────────────────────────────────────────────
 
 const validateRemarks = body("remarks")
@@ -324,7 +311,7 @@ export const validateCreatePatient = [
   validateResidenceGovernorat,
   validateResidencePostalCode,
   validateExactAddress,
-    validateRemarks,
+  validateRemarks,
   validateEmail,
   handleValidation,
   

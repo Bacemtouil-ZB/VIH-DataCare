@@ -1,3 +1,4 @@
+//cheked 15/04/2026
 import { useOutletContext } from "react-router-dom";
 import { ActionButton } from "../../../../../../shared/components";
 import { Spinner } from "../index";
@@ -39,8 +40,8 @@ export default function ObservationPage() {
         setDetailObservation={logic.setDetailObservation}
         showForm={logic.showForm}
         remarque={logic.remarque}
-        handleRemarqueChange={logic.handleRemarqueChange}  // ← wrapper clearFieldError
-        errors={logic.errors}                              // ← erreurs pour <FieldError />
+        handleRemarqueChange={logic.handleRemarqueChange}  
+        errors={logic.errors}                              
         isModifying={logic.isModifying}
         saving={logic.saving}
         handleSave={logic.handleSave}

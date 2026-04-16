@@ -1,5 +1,5 @@
+//cheked 15/04/2026
 import pool from "../config/db.js";
-
 export const getAllAddresses = async () => {
   const query = `
     SELECT 
@@ -28,8 +28,8 @@ export const getAllPostalCodes = async () => {
   const result = await pool.query(`
     SELECT 
       p.id,
-      p.place_name,          -- ✅ ADD THIS (name of delegation)
-      p.code AS code_postal, -- keep code if you want
+      p.place_name,          
+      p.code AS code_postal, 
       g.name AS governorate
     FROM postal_codes p
     JOIN governorates g ON p.governorate_id = g.id
@@ -37,7 +37,7 @@ export const getAllPostalCodes = async () => {
   `);
   return result.rows;
 };
-
+// called in patient model to create a new address for a patient no service for create and update address because they are called in patient model when creating or updating a patient .
 export const createAddress = async (
   client,
   postal_code_id,

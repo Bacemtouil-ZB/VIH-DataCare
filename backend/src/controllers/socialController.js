@@ -1,8 +1,10 @@
+// cheked 15/04/2026
 import {
   getSocialByNumero as getSocialByNumeroService,
   createSocial as createSocialService,
   updateSocial as updateSocialService,
 } from "../services/socialService.js";
+
 import { logAction } from "../services/auditService.js";
 
 // Récupérer la fiche sociale par numéro
@@ -27,9 +29,6 @@ export const getSocialByNumero = async (req, res) => {
         message: "Aucune fiche sociale trouvée pour ce patient",
       });
     }
-
-    //
-
     res.status(200).json({
       success: true,
       social,

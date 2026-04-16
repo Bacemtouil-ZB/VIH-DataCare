@@ -1,9 +1,10 @@
+//cheked 15/04/2026
 import {
   FormulaireWrapper,
   HistoriqueAccordeon,
   HistoriqueActions,
   HistoriqueTable,
-  FieldError,                                              // ← import ajouté
+  FieldError,                                            
 } from "../../../../../../shared/components";
 import { ActionButton } from "../../../../../../shared/components";
 import { formatDateFr } from "../../../../../../shared/utils/logiqueTableHistory";
@@ -19,8 +20,8 @@ export default function ObservationUI({
   setDetailObservation,
   showForm,
   remarque,
-  handleRemarqueChange,                                    // ← remplace setRemarque direct
-  errors,                                                  // ← erreurs par champ
+  handleRemarqueChange,                                    
+  errors,                                                 
   isModifying,
   saving,
   handleSave,
@@ -40,9 +41,9 @@ export default function ObservationUI({
               rows={6}
               placeholder="Décrivez les observations médicales..."
               value={remarque}
-              onChange={handleRemarqueChange}              // ← clearFieldError automatique
+              onChange={handleRemarqueChange}              
             />
-            <FieldError error={errors.remarque} />         {/* ← affiché sous le textarea */}
+            <FieldError error={errors.remarque} />         
             <div className="d-flex justify-content-end mt-1">
               <small className="text-secondary">
                 {remarque.length} caractère{remarque.length !== 1 ? "s" : ""}

@@ -5,6 +5,7 @@ import {
   mobileGetMeController,
   mobileLogoutController,
 } from "../../controllers/mobile/mobileAuthController.js";
+
 import { mobileProtect } from "../../middlewares/mobileAuthMiddleware.js";
 
 const router = express.Router();

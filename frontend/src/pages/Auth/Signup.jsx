@@ -10,7 +10,6 @@ function Signup() {
   const [formData, setFormData] = useState({
     nom: "", prenom: "", email: "", password: "", confirmPassword: "",
   });
-  const [agreeToTerms, setAgreeToTerms] = useState(false);
   const [errors, setErrors] = useState({});
 
   // Toast erreur backend
@@ -40,8 +39,6 @@ function Signup() {
       e.password = "Doit contenir un chiffre";
     if (formData.password !== formData.confirmPassword)
       e.confirmPassword = "Les mots de passe ne correspondent pas";
-    if (!agreeToTerms)
-      e.terms = "Vous devez accepter les conditions d'utilisation";
 
     return e;
   };
@@ -67,12 +64,11 @@ function Signup() {
         formData.email.trim().toLowerCase(),
         formData.password
       );
-
-      toast.success("Compte créé ! Vérifiez votre email pour l'activer.");
+      toast.success("Compte créé ! Email envoyé après activation.");
       setFormData({ nom: "", prenom: "", email: "", password: "", confirmPassword: "" });
-      setAgreeToTerms(false);
 
-      setTimeout(() => navigate('/login', { state: { message: "Connectez-vous après activation." } }), 3000);
+
+      setTimeout(() => navigate('/login'), 3000);
 
     } catch (err) {
       if (err.response?.data?.errors) {
@@ -151,16 +147,6 @@ function Signup() {
               {errors.confirmPassword && <p className="mt-1 text-xs text-red-500">{errors.confirmPassword}</p>}
             </div>
 
-            {/* Terms */}
-            <div>
-              <label className="flex items-start cursor-pointer">
-                <input type="checkbox" checked={agreeToTerms}
-                  onChange={(e) => { setAgreeToTerms(e.target.checked); setErrors(p => ({ ...p, terms: "" })); }}
-                  className="w-4 h-4 text-green-500 rounded mt-0.5" disabled={loading} />
-                <span className="ml-2 text-sm text-gray-600">J'accepte les conditions générales d'utilisation *</span>
-              </label>
-              {errors.terms && <p className="mt-1 text-xs text-red-500 ml-6">{errors.terms}</p>}
-            </div>
 
             {/* Submit */}
             <button type="submit" disabled={loading}

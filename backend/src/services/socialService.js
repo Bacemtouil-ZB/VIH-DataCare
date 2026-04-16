@@ -1,3 +1,4 @@
+// cheked 15/04/2026
 import {
   getSocialByNumero as getSocialByNumeroModel,
   createSocial as createSocialModel,

@@ -1,3 +1,4 @@
+//cheked 15/04/2026
 import { fetchMedical, addMedical, editMedical } from "../../services/antecedents/medicalService.js";
 
 export const getMedicalController = async (req, res) => {

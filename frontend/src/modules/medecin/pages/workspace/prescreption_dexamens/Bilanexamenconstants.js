@@ -1,3 +1,4 @@
+//cheked 15/04/2026
 export const BILANS = [
   { key: "bilan_initial_complet",  label: "Bilan initial complet",   isMaster: true },
   { key: "serologie_vih",          label: "Sérologie VIH"                           },

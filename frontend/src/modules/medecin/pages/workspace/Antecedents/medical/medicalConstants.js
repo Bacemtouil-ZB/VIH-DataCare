@@ -1,3 +1,4 @@
+//cheked 15/04/2026
 export const MEDICAL_INITIAL_STATE = {
   diabete: false,
   hypertension: false,

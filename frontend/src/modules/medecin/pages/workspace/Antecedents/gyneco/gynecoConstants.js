@@ -1,3 +1,4 @@
+//cheked 15/04/2026
 export const GYNECO_INITIAL_STATE = {
   gestite: "",
   parite: "",

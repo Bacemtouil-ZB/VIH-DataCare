@@ -1,3 +1,4 @@
+//cheked 15/04/2026
 import { fetchTransfusion, addTransfusion, editTransfusion, removeTransfusion } from "../../services/antecedents/transfusionService.js";
 
 export const getTransfusionController = async (req, res) => {

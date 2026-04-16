@@ -1,10 +1,10 @@
+// cheked 15/04/2026
 import {
   PageTitle,
   ActionButton,
   FieldLabel,
   FieldError,
   Input,
-  RadioGroup,
   Spinner,
 } from "../../../../../shared/components";
 import { toInputDate } from "../../../../../shared/utils/dateHelpers";
@@ -186,7 +186,7 @@ export default function VihUI({
 
             
 
-            <div className="col-12 mt-2  mt-4">
+            <div className="col-12 mt-4">
               {!isEditMode && !isCreateMode ?
                 <ActionButton type="button" action="edit" label="Modifier" onClick={handleEdit} block={true} />
               : <div className="edit-actions">

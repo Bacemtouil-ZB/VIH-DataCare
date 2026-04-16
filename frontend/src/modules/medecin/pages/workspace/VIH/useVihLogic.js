@@ -1,4 +1,5 @@
-﻿import { useEffect, useState } from "react";
+﻿// cheked 15/04/2026
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { confirmEdit } from "../../../../../shared/utils/uiAlerts";
 import {
@@ -61,7 +62,7 @@ export function useVihLogic(numero) {
   const submitVihData = async (payload) => {
 
     // ── Validation frontend des champs requis ──────────────────────────────
-    // Chaque champ manquant → FieldError sous le champ (pas de toast global)
+    // Chaque champ manquant → FieldError sous le champ
     const fieldErrors = {};
     for (const field of REQUIRED_FIELDS) {
       const value = payload[field.key];
@@ -105,11 +106,9 @@ export function useVihLogic(numero) {
         setErrors(errorObj);
         return;
       }
-
-      // Cas 2 — message simple (validateDateLogic — cohérence entre les deux dates)
-      // → FieldError sous date_derniere_negative (c'est ce champ qui doit être antérieur)
+      // Cas 2 — message simple (validateDateLogic — cohérence entre les deux dates) 
       if (error?.message) {
-        setErrors({ date_derniere_negative: error.message });
+        setErrors({ date_derniere_negative: error.message }); //
         return;
       }
 

@@ -1,16 +1,12 @@
-﻿import { NavLink }                          from "react-router-dom";
-import { useRef, useState, useEffect }      from "react";
-import {
-  ActionButton, PageTitle, FilterToolbar, Spinner,
-} from "../../../../shared/components/index.js";
+﻿import { NavLink }  from "react-router-dom";
+import { useRef, useState, useEffect }  from "react";
+
+import { ActionButton, PageTitle, FilterToolbar, Spinner} from "../../../../shared/components/index.js";
 
 import usePatientsPage    from "./usePatientsPage.js";
 import useNotifications   from "./notification/useNotifications.js";
-
 import { daysUntil, getRdvBarWidth, getDaysLabel } from "./patientsPageHelpers.js";
-import {
-  HOSPITALISATION_OPTIONS, RDV_FILTER_OPTIONS, TABLE_COLUMNS,
-} from "./patientsPageConstants.js";
+import { HOSPITALISATION_OPTIONS, RDV_FILTER_OPTIONS, TABLE_COLUMNS} from "./patientsPageConstants.js";
 import { NOTIF_ICON_MAP } from "./notification/notificationConstants.js";
 
 import "./PatientsPage.css";

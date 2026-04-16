@@ -14,7 +14,7 @@ import { generateToken } from "../utils/jwt.js";
 import {
   sendUserCredentialsEmail,
   sendPasswordResetEmail,
-} from "./mailService.js";
+} from "../utils/mailer.js";
 
 export const loginUser = async (email, password) => {
   // Vérifier si l'utilisateur existe

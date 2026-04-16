@@ -1,3 +1,4 @@
+//cheked 15/04/2026
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { confirmAction, alertError } from "../../../../../../shared/utils/uiAlerts";
@@ -50,7 +51,7 @@ export default function SurgicalOrchestrer() {
     <SurgicalUI
       items={items}
       form={form}
-      errors={errors}          // ← transmission des erreurs au composant UI
+      errors={errors}          
       editingItem={editingItem}
       showForm={showForm}
       saving={saving}

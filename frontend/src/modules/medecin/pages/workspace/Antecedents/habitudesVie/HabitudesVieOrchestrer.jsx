@@ -1,5 +1,5 @@
+//cheked 15/04/2026
 import { useParams } from "react-router-dom";
-import { toast } from "react-toastify";
 import { confirmAction, alertError } from "../../../../../../shared/utils/uiAlerts";
 import { Spinner } from "../../../../../../shared/components/UI/Loading/Spinner.jsx";
 import useHabitudesVie from "./useHabitudesVie";
@@ -37,7 +37,7 @@ export default function HabitudesVieOrchestrer() {
   return (
     <HabitudesVieUI
       form={form}
-      errors={errors}          // ← transmission des erreurs au composant UI
+      errors={errors}         
       isExisting={isExisting}
       isEditing={isEditing}
       saving={saving}

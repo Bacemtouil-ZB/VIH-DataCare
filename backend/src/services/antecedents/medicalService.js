@@ -1,3 +1,4 @@
+//cheked 15/04/2026
 import pool from "../../config/db.js";
 import { getMedical, createMedical, updateMedical } from "../../models/antecedents/medicalModel.js";
 

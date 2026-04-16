@@ -1,3 +1,4 @@
+//cheked 15/04/2026
 import {
   HistoriqueAccordeon,
   HistoriqueActions,
@@ -8,7 +9,7 @@ import {
   AutresSignesSection,
   RasToggle,
 } from "../index";
-import { ActionButton,  FieldError,                                              // ← import ajouté
+import { ActionButton,  FieldError,                                              
  } from "../../../../../../shared/components";
 import ToggleSwitch from "../../../../components/buttons/ToggleSwitch";
 import { formatDateFr } from "../../../../../../shared/utils/logiqueTableHistory";
@@ -44,7 +45,7 @@ export default function SignesFonctionnelsUI({
   ajouterAutreSigne,
   supprimerAutreSigne,
   modifierDescription,
-  errors,                                                  // ← erreurs backend
+  errors,                                                  
   handleSave,
 }) {
   return (
