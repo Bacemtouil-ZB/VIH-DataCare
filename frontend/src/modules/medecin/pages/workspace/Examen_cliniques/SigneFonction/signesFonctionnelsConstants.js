@@ -1,4 +1,5 @@
-﻿export const PAGE_CONTAINER_CLASS = "ec-page-bg";
+﻿//cheked 15/04/2026
+export const PAGE_CONTAINER_CLASS = "ec-page-bg";
 export const HISTORY_HEADERS = ["Date", "Signes positifs", "Action"];
 export const SIGNES_KEYS = [
   "fievre","toux","dyspnee","sueurs_nocturnes","cephalee","rhinorrhee",

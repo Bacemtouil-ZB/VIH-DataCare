@@ -1,4 +1,4 @@
-
+//cheked 15/04/2026
 import { useParams } from "react-router-dom";
 import { useBilanExamenLogic } from "./useBilanExamenLogic";
 import BilanExamenUI            from "./BilanExamenUI";

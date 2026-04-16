@@ -1,4 +1,5 @@
-﻿import { useEffect, useMemo, useState } from "react";
+﻿//cheked 15/04/2026
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { confirmAction, alertError } from "../../../../../../shared/utils/uiAlerts";
 import {
@@ -113,7 +114,6 @@ export function useSignesCliniquesLogic(numero, examenId) {
     setDescription("");
     setShowForm(true);
     setErrors({});
-    toast.info("Mode modification activé");
   };
 
   const handleShowDetails = (s) => {

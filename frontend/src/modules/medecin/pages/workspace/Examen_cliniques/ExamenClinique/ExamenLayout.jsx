@@ -24,6 +24,7 @@ export default function ExamenLayout() {
       return;
     }
     initExamenClinique();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [numero, navigate]);
 
   const initExamenClinique = async () => {

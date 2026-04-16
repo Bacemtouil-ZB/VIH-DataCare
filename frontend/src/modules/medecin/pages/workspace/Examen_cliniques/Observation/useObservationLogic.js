@@ -1,4 +1,5 @@
-﻿import { useEffect, useState } from "react";
+﻿//cheked 15/04/2026
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { confirmAction, alertError } from "../../../../../../shared/utils/uiAlerts";
 import {
@@ -18,7 +19,7 @@ export function useObservationLogic(patientNumero, examenId) {
   const [saving, setSaving] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [showHistory, setShowHistory] = useState(true);
-  const [errors, setErrors] = useState({});                // ← erreurs par champ
+  const [errors, setErrors] = useState({});                
 
   const [observationId, setObservationId] = useState(null);
   const [isModifying, setIsModifying] = useState(false);
@@ -32,7 +33,7 @@ export function useObservationLogic(patientNumero, examenId) {
     setObservationId(null);
     setIsModifying(false);
     setRemarque("");
-    setErrors({});                                         // ← efface les erreurs
+    setErrors({});                                         
   };
 
   // ====== Chargement initial ======
@@ -77,7 +78,7 @@ export function useObservationLogic(patientNumero, examenId) {
     setIsModifying(true);
     setRemarque(obs.remarque || "");
     setShowForm(true);
-    setErrors({});                                         // ← reset à l'ouverture
+    setErrors({});                                         
     toast.info("Mode modification actif");
   };
 
@@ -162,8 +163,8 @@ export function useObservationLogic(patientNumero, examenId) {
     observationId,
     remarque,
     setRemarque,
-    handleRemarqueChange,                                  // ← wrapper avec clearFieldError
-    errors,                                                // ← exposé pour <FieldError />
+    handleRemarqueChange,                                  
+    errors,                                                
     historique,
     detailObservation,
     setDetailObservation,

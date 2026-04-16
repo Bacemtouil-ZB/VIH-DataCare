@@ -1,5 +1,5 @@
+//cheked 15/04/2026
 import API from "../../../shared/utils/api";
-
 // Récupérer toutes les notifications RDV
 export const getNotificationsRdv = async () => {
   try {

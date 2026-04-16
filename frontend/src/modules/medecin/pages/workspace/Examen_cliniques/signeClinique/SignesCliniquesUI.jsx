@@ -1,4 +1,5 @@
-﻿import { ActionButton, FieldError } from "../../../../../../shared/components"; // ← FieldError ajouté
+﻿//cheked 15/04/2026
+import { ActionButton, FieldError } from "../../../../../../shared/components"; 
 import { FieldLabel } from "../../../../../../shared/components";
 import {
   HistoriqueAccordeon,
@@ -34,9 +35,9 @@ export default function SignesCliniquesUI({
   isModifying,
   saving,
   taille,
-  handleTailleChange,                                      // ← remplace setTaille direct
+  handleTailleChange,                                     
   poids,
-  handlePoidsChange,                                       // ← remplace setPoids direct
+  handlePoidsChange,                                       
   imc,
   appareils,
   autresSignes,
@@ -47,7 +48,7 @@ export default function SignesCliniquesUI({
   ajouterAutreSigne,
   supprimerAutreSigne,
   modifierDescription,
-  errors,                                                  // ← erreurs par champ
+  errors,                                                   
   handleSave,
 }) {
   return (
@@ -72,9 +73,9 @@ export default function SignesCliniquesUI({
                 min={1}
                 max={250}
                 value={taille}
-                onChange={handleTailleChange}              // ← clearFieldError automatique
+                onChange={handleTailleChange}              
               />
-              <FieldError error={errors.taille} />         {/* ← affiché sous taille */}
+              <FieldError error={errors.taille} />        
             </div>
 
             <div className="ec-flex-input">
@@ -86,9 +87,9 @@ export default function SignesCliniquesUI({
                 min={1}
                 max={300}
                 value={poids}
-                onChange={handlePoidsChange}               // ← clearFieldError automatique
+                onChange={handlePoidsChange}              
               />
-              <FieldError error={errors.poids} />          {/* ← affiché sous poids */}
+              <FieldError error={errors.poids} />         
             </div>
 
             <div className="ec-flex-input-l">

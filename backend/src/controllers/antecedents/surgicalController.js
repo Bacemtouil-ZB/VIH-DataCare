@@ -1,3 +1,4 @@
+//cheked 15/04/2026
 import { fetchSurgical, addSurgical, editSurgical, removeSurgical } from "../../services/antecedents/surgicalService.js";
 
 export const getSurgicalController = async (req, res) => {

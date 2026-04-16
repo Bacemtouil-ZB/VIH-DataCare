@@ -1,3 +1,4 @@
+//cheked 15/04/2026
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useBlocker } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -70,7 +71,7 @@ export default function useMedical(numero) {
     if (isHandlingBlock.current) return;
     isHandlingBlock.current = true;
  
-    const isAntecedentsNav = blocker.location.pathname.includes("/antecedents/");
+    const isAntecedentsNav = blocker.location.pathname.includes("/antecedents/"); // used to identify if navigation is within the antecedents section
  
     if (isAntecedentsNav) {
       (async () => {
@@ -105,7 +106,7 @@ export default function useMedical(numero) {
         isHandlingBlock.current = false;
       }
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [blocker.state]);
  
   const handleToggle = (key) => {

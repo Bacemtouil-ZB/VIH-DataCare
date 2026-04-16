@@ -1,6 +1,6 @@
 ﻿import pool from "../config/db.js";
 
-const normalizeNumero = (n) => {
+const normalizeNumero = (n) => {  // nope 
   if (!n) return { withPrefix: null, raw: null };
   const raw = String(n).replace(/^F-/i, "").trim();
   return { withPrefix: `F-${raw}`, raw };
@@ -134,6 +134,8 @@ export const createPrescription = async ({
     client.release();
   }
 };
+
+//-----------------------------pharmacien-----------------------------
 
 // ── VALIDER — Scénario 1 : sans modification ──────────────────
 export const validerPrescription = async (id) => {

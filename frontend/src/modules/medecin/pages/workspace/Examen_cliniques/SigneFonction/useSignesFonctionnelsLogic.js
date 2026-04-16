@@ -1,4 +1,5 @@
-﻿import { useEffect, useState } from "react";
+﻿//cheked 15/04/2026
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { confirmAction, alertError } from "../../../../../../shared/utils/uiAlerts";
 import {
@@ -23,7 +24,7 @@ export function useSignesFonctionnelsLogic(patientNumero, examenId) {
   const [saving, setSaving] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [showHistory, setShowHistory] = useState(true);
-  const [errors, setErrors] = useState({});                // ← erreurs par champ
+  const [errors, setErrors] = useState({});                
 
   const [signesId, setSignesId] = useState(FORM_SF_INIT.signesId);
   const [isModifying, setIsModifying] = useState(FORM_SF_INIT.isModifying);
@@ -46,7 +47,7 @@ export function useSignesFonctionnelsLogic(patientNumero, examenId) {
     setAutresSignes(FORM_SF_INIT.autresSignes);
     setAppareilSel(FORM_SF_INIT.appareilSel);
     setDescription(FORM_SF_INIT.description);
-    setErrors({});                                         // ← efface les erreurs
+    setErrors({});                                         
   };
 
   // ====== Chargement initial ======
@@ -92,7 +93,7 @@ export function useSignesFonctionnelsLogic(patientNumero, examenId) {
     setAppareilSel("");
     setDescription("");
     setShowForm(true);
-    setErrors({});                                         // ← reset à l'ouverture
+    setErrors({});                                        
     toast.info("Mode modification activé");
   };
 
@@ -200,7 +201,7 @@ export function useSignesFonctionnelsLogic(patientNumero, examenId) {
     historique,
     detailSigne,
     setDetailSigne,
-    errors,                                                // ← exposé pour <FieldError />
+    errors,                                                
     openCreate,
     handleCancel,
     handleEdit,

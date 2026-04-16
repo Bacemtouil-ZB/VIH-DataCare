@@ -2,6 +2,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAllPatients } from "../../services/patientServices.jsx";
+//dans shared car utilisé aussi par ordonnance
 import { getLastPrescriptionPerPatient } from "../../../../shared/services/prescriptionWorkflowService.jsx";
 import { getNextRendezVousPerPatient }  from "../../services/rendezvousService.jsx";
 import { filterPatients }  from "./patientsPageHelpers.js";

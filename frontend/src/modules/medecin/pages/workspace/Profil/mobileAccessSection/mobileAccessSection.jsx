@@ -1,3 +1,4 @@
+// cheked 15/04/2026
 import { useState } from "react";
 import { useMobileAccess } from "./useMobileAccess.js";
 import CredentialsModal from "./credentialsModal.jsx";
@@ -20,7 +21,7 @@ export default function MobileAccessSection({ numero }) {
     handleCreate,
     handleReset,
     handleCloseModal,
-  } = useMobileAccess(numero);
+  } = useMobileAccess(numero, () => setModalOpen(false));
 
   if (!numero || loading) return null;
 

@@ -1,3 +1,4 @@
+// cheked 15/04/2026
 export const sanitizeText = (value) =>
   typeof value === "string" ? value.replace(/[<>]/g, "") : value;
 

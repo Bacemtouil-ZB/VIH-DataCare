@@ -1,4 +1,4 @@
-import { ALL_BILAN_KEYS } from "./bilanExamenConstants";
+import { ALL_BILAN_KEYS } from "./Bilanexamenconstants";
 
 // ── Nombre de bilans cochés dans un formulaire ────────────────
 export const countChecked = (form) =>

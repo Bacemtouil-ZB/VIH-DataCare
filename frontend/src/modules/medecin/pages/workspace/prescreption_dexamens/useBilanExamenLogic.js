@@ -1,4 +1,4 @@
-
+//cheked 15/04/2026
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { confirmAction, alertError } from "../../../../../shared/utils/uiAlerts";
@@ -7,8 +7,8 @@ import {
   createBilan,
   updateBilan,
 } from "../../../services/bilanExamenService";
-import { INITIAL_FORM } from "./bilanExamenConstants";
-import { applyToggle, countChecked, extractBilanFields, formatBilanSummary } from "./bilanExamenHelpers";
+import { INITIAL_FORM } from "./Bilanexamenconstants";
+import { applyToggle, countChecked, extractBilanFields } from "./Bilanexamenhelpers";
 
 export function useBilanExamenLogic(numero) {
 
@@ -47,7 +47,7 @@ export function useBilanExamenLogic(numero) {
     setEditingId(null);
   };
 
-  const closeForm = (notify = true) => {
+  const closeForm = () => {
     resetForm();
     setShowForm(false);
   };
@@ -96,7 +96,7 @@ export function useBilanExamenLogic(numero) {
       return;
     }
 
-    const ok = await confirmAction(
+     await confirmAction(
       isModifying ? "Enregistrer les modifications ?" : "Créer ce bilan ?",
       `${nbChecked} bilan(s) sélectionné(s) — les données seront enregistrées.`,
     );

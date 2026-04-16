@@ -1,6 +1,4 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// useGyneco.js
-// ─────────────────────────────────────────────────────────────────────────────
+//cheked 15/04/2026
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useBlocker } from "react-router-dom";
 import { toast } from "react-toastify";

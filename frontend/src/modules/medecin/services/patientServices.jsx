@@ -1,5 +1,5 @@
+//cheked 15/04/2026
 import API from "../../../shared/utils/api";
-
 export const createPatient = async (patientData) => {
   try {
     const response = await API.post("/patients/add", patientData);
@@ -18,7 +18,7 @@ export const getPatientByNumero = async (numero) => {
   }
 };
 
-
+// used in patients list page, to get the list of patients for the doctor
 export const getAllPatients = async () => {
   try {
     const response = await API.get("/patients/getAllPatients");
@@ -39,6 +39,7 @@ export const updatePatient = async (id, patientData) => {
 
 /**
  * Récupérer tous les médecins pour dropdown
+ * this is not in the patientRoutes, but in userRoutes, but since we need it in the patient form.
  */
 export const getAllDoctors = async () => {
   try {
@@ -53,6 +54,7 @@ export const getAllDoctors = async () => {
 
 //Récupère toutes les données nécessaires pour le formulaire :
 // - la liste des gouvernorats + leurs codes postaux associés
+// from backend/src/routes/addressRoutes.js : router.get("/form-data", getFormData);
 export const getFormData = async () => {
   try {
     const response = await API.get("/addresses/form-data");
@@ -65,6 +67,8 @@ export const getFormData = async () => {
     throw error.response?.data || error.message;
   }
 };
+
+// from backend/src/routes/patientRoutes.js : router.get("/check/:numero", checkNumeroExistsController);
 export const checkPatientNumero = async (numero) => {
   try {
     const response = await API.get(`/patients/check/${numero}`);

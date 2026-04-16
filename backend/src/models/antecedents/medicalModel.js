@@ -1,3 +1,4 @@
+//cheked 15/04/2026
 import pool from "../../config/db.js";
 
 export const getMedical = async (numero) => {

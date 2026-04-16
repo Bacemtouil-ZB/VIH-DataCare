@@ -2,6 +2,7 @@ import {
   fetchAllAddresses,
   fetchFormData,
 } from "../services/addresseService.js";
+
 export const listAllAddresses = async (req, res) => {
   try {
     const addresses = await fetchAllAddresses();

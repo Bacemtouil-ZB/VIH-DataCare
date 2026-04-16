@@ -4,6 +4,7 @@ import {
   updateUserRole,
   getAllDoctors,
 } from "../models/userModel.js";
+import { sendActivationEmail } from "../utils/mailer.js";
 
 /**
  * Récupère la liste de tous les utilisateurs
@@ -26,8 +27,21 @@ export const toggleUserActivation = async (userId, isactivated) => {
   if (!updatedUser) {
     throw new Error("Utilisateur non trouvé");
   }
-
-  // Ne pas retourner le mot de passe
+ 
+  // ── Envoyer email seulement lors de l'activation (pas lors désactivation) ──
+  if (isactivated && updatedUser.email) {
+    try {
+      await sendActivationEmail({
+        to: updatedUser.email,
+        nom: updatedUser.nom,
+        prenom: updatedUser.prenom,
+      });
+    } catch (mailErr) {
+      // L'activation est déjà enregistrée en base — on ne bloque pas si l'email échoue
+      console.error("Erreur envoi email activation:", mailErr);
+    }
+  }
+ 
   const { password: _, ...userWithoutPassword } = updatedUser;
   return userWithoutPassword;
 };
@@ -50,6 +64,17 @@ export const listAllDoctors = async () => {
   const doctors = await getAllDoctors();
   return doctors; // renvoie tableau [{id, nom, prenom, email}, ...]
 };
+
+
+
+
+
+
+
+
+
+
+
 //gestion du profil : update user info (nom, prenom, email, password)
 
 import bcrypt from "bcryptjs";

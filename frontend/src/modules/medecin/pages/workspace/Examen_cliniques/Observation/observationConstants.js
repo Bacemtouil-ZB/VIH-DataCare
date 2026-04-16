@@ -1,4 +1,5 @@
-﻿export const PAGE_CONTAINER_CLASS = "ec-page-bg";
+﻿//cheked 15/04/2026
+export const PAGE_CONTAINER_CLASS = "ec-page-bg";
 
 export const LABEL_CLS = "text-uppercase fw-semibold text-secondary d-block mb-1 ec-label";
 

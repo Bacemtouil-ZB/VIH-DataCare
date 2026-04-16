@@ -1,9 +1,12 @@
+// cheked 15/04/2026
 import {
   mobileLoginService,
   mobileChangePasswordService,
 } from "../../services/mobile/mobileAuthService.js";
+
 import { findPatientByUserId } from "../../models/mobile/mobilePatientModel.js";
-// POST /api/mobile/auth/login
+
+//---------------login------------------
 export const mobileLoginController = async (req, res) => {
   const { username, password } = req.body;
 
@@ -29,7 +32,7 @@ export const mobileLoginController = async (req, res) => {
   }
 };
 
-// PUT /api/mobile/auth/change-password
+//---------------change password------------------
 export const mobileChangePasswordController = async (req, res) => {
   const { newPassword } = req.body;
 
@@ -51,7 +54,7 @@ export const mobileChangePasswordController = async (req, res) => {
   }
 };
 
-// GET /api/mobile/auth/me
+//---------------get me------------------
 export const mobileGetMeController = async (req, res) => {
   try {
     const patient = await findPatientByUserId(req.user.id);
@@ -75,17 +78,20 @@ export const mobileGetMeController = async (req, res) => {
   }
 };
 
-// POST /api/mobile/auth/logout
+//---------------logout------------------
 export const mobileLogoutController = async (req, res) => {
   return res.status(200).json({
     success: true,
     message: "Déconnexion réussie",
   });
 };
+
+
+//------------------save push token------------------
 // used to save expo push token for the user to send notifications later
+// saved in table user 
 import { savePushToken } from '../../models/mobile/mobileUserModel.js';
 
-// POST /api/mobile/patient/push-token
 export const savePushTokenController = async (req, res) => {
   const { pushToken } = req.body;
 

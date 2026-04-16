@@ -1,3 +1,4 @@
+//cheked 15/04/2026
 import { fetchGyneco, addGyneco, editGyneco } from "../../services/antecedents/gynecoService.js";
 
 export const getGynecoController = async (req, res) => {

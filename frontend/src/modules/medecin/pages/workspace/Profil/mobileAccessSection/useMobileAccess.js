@@ -1,3 +1,4 @@
+// cheked 15/04/2026
 import { useState, useEffect, useCallback } from "react";
 import {
   getMobileAccountStatus,
@@ -8,7 +9,7 @@ import { getAccountStatus } from "./mobileAccess.helpers.js";
 import { MOBILE_ACCESS_STATUS, MESSAGES } from "./mobileAccess.constants.js";
 import { confirmAction } from "../../../../../../shared/utils/uiAlerts";
 
-export const useMobileAccess = (numero) => {
+export const useMobileAccess = (numero, onActionSuccess) => {
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
@@ -35,17 +36,13 @@ export const useMobileAccess = (numero) => {
   }, [fetchStatus]);
 
   const handleCreate = async () => {
-    const confirmed = await confirmAction(
-      MESSAGES.CREATE_CONFIRM,
-      "Un identifiant et un mot de passe temporaire seront générés."
-    );
-    if (!confirmed) return;
     try {
       setActionLoading(true);
       setError(null);
       const data = await createMobileAccount(numero);
       setCredentials(data.credentials);
       setShowModal(true);
+      onActionSuccess?.();
       await fetchStatus();
     } catch (err) {
       setError(err.message || "Erreur lors de la création");
@@ -66,6 +63,7 @@ export const useMobileAccess = (numero) => {
       const data = await resetMobilePassword(numero);
       setCredentials(data.credentials);
       setShowModal(true);
+      onActionSuccess?.();
     } catch (err) {
       setError(err.message || "Erreur lors de la réinitialisation");
     } finally {
