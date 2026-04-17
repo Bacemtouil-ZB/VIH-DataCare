@@ -12,7 +12,7 @@ import {
 } from "../../models/mobile/mobileUserModel.js";
 
 const generateTempPassword = () => {
-  const chars = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789";
+  const chars = "ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789"; // !!
   let password = "";
   for (let i = 0; i < 8; i++) {
     password += chars.charAt(Math.floor(Math.random() * chars.length));

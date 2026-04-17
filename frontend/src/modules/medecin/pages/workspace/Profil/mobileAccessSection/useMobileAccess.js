@@ -56,7 +56,11 @@ export const useMobileAccess = (numero, onActionSuccess) => {
       MESSAGES.RESET_CONFIRM,
       "Un nouveau mot de passe temporaire sera généré."
     );
-    if (!confirmed) return;
+     if (!confirmed) {
+    handleCloseModal();        
+    onActionSuccess?.();       //  CLOSE MAIN MODAL
+    return;
+  } 
     try {
       setActionLoading(true);
       setError(null);
@@ -74,6 +78,7 @@ export const useMobileAccess = (numero, onActionSuccess) => {
   const handleCloseModal = () => {
     setShowModal(false);
     setCredentials(null);
+    
   };
 
   const accountStatus = status ? getAccountStatus(status) : null;

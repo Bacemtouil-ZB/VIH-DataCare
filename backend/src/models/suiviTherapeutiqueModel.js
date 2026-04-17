@@ -146,7 +146,7 @@ export const getSuiviByNumeroDossier = async (numeroDossier) => {
 // ── UPDATE statut_patient en base (synchronisation périodique) ─
 // Appelé par un job cron ou après chaque validation pour garder
 // la table suivi_therapeutique cohérente avec les calculs SQL.
-export const syncStatutPatient = async () => {
+export const syncStatutPatient = async () => {  // 
   const query = `
     UPDATE suivi_therapeutique st
     SET

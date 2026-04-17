@@ -64,8 +64,7 @@ const DATE_FIELDS = [
 const TEXT_FIELDS = {
   observations: { max: 4000, label: "Observations" },
   radio_description: { max: 4000, label: "Description radio" },
-  // Taille maximale du champ genotypage_file_url : 50MB environ en base64
-  genotypage_file_url: { max: 50000000, label: "Fichier genotypage" },
+  
 };
 
 const RESULT_VALUE_FIELDS = [
@@ -116,16 +115,28 @@ const validatePastOrTodayDate = (value, fieldLabel) => {
   return true;
 };
 
+const validateDates = DATE_FIELDS.map((field) => {
+  const relatedSelectField = field.replace(/^date_/, "");
 
-const validateDates = DATE_FIELDS.map((field) =>
-  body(field)
-    .if((value, { req }) => Object.prototype.hasOwnProperty.call(req.body || {}, field))
-    .notEmpty()
-    .withMessage(`${field} est obligatoire`)
+  return body(field)
+    // 1️⃣ Rendre le champ totalement optionnel (null ou absent accepté)
+    .optional({ nullable: true, checkFalsy: true })
+    // 2️⃣ Valider seulement si le champ est présent ET que le select associé ≠ "NF"
+    .if((value, { req }) => {
+      // Si le champ n'est pas fourni ou est null → on ignore toute validation
+      if (value === undefined || value === null || value === "") {
+        return false;
+      }
+
+      // Récupérer la valeur du select associé
+      const selectValue = req.body?.[relatedSelectField];
+      // Si select = "NF", on ignore la validation de la date
+      return String(selectValue).toUpperCase() !== "NF";
+    })
     .isISO8601({ strict: true, strictSeparator: true })
-    .withMessage(`${field} doit respecter le format YYYY-MM-DD`)
-    .custom((value) => validatePastOrTodayDate(value, field)),
-);
+    .withMessage(`${field} doit être une date valide (YYYY-MM-DD)`)
+    .custom((value) => validatePastOrTodayDate(value, field));
+});
 
 const validateTexts = Object.entries(TEXT_FIELDS).map(([field, meta]) =>
   body(field)
@@ -139,9 +150,12 @@ const validateTexts = Object.entries(TEXT_FIELDS).map(([field, meta]) =>
 const validateGenotypageFile = body("genotypage_file_url")
   .optional({ nullable: true, checkFalsy: true })
   .custom((value) => {
-    if (!value) return true;
+    // Accepter null, undefined, chaîne vide, tableau vide
+    if (!value || (Array.isArray(value) && value.length === 0)) {
+      return true;
+    }
 
-    const textValue = String(value).trim();
+    const textValue = Array.isArray(value) ? JSON.stringify(value) : String(value).trim();
 
     const isDataUri = (uri) => {
       if (!uri || typeof uri !== "string") return false;
@@ -161,44 +175,40 @@ const validateGenotypageFile = body("genotypage_file_url")
       return isDataUri(trimmed) || isHttpUrl(trimmed);
     };
 
-    // Si c'est un tableau JSON (plusieurs fichiers)
+    // Cas tableau JSON
     if (textValue.startsWith("[") && textValue.endsWith("]")) {
       let parsed;
       try {
         parsed = JSON.parse(textValue);
       } catch {
-        throw new Error("Le fichier genotypage doit etre un tableau JSON de dataURL ou d'URLs valide");
+        throw new Error("Le fichier genotypage doit être un tableau JSON valide");
       }
-
-      if (!Array.isArray(parsed) || parsed.length === 0) {
-        throw new Error("Le fichier genotypage doit contenir au moins un fichier");
+      if (!Array.isArray(parsed)) {
+        throw new Error("Le fichier genotypage doit être un tableau JSON");
       }
+      if (parsed.length === 0) return true;
 
       parsed.forEach((entry) => {
         if (!validateSingleValue(entry)) {
-          throw new Error("Chaque élément de genotypage_file_url doit etre une image, un PDF ou une URL valide");
+          throw new Error("Chaque élément doit être une image, un PDF ou une URL valide");
         }
       });
 
-      // vérification de la taille
-      const MAX_GENOTYPAGE_LENGTH = 50000000; // 50MB de texte
-      if (textValue.length > MAX_GENOTYPAGE_LENGTH) {
-        throw new Error("Le fichier genotypage est trop volumineux (max 50MB). Utilisez moins de fichiers ou des fichiers plus petits.");
+      const MAX_SIZE = 50000000;
+      if (textValue.length > MAX_SIZE) {
+        throw new Error("Fichier trop volumineux (max 50MB)");
       }
-
       return true;
     }
 
-    // Cas simple fichier unique
+    // Cas valeur unique
     if (!validateSingleValue(textValue)) {
-      throw new Error("Le fichier genotypage doit etre une image, un PDF ou une URL valide");
+      throw new Error("Le fichier genotypage doit être une image, un PDF ou une URL valide");
     }
-
-    const MAX_GENOTYPAGE_LENGTH = 50000000; // 50MB de texte
-    if (textValue.length > MAX_GENOTYPAGE_LENGTH) {
-      throw new Error("Le fichier genotypage est trop volumineux (max 50MB). Utilisez moins de fichiers ou des fichiers plus petits.");
+    const MAX_SIZE = 50000000;
+    if (textValue.length > MAX_SIZE) {
+      throw new Error("Fichier trop volumineux (max 50MB)");
     }
-
     return true;
   });
 
