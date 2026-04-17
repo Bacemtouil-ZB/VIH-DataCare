@@ -28,6 +28,8 @@ export default function ResultatsBiologiques() {
       closeForm={logic.closeForm}
       handleShowDetails={logic.handleShowDetails}
       handleSubmit={logic.handleSubmit}
+      nfSections={logic.nfSections}
+      toggleSectionNF={logic.toggleSectionNF}
       fileInputRef={logic.fileInputRef}
       genotypageSectionRef={logic.genotypageSectionRef}
       openGenotypagePage={logic.openGenotypagePage}

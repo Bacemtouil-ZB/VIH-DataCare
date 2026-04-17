@@ -44,7 +44,7 @@ export default function CredentialsModal({ credentials, onClose }) {
         <div className="credentials-print-row">
           <button
             className="btn-print"
-            onClick={() => printCredentials(credentials)}
+            onClick={() => printCredentials(credentials)} // imprimer @ and credentiel 
           >
             <i className="bi bi-printer"></i>
             {LABELS.PRINT}

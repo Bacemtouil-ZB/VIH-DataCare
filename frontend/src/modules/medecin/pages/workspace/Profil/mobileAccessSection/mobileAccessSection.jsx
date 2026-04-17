@@ -47,7 +47,9 @@ export default function MobileAccessSection({ numero }) {
         <i className="bi bi-phone"></i>
         {LABELS.SECTION_TITLE}
         <span className={`trigger-badge ${triggerBadgeClass}`}>
-          {triggerBadgeIcon}
+          <span className="trigger-icon">
+            {triggerBadgeIcon}
+          </span>
         </span>
       </button>
 
@@ -150,12 +152,12 @@ export default function MobileAccessSection({ numero }) {
       )}
 
       {/* Credentials Modal */}
-      {showModal && (
-        <CredentialsModal
-          credentials={credentials}
-          onClose={handleCloseModal}
-        />
-      )}
+     {showModal && (
+    <CredentialsModal
+      credentials={credentials}
+      onClose={handleCloseModal}
+    />
+  )}
     </>
   );
 }

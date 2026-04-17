@@ -8,7 +8,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import useReminders from '../hooks/useReminders';
-import ReminderCard from '../components/ReminderCard';
+import ReminderCard from '../components/reminderCard';
 import styles from '../styles/reminders.styles';
 import colors from '../../../constants/colors';
 
