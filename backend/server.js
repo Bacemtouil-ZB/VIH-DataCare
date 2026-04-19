@@ -86,7 +86,7 @@ app.use("/api/suivi-notifications", suiviNotificationRoute);
 app.use("/api/permissions", permissionRoutes);
 app.use("/api/emergency-contacts", emergencyContactRoutes);
 app.use("/api/bi", biRoutes);
-import { startBiRefreshJob } from "./src/utils/biRefreshJob.js";
+import { startBiRefreshJob , startStatutsJob } from "./src/utils/biRefreshJob.js";
 
 // 404 handler
 app.use((req, res) => {
@@ -116,7 +116,8 @@ const startServer = async () => {
 };
 
 // Démarrer le job de refresh BI
-startBiRefreshJob();
+startBiRefreshJob(); // utilisé pour faire refresh les MVs de la BI chaque nuit à 02h00
+startStatutsJob();// utilisé pour faire refresh les statuts des patients chaque nuit à 03h00
 
 startServer();
 

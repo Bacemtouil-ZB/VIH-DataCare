@@ -140,7 +140,7 @@ export const createPatient = async (client, patientData, userId) => {
     exact_address, 
     phone,
     hospitalisation,
-    status,
+    status,        // médecin peut envoyer uniquement les 4 administratifs
     remarks,
     email,
     whatsapp,
@@ -184,7 +184,7 @@ export const createPatient = async (client, patientData, userId) => {
       residence_address_id,
       phone,
       hospitalisation,
-      status || "actif",
+      status && ['transfere', 'migrant'].includes(status) ? status : 'en_attente',
       remarks || null,
       email || null,
       whatsapp || null,
@@ -215,15 +215,19 @@ export const updatePatient = async (id, patientData, updatedBy) => {
       residence_address_id,
       birth_postal_code_id,
       residence_postal_code_id,
-      exact_address, //  update residence exact_address in addresses table
+      exact_address,
       phone,
       hospitalisation,
-      status,
+      status,        // médecin peut envoyer uniquement les 4 administratifs
       remarks,
       email,
-      whatsapp, 
+      whatsapp,
       doctor_id,
     } = patientData;
+
+    // ── Validation statut : uniquement les 4 administratifs ──
+    const STATUTS_ADMIN = ['decede', 'decede_sida', 'transfere', 'migrant'];
+    const statutValide = status && STATUTS_ADMIN.includes(status) ? status : undefined;
 
     // 1) Update addresses
     if (birth_address_id && birth_postal_code_id) {
@@ -239,41 +243,41 @@ export const updatePatient = async (id, patientData, updatedBy) => {
       );
     }
 
-    // 2) Update patient ( no exact_address column here)
+    // 2) Update patient
     const result = await client.query(
       `
       UPDATE patients
       SET 
-        numero = COALESCE($1, numero),
-        name = COALESCE($2, name),
-        surname = COALESCE($3, surname),
-        birthdate = COALESCE($4, birthdate),
-        gender = COALESCE($5, gender),
-        phone = COALESCE($6, phone),
+        numero         = COALESCE($1,  numero),
+        name           = COALESCE($2,  name),
+        surname        = COALESCE($3,  surname),
+        birthdate      = COALESCE($4,  birthdate),
+        gender         = COALESCE($5,  gender),
+        phone          = COALESCE($6,  phone),
         hospitalisation = COALESCE($7, hospitalisation),
-        status = COALESCE($8, status),
-        remarks = COALESCE($9, remarks),
-        email = COALESCE($10, email),
-        whatsapp = COALESCE($11, whatsapp),
-        doctor_id = COALESCE($12, doctor_id),
-        updated_by = $13,
-        updated_at = NOW()
+        status         = COALESCE($8,  status),
+        remarks        = COALESCE($9,  remarks),
+        email          = COALESCE($10, email),
+        whatsapp       = COALESCE($11, whatsapp),
+        doctor_id      = COALESCE($12, doctor_id),
+        updated_by     = $13,
+        updated_at     = NOW()
       WHERE id = $14
       RETURNING *;
       `,
       [
-        numero,
-        name,
-        surname,
-        birthdate,
-        gender,
-        phone,
-        hospitalisation, 
-        status || "actif",
-        remarks || null,
-        email || null,
-        whatsapp || null,
-        doctor_id || null,
+        numero        || null,
+        name          || null,
+        surname       || null,
+        birthdate     || null,
+        gender        || null,
+        phone         || null,
+        hospitalisation || null,
+        statutValide  || null,   // undefined/non-admin → null → COALESCE garde l'ancien
+        remarks       || null,
+        email         || null,
+        whatsapp      || null,
+        doctor_id     || null,
         updatedBy,
         id,
       ],
@@ -291,4 +295,27 @@ export const updatePatient = async (id, patientData, updatedBy) => {
   }
 };
 
+// fonction pour patient en_attente sans aucune ligne suivi depuis plus de 180 jours → on les passe en perdu_de_vue
+export const recalculerTousLesStatuts = async () => {
+  const { rows } = await pool.query(
+    `SELECT p.id
+     FROM patients p
+     LEFT JOIN suivi_therapeutique st ON st.patient_id = p.id
+     WHERE p.status = 'en_attente'
+     AND st.id IS NULL;`
+  );
 
+  if (rows.length === 0) return [];
+
+  // Mettre à jour ceux qui dépassent 180 jours depuis created_at
+  const { rows: updated } = await pool.query(
+    `UPDATE patients
+     SET status = 'perdu_de_vue', updated_at = NOW()
+     WHERE id = ANY($1::int[])
+     AND CURRENT_DATE - created_at::date >= 180
+     RETURNING id, status;`,
+    [rows.map(r => r.id)]
+  );
+
+  return updated;
+};

@@ -1,17 +1,5 @@
 ﻿import pool from "../config/db.js";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Les champs ecart_jours et statut_patient sont calculés directement en SQL.
-// Plus aucune dépendance sur SuiviTherapeutique.js côté JS.
-//
-// Logique statut_patient (identique à suiviTherapeutiqueModel.js) :
-//   "en attente"             → prescription pas encore délivrée
-//   "récupéré perdue de vue" → était perdue de vue + nouvelle livraison récente (90j)
-//   "perdue de vue"          → ecart > 60 j sans livraison récente
-//   "en retard"              → ecart 1–60 j
-//   "actif"                  → ecart ≤ 0
-// ─────────────────────────────────────────────────────────────────────────────
-
 export const getPatientsWithPrescriptions = async () => {
   const query = `
     SELECT
@@ -20,6 +8,7 @@ export const getPatientsWithPrescriptions = async () => {
       p.name                                          AS patient_name,
       p.surname                                       AS patient_surname,
       p.birthdate                                     AS date_naissance,
+      p.status                                        AS statut_patient,
 
       pe.id                                           AS prescription_id,
       pe.date                                         AS date_debut_traitement,
@@ -42,34 +31,9 @@ export const getPatientsWithPrescriptions = async () => {
 
       -- Suivi thérapeutique
       st.date_prochaine_prise,
-
-      -- Écart en jours (≥ 0)
-      CASE
-        WHEN st.date_prochaine_prise IS NULL THEN 0
-        ELSE GREATEST(0, CURRENT_DATE - st.date_prochaine_prise)
-      END                                             AS ecart_jours,
-
-      -- Statut patient calculé dynamiquement
-      CASE
-        WHEN pe.statut NOT IN ('delivree', 'modifie')
-          THEN 'en attente'
-        WHEN st.date_prochaine_prise IS NULL
-          THEN 'en attente'
-        WHEN (CURRENT_DATE - st.date_prochaine_prise) > 60
-          AND EXISTS (
-            SELECT 1 FROM prescription_medicale pm2
-            WHERE pm2.patient_id = pe.patient_id
-              AND pm2.statut IN ('delivree', 'modifie')
-              AND pm2.date_delivrance >= CURRENT_DATE - INTERVAL '90 days'
-              AND pm2.id <> pe.id
-          )
-          THEN 'récupéré perdue de vue'
-        WHEN (CURRENT_DATE - st.date_prochaine_prise) > 60
-          THEN 'perdue de vue'
-        WHEN (CURRENT_DATE - st.date_prochaine_prise) BETWEEN 1 AND 60
-          THEN 'en retard'
-        ELSE 'actif'
-      END                                             AS statut_patient,
+      st.statut_patient                               AS suivi_statut_patient,
+      st.date_ecart,
+      st.alerte_contradiction,
 
       pe.created_at                                   AS prescription_created_at
 
@@ -80,10 +44,11 @@ export const getPatientsWithPrescriptions = async () => {
     LEFT  JOIN suivi_therapeutique   st ON st.prescription_id = pe.id
 
     GROUP BY
-      p.id, p.numero, p.name, p.surname, p.birthdate,
+      p.id, p.numero, p.name, p.surname, p.birthdate, p.status,
       pe.id, pe.date, pe.posologie, pe.periode, pe.periode_modifiee,
       pe.statut, pe.date_delivrance, pe.remarque,
-      st.date_prochaine_prise,
+      st.date_prochaine_prise, st.statut_patient,
+      st.date_ecart, st.alerte_contradiction,
       pe.created_at
 
     ORDER BY pe.created_at DESC;

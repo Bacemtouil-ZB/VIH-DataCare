@@ -59,3 +59,30 @@ BEFORE UPDATE ON suivi_therapeutique
 FOR EACH ROW EXECUTE FUNCTION fn_suivi_updated_at();
  
  
+---bacem 19/04/2025
+-- 1. Supprimer ancien CHECK statut
+
+ALTER TABLE public.suivi_therapeutique
+  DROP CONSTRAINT suivi_therapeutique_statut_patient_check;
+
+-- 2. Corriger DEFAULT
+ALTER TABLE public.suivi_therapeutique
+  ALTER COLUMN statut_patient SET DEFAULT 'actif';
+
+-- 3. Ajouter nouveau CHECK
+ALTER TABLE public.suivi_therapeutique
+  ADD CONSTRAINT suivi_therapeutique_statut_patient_check
+    CHECK (statut_patient::text = ANY (ARRAY[
+      'actif'::character varying,
+      'en_retard'::character varying,
+      'perdu_de_vue'::character varying,
+      'recupere'::character varying
+    ]::text[]));
+
+-- 4. Corriger les valeurs existantes si nécessaire
+UPDATE public.suivi_therapeutique
+  SET statut_patient = 'actif'
+  WHERE statut_patient NOT IN ('actif', 'en_retard', 'perdu_de_vue', 'recupere');
+
+ALTER TABLE suivi_therapeutique
+ADD COLUMN alerte_contradiction BOOLEAN DEFAULT false;

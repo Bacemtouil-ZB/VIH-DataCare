@@ -18,7 +18,9 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 24px 32px;
+  
 }
+
 
 /* ===== Form Group ===== */
 .form-group {
@@ -183,3 +185,28 @@ button.cancel-btn:hover {
   font-size : 12px;
   margin-top: 1px;
 }
+
+/* ===== FORCE ROW FULL WIDTH ===== */
+.form-row {
+  display: flex !important;          
+  gap: 24px;
+  width: 100%;
+  grid-column: 1 / -1;               
+}
+
+/* ===== EACH FIELD TAKES EQUAL SPACE ===== */
+.form-row .form-group {
+  flex: 1;
+  min-width: 0;                     
+}
+
+/* ===== OPTIONAL: control sizes (better UI) */
+.form-row .form-group:nth-child(1) {
+  flex: 2.2; /* Numéro dossier bigger */
+}
+
+.form-row .form-group:nth-child(2),
+.form-row .form-group:nth-child(3) {
+  flex: 1.08; /* Nom et Prénom plus petits */
+}
+

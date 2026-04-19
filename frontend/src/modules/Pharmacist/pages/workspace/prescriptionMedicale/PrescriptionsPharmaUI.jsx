@@ -3,102 +3,86 @@ import {
   HistoriqueActions,
   HistoriqueTable,
   SearchBar,
-  Badge
+  Badge,
 } from "../../../../../shared/components";
-import { MESSAGES, TABLE_HEADERS }         from "./prescriptionsPharmaConstants";
+import {
+  MESSAGES,
+  TABLE_HEADERS,
+  BADGE_COLORS,
+} from "./prescriptionsPharmaConstants";
 import {
   resolveSuiviBadge,
   resolvePrescriptionBadge,
   isValidateDisabled,
   isModifyDisabled,
-  daysUntil,
-  getRdvBarWidth,
-  getDaysLabel,
 } from "./PrescriptionsPharmahelpers";
-import ModalDetailPrescription             from "../../../components/modal/Modaldetailprescription";
-import ModalValidationPrescription         from "../../../components/modal/ModalValidationPrescription";
-import ModalModifierPeriode                from "../../../components/modal/ModalModifierPeriode";
-import { formatDateFr }                    from "../../../../../shared/utils/logiqueTableHistory";
+import ModalDetailPrescription     from "../../../components/modal/Modaldetailprescription";
+import ModalValidationPrescription from "../../../components/modal/ModalValidationPrescription";
+import ModalModifierPeriode        from "../../../components/modal/ModalModifierPeriode";
+import { formatDateFr }            from "../../../../../shared/utils/logiqueTableHistory";
 
-// ── Palette de couleurs centralisée ──────────────────────────
-// Couvre les 5 statuts SQL retournés par le modèle
-const BADGE_COLORS = {
-  // Statut prescription
-  delivree:  { bg: "#dcfce7", color: "#166534" },
-  modifie:   { bg: "#ffedd5", color: "#9a3412" },
-  envoyee:   { bg: "#fef9c3", color: "#854d0e" },
-  // Statut suivi thérapeutique
-  actif:     { bg: "#dbeafe", color: "#1e40af" },
-  attente:   { bg: "#f1f5f9", color: "#475569" },
-  retard:    { bg: "#fff7ed", color: "#c2410c" },   // "en retard"
-  perdu:     { bg: "#fee2e2", color: "#991b1b" },   // "perdue de vue"
-  recupere:  { bg: "#f0fdf4", color: "#15803d" },   // "récupéré perdue de vue"
-};
+const resolvePalette = (key) => BADGE_COLORS[key] ?? BADGE_COLORS.en_attente;
 
-// ── Résolution de la palette suivi à partir du statut ────────
-const resolveSuiviPalette = (statutPatient) => {
-  const key = (statutPatient || "").toLowerCase().trim();
-  if (key.includes("récupéré") || key.includes("recupere")) return BADGE_COLORS.recupere;
-  if (key.includes("perdue") || key.includes("perdu"))       return BADGE_COLORS.perdu;
-  if (key.includes("retard"))                                 return BADGE_COLORS.retard;
-  if (key.includes("attente"))                                return BADGE_COLORS.attente;
-  return BADGE_COLORS.actif;
-};
-
-// ── SuiviBadge ───────────────────────────────────────────────
-function SuiviBadge({ statutPatient, ecartJours }) {
-  const { badgeText, showEcart } = resolveSuiviBadge(statutPatient, ecartJours);
-  const palette = resolveSuiviPalette(statutPatient);
-
+// ── Statut patient badge ──────────────────────────────────────
+function StatutPatientBadge({ statutPatient, dateEcart }) {
+  const { badgeText, showEcart } = resolveSuiviBadge(statutPatient, dateEcart);
+  const palette = resolvePalette(statutPatient);
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "0.25rem", alignItems: "flex-start" }}>
+    <div className="statut-wrapper">
       <Badge bg={palette.bg} color={palette.color}>{badgeText}</Badge>
       {showEcart && (
-        <Badge bg="#fef2f2" color="#dc2626">+{ecartJours}j</Badge>
+        <span className="ecart-badge">+{dateEcart}j de retard</span>
       )}
     </div>
   );
 }
 
-// ── PrescriptionBadge ─────────────────────────────────────────
+// ── Prescription badge ────────────────────────────────────────
 function PrescriptionBadge({ statutPrescription }) {
   const { badgeText } = resolvePrescriptionBadge(statutPrescription);
   const key     = (statutPrescription || "envoyee").toLowerCase();
-  const palette = BADGE_COLORS[key] ?? BADGE_COLORS.envoyee;
-
+  const palette = resolvePalette(key);
   return <Badge bg={palette.bg} color={palette.color}>{badgeText}</Badge>;
 }
 
-// ── RdvCell ───────────────────────────────────────────────────
-function RdvCell({ rdv }) {
-  if (!rdv?.date) {
-    return <Badge bg="#f8fafc" color="#94a3b8">Aucun RDV</Badge>;
-  }
-  const days    = daysUntil(rdv.date);
-  const label   = getDaysLabel(days);
-  const bar     = getRdvBarWidth(days);
-  const rdvDate = new Date(rdv.date).toLocaleDateString("fr-FR");
-
+// ── Colonne fusionnée : Prescription + Statut patient ─────────
+function StatutCell({ statutPrescription, statutPatient, dateEcart }) {
   return (
-    <div className="rdv-bar-cell">
-      <div className="rdv-bar-top">
-        <span className="rdv-bar-date">{rdvDate}</span>
-        <span className={`rdv-bar-days rdv-days-${bar.cls}`}>{label}</span>
-      </div>
-      <div className="rdv-bar-track">
-        <div className={`rdv-bar-fill rdv-fill-${bar.cls}`} style={{ width: `${bar.width}%` }} />
-      </div>
+    <div className="statut-cell">
+      <PrescriptionBadge statutPrescription={statutPrescription} />
+      <StatutPatientBadge statutPatient={statutPatient} dateEcart={dateEcart} />
     </div>
   );
 }
 
-// ── ActionButtons ─────────────────────────────────────────────
+// ── Colonne fusionnée : Date prochaine prise + écart ──────────
+function PriseDateCell({ dateProchainePrise, dateEcart }) {
+  if (!dateProchainePrise) return <span className="td-empty">—</span>;
+  const enRetard = dateEcart > 2;
+  return (
+    <div className="prise-cell">
+      <span className={enRetard ? "date-retard" : "date-future"}>
+        {formatDateFr(dateProchainePrise, "—")}
+      </span>
+      {enRetard && (
+        <span className="ecart-badge">+{dateEcart}j</span>
+      )}
+    </div>
+  );
+}
+
+// ── RDV cell ──────────────────────────────────────────────────
+function RdvCell({ rdv }) {
+  if (!rdv?.date) {
+    return <span className="rdv-none">Aucun RDV</span>;
+  }
+  return <span className="rdv-date">{formatDateFr(rdv.date, "—")}</span>;
+}
+
+// ── Action buttons ────────────────────────────────────────────
 function ActionButtons({ p, openDetail, openValidation, openModification, activeAction }) {
-  const statut = p.statutPrescription;
-
-  const validateBlocked = isValidateDisabled(statut) || activeAction === "modify";
-  const modifyBlocked   = isModifyDisabled(statut)   || activeAction === "validate";
-
+  const validateBlocked = isValidateDisabled(p.statutPrescription) || activeAction === "modify";
+  const modifyBlocked   = isModifyDisabled(p.statutPrescription)   || activeAction === "validate";
   return (
     <HistoriqueActions
       onDetails={() => openDetail(p)}
@@ -140,16 +124,12 @@ export default function PrescriptionsUI({
   handleValidate,
   handleValidateAvecModification,
 }) {
-  const activeAction = validationItem
-    ? "validate"
-    : modificationItem
-      ? "modify"
-      : null;
+  const activeAction = validationItem ? "validate" : modificationItem ? "modify" : null;
 
   return (
     <div className="prescriptions-page-container">
 
-      {/* ── Header ────────────────────────────────────────── */}
+      {/* ── Header ─────────────────────────────────────────── */}
       <div className="prescriptions-header">
         <h2 className="page-title">
           {MESSAGES.titrePage} ({filtered.length})
@@ -157,14 +137,13 @@ export default function PrescriptionsUI({
         <SearchBar
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          label=""
           placeholder="Rechercher par nom, prénom ou traitement"
           wrapperClassName="prescription-search"
           inputClassName="search-input"
         />
       </div>
 
-      {/* ── Tableau ───────────────────────────────────────── */}
+      {/* ── Tableau ─────────────────────────────────────────── */}
       <HistoriqueAccordeon
         title=""
         count={filtered.length}
@@ -179,49 +158,50 @@ export default function PrescriptionsUI({
           items={filtered}
           emptyMessage={search ? MESSAGES.aucunResultat : MESSAGES.aucunePrescription}
           renderRow={(p) => (
-            <tr key={p.prescriptionId || `${p.numeroDossier}-${p.nomTraitement}`}>
+            <tr key={p.prescriptionId}>
 
               {/* Date naissance */}
-              <td className="td-date">
+              <td className="col-date">
                 {p.dateNaissance
-                  ? new Date(p.dateNaissance).toLocaleDateString("fr-FR")
-                  : "-"}
+                  ? `- ${new Date(p.dateNaissance).toLocaleDateString("fr-FR")}`
+                  : "—"}
               </td>
 
               {/* Patient */}
-              <td className="td-patient">
-                {`${p.patientSurname} ${p.patientName}`.trim()}
+              <td className="col-patient">
+                <span className="patient-nom">
+                  {`${p.patientSurname} ${p.patientName}`.trim()}
+                </span>
+                <span className="patient-dossier">{p.numeroDossier}</span>
               </td>
 
               {/* Traitement */}
-              <td className="td-traitement">{p.nomTraitement}</td>
+              <td className="col-traitement">{p.nomTraitement}</td>
 
-              {/* Date prochaine prise */}
-              <td className="td-date">
-                {p.dateProchainePrise ? (
-                  <span className={p.ecartJours > 0 ? "date-retard" : "date-future"}>
-                    {formatDateFr(p.dateProchainePrise, "-")}
-                  </span>
-                ) : "-"}
+              {/* Prochaine prise + écart */}
+              <td className="col-prise">
+                <PriseDateCell
+                  dateProchainePrise={p.dateProchainePrise}
+                  dateEcart={p.dateEcart}
+                />
               </td>
 
-              {/* Statut prescription */}
-              <td className="td-statut">
-                <PrescriptionBadge statutPrescription={p.statutPrescription} />
-              </td>
-
-              {/* Suivi thérapeutique */}
-              <td className="td-statut">
-                <SuiviBadge statutPatient={p.statutPatient} ecartJours={p.ecartJours} />
+              {/* Prescription + Statut patient — fusionnés */}
+              <td className="col-statut">
+                <StatutCell
+                  statutPrescription={p.statutPrescription}
+                  statutPatient={p.statutPatient}
+                  dateEcart={p.dateEcart}
+                />
               </td>
 
               {/* RDV */}
-              <td className="td-rdv">
+              <td className="col-rdv">
                 <RdvCell rdv={p.rdv} />
               </td>
 
               {/* Action */}
-              <td className="td-action">
+              <td className="col-action">
                 <ActionButtons
                   p={p}
                   openDetail={openDetail}
@@ -235,7 +215,7 @@ export default function PrescriptionsUI({
         />
       </HistoriqueAccordeon>
 
-      {/* ── Modales ───────────────────────────────────────── */}
+      {/* ── Modales ─────────────────────────────────────────── */}
       <ModalDetailPrescription item={detailItem} onClose={closeDetail} />
       <ModalValidationPrescription
         item={validationItem}
