@@ -1,4 +1,3 @@
-
 import { useEffect, useMemo, useState } from "react";
 import {
   getPatientsWithPrescriptions,
@@ -11,18 +10,24 @@ import {
 } from "../../../../../shared/services/prescriptionWorkflowService";
 import { toUiPrescriptionItem, MESSAGES } from "./prescriptionsPharmaConstants";
 import { filterPrescriptions } from "./PrescriptionsPharmahelpers";
+import {
+  confirmAction,
+  alertSuccess,
+  alertError,
+} from "../../../../../shared/utils/uiAlerts.js";
 
 export function usePrescriptionsLogic() {
-  const [patients, setPatients] = useState([]);
-  const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [showHistory, setShowHistory] = useState(true);
-  const [detailItem, setDetailItem] = useState(null);
-  const [validationItem, setValidationItem] = useState(null);
-  const [modificationItem, setModificationItem] = useState(null); // ← NOUVEAU
+  const [patients, setPatients]               = useState([]);
+  const [search, setSearch]                   = useState("");
+  const [loading, setLoading]                 = useState(true);
+  const [error, setError]                     = useState(null);
+  const [showHistory, setShowHistory]         = useState(true);
+  const [detailItem, setDetailItem]           = useState(null);
+  const [validationItem, setValidationItem]   = useState(null);
+  const [modificationItem, setModificationItem] = useState(null);
   const [savingValidation, setSavingValidation] = useState(false);
 
+  // ── Chargement ───────────────────────────────────────────────
   const loadPatients = async () => {
     try {
       setLoading(true);
@@ -31,7 +36,7 @@ export function usePrescriptionsLogic() {
       try {
         await deleteExpiredPrescriptions();
       } catch (cleanupError) {
-        console.warn("Nettoyage des prescriptions expirees non execute:", cleanupError);
+        console.warn("Nettoyage prescriptions expirées non exécuté :", cleanupError);
       }
 
       const [data, rdvMap] = await Promise.all([
@@ -45,54 +50,72 @@ export function usePrescriptionsLogic() {
           const rdv = rdvMap?.[row.patient_id] ?? null;
           return toUiPrescriptionItem({
             ...row,
-            rdv_date: rdv?.date ?? null,
-            rdv_heure: rdv?.heure ?? null,
-            rdv_type: rdv?.type ?? null,
+            rdv_date:   rdv?.date   ?? null,
+            rdv_heure:  rdv?.heure  ?? null,
+            rdv_type:   rdv?.type   ?? null,
             rdv_statut: rdv?.statut ?? null,
           });
-        }),
+        })
       );
     } catch (err) {
-      setError(err?.message || err?.error || MESSAGES.erreurChargement);
+      setError(err?.message || MESSAGES.erreurChargement);
       setPatients([]);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    loadPatients();
-  }, []);
+  useEffect(() => { loadPatients(); }, []);
 
   const filtered = useMemo(
     () => filterPrescriptions(patients, search),
-    [patients, search],
+    [patients, search]
   );
 
-  const openDetail = (item) => setDetailItem(item);
-  const closeDetail = () => setDetailItem(null);
+  // ── Détail ───────────────────────────────────────────────────
+  const openDetail  = (item) => setDetailItem(item);
+  const closeDetail = ()     => setDetailItem(null);
 
-  const openValidation = (item) => setValidationItem(item);
-  const closeValidation = () => {
-    if (!savingValidation) setValidationItem(null);
-  };
+  // ── Validation ───────────────────────────────────────────────
+  const openValidation  = (item) => setValidationItem(item);
+  const closeValidation = ()     => { if (!savingValidation) setValidationItem(null); };
 
-  // ── NOUVEAU : Gestion modification ────────────────────────────
-  const openModification = (item) => setModificationItem(item);
-  const closeModification = () => {
-    if (!savingValidation) setModificationItem(null);
-  };
+  // ── Modification ─────────────────────────────────────────────
+  const openModification  = (item) => setModificationItem(item);
+  const closeModification = ()     => { if (!savingValidation) setModificationItem(null); };
 
   // ── Validation SANS modification (Scénario 1) ─────────────────
   const handleValidate = async () => {
     if (!validationItem?.prescriptionId) return;
+
+    const confirmed = await confirmAction({
+      title:        "Valider la prescription ?",
+      message:      "Le traitement sera délivré au patient.",
+      confirmLabel: "Valider",
+      cancelLabel:  "Annuler",
+    });
+    if (!confirmed) return;
+
     setSavingValidation(true);
     try {
-      await validatePrescription(validationItem.prescriptionId);
+      const result = await validatePrescription(validationItem.prescriptionId);
+
+      // Alerte contradiction → patient administratif + délivrance
+      if (result?.alerte) {
+        await confirmAction({
+          title:        "⚠️ Incohérence détectée",
+          message:      "Ce patient est marqué comme décédé ou transféré. Veuillez vérifier avec le médecin.",
+          confirmLabel: "Compris",
+          cancelLabel:  "Fermer",
+        });
+      } else {
+        await alertSuccess("Prescription validée avec succès");
+      }
+
       setValidationItem(null);
       await loadPatients();
     } catch (err) {
-      alert(err?.message || err?.error || MESSAGES.erreurValidation);
+      await alertError(err?.message || MESSAGES.erreurValidation);
     } finally {
       setSavingValidation(false);
     }
@@ -101,16 +124,37 @@ export function usePrescriptionsLogic() {
   // ── Validation AVEC modification (Scénario 2) ─────────────────
   const handleValidateAvecModification = async (periodeModifiee) => {
     if (!modificationItem?.prescriptionId) return;
+
+    const confirmed = await confirmAction({
+      title:        "Valider avec modification ?",
+      message:      `La période sera modifiée à ${periodeModifiee} jours.`,
+      confirmLabel: "Valider",
+      cancelLabel:  "Annuler",
+    });
+    if (!confirmed) return;
+
     setSavingValidation(true);
     try {
-      await validatePrescriptionAvecModification(
+      const result = await validatePrescriptionAvecModification(
         modificationItem.prescriptionId,
         periodeModifiee,
       );
+
+      if (result?.alerte) {
+        await confirmAction({
+          title:        "⚠️ Incohérence détectée",
+          message:      "Ce patient est marqué comme décédé ou transféré. Veuillez vérifier avec le médecin.",
+          confirmLabel: "Compris",
+          cancelLabel:  "Fermer",
+        });
+      } else {
+        await alertSuccess("Prescription modifiée et validée avec succès");
+      }
+
       setModificationItem(null);
       await loadPatients();
     } catch (err) {
-      alert(err?.message || err?.error || MESSAGES.erreurValidation);
+      await alertError(err?.message || MESSAGES.erreurValidation);
     } finally {
       setSavingValidation(false);
     }
@@ -124,7 +168,7 @@ export function usePrescriptionsLogic() {
     filtered,
     detailItem,
     validationItem,
-    modificationItem, // ← NOUVEAU
+    modificationItem,
     savingValidation,
     setSearch,
     setShowHistory,
@@ -133,9 +177,9 @@ export function usePrescriptionsLogic() {
     closeDetail,
     openValidation,
     closeValidation,
-    openModification, // ← NOUVEAU
-    closeModification, // ← NOUVEAU
+    openModification,
+    closeModification,
     handleValidate,
-    handleValidateAvecModification, // ← NOUVEAU
+    handleValidateAvecModification,
   };
 }

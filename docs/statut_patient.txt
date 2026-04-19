@@ -1,0 +1,125 @@
+Récap Final Complet — Système Statut Patient
+
+1. patients.status — 8 valeurs
+Valeurs calculées (système uniquement)
+ValeurConditionen_attentepatient créé, aucune délivrance encoreactifécart ≤ 2 jours, après 1ère délivranceen_retard2 < écart ≤ 179 joursperdu_de_vueécart ≥ 180 jours
+Valeurs administratives (médecin uniquement)
+ValeurQui écritdecedemédecindecede_sidamédecintransferemédecinmigrantmédecin
+Règles médecin :
+✅ peut écrire uniquement vers les 4 administratifs
+✅ peut signaler "faute de frappe" sur un administratif
+❌ ne peut jamais écrire actif / en_retard / perdu_de_vue
+❌ ne peut jamais écrire en_attente / recupere
+
+2. suivi_therapeutique.statut_patient — 5 valeurs
+ValeurConditionactifécart ≤ 2 joursen_retard2 < écart ≤ 179 joursperdu_de_vueécart ≥ 180 joursrecupereétait perdu_de_vue + nouvelle délivrance
+Règles :
+✅ système écrit à chaque délivrance
+✅ historique immuable permanent
+✅ recupere stocké ici uniquement
+✅ première ligne créée à la 1ère délivrance
+❌ jamais modifiable
+
+3. Calcul du statut dynamique
+Avant 1ère délivrance
+→ patients.status = 'en_attente'
+→ aucune ligne dans suivi_therapeutique
+
+Après 1ère délivrance
+→ ecart = CURRENT_DATE - date_prochaine_prise
+
+ecart ≤ 2 jours          → actif
+2 < ecart ≤ 179 jours    → en_retard
+ecart ≥ 180 jours        → perdu_de_vue
+
+était perdu_de_vue
++ nouvelle délivrance    → recupere (suivi_therapeutique)
+                         → actif    (patients.status)
+
+4. Règle 48h prescription
+Patient vient APRÈS 48h
+        ↓
+Pharmacien ne trouve pas la prescription
+        ↓
+prescription.statut = 'non_validee'
+        ↓
+Patient retourne au médecin
+        ↓
+Médecin crée nouvelle prescription
+        ↓
+patients.status reste inchangé jusqu'à nouvelle délivrance
+
+
+6. Règle de recalcul système
+Système recalcule TOUJOURS à chaque délivrance
+              ↓
+    ┌─────────────────────────────────┐
+    │ patients.status = administratif │
+    │ + délivrance récente existe     │
+    └─────────────────────────────────┘
+              ↓
+    ⚠️ ALERTE médecin
+    "incohérence détectée — faute de frappe probable"
+              ↓
+    médecin décide :
+    ✅ signale erreur  → système recalcule → bon statut auto
+    ✅ confirme statut → délivrance = erreur à investiguer
+
+    ┌─────────────────────────────────┐
+    │ patients.status = administratif │
+    │ + PAS de délivrance récente     │
+    └─────────────────────────────────┘
+              ↓
+    ✅ garde le status administratif tel quel
+    ✅ pas de recalcul
+
+7. File active (KPI principal)
+Inclure :
+✅ actif
+✅ en_retard
+Exclure :
+❌ en_attente
+❌ decede
+❌ decede_sida
+❌ transfere
+❌ migrant
+❌ perdu_de_vue
+
+8. Flux complet système
+1. Patient créé
+   → patients.status = 'en_attente'
+
+2. Médecin crée prescription
+   → prescription.statut = 'envoyee'
+   → patients.status reste 'en_attente'
+
+3. Pharmacien valide
+   → prescription.statut = 'delivree'
+   → date_delivrance = TODAY
+
+4. Système calcule
+   → ecart = CURRENT_DATE - date_prochaine_prise
+   → détermine statut calculé
+   → écrit suivi_therapeutique      (historique immuable)
+   → écrit patients.status          (toujours)
+   → ALERTE si contradiction        (administratif + délivrance)
+
+5. Médecin si besoin
+   → change vers administratif uniquement
+   → signale faute de frappe → système recalcule
+
+9. Résumé des 2 tables
+patients.statussuivi_therapeutique.statut_patientRôleVérité aujourd'huiHistorique permanentValeurs8 (4 calculées + 4 admin)5 (calculées + recupere)Qui écritSystème + MédecinSystème uniquementModifiableOui (médecin → admin only)Non jamaisen_attenteOuiNonrecupereNon (→ actif)OuiUsageAffichage, file active, alertesRapports, KPI, trimestres
+
+
+patients.model.js
+→ recalculerTousLesStatuts()
+→ cible : en_attente sans suivi ≥ 180 jours
+→ écrit : patients.status = perdu_de_vue
+
+suivi_therapeutique.model.js
+→ recalculerEcartEtStatuts()
+→ cible : dernière ligne suivi par patient
+→ écrit : suivi_therapeutique.date_ecart
+→ écrit : suivi_therapeutique.statut_patient
+→ écrit : patients.status

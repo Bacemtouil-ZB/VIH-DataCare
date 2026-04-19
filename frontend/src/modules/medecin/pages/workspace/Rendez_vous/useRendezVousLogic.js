@@ -1,5 +1,5 @@
-﻿import { useEffect, useMemo, useState } from "react";
-import { toast } from "react-toastify";
+﻿import { useEffect, useMemo, useState } from "react"; // there's another hook for estimating next prise reference.
+import { toast } from "react-toastify";               // usedateestimee
 import {
   confirmAction,
   alertError,
@@ -14,13 +14,13 @@ import {
   updateRendezvous,
 } from "../../../services/rendezvousService";
 import {
-  toFrDate,
+  //toFrDate,
   toInputDate,
   toInputTime,
 } from "../../../../../shared/utils/dateHelpers";
 import { INITIAL_FORM }    from "./rendezVousConstants";
 import { getStatusStyle }  from "./rendezVousHelpers";  // ← pickProchainePriseReference supprimé
-import { clearFieldError } from "../../../../../shared/components/Forms/FieldLabel/clearFieldError";
+// import { clearFieldError } from "../../../../../shared/components/Forms/FieldLabel/clearFieldError";
 
 export function useRendezVousLogic(numero) {
   const [searchDate,  setSearchDate]  = useState("");

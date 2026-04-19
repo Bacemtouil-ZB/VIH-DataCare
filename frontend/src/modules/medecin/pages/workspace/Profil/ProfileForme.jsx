@@ -2,6 +2,7 @@
 import "./ProfilForme.css";
 import { ActionButton, FieldLabel,FieldError, Input, RadioGroup, Spinner } from "../../../../../shared/components";
 import { confirmAction } from "../../../../../shared/utils/uiAlerts.js";
+import { STATUTS_ADMINISTRATIFS, STATUTS_LABELS, STATUTS_COLORS , STATUTS_CREATION } from './profileConstants.js';
 
 export default function ProfileForme({
   loading,
@@ -38,37 +39,72 @@ export default function ProfileForme({
   return (
     <div className="form-card">
       <form onSubmit={handleSubmit} className="form-grid">
-        <div className="form-group">
-          <FieldLabel required>Numéro dossier</FieldLabel>
-          <Input
-            name="numero"
-            value={formData.numero || ""}
-            onChange={handleNumeroChange}
-            disabled={!canEditNumero}
-            required
-            placeholder="Ex: 0001-2026"
-          />
-          {numeroHasError && (
-            <span className="error-text">Format invalide : ex. 0001-2026</span>
-          )}
-          {errors.numero && <FieldError error={errors.numero} />}
-        </div>
+        <div className="form-row">
+            <div className="form-group">
+              <FieldLabel required>Numéro dossier</FieldLabel>
+              <Input
+                name="numero"
+                value={formData.numero || ""}
+                onChange={handleNumeroChange}
+                disabled={!canEditNumero}
+                required
+                placeholder="Ex: 0001-2026"
+              />
+              {numeroHasError && (
+                <span className="error-text">Format invalide : ex. 0001-2026</span>
+              )}
+              {errors.numero && <FieldError error={errors.numero} />}
+            </div>
 
-        <div className="form-group">
-          <FieldLabel required>Hospitalisation</FieldLabel>
-          <select
-            name="hospitalisation"
-            value={formData.hospitalisation || "interne"}
-            onChange={handleHospitalisationChange}
-            disabled={!isEditing}
-            required
-          >
-            <option value="interne">Interne</option>
-            <option value="externe">Externe</option>
-          </select>
-          {errors.hospitalisation && <FieldError error={errors.hospitalisation} />}
-        </div>
+            <div className="form-group">
+              <FieldLabel required>Hospitalisation</FieldLabel>
+              <select
+                name="hospitalisation"
+                value={formData.hospitalisation || "interne"}
+                onChange={handleHospitalisationChange}
+                disabled={!isEditing}
+                required
+              >
+                <option value="interne">Interne</option>
+                <option value="externe">Externe</option>
+              </select>
+              {errors.hospitalisation && <FieldError error={errors.hospitalisation} />}
+            </div>
 
+           <div className="form-group">
+            <FieldLabel>Statut</FieldLabel>
+            {isNew ? (
+              <select
+                name="status"
+                value={formData.status || ""}
+                onChange={handleChange}
+              >
+                <option value="">Aucun</option>
+                {STATUTS_CREATION.map((s) => (
+                  <option key={s.value} value={s.value}>{s.label}</option>
+                ))}
+              </select>
+            ) : isEditing ? (
+              <select
+                name="status"
+                value={formData.status || ""}
+                onChange={handleChange}
+              >
+                <option value="">Situation normale</option> //dans bd c'est en attente stade par defaut.
+                {STATUTS_ADMINISTRATIFS.map((s) => (
+                  <option key={s.value} value={s.value}>{s.label}</option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type="text"
+                value={STATUTS_LABELS[formData.status] || 'Normal'}
+                disabled
+                readOnly
+              />
+            )}
+          </div>
+        </div>
         <div className="form-group">
           <FieldLabel required>Nom</FieldLabel>
           <Input

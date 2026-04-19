@@ -1,6 +1,8 @@
-import { SUIVI_BADGE_MAP, PRESCRIPTION_BADGE_MAP } from "./prescriptionsPharmaConstants";
+import {
+  STATUT_PATIENT_BADGE_MAP,
+  PRESCRIPTION_BADGE_MAP,
+} from "./prescriptionsPharmaConstants";
 
-// ── Preview date prochaine prise (scénario 1 : validation sans modif) ────────
 export const calculatePreviewDate = (periodeJours, dateDelivrance = new Date()) => {
   const jours = Number.parseInt(periodeJours, 10);
   if (!jours || jours <= 0) return null;
@@ -10,7 +12,6 @@ export const calculatePreviewDate = (periodeJours, dateDelivrance = new Date()) 
   return base;
 };
 
-// ── Helpers RDV ───────────────────────────────────────────────
 export const daysUntil = (dateStr) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -35,49 +36,30 @@ export const getDaysLabel = (days) => {
   return `dans ${days}j`;
 };
 
-// ── resolveSuiviBadge ─────────────────────────────────────────
-// Couvre les 5 statuts SQL :
-//   "en attente" | "actif" | "en retard" | "perdue de vue" | "récupéré perdue de vue"
-export const resolveSuiviBadge = (statutPatient, ecartJours) => {
-  const key = (statutPatient || "").toLowerCase().trim();
-
-  if (key.includes("récupéré") || key.includes("recupere")) {
-    return { ...SUIVI_BADGE_MAP.recupere, showEcart: ecartJours > 0 };
-  }
-  if (key.includes("perdue") || key.includes("perdu")) {
-    return { ...SUIVI_BADGE_MAP.perdu, showEcart: ecartJours > 0 };
-  }
-  if (key.includes("retard")) {
-    return { ...SUIVI_BADGE_MAP.retard, showEcart: ecartJours > 0 };
-  }
-  if (key.includes("attente")) {
-    return { ...SUIVI_BADGE_MAP.attente, showEcart: false };
-  }
-  // "actif" (ecart ≤ 0, showEcart inutile)
-  return { ...SUIVI_BADGE_MAP.actif, showEcart: false };
+export const resolveSuiviBadge = (statutPatient, dateEcart) => {
+  const key   = (statutPatient || "en_attente").toLowerCase().trim();
+  const badge = STATUT_PATIENT_BADGE_MAP[key] ?? STATUT_PATIENT_BADGE_MAP.en_attente;
+  const showEcart = dateEcart > 0 && key === "en_retard";
+  return { ...badge, showEcart };
 };
 
 export const resolvePrescriptionBadge = (statutPrescription) => {
   const key = (statutPrescription || "envoyee").toLowerCase();
-  if (key === "delivree") return PRESCRIPTION_BADGE_MAP.delivree;
-  if (key === "modifie")  return PRESCRIPTION_BADGE_MAP.modifie;
-  return PRESCRIPTION_BADGE_MAP.envoyee;
+  return PRESCRIPTION_BADGE_MAP[key] ?? PRESCRIPTION_BADGE_MAP.envoyee;
 };
 
 export const filterPrescriptions = (patients, search) => {
   if (!Array.isArray(patients)) return [];
   const q = (search || "").trim().toLowerCase();
   if (!q) return patients;
-  return patients.filter(
-    (p) =>
-      p.patientName?.toLowerCase().includes(q)    ||
-      p.patientSurname?.toLowerCase().includes(q) ||
-      p.numeroDossier?.toLowerCase().includes(q)  ||
-      p.nomTraitement?.toLowerCase().includes(q),
+  return patients.filter((p) =>
+    p.patientName?.toLowerCase().includes(q)    ||
+    p.patientSurname?.toLowerCase().includes(q) ||
+    p.numeroDossier?.toLowerCase().includes(q)  ||
+    p.nomTraitement?.toLowerCase().includes(q)
   );
 };
 
-// ── Verrouillage des boutons ──────────────────────────────────
 export const isValidateDisabled = (statutPrescription) => {
   const s = (statutPrescription || "").toLowerCase();
   return s === "delivree" || s === "modifie";

@@ -44,3 +44,27 @@ ADD COLUMN user_id INTEGER UNIQUE REFERENCES users(id);
 ALTER TABLE patients
 ADD COLUMN email VARCHAR(255),
 ADD COLUMN whatsapp VARCHAR(20);
+
+
+
+-- update 19/04/2026
+-- 1. Corriger les valeurs NULL existantes
+UPDATE public.patients
+  SET status = 'en_attente'
+  WHERE status IS NULL;
+
+-- 2. Modifier le champ status
+ALTER TABLE public.patients
+  ALTER COLUMN status SET NOT NULL,
+  ALTER COLUMN status SET DEFAULT 'en_attente',
+  ADD CONSTRAINT patients_status_check
+    CHECK (status::text = ANY (ARRAY[
+      'en_attente'::character varying,
+      'actif'::character varying,
+      'en_retard'::character varying,
+      'perdu_de_vue'::character varying,
+      'decede'::character varying,
+      'decede_sida'::character varying,
+      'transfere'::character varying,
+      'migrant'::character varying
+    ]::text[]));
