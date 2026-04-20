@@ -617,3 +617,8 @@ tbody tr:hover {
   align-items: center;
   gap: 8px;
 }
+
+.notif-date {
+  font-size: 11px; color: var(--color-text-tertiary);
+  display: flex; align-items: center; gap: 4px; margin-bottom: 4px;
+}

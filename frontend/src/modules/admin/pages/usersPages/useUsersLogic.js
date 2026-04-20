@@ -74,11 +74,6 @@ export function useUsersLogic() {
 
   const handleChangeRole = async () => {
     if (!selectedUser || !newRole) return;
-    const ok = await confirmAction(
-      "Confirmer la modification ?",
-      `Voulez-vous changer le rôle de ${selectedUser.prenom || ""} ${selectedUser.nom || ""} en "${newRole}" ?`,
-    );
-    if (!ok) return;
 
     try {
       setActionLoading(selectedUser.id);

@@ -1,11 +1,10 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
 import { getNouveauxMaladesSummary,
          getAnneesDisponibles,
-         refreshBiMVs }                              from "../../../services/biService.js";
-import { toCasSexeAgeChartData,
-         toKpiData }                                 from "../helpers/formatCasSexeAge";
-import { toDiagnosticTardifChartData }               from "../helpers/formatDiagnostic";
-import { toPopulationsClesChartData }                from "../helpers/formatPopCles";
+         refreshBiMVs }  from "../../../services/biService.js";
+import { toCasSexeAgeChartData,  toKpiData }    from "../helpers/formatCasSexeAge";
+import { toDiagnosticTardifChartData }  from "../helpers/formatDiagnostic";
+import { toPopulationsClesChartData }  from "../helpers/formatPopCles";
 
 const useNouveauxMaladesDashboard = () => {
 

@@ -1,6 +1,6 @@
 ﻿import pool from "../config/db.js";
-
-const STATUTS_ADMIN = ['decede', 'decede_sida', 'transfere', 'migrant'];
+import { createNotificationDelivrance } from "../services/suiviNotificationService.js";
+const STATUTS_ADMIN = ['decede', 'decede_sida', 'transfere']; // pas le meme  que STATUTS_ALERTE pour logique métier
 const STATUTS_ALERTE = ['decede', 'decede_sida', 'transfere'];
 
 const normalizeNumero = (n) => {
@@ -68,7 +68,6 @@ const traiterApresDelivrance = async (client, patientId, prescriptionId) => {
       return { alerte: true };
     }
 
-    // migrant → traitement normal, pas d'alerte
     return { alerte: false };
   }
 
@@ -181,7 +180,6 @@ export const createPrescription = async ({
     client.release();
   }
 };
-
 // ── VALIDER — sans modification ───────────────────────────────
 export const validerPrescription = async (id) => {
   const client = await pool.connect();
@@ -225,6 +223,7 @@ export const validerPrescription = async (id) => {
       )
       SELECT
         u.*,
+        s.id             AS suivi_id,
         s.date_prochaine_prise,
         s.statut_patient AS suivi_statut_patient,
         s.date_ecart     AS suivi_date_ecart
@@ -242,6 +241,17 @@ export const validerPrescription = async (id) => {
     );
 
     await client.query("COMMIT");
+
+    // 3. Notification après COMMIT — hors transaction
+    await createNotificationDelivrance({
+      patient_id:      prescription.patient_id,
+      suivi_id:        prescription.suivi_id,
+      prescription_id: id,
+      estAlerte:       alerte,
+    }).catch((err) =>
+      console.error("[Notif] Erreur delivrance:", err.message)
+    );
+
     return { ...prescription, alerte };
 
   } catch (error) {
@@ -251,8 +261,7 @@ export const validerPrescription = async (id) => {
     client.release();
   }
 };
-
-// ── VALIDER AVEC MODIFICATION ─────────────────────────────────
+//------ VALIDER — avec modification de la période ─────────────────
 export const validerAvecModification = async (id, periodeModifiee) => {
   const client = await pool.connect();
   try {
@@ -296,6 +305,7 @@ export const validerAvecModification = async (id, periodeModifiee) => {
       )
       SELECT
         u.*,
+        s.id             AS suivi_id,
         s.date_prochaine_prise,
         s.statut_patient AS suivi_statut_patient,
         s.date_ecart     AS suivi_date_ecart
@@ -313,6 +323,17 @@ export const validerAvecModification = async (id, periodeModifiee) => {
     );
 
     await client.query("COMMIT");
+
+    // 3. Notification après COMMIT — hors transaction
+    await createNotificationDelivrance({
+      patient_id:      prescription.patient_id,
+      suivi_id:        prescription.suivi_id,
+      prescription_id: id,
+      estAlerte:       alerte,
+    }).catch((err) =>
+      console.error("[Notif] Erreur delivrance:", err.message)
+    );
+
     return { ...prescription, alerte };
 
   } catch (error) {
@@ -407,7 +428,7 @@ export const recalculerEcartEtStatuts = async () => {
         p.status AS statut_actuel_patient
       FROM suivi_therapeutique st
       JOIN patients p ON p.id = st.patient_id
-      WHERE p.status NOT IN ('decede', 'decede_sida', 'transfere', 'migrant')
+      WHERE p.status NOT IN ('decede', 'decede_sida', 'transfere')
       ORDER BY st.patient_id, st.created_at DESC;
     `);
 

@@ -1,70 +1,75 @@
 // notificationHelpers.js
 
-import { NOTIF_EXPIRY_DAYS, NOTIF_TITLE_MAP } from "./notificationConstants.js";
+import {
+  NOTIF_CLICKED_KEY,
+  NOTIF_CLICK_EXPIRY_MS,
+  NOTIF_ICON_MAP,
+  NOTIF_TITLE_MAP,
+} from "./notificationConstants.js";
 
-// ── Charger depuis localStorage ──
-export const loadFromStorage = (key) => {
+// ── localStorage — lecture ────────────────────────────────────
+export const loadFromStorage = (key, fallback = []) => {
   try {
     const saved = localStorage.getItem(key);
-    return saved ? JSON.parse(saved) : [];
+    return saved ? JSON.parse(saved) : fallback;
   } catch {
-    return [];
+    return fallback;
   }
 };
 
-// ── Sauvegarder dans localStorage ──
+// ── localStorage — écriture ───────────────────────────────────
 export const saveToStorage = (key, value) => {
   try {
     localStorage.setItem(key, JSON.stringify(value));
   } catch {
-    // silent
+    // silent fail
   }
 };
 
-// ── Calculer le type selon la date ──
-export const getNotifType = (dateStr) => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const in7days = new Date(today);
-  in7days.setDate(today.getDate() + 7);
-
-  const rdvDate = new Date(dateStr);
-  rdvDate.setHours(0, 0, 0, 0);
-
-  if (rdvDate < today)     return "missed";
-  if (rdvDate <= in7days)  return "soon";
-  return "pharmacie";
+// ── clicked_at : enregistrer le clic ─────────────────────────
+export const saveClickedAt = (notifId) => {
+  const clicked = loadFromStorage(NOTIF_CLICKED_KEY, {});
+  clicked[notifId] = Date.now();
+  saveToStorage(NOTIF_CLICKED_KEY, clicked);
 };
 
-// ── Formater la date en français ──
-export const formatDateFr = (dateStr) =>
-  new Date(dateStr).toLocaleDateString("fr-FR");
-
-// ── Enrichir une notif brute ──
-export const enrichNotif = (raw, readIds, seenIds) => {
-  const type = raw.type ?? getNotifType(raw.date_prochaine_prise);
-  return {
-    ...raw,
-    type,
-    isRead:  readIds.includes(raw.id),
-    isNew:   !seenIds.includes(raw.id),
-    title:   NOTIF_TITLE_MAP[type] ?? "Notification",
-    message: `${raw.patient_name} ${raw.patient_surname} — N° ${raw.patient_numero}`,
-    rdv_url: `/medecin/patient/${raw.patient_numero}/workspace/rendez-vous`,
-  };
+// ── clicked_at : vérifier si 24h dépassé ─────────────────────
+export const isClickExpired = (notifId) => {
+  const clicked = loadFromStorage(NOTIF_CLICKED_KEY, {});
+  const ts = clicked[notifId];
+  if (!ts) return false;
+  return Date.now() - ts > NOTIF_CLICK_EXPIRY_MS;
 };
 
-// ── Filtrer les notifs expirées (> 7 jours) ──
-export const filterExpired = (notifs) => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+// ── Visibilité d'une notif côté frontend ─────────────────────
+// BD gère déjà l'expiration 7j → on filtre uniquement la règle 24h après clic
+export const isNotifVisible = (notif) => {
+  if (!notif.rdv_url) return true;           // sans lien → toujours visible
+  return !isClickExpired(notif.notif_id);    // avec lien → masquer si 24h après clic
+};
 
-  return notifs.filter((n) => {
-    const rdvDate = new Date(n.date_prochaine_prise);
-    rdvDate.setHours(0, 0, 0, 0);
-    const diffDays = Math.floor((today - rdvDate) / (1000 * 60 * 60 * 24));
-    // garder si pas encore expirée (missed depuis moins de 7j ou future)
-    return diffDays <= NOTIF_EXPIRY_DAYS;
-  });
+// ── Enrichir une notif brute du backend ──────────────────────
+export const enrichNotif = (raw, readIds) => ({
+  ...raw,
+  isRead:  readIds.includes(raw.notif_id),
+  icon:    NOTIF_ICON_MAP[raw.type]  ?? "bi bi-bell",
+  title:   NOTIF_TITLE_MAP[raw.type] ?? "Notification",
+  // message déjà construit par le backend dans buildNotifications()
+});
+
+//-- pour date de notification : format "il y a X min" ou "il y a 2h" ou "il y a 3j"
+// ── Formater date notification ────────────────────────────────
+export const formatNotifDate = (dateStr) => {
+  const date = new Date(dateStr);
+  const now  = new Date();
+  const diffMs   = now - date;
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffH    = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffMins < 1)  return "À l'instant";
+  if (diffMins < 60) return `Il y a ${diffMins} min`;
+  if (diffH    < 24) return `Il y a ${diffH}h`;
+  if (diffDays === 1) return "Hier";
+  return date.toLocaleDateString("fr-FR"); // ex: 19/04/2026
 };

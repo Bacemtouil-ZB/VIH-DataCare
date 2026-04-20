@@ -1,19 +1,14 @@
-// suiviNotificationController.js
-
 import { buildNotifications ,getDateEstimeeByNumero } from "../services/suiviNotificationService.js";
 
-export const getNotifications = async (req, res) => {
+export const getNotificationsController = async (_req, res) => {
   try {
     const notifications = await buildNotifications();
     res.status(200).json(notifications);
   } catch (error) {
-    console.error("Erreur getNotifications:", error);
+    console.error("Erreur getNotifications:", error.message);
     res.status(500).json({ message: "Erreur serveur" });
   }
 };
-
-
-
 
 export const getDateEstimee = async (req, res) => {
   try {
