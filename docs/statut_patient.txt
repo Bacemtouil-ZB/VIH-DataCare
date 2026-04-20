@@ -123,3 +123,66 @@ suivi_therapeutique.model.js
 → écrit : suivi_therapeutique.date_ecart
 → écrit : suivi_therapeutique.statut_patient
 → écrit : patients.status
+
+
+
+//////------------notification 
+
+
+**8 types finaux :**
+
+| # | Type | Source | Lien | Durée |
+|---|------|---------|------|-------|
+| 1 | `delivrance` | s.t | ✅ rdv | 7j ou 24h après clic |
+| 2 | `en_retard` | s.t | ❌ | 7j |
+| 3 | `perdu_de_vue` | s.t | ❌ | 7j |
+| 4 |
+| 5 | `alerte` | s.t | ✅ profil | 7j ou 24h après clic |
+| 6 | `prescription_non_validee` | p.m | ✅ profil | 7j ou 24h après clic |
+| 7 | `rdv_manque` | rdv | ✅ rdv | 7j ou 24h après clic |
+| 8 | `rdv_proche` | rdv | ✅ rdv | 7j ou 24h après clic |
+
+---
+
+Durée = combien de temps la notif reste visible dans la barre.
+
+7j :
+notif créée aujourd'hui
+→ reste visible 7 jours
+→ au 8ème jour → disparaît automatiquement
+→ même si médecin ne la lit pas
+24h après clic :
+notif avec lien
+→ médecin clique le lien
+→ timestamp du clic stocké en BD
+→ 24h après → disparaît automatiquement
+→ si médecin ne clique pas → reste jusqu'à 7j
+
+Donc pour chaque notif avec lien :
+disparaît si :
+created_at > 7j    → expirée naturellement
+OU
+clicked_at + 24h   → médecin a agi
+Pour chaque notif sans lien :
+disparaît si :
+created_at > 7j    → expirée naturellement
+
+
+
+////------------ n medecin consulter notification so utiliser local storage et table notification 
+
+BD → source de vérité des notifications
+     (créée, expirée, supprimée)
+
+localStorage → état lu/non-lu par médecin
+               (chaque médecin a son propre état)
+Pourquoi :
+✅ BD légère — pas de colonnes par médecin
+✅ chaque médecin a son propre lu/non-lu
+✅ localStorage fiable car :
+   → si vidé → notifs rechargées depuis BD
+   → lu/non-lu reset → pas critique
+   → notif elle-même jamais perdue ✅
+✅ clicked_at → aussi dans localStorage
+   → si vidé → notif réapparaît → médecin reclique ✅
+   → pas critique non plus

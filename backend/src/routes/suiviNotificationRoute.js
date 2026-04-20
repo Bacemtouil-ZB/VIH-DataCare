@@ -1,14 +1,12 @@
-// suiviNotificationRoute.js
-
 import express from "express";
 import {
-  getNotifications,
+  getNotificationsController,
   getDateEstimee,
 } from "../controllers/suiviNotificationController.js";
 
 const router = express.Router();
 
-router.get("/", getNotifications);
-router.get("/:numero", getDateEstimee);   
+router.get("/", getNotificationsController);
+router.get("/:numero", getDateEstimee);
 
 export default router;

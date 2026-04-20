@@ -46,11 +46,14 @@ function PrescriptionBadge({ statutPrescription }) {
 }
 
 // ── Colonne fusionnée : Prescription + Statut patient ─────────
-function StatutCell({ statutPrescription, statutPatient, dateEcart }) {
+function StatutCell({ statutPrescription, suiviStatutPatient, dateEcart }) {
   return (
     <div className="statut-cell">
       <PrescriptionBadge statutPrescription={statutPrescription} />
-      <StatutPatientBadge statutPatient={statutPatient} dateEcart={dateEcart} />
+      <StatutPatientBadge
+        statutPatient={suiviStatutPatient || "actif"}
+        dateEcart={dateEcart}
+      />
     </div>
   );
 }
@@ -190,7 +193,7 @@ export default function PrescriptionsUI({
               <td className="col-statut">
                 <StatutCell
                   statutPrescription={p.statutPrescription}
-                  statutPatient={p.statutPatient}
+                  suiviStatutPatient={p.suiviStatutPatient}
                   dateEcart={p.dateEcart}
                 />
               </td>

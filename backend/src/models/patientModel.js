@@ -114,8 +114,13 @@ export const getAllPatients = async (options = {}) => {
 };
 
 // --------------------- CHECK NUMERO EXISTS ---------------------
+
 export const checkNumeroExists = async (numero) => {
-  const query = `SELECT COUNT(*) as count FROM patients WHERE numero = $1`;
+  const query = `
+    SELECT COUNT(*) as count 
+    FROM patients 
+    WHERE REPLACE(numero, 'F-', '') = REPLACE($1, 'F-', '')
+  `;
   const result = await pool.query(query, [numero]);
   return parseInt(result.rows[0].count, 10) > 0;
 };

@@ -34,7 +34,7 @@ import suiviNotificationRoute from "./src/routes/suiviNotificationRoute.js";
 import permissionRoutes from "./src/routes/permissionRoutes.js";
 import emergencyContactRoutes from "./src/routes/emergencyContactRoutes.js";
 import biRoutes from "./src/routes/biRoutes.js";
-// Scheduler
+// mobile Scheduler
 import { startScheduler } from './src/services/mobile/mobileScheduler.js';
 
 
@@ -86,7 +86,7 @@ app.use("/api/suivi-notifications", suiviNotificationRoute);
 app.use("/api/permissions", permissionRoutes);
 app.use("/api/emergency-contacts", emergencyContactRoutes);
 app.use("/api/bi", biRoutes);
-import { startBiRefreshJob , startStatutsJob } from "./src/utils/biRefreshJob.js";
+import { startBiRefreshJob , startStatutsJob , startNotificationsJob ,startCleanupNotificationsJob} from "./src/utils/scheduler.js";
 
 // 404 handler
 app.use((req, res) => {
@@ -115,9 +115,11 @@ const startServer = async () => {
   }
 };
 
-// Démarrer le job de refresh BI
+// wweb Scheduler
 startBiRefreshJob(); // utilisé pour faire refresh les MVs de la BI chaque nuit à 02h00
 startStatutsJob();// utilisé pour faire refresh les statuts des patients chaque nuit à 03h00
+startNotificationsJob();          // 03h30 — Création notifications nuit
+startCleanupNotificationsJob();   // 04h00 — Cleanup notifs > 7 jours
 
 startServer();
 

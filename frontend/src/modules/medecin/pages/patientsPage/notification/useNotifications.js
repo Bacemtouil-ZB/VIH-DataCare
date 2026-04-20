@@ -1,22 +1,21 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import { getNotificationsRdv } from "./../../../services/suiviNotificationService";
+// useNotifications.js
+import { useState, useEffect, useRef } from "react";
+import { getNotificationsRdv } from "../../../services/suiviNotificationService";
 import {
-  NOTIF_STORAGE_KEY,
-  NOTIF_NEW_KEY,
+  NOTIF_READ_KEY,
   NOTIF_REFRESH_MS,
 } from "./notificationConstants.js";
 import {
   loadFromStorage,
   saveToStorage,
+  saveClickedAt,
   enrichNotif,
-  filterExpired,
+  isNotifVisible,
 } from "./notificationHelpers.js";
-//partie ui de notification dans PatientsPage.jsx
+
 export default function useNotifications() {
   const [rawNotifs, setRawNotifs] = useState([]);
-  const [readIds,   setReadIds]   = useState(() => loadFromStorage(NOTIF_STORAGE_KEY));
-  const [seenIds,   setSeenIds]   = useState(() => loadFromStorage(NOTIF_NEW_KEY));
-
+  const [readIds,   setReadIds]   = useState(() => loadFromStorage(NOTIF_READ_KEY, []));
   const mountedRef = useRef(true);
 
   useEffect(() => {
@@ -24,56 +23,64 @@ export default function useNotifications() {
     return () => { mountedRef.current = false; };
   }, []);
 
-  // ── Une seule déclaration de fetchNotifs ──
-  const fetchNotifs = useCallback(async () => {
-    try {
-      const data     = await getNotificationsRdv();
-      const filtered = filterExpired(data ?? []);
-      setTimeout(() => {
-        if (mountedRef.current) setRawNotifs(filtered);
-      }, 0);
-    } catch (err) {
-      console.error("Erreur fetch notifications:", err);
-    }
-  }, []);
-
+  // ── Fetch ─────────────────────────────────────────────────
   useEffect(() => {
+    const fetchNotifs = async () => {
+      try {
+        const data = await getNotificationsRdv();
+        if (!mountedRef.current) return;
+
+        const validData = data ?? [];
+        setRawNotifs(validData);
+
+        // nettoyer readIds — garder seulement ids encore en BD
+        setReadIds((prev) => {
+          const validIds = validData.map((n) => n.notif_id);
+          const cleaned  = prev.filter((id) => validIds.includes(id));
+          saveToStorage(NOTIF_READ_KEY, cleaned);
+          return cleaned;
+        });
+
+      } catch (err) {
+        console.error("Erreur fetch notifications:", err);
+      }
+    };
+
     fetchNotifs();
     const interval = setInterval(fetchNotifs, NOTIF_REFRESH_MS);
     return () => clearInterval(interval);
-  }, [fetchNotifs]);
+  }, []); 
 
-  // ── Calculs dérivés ──
-  const notifications = rawNotifs.map((n) => enrichNotif(n, readIds, seenIds));
-  const unreadCount   = notifications.filter((n) => !n.isRead).length;
-  const hasNew        = notifications.some((n) => n.isNew);
+  // ── Calculs dérivés ───────────────────────────────────────
+  const notifications = rawNotifs
+    .map((n) => enrichNotif(n, readIds))
+    .filter(isNotifVisible);
 
-  const markAllSeen = useCallback(() => {
-    const ids = rawNotifs.map((n) => n.id);
-    setSeenIds(ids);
-    saveToStorage(NOTIF_NEW_KEY, ids);
-  }, [rawNotifs]);
+  const unreadCount = notifications.filter((n) => !n.isRead).length;
 
-  const markOne = useCallback((id) => {
+  // ── Marquer lue + enregistrer clic si lien ───────────────
+  const markOne = (notif) => {
     setReadIds((prev) => {
-      const updated = [...new Set([...prev, id])];
-      saveToStorage(NOTIF_STORAGE_KEY, updated);
+      const updated = [...new Set([...prev, notif.notif_id])];
+      saveToStorage(NOTIF_READ_KEY, updated);
       return updated;
     });
-  }, []);
+    if (notif.rdv_url) {
+      saveClickedAt(notif.notif_id);
+    }
+  };
 
-  const markAll = useCallback(() => {
-    const ids = rawNotifs.map((n) => n.id);
+  // ── Marquer toutes lues ───────────────────────────────────
+  const markAll = () => {
+    const ids = rawNotifs.map((n) => n.notif_id);
     setReadIds(ids);
-    saveToStorage(NOTIF_STORAGE_KEY, ids);
-  }, [rawNotifs]);
+    saveToStorage(NOTIF_READ_KEY, ids);
+  };
 
   return {
     notifications,
     unreadCount,
-    hasNew,
     markOne,
     markAll,
-    markAllSeen,
   };
 }

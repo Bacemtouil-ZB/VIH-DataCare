@@ -90,7 +90,7 @@ export default function ProfileForme({
                 value={formData.status || ""}
                 onChange={handleChange}
               >
-                <option value="">Situation normale</option> //dans bd c'est en attente stade par defaut.
+                <option value="">Sélectionner</option> //dans bd c'est en attente stade par defaut.
                 {STATUTS_ADMINISTRATIFS.map((s) => (
                   <option key={s.value} value={s.value}>{s.label}</option>
                 ))}

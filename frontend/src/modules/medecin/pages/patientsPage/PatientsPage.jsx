@@ -8,6 +8,7 @@ import useNotifications   from "./notification/useNotifications.js";
 import { daysUntil, getRdvBarWidth, getDaysLabel } from "./patientsPageHelpers.js";
 import { HOSPITALISATION_OPTIONS, RDV_FILTER_OPTIONS, TABLE_COLUMNS} from "./patientsPageConstants.js";
 import { NOTIF_ICON_MAP } from "./notification/notificationConstants.js";
+import { formatNotifDate } from "./notification/notificationHelpers.js";
 
 import "./PatientsPage.css";
 
@@ -15,10 +16,8 @@ import "./PatientsPage.css";
 function NotificationBell({
   notifications,
   unreadCount,
-  hasNew,
   onMarkOne,
   onMarkAll,
-  onOpen,
 }) {
   const [open, setOpen] = useState(false);
   const ref = useRef();
@@ -32,20 +31,13 @@ function NotificationBell({
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const handleOpen = () => {
-    setOpen((o) => {
-      if (!o) onOpen?.();   // marquer comme vu → point rouge disparait
-      return !o;
-    });
-  };
-
   return (
     <div ref={ref} className="notif-wrapper">
 
       {/* ── Cloche ── */}
       <button
         className={`notif-bell-btn ${open ? "active" : ""}`}
-        onClick={handleOpen}
+        onClick={() => setOpen((o) => !o)}
       >
         <i className={`bi ${open ? "bi-bell-fill" : "bi-bell"}`} />
 
@@ -54,11 +46,6 @@ function NotificationBell({
           <span className="notif-badge">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
-        )}
-
-        {/* Point rouge nouvelle notification */}
-        {hasNew && unreadCount === 0 && (
-          <span className="notif-dot-new" />
         )}
       </button>
 
@@ -93,9 +80,9 @@ function NotificationBell({
             ) : (
               notifications.map((notif) => (
                 <div
-                  key={notif.id}
+                  key={notif.notif_id}
                   className={`notif-item ${notif.isRead ? "read" : "unread"}`}
-                  onClick={() => onMarkOne(notif.id)}
+                  onClick={() => onMarkOne(notif)}
                 >
                   <div className={`notif-icon-wrap type-${notif.type}`}>
                     <i className={NOTIF_ICON_MAP[notif.type] ?? "bi bi-info-circle"} />
@@ -104,14 +91,25 @@ function NotificationBell({
                   <div className="notif-content">
                     <div className="notif-title">{notif.title}</div>
                     <div className="notif-message">{notif.message}</div>
-                    <NavLink
-                      to={notif.rdv_url}
-                      className="notif-link"
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      Fixer le rendez-vous
-                      <i className="bi bi-arrow-right ms-1" />
-                    </NavLink>
+                    {/* ── Date ── */}
+                      <div className="notif-date">
+                        <i className="bi bi-clock me-1" />
+                        {formatNotifDate(notif.created_at)}
+                      </div>
+                    {/* Lien uniquement si rdv_url existe */}
+                    {notif.rdv_url && (
+                      <NavLink
+                        to={notif.rdv_url}
+                        className="notif-link"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onMarkOne(notif); // enregistre clicked_at
+                        }}
+                      >
+                        Voir détails
+                        <i className="bi bi-arrow-right ms-1" />
+                      </NavLink>
+                    )}
                   </div>
 
                   {!notif.isRead && <span className="notif-dot" />}
@@ -135,13 +133,11 @@ export default function PatientsPage() {
   } = usePatientsPage();
 
   const {
-    notifications,
-    unreadCount,
-    hasNew,
-    markOne,
-    markAll,
-    markAllSeen,
-  } = useNotifications();
+  notifications,
+  unreadCount,
+  markOne,
+  markAll,
+} = useNotifications();
 
   return (
     <div className="patients-page">
@@ -180,10 +176,8 @@ export default function PatientsPage() {
             <NotificationBell
               notifications={notifications}
               unreadCount={unreadCount}
-              hasNew={hasNew}
               onMarkOne={markOne}
               onMarkAll={markAll}
-              onOpen={markAllSeen}
             />
             <FilterToolbar
               className="toolbar-right"
