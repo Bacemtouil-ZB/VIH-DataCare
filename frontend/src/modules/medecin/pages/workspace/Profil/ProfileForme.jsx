@@ -79,7 +79,7 @@ export default function ProfileForme({
                 value={formData.status || ""}
                 onChange={handleChange}
               >
-                <option value="">Aucun</option>
+                <option value="">Sélectionner</option>
                 {STATUTS_CREATION.map((s) => (
                   <option key={s.value} value={s.value}>{s.label}</option>
                 ))}

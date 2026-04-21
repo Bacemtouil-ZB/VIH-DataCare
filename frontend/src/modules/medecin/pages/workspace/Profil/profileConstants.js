@@ -5,7 +5,6 @@ export const STATUTS_ADMINISTRATIFS = [
   { value: 'migrant',     label: 'Migrant' },
 ];
 export const STATUTS_CREATION = [
-  { value: 'transfere',   label: 'Transféré' },
   { value: 'migrant',     label: 'Migrant' },
 ];
 export const STATUTS_LABELS = {

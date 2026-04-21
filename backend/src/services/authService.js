@@ -59,7 +59,7 @@ export const loginUser = async (email, password) => {
   };
 };
 
-// register sans role
+// register 
 export const registerUser = async (
   nom,
   prenom,
@@ -88,19 +88,14 @@ export const registerUser = async (
     false,
   );
 
-  try {
-    await sendUserCredentialsEmail({
-      to: email,
-      nom,
-      prenom,
-      password,
-      role,
-    });
-  } catch (error) {
-    console.error("Erreur envoi email identifiants:", error.message);
-  }
+  // Email en arrière-plan — ne bloque pas l'inscription
+  setImmediate(() => {
+    sendUserCredentialsEmail({ to: email, nom, prenom, password, role })
+      .catch((error) =>
+        console.error("Erreur envoi email identifiants:", error.message),
+      );
+  });
 
-  // Ne pas retourner le mot de passe
   const { password: _, ...userWithoutPassword } = user;
   return userWithoutPassword;
 };
