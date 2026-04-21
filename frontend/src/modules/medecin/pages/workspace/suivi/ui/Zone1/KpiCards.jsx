@@ -2,7 +2,7 @@
 //  KpiCards.jsx — VERSION FINALE CORRIGÉE
 // ============================================================
 
-import { Spin, Empty, Tag } from "antd";
+import { Spin, Empty } from "antd";
 import {
   RiseOutlined,
   FallOutlined,
@@ -10,7 +10,6 @@ import {
   HeartOutlined,
   ThunderboltOutlined,
   ExperimentOutlined,
-  SafetyOutlined,
   CalendarOutlined,
   LineChartOutlined,
   MedicineBoxOutlined,
@@ -28,7 +27,6 @@ import {
 } from "../../helpers/suiviHelpers";
 
 import {
-  COULEURS_STATUT,
   COULEURS_STATUT_HEX,
   STATUTS,
   UNITES,
@@ -58,7 +56,7 @@ const Tendance = ({ actuel, precedent, inverse = false }) => {
 // ============================================================
 //  KpiCard RESPONSIVE
 // ============================================================
-const KpiCard = ({ icon, iconBg, label, value, unite, pourcent, rows, tag }) => (
+const KpiCard = ({ icon, iconBg, label, value, unite, pourcent, rows }) => (
   <div style={{
     width: "100%",              // ✔ responsive
     height: 110,
@@ -97,41 +95,39 @@ const KpiCard = ({ icon, iconBg, label, value, unite, pourcent, rows, tag }) => 
 
     {/* VALUE */}
     <div>
-      {tag ? tag : (
-        <div style={{ display: "flex", alignItems: "baseline", gap: 3 }}>
-          <span style={{
-            fontSize: 15,
-            fontWeight: 700,
-            color: "#111827",
-          }}>
-            {value}
+      <div style={{ display: "flex", alignItems: "baseline", gap: 3 }}>
+        <span style={{
+          fontSize: 15,
+          fontWeight: 700,
+          color: "#111827",
+        }}>
+          {value}
+        </span>
+
+        {unite && (
+          <span style={{ fontSize: 9, color: "#9CA3AF" }}>
+            {unite}
           </span>
+        )}
 
-          {unite && (
-            <span style={{ fontSize: 9, color: "#9CA3AF" }}>
-              {unite}
-            </span>
-          )}
-
-          {pourcent != null && (
-            <span style={{
-                fontSize: 11,
-                fontWeight: 700,
-                color: "#111827",
-                background: "#3B82F615", // bleu avec transparence
-                border: "1px solid #3B82F640",
-                borderRadius: 6,
-                padding: "2px 6px",
-                marginLeft: 4,
-                display: "flex",
-                alignItems: "center",
-                gap: 3,
-              }}>
-                 {pourcent} %
-            </span>
-          )}
-        </div>
-      )}
+        {pourcent != null && (
+          <span style={{
+              fontSize: 11,
+              fontWeight: 700,
+              color: "#111827",
+              background: "#3B82F615", // bleu avec transparence
+              border: "1px solid #3B82F640",
+              borderRadius: 6,
+              padding: "2px 6px",
+              marginLeft: 4,
+              display: "flex",
+              alignItems: "center",
+              gap: 3,
+            }}>
+               {pourcent} %
+          </span>
+        )}
+      </div>
     </div>
 
     {/* INFOS */}
@@ -315,25 +311,6 @@ const KpiCards = ({ kpis, loading }) => {
             />
           </>
         )}
-
-        {/* STATUT */}
-        <KpiCard
-          icon={<SafetyOutlined style={{ color: "#7C3AED" }} />}
-          iconBg="#EDE9FE"
-          label="Statut"
-          tag={
-            <Tag color={COULEURS_STATUT[kpis.statut]}>
-              {kpis.statut ?? "Inconnu"}
-            </Tag>
-          }
-          rows={[
-            kpis.cd4?.traitement && {
-              icon: <MedicineBoxOutlined />,
-              label: "ARV",
-              value: kpis.cd4.traitement,
-            }
-          ]}
-        />
 
       </div>
     </div>

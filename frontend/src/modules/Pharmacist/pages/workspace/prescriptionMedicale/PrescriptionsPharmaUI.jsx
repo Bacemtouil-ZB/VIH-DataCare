@@ -24,9 +24,10 @@ import { formatDateFr }            from "../../../../../shared/utils/logiqueTabl
 const resolvePalette = (key) => BADGE_COLORS[key] ?? BADGE_COLORS.en_attente;
 
 // ── Statut patient badge ──────────────────────────────────────
-function StatutPatientBadge({ statutPatient, dateEcart }) {
-  const { badgeText, showEcart } = resolveSuiviBadge(statutPatient, dateEcart);
-  const palette = resolvePalette(statutPatient);
+function StatutPatientBadge({ suiviStatutPatient, dateEcart }) {
+  const statut = suiviStatutPatient || "en_attente"; // ✅ fallback en_attente
+  const { badgeText, showEcart } = resolveSuiviBadge(statut, dateEcart);
+  const palette = resolvePalette(statut);
   return (
     <div className="statut-wrapper">
       <Badge bg={palette.bg} color={palette.color}>{badgeText}</Badge>
@@ -36,7 +37,6 @@ function StatutPatientBadge({ statutPatient, dateEcart }) {
     </div>
   );
 }
-
 // ── Prescription badge ────────────────────────────────────────
 function PrescriptionBadge({ statutPrescription }) {
   const { badgeText } = resolvePrescriptionBadge(statutPrescription);
@@ -51,13 +51,12 @@ function StatutCell({ statutPrescription, suiviStatutPatient, dateEcart }) {
     <div className="statut-cell">
       <PrescriptionBadge statutPrescription={statutPrescription} />
       <StatutPatientBadge
-        statutPatient={suiviStatutPatient || "actif"}
+        suiviStatutPatient={suiviStatutPatient}
         dateEcart={dateEcart}
       />
     </div>
   );
 }
-
 // ── Colonne fusionnée : Date prochaine prise + écart ──────────
 function PriseDateCell({ dateProchainePrise, dateEcart }) {
   if (!dateProchainePrise) return <span className="td-empty">—</span>;

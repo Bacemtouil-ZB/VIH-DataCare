@@ -106,13 +106,6 @@ function ResetPassword() {
               Definissez un nouveau mot de passe securise pour votre compte.
             </p>
           </div>
-
-          <NavLink
-            to="/login"
-            className="mt-6 bg-white text-green-600 font-semibold py-3 px-10 rounded-lg shadow-lg hover:bg-gray-50 transition-all"
-          >
-            RETOUR
-          </NavLink>
         </div>
 
         <div className="w-7/12 p-8 flex flex-col justify-center">
@@ -193,6 +186,15 @@ function ResetPassword() {
                     ? "REINITIALISATION..."
                     : "REINITIALISER LE MOT DE PASSE"}
                 </button>
+
+                <div className="flex justify-end pt-2">
+                  <NavLink
+                    to="/login"
+                    className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 hover:underline underline-offset-4 transition-colors"
+                  >
+                    Retour a la connexion
+                  </NavLink>
+                </div>
               </form>
             </>
           ) : (

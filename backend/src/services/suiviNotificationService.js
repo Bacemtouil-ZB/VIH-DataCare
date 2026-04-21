@@ -1,9 +1,13 @@
-import pool from "../config/db.js";
 import {
   getNotifications,
   createNotification,
   notificationExiste,
-  getDateEstimeeByNumero as getDateEstimeeModel,
+  getDateEstimeeByNumero as getDateEstimee,
+  getPatientsEnRetard,
+  getPatientsPerdusDeVue,
+  getPrescriptionsNonValidees,
+  getRdvManques,
+  getRdvProches,
 } from "../models/suiviNotificationModel.js";
 
 // ── GET — toutes notifications enrichies → frontend ───────────
@@ -30,7 +34,7 @@ export const buildNotifications = async () => {
       case "recupere":
         message = `${patientLabel} · de retour après absence`;
         break;
-      case "alerte":
+      case "alerte": {
         const labels = {
           decede:      "marqué décédé",
           decede_sida: "marqué décédé (SIDA)",
@@ -39,6 +43,7 @@ export const buildNotifications = async () => {
         message = `${patientLabel} · ${labels[row.patient_status] ?? "statut administratif"}`;
         rdv_url = `/medecin/patient/${row.patient_numero}/workspace/profil`;
         break;
+      }
       case "prescription_non_validee":
         message = `${patientLabel} · prescription expirée`;
         rdv_url = `/medecin/patient/${row.patient_numero}/workspace/profil`;
@@ -48,7 +53,9 @@ export const buildNotifications = async () => {
         rdv_url = `/medecin/patient/${row.patient_numero}/workspace/rendez-vous`;
         break;
       case "rdv_proche":
-        message = `${patientLabel} · RDV dans ${row.rdv_date ? new Date(row.rdv_date).toLocaleDateString("fr-FR") : ""}`;
+        message = `${patientLabel} · RDV dans ${
+          row.rdv_date ? new Date(row.rdv_date).toLocaleDateString("fr-FR") : ""
+        }`;
         rdv_url = `/medecin/patient/${row.patient_numero}/workspace/rendez-vous`;
         break;
     }
@@ -63,11 +70,18 @@ export const buildNotifications = async () => {
       patient_surname: row.patient_surname,
       message,
       rdv_url,
-      created_at:      row.created_at,
+      created_at:           row.created_at,
       date_prochaine_prise: row.date_prochaine_prise,
-      date_ecart:      row.date_ecart,
+      date_ecart:           row.date_ecart,
     };
   });
+};
+
+// ── Helper : créer une notification si elle n'existe pas déjà ─
+const createIfNotExists = async (params) => {
+  const existe = await notificationExiste(params);
+  if (!existe) return await createNotification(params);
+  return null;
 };
 
 // ── CREATE notifications nuit (cron 03h30) ────────────────────
@@ -75,73 +89,38 @@ export const createNotificationsNuit = async () => {
   const created = [];
 
   // 1. en_retard
-  const { rows: enRetard } = await pool.query(`
-    SELECT st.id AS suivi_id, st.patient_id
-    FROM suivi_therapeutique st
-    INNER JOIN patients p ON p.id = st.patient_id
-    WHERE st.statut_patient = 'en_retard'
-      AND st.date_ecart = 2
-      AND p.status NOT IN ('decede', 'decede_sida', 'transfere')
-  `);
+  const enRetard = await getPatientsEnRetard();
   for (const row of enRetard) {
-    const existe = await notificationExiste({ patient_id: row.patient_id, type: 'en_retard', suivi_id: row.suivi_id });
-    if (!existe) created.push(await createNotification({ patient_id: row.patient_id, type: 'en_retard', suivi_id: row.suivi_id }));
+    const notif = await createIfNotExists({ patient_id: row.patient_id, type: "en_retard", suivi_id: row.suivi_id });
+    if (notif) created.push(notif);
   }
 
   // 2. perdu_de_vue
-  const { rows: perdus } = await pool.query(`
-    SELECT DISTINCT ON (st.patient_id)
-      st.id AS suivi_id, st.patient_id
-    FROM suivi_therapeutique st
-    INNER JOIN patients p ON p.id = st.patient_id
-    WHERE st.statut_patient = 'perdu_de_vue'
-      AND p.status NOT IN ('decede', 'decede_sida', 'transfere')
-    ORDER BY st.patient_id, st.created_at DESC
-  `);
+  const perdus = await getPatientsPerdusDeVue();
   for (const row of perdus) {
-    const existe = await notificationExiste({ patient_id: row.patient_id, type: 'perdu_de_vue', suivi_id: row.suivi_id });
-    if (!existe) created.push(await createNotification({ patient_id: row.patient_id, type: 'perdu_de_vue', suivi_id: row.suivi_id }));
+    const notif = await createIfNotExists({ patient_id: row.patient_id, type: "perdu_de_vue", suivi_id: row.suivi_id });
+    if (notif) created.push(notif);
   }
 
   // 3. prescription_non_validee
-  const { rows: nonValidees } = await pool.query(`
-    SELECT pm.id AS prescription_id, pm.patient_id
-    FROM prescription_medicale pm
-    INNER JOIN patients p ON p.id = pm.patient_id
-    WHERE pm.statut = 'non_validee'
-      AND p.status NOT IN ('decede', 'decede_sida', 'transfere')
-  `);
+  const nonValidees = await getPrescriptionsNonValidees();
   for (const row of nonValidees) {
-    const existe = await notificationExiste({ patient_id: row.patient_id, type: 'prescription_non_validee', prescription_id: row.prescription_id });
-    if (!existe) created.push(await createNotification({ patient_id: row.patient_id, type: 'prescription_non_validee', prescription_id: row.prescription_id }));
+    const notif = await createIfNotExists({ patient_id: row.patient_id, type: "prescription_non_validee", prescription_id: row.prescription_id });
+    if (notif) created.push(notif);
   }
 
   // 4. rdv_manque
-  const { rows: rdvManques } = await pool.query(`
-    SELECT rv.id AS rdv_id, rv.patient_id
-    FROM rendezvous rv
-    INNER JOIN patients p ON p.id = rv.patient_id
-    WHERE rv.date < CURRENT_DATE
-      AND rv.statut NOT IN ('effectue', 'annule')
-      AND p.status NOT IN ('decede', 'decede_sida', 'transfere')
-  `);
+  const rdvManques = await getRdvManques();
   for (const row of rdvManques) {
-    const existe = await notificationExiste({ patient_id: row.patient_id, type: 'rdv_manque', rdv_id: row.rdv_id });
-    if (!existe) created.push(await createNotification({ patient_id: row.patient_id, type: 'rdv_manque', rdv_id: row.rdv_id }));
+    const notif = await createIfNotExists({ patient_id: row.patient_id, type: "rdv_manque", rdv_id: row.rdv_id });
+    if (notif) created.push(notif);
   }
 
   // 5. rdv_proche
-  const { rows: rdvProches } = await pool.query(`
-    SELECT rv.id AS rdv_id, rv.patient_id
-    FROM rendezvous rv
-    INNER JOIN patients p ON p.id = rv.patient_id
-    WHERE rv.date BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '7 days'
-      AND rv.statut NOT IN ('effectue', 'annule')
-      AND p.status NOT IN ('decede', 'decede_sida', 'transfere')
-  `);
+  const rdvProches = await getRdvProches();
   for (const row of rdvProches) {
-    const existe = await notificationExiste({ patient_id: row.patient_id, type: 'rdv_proche', rdv_id: row.rdv_id });
-    if (!existe) created.push(await createNotification({ patient_id: row.patient_id, type: 'rdv_proche', rdv_id: row.rdv_id }));
+    const notif = await createIfNotExists({ patient_id: row.patient_id, type: "rdv_proche", rdv_id: row.rdv_id });
+    if (notif) created.push(notif);
   }
 
   return created;
@@ -155,23 +134,16 @@ export const createNotificationDelivrance = async ({
   prescription_id,
   estAlerte,
 }) => {
-  // alerte → contradiction decede/transfere
   if (estAlerte) {
-    const existe = await notificationExiste({ patient_id, type: 'alerte', suivi_id });
-    if (!existe) await createNotification({ patient_id, type: 'alerte', suivi_id, prescription_id });
+    await createIfNotExists({ patient_id, type: "alerte", suivi_id, prescription_id });
     return;
   }
-
-  // delivrance → toujours créée
-  const existe = await notificationExiste({ patient_id, type: 'delivrance', suivi_id });
-  if (!existe) await createNotification({ patient_id, type: 'delivrance', suivi_id, prescription_id });
+  await createIfNotExists({ patient_id, type: "delivrance", suivi_id, prescription_id });
 };
 
-
-
-// ── Date estimée par numéro ── ← ajouter cette fonction
+// ── GET date estimée par numéro patient ───────────────────────
 export const getDateEstimeeByNumero = async (numero) => {
-  const row = await getDateEstimeeModel(numero);
+  const row = await getDateEstimee(numero);
   if (!row) return null;
 
   return {

@@ -1,6 +1,7 @@
 //cheked 15/04/2026
 import pool from "../config/db.js";
 import { createAddress, updateAddress } from "./addresseModel.js";
+import { stripNumeroPrefix } from "../utils/numero.js"; 
 
 // --------------------- GET PATIENT BY ID ---------------------
 export const getPatientById = async (id) => {
@@ -189,7 +190,7 @@ export const createPatient = async (client, patientData, userId) => {
       residence_address_id,
       phone,
       hospitalisation,
-      status && ['transfere', 'migrant'].includes(status) ? status : 'en_attente',
+      status === 'migrant' ? 'migrant' : 'standard', // par défaut 'standard' si pas 'migrant'
       remarks || null,
       email || null,
       whatsapp || null,
@@ -303,24 +304,143 @@ export const updatePatient = async (id, patientData, updatedBy) => {
 // fonction pour patient en_attente sans aucune ligne suivi depuis plus de 180 jours → on les passe en perdu_de_vue
 export const recalculerTousLesStatuts = async () => {
   const { rows } = await pool.query(
-    `SELECT p.id
+    `SELECT p.id, p.status
      FROM patients p
      LEFT JOIN suivi_therapeutique st ON st.patient_id = p.id
-     WHERE p.status = 'en_attente'
-     AND st.id IS NULL;`
+     WHERE p.status IN ('standard', 'migrant')
+     AND st.id IS NULL
+     AND NOT EXISTS (
+       SELECT 1 FROM prescription_medicale pm
+       WHERE pm.patient_id = p.id
+       AND pm.statut = 'envoyee'
+       AND pm.created_at >= NOW() - INTERVAL '48 hours'  -- ✅ exclure seulement récentes
+     );`
   );
 
   if (rows.length === 0) return [];
 
-  // Mettre à jour ceux qui dépassent 180 jours depuis created_at
-  const { rows: updated } = await pool.query(
-    `UPDATE patients
-     SET status = 'perdu_de_vue', updated_at = NOW()
-     WHERE id = ANY($1::int[])
-     AND CURRENT_DATE - created_at::date >= 180
-     RETURNING id, status;`,
-    [rows.map(r => r.id)]
-  );
+  const standardIds = rows.filter(r => r.status === 'standard').map(r => r.id);
+  const migrantIds  = rows.filter(r => r.status === 'migrant').map(r => r.id);
+
+  const updated = [];
+
+  if (standardIds.length > 0) {
+    const { rows: s } = await pool.query(
+      `UPDATE patients
+       SET status = 'standard_inactif', updated_at = NOW()
+       WHERE id = ANY($1::int[])
+       AND CURRENT_DATE - created_at::date >= 180
+       RETURNING id, status;`,
+      [standardIds]
+    );
+    updated.push(...s);
+  }
+
+  if (migrantIds.length > 0) {
+    const { rows: m } = await pool.query(
+      `UPDATE patients
+       SET status = 'migrant_inactif', updated_at = NOW()
+       WHERE id = ANY($1::int[])
+       AND CURRENT_DATE - created_at::date >= 180
+       RETURNING id, status;`,
+      [migrantIds]
+    );
+    updated.push(...m);
+  }
 
   return updated;
+};
+
+
+// --------------------- GET LEFT PANEL DATA ---------------------
+export const getLeftPanelData = async (numero) => {
+  const raw = stripNumeroPrefix(numero);
+  const withPrefix = `F-${raw}`;
+
+  const { rows } = await pool.query(`
+    SELECT
+      -- Info patient
+      p.id              AS patient_id,
+      p.numero,
+      p.name,
+      p.surname,
+      p.birthdate,
+      p.hospitalisation,
+
+      -- Statut suivi_therapeutique dernière ligne
+      (
+        SELECT st.statut_patient
+        FROM suivi_therapeutique st
+        WHERE st.patient_id = p.id
+        ORDER BY st.created_at DESC
+        LIMIT 1
+      ) AS statut_suivi,
+
+      -- Dernier traitement
+      (
+        SELECT STRING_AGG(pl.medicament_nom_snapshot, ', ' ORDER BY pl.id)
+        FROM prescription_lignes pl
+        INNER JOIN prescription_medicale pm ON pm.id = pl.prescription_id
+        WHERE pm.patient_id = p.id
+          AND pm.statut IN ('delivree', 'modifie')
+          AND pm.date_delivrance = (
+            SELECT MAX(pm2.date_delivrance)
+            FROM prescription_medicale pm2
+            WHERE pm2.patient_id = p.id
+              AND pm2.statut IN ('delivree', 'modifie')
+          )
+      ) AS dernier_traitement,
+
+      -- Dernière charge virale
+      (
+        SELECT rb.charge_virale_valeur
+        FROM resultats_biologiques rb
+        WHERE rb.patient_id = p.id
+          AND rb.charge_virale_valeur IS NOT NULL
+        ORDER BY rb.date_charge_virale_vih DESC NULLS LAST, rb.created_at DESC
+        LIMIT 1
+      ) AS derniere_charge_virale,
+
+      (
+        SELECT rb.date_charge_virale_vih
+        FROM resultats_biologiques rb
+        WHERE rb.patient_id = p.id
+          AND rb.charge_virale_valeur IS NOT NULL
+        ORDER BY rb.date_charge_virale_vih DESC NULLS LAST, rb.created_at DESC
+        LIMIT 1
+      ) AS date_charge_virale,
+
+      -- Dernier CD4
+      (
+        SELECT rb.cd4_absolu
+        FROM resultats_biologiques rb
+        WHERE rb.patient_id = p.id
+          AND rb.cd4_absolu IS NOT NULL
+        ORDER BY rb.date_cd4_cd8 DESC NULLS LAST, rb.created_at DESC
+        LIMIT 1
+      ) AS dernier_cd4_absolu,
+
+      (
+        SELECT rb.cd4_pourcent
+        FROM resultats_biologiques rb
+        WHERE rb.patient_id = p.id
+          AND rb.cd4_absolu IS NOT NULL
+        ORDER BY rb.date_cd4_cd8 DESC NULLS LAST, rb.created_at DESC
+        LIMIT 1
+      ) AS dernier_cd4_pourcent,
+
+      (
+        SELECT rb.date_cd4_cd8
+        FROM resultats_biologiques rb
+        WHERE rb.patient_id = p.id
+          AND rb.cd4_absolu IS NOT NULL
+        ORDER BY rb.date_cd4_cd8 DESC NULLS LAST, rb.created_at DESC
+        LIMIT 1
+      ) AS date_cd4
+
+    FROM patients p
+    WHERE p.numero = $1 OR p.numero = $2;
+  `, [withPrefix, raw]);
+
+  return rows[0] ?? null;
 };

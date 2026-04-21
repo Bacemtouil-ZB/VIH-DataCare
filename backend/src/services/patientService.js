@@ -123,3 +123,32 @@ export const updatePatient = async (id, patientData, userId) => {
 
   return await updatePatientModel(id, data, userId);
 };
+
+
+//------------getLeftPanel------------
+import { getLeftPanelData } from "../models/patientModel.js";
+
+export const getLeftPanel = async (numero) => {
+  const data = await getLeftPanelData(numero);
+  if (!data) throw new Error("Patient non trouvé");
+
+  return {
+    patient_id:      data.patient_id,
+    numero:          data.numero,
+    name:            data.name,
+    surname:         data.surname,
+    birthdate:       data.birthdate,
+    hospitalisation: data.hospitalisation,
+    statut_suivi:    data.statut_suivi ?? null,
+    dernier_traitement: data.dernier_traitement ?? "Aucun",
+    charge_virale: {
+      valeur: data.derniere_charge_virale ?? null,
+      date:   data.date_charge_virale     ?? null,
+    },
+    cd4: {
+      absolu:   data.dernier_cd4_absolu   ?? null,
+      pourcent: data.dernier_cd4_pourcent ?? null,
+      date:     data.date_cd4             ?? null,
+    },
+  };
+};

@@ -7,7 +7,6 @@ import ProfilPage from "../../../pages/parametres/profile";
 import MainWorkspaceLayout from "../pages/MainWorkspaceLayout";
 import ExamenLayout from "../pages/workspace/Examen_cliniques/ExamenClinique/ExamenLayout.jsx";
 import ObservationPage from "../pages/workspace/Examen_cliniques/Observation/ObservationPage.jsx";
-import ObservancePage from "../pages/workspace/Examen_cliniques/observance/observancePage.jsx";
 import Profilpage from "../pages/workspace/Profil/ProfilPageWorkspace"
 import Social from "../pages/workspace/Social/SocialFormPage.jsx";
 import VIH from "../pages/workspace/VIH/VIH";
@@ -96,7 +95,6 @@ const medecinRoutes = [
         { path: "signesCliniques", element: <SignesCliniques /> },
         { path: "signesFonctionnels", element: <SignesFonctionnels /> },
         { path: "observation", element: <ObservationPage /> },
-        { path: "observance", element: <ObservancePage /> },
       ],
     },
     {

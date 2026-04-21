@@ -6,6 +6,7 @@ import {
   checkNumeroExistsController,
   getAllPatientsController,
   updatePatientController,
+  getLeftPanelController,
 } from "../controllers/patientController.js";
 
 import {
@@ -65,5 +66,8 @@ router.put(
   updatePatientLimiter,
   updatePatientController,
 );
+
+//-- left panel data
+router.get("/:numero/left-panel", getLeftPanelController);
 
 export default router;

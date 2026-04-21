@@ -144,3 +144,25 @@ export const updatePatientController = async (req, res) => {
   }
 };
 
+
+//------------getLeftPanelData------------
+import { getLeftPanel } from "../services/patientService.js";
+
+export const getLeftPanelController = async (req, res) => {
+  try {
+    const { numero } = req.params;
+    if (!numero) {
+      return res.status(400).json({ success: false, message: "Numéro de dossier requis" });
+    }
+
+    const data = await getLeftPanel(numero);
+    return res.status(200).json({ success: true, data });
+
+  } catch (err) {
+    if (err.message === "Patient non trouvé") {
+      return res.status(404).json({ success: false, message: err.message });
+    }
+    console.error("[LeftPanel] Erreur:", err.message);
+    return res.status(500).json({ success: false, message: "Erreur serveur" });
+  }
+};
