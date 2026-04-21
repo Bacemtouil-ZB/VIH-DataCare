@@ -54,6 +54,14 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 flex items-center justify-center p-6">
+      <Link
+        to="/"
+        aria-label="Retour a l'accueil"
+        className="absolute left-8 top-8 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-gray-600 no-underline shadow-md transition-all hover:-translate-y-0.5 hover:text-gray-800 hover:no-underline hover:shadow-lg"
+      >
+        <span aria-hidden="true" className="text-xl leading-none">&larr;</span>
+      </Link>
+
       <div className="flex max-w-4xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden">
 
         {/* Gauche */}
@@ -62,7 +70,7 @@ const Login = () => {
           <p className="text-base opacity-90 leading-relaxed mb-8">
             Rejoignez notre plateforme et découvrez une nouvelle expérience.
           </p>
-          <Link to="/signup" className="bg-white text-green-600 font-semibold py-3 px-10 rounded-lg text-center hover:bg-gray-50 transition-all">
+          <Link to="/signup" className="bg-white text-green-600 font-semibold py-3 px-10 rounded-lg text-center no-underline hover:bg-gray-50 hover:no-underline transition-all">
             S'INSCRIRE
           </Link>
         </div>
