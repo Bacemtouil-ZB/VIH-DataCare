@@ -81,7 +81,7 @@ export const createNotificationsNuit = async () => {
     INNER JOIN patients p ON p.id = st.patient_id
     WHERE st.statut_patient = 'en_retard'
       AND st.date_ecart = 2
-      AND p.status NOT IN ('decede', 'decede_sida', 'transfere')
+      AND p.status NOT IN ('decede', 'decede_sida', 'transfere' , 'standard_inactif', 'migrant_inactif')
   `);
   for (const row of enRetard) {
     const existe = await notificationExiste({ patient_id: row.patient_id, type: 'en_retard', suivi_id: row.suivi_id });
@@ -95,7 +95,7 @@ export const createNotificationsNuit = async () => {
     FROM suivi_therapeutique st
     INNER JOIN patients p ON p.id = st.patient_id
     WHERE st.statut_patient = 'perdu_de_vue'
-      AND p.status NOT IN ('decede', 'decede_sida', 'transfere')
+      AND p.status NOT IN ('decede', 'decede_sida', 'transfere' , 'standard_inactif', 'migrant_inactif')
     ORDER BY st.patient_id, st.created_at DESC
   `);
   for (const row of perdus) {
@@ -109,7 +109,7 @@ export const createNotificationsNuit = async () => {
     FROM prescription_medicale pm
     INNER JOIN patients p ON p.id = pm.patient_id
     WHERE pm.statut = 'non_validee'
-      AND p.status NOT IN ('decede', 'decede_sida', 'transfere')
+      AND p.status NOT IN ('decede', 'decede_sida', 'transfere' , 'standard_inactif', 'migrant_inactif')
   `);
   for (const row of nonValidees) {
     const existe = await notificationExiste({ patient_id: row.patient_id, type: 'prescription_non_validee', prescription_id: row.prescription_id });
@@ -123,7 +123,7 @@ export const createNotificationsNuit = async () => {
     INNER JOIN patients p ON p.id = rv.patient_id
     WHERE rv.date < CURRENT_DATE
       AND rv.statut NOT IN ('effectue', 'annule')
-      AND p.status NOT IN ('decede', 'decede_sida', 'transfere')
+      AND p.status NOT IN ('decede', 'decede_sida', 'transfere' , 'standard_inactif', 'migrant_inactif')
   `);
   for (const row of rdvManques) {
     const existe = await notificationExiste({ patient_id: row.patient_id, type: 'rdv_manque', rdv_id: row.rdv_id });
@@ -137,7 +137,7 @@ export const createNotificationsNuit = async () => {
     INNER JOIN patients p ON p.id = rv.patient_id
     WHERE rv.date BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '7 days'
       AND rv.statut NOT IN ('effectue', 'annule')
-      AND p.status NOT IN ('decede', 'decede_sida', 'transfere')
+      AND p.status NOT IN ('decede', 'decede_sida', 'transfere' , 'standard_inactif', 'migrant_inactif')
   `);
   for (const row of rdvProches) {
     const existe = await notificationExiste({ patient_id: row.patient_id, type: 'rdv_proche', rdv_id: row.rdv_id });

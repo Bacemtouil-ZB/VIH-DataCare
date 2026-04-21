@@ -186,3 +186,12 @@ Pourquoi :
 ✅ clicked_at → aussi dans localStorage
    → si vidé → notif réapparaît → médecin reclique ✅
    → pas critique non plus
+
+
+///21/04/2026
+
+Récap complet — état actuel
+patients.status — statuts administratifs
+StatutSignificationQui le setstandardPatient normalcreatePatient / createPrescriptionstandard_inactifStandard +180j sans prescriptionCRON recalculerTousLesStatutsmigrantPatient étrangercreatePatient / createPrescriptionmigrant_inactifMigrant +180j sans prescriptionCRON recalculerTousLesStatutsdecedeDécédéAdmin manueldecede_sidaDécédé SIDAAdmin manueltransfereTransféréAdmin manuel
+suivi_therapeutique.statut_patient — statuts thérapeutiques
+StatutSignificationQui le setactifVient normalementDélivranceen_retardRetard < 180jCRON recalculerEcartEtStatutsperdu_de_vueAbsent +180jCRON recalculerEcartEtStatutsrecupereÉtait perdu, revenutraiterApresDelivrance

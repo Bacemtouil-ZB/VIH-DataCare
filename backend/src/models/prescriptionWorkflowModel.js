@@ -1,11 +1,12 @@
 ﻿import pool from "../config/db.js";
 import { createNotificationDelivrance } from "../services/suiviNotificationService.js";
-const STATUTS_ADMIN = ['decede', 'decede_sida', 'transfere']; // pas le meme  que STATUTS_ALERTE pour logique métier
-const STATUTS_ALERTE = ['decede', 'decede_sida', 'transfere'];
+const STATUTS_PROTEGES = ['decede', 'decede_sida', 'transfere', 'standard_inactif', 'migrant_inactif'];
+const STATUTS_ALERTE   = ['decede', 'decede_sida', 'transfere'];
+
 
 const normalizeNumero = (n) => {
   if (!n) return { withPrefix: null, raw: null };
-  const raw = String(n).replace(/^F-/i, "").trim();
+  const raw = String(n).replace(/^F-/i, "").trim(); 
   return { withPrefix: `F-${raw}`, raw };
 };
 
@@ -44,38 +45,40 @@ const PRESCRIPTION_GROUP = `
     pm.date_delivrance, pm.remarque, pm.created_at, pm.updated_at
 `;
 
-
-// ── Logique commune après délivrance ─────────────────────────
+//---- Traiter statut patient après délivrance — alerte, réactivation, etc. ──
 const traiterApresDelivrance = async (client, patientId, prescriptionId) => {
-  // 1. Vérifier statut actuel du patient
   const { rows } = await client.query(
     `SELECT status FROM patients WHERE id = $1`,
     [patientId]
   );
   const statutActuel = rows[0]?.status;
 
-  // 2. Si administratif → vérifier si alerte nécessaire
-  if (STATUTS_ADMIN.includes(statutActuel)) {
+  // Alerte contradiction
+  if (STATUTS_ALERTE.includes(statutActuel)) {
+    await client.query(
+      `UPDATE suivi_therapeutique
+       SET alerte_contradiction = true
+       WHERE prescription_id = $1`,
+      [prescriptionId]
+    );
+    return { alerte: true };
+  }
 
-    // decede, decede_sida, transfere → alerte contradiction
-    if (STATUTS_ALERTE.includes(statutActuel)) {
-      await client.query(
-        `UPDATE suivi_therapeutique
-         SET alerte_contradiction = true
-         WHERE prescription_id = $1`,
-        [prescriptionId]
-      );
-      return { alerte: true };
-    }
-
+  // Statuts protégés sans alerte — ne rien toucher
+  if (STATUTS_PROTEGES.includes(statutActuel)) {
     return { alerte: false };
   }
 
-  // 3. Déterminer statut_patient pour suivi
-  const etaitPerduDeVue = statutActuel === 'perdu_de_vue';
-  const statutSuivi = etaitPerduDeVue ? 'recupere' : 'actif';
+  // ✅ Vérifier perdu_de_vue depuis suivi_therapeutique (dernière ligne du patient)
+  const { rows: suiviRows } = await client.query(
+    `SELECT statut_patient FROM suivi_therapeutique
+     WHERE patient_id = $1
+     ORDER BY created_at DESC
+     LIMIT 1`,
+    [patientId]
+  );
+  const etaitPerduDeVue = suiviRows[0]?.statut_patient === 'perdu_de_vue';
 
-  // 4. Si recupere → mettre à jour suivi
   if (etaitPerduDeVue) {
     await client.query(
       `UPDATE suivi_therapeutique
@@ -85,15 +88,7 @@ const traiterApresDelivrance = async (client, patientId, prescriptionId) => {
     );
   }
 
-  // 5. Mettre à jour patients.status → toujours actif après délivrance
-  await client.query(
-    `UPDATE patients
-     SET status = 'actif', updated_at = NOW()
-     WHERE id = $1`,
-    [patientId]
-  );
-
-  return { alerte: false, statut_patient: statutSuivi };
+  return { alerte: false, statut_patient: etaitPerduDeVue ? 'recupere' : 'actif' };
 };
 
 // ── GET — prescriptions d'un patient ─────────────────────────
@@ -133,6 +128,25 @@ export const createPrescription = async ({
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
+
+    // 0. Si inactif → remettre statut actif selon origine
+    const { rows: patientRows } = await client.query(
+      `SELECT status FROM patients WHERE id = $1`,
+      [patient_id]
+    );
+    const statutActuel = patientRows[0]?.status;
+
+    if (statutActuel === 'standard_inactif') {
+      await client.query(
+        `UPDATE patients SET status = 'standard', updated_at = NOW() WHERE id = $1`,
+        [patient_id]
+      );
+    } else if (statutActuel === 'migrant_inactif') {
+      await client.query(
+        `UPDATE patients SET status = 'migrant', updated_at = NOW() WHERE id = $1`,
+        [patient_id]
+      );
+    }
 
     // 1. Insérer l'en-tête
     const insertPrescription = await client.query(
@@ -350,10 +364,18 @@ export const supprimerPrescriptionsExpirees = async () => {
   try {
     await client.query("BEGIN");
 
+    // 1. Changer envoyee → non_validee après 48h
+    await client.query(`
+      UPDATE prescription_medicale
+      SET statut = 'non_validee', updated_at = NOW()
+      WHERE statut = 'envoyee'
+        AND created_at < NOW() - INTERVAL '48 hours';
+    `);
+
+    // 2. Chercher toutes les non_validee à supprimer
     const { rows: cibles } = await client.query(`
       SELECT id FROM prescription_medicale
-      WHERE statut = 'non_validee'
-        AND created_at < NOW() - INTERVAL '48 hours';
+      WHERE statut = 'non_validee';
     `);
 
     if (cibles.length === 0) {
@@ -363,11 +385,13 @@ export const supprimerPrescriptionsExpirees = async () => {
 
     const ids = cibles.map((r) => r.id);
 
+    // 3. Supprimer lignes
     await client.query(
       `DELETE FROM prescription_lignes WHERE prescription_id = ANY($1::int[]);`,
       [ids]
     );
 
+    // 4. Supprimer prescriptions
     const { rows: supprimees } = await client.query(
       `DELETE FROM prescription_medicale
        WHERE id = ANY($1::int[])
@@ -461,15 +485,7 @@ export const recalculerEcartEtStatuts = async () => {
         [ecart, nouveauStatut, suivi.id]
       );
 
-      // 5. Mettre à jour patients.status
-      await client.query(
-        `UPDATE patients
-         SET status     = $1,
-             updated_at = NOW()
-         WHERE id = $2`,
-        [nouveauStatut, suivi.patient_id]
-      );
-
+    
       updated.push({
         patient_id: suivi.patient_id,
         ecart,

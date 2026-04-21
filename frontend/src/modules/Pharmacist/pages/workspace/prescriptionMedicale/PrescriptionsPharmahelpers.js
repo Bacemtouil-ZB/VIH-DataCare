@@ -36,9 +36,9 @@ export const getDaysLabel = (days) => {
   return `dans ${days}j`;
 };
 
-export const resolveSuiviBadge = (statutPatient, dateEcart) => {
-  const key   = (statutPatient || "en_attente").toLowerCase().trim();
-  const badge = STATUT_PATIENT_BADGE_MAP[key] ?? STATUT_PATIENT_BADGE_MAP.en_attente;
+export const resolveSuiviBadge = (suiviStatutPatient, dateEcart) => {
+  const key   = (suiviStatutPatient || "en_attente").toLowerCase().trim(); // ✅
+  const badge = STATUT_PATIENT_BADGE_MAP[key] ?? STATUT_PATIENT_BADGE_MAP.en_attente; // ✅
   const showEcart = dateEcart > 0 && key === "en_retard";
   return { ...badge, showEcart };
 };

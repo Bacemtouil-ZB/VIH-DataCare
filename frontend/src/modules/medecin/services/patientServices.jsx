@@ -107,6 +107,16 @@ export const resetMobilePassword = async (numero) => {
   }
 };
 
+//--left panel data (patient details + 3 last prises) for patient workspace
+export const getPatientLeftPanel = async (numero) => {
+  try {
+    const response = await API.get(`/patients/${numero}/left-panel`);
+    return response.data;
+  } catch (error) {
+    throw error.response?.data || error.message;
+  }
+};
+
 
 // Export par défaut
 export default {
@@ -120,4 +130,5 @@ export default {
   getMobileAccountStatus,
   createMobileAccount,
   resetMobilePassword,
+  getPatientLeftPanel,
 };

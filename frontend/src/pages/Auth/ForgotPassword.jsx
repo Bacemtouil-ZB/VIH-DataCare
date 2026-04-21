@@ -54,13 +54,6 @@ function ForgotPassword() {
               Entrez votre email pour recevoir un lien de reinitialisation.
             </p>
           </div>
-
-          <NavLink
-            to="/login"
-            className="mt-6 bg-white text-green-600 font-semibold py-3 px-10 rounded-lg shadow-lg hover:bg-gray-50 transition-all"
-          >
-            RETOUR
-          </NavLink>
         </div>
 
         <div className="w-7/12 p-8 flex flex-col justify-center">
