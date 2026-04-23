@@ -27,21 +27,20 @@ export const toggleUserActivation = async (userId, isactivated) => {
   if (!updatedUser) {
     throw new Error("Utilisateur non trouvé");
   }
- 
-  // ── Envoyer email seulement lors de l'activation (pas lors désactivation) ──
+
+  // Email en arrière-plan — ne bloque pas l'activation
   if (isactivated && updatedUser.email) {
-    try {
-      await sendActivationEmail({
+    setImmediate(() => {
+      sendActivationEmail({
         to: updatedUser.email,
         nom: updatedUser.nom,
         prenom: updatedUser.prenom,
-      });
-    } catch (mailErr) {
-      // L'activation est déjà enregistrée en base — on ne bloque pas si l'email échoue
-      console.error("Erreur envoi email activation:", mailErr);
-    }
+      }).catch((mailErr) =>
+        console.error("Erreur envoi email activation:", mailErr),
+      );
+    });
   }
- 
+
   const { password: _, ...userWithoutPassword } = updatedUser;
   return userWithoutPassword;
 };

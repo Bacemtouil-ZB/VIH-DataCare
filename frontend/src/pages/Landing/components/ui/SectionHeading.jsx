@@ -4,7 +4,7 @@ function SectionHeading({ badge, title, description }) {
   return (
     <div className="max-w-3xl">
       {badge && (
-        <p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#1B5E20]">
+        <p className="inline-flex rounded-full border border-[#C8E6C9] bg-[#F6FFF7] px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-[#1B5E20] shadow-sm">
           {badge}
         </p>
       )}

@@ -1,16 +1,22 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
+const NAV_ITEMS = [
+  { label: "A propos", href: "#about" },
+  { label: "Fonctionnalites", href: "#features" },
+  { label: "Fiabilite", href: "#fiabilite" },
+];
+
 function LandingNavbar() {
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-5 py-4 md:px-8 lg:px-10">
+    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-xl">
+      <div className="flex w-full items-center justify-between gap-4 px-5 py-4 md:px-8 lg:px-10">
         <div className="flex items-center gap-4">
-          <div className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-[#E8F5E9] animate-pulse">
+          <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#E8F5E9] shadow-sm ring-1 ring-[#C8E6C9]/70">
             <i className="bi bi-heart-pulse-fill text-3xl text-[#1B5E20]"></i>
           </div>
           <div className="flex flex-col">
-            <span className="text-2xl font-semibold tracking-wide text-slate-900 leading-none">
+            <span className="text-xl font-semibold leading-none tracking-wide text-slate-900 md:text-2xl">
               VIH DataCare
             </span>
             <span className="mt-1 text-xs text-slate-500">
@@ -19,12 +25,31 @@ function LandingNavbar() {
           </div>
         </div>
 
-        <div className="ml-auto flex items-center">
+        <div className="ml-auto hidden items-center gap-7 lg:flex">
+          {NAV_ITEMS.map((item) => (
+            <a
+              key={item.href}
+              href={item.href}
+              className="text-sm font-medium text-slate-600 transition-colors hover:text-[#1B5E20] hover:!no-underline"
+            >
+              {item.label}
+            </a>
+          ))}
+        </div>
+
+        <div className="ml-auto flex items-center gap-3 lg:ml-0">
           <Link
             to="/login"
-            className="inline-flex items-center justify-center rounded-xl bg-[#1B5E20] px-5 py-2 text-sm font-semibold text-white !no-underline shadow-sm transition-colors hover:bg-[#2E7D32] hover:!no-underline"
+            className="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 !no-underline shadow-sm transition-all hover:-translate-y-0.5 hover:border-[#A5D6A7] hover:text-[#1B5E20] hover:shadow-md hover:!no-underline md:px-5"
           >
             Connexion
+          </Link>
+
+          <Link
+            to="/signup"
+            className="inline-flex items-center justify-center rounded-xl bg-[#1B5E20] px-4 py-2 text-sm font-semibold text-white !no-underline shadow-sm transition-all hover:-translate-y-0.5 hover:bg-[#2E7D32] hover:shadow-md hover:!no-underline md:px-5"
+          >
+            S'inscrire
           </Link>
         </div>
       </div>
