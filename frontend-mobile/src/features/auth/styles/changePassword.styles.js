@@ -62,6 +62,10 @@ const styles = StyleSheet.create({
   inputIcon: {
     marginRight: spacing.sm,
   },
+  inputIconRtl: {
+    marginRight: 0,
+    marginLeft: spacing.sm,
+  },
   input: {
     flex: 1,
     fontSize: spacing.fontSize.md,
@@ -105,6 +109,12 @@ const styles = StyleSheet.create({
     color: colors.primary,
     flex: 1,
     lineHeight: 20,
+  },
+  rtlRow: {
+    flexDirection: "row-reverse",
+  },
+  textAlignRight: {
+    textAlign: "right",
   },
 });
 

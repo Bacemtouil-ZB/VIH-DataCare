@@ -1,16 +1,21 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import useI18n from "../i18n/useI18n";
 
-const ErrorMessage = ({ message, onRetry }) => (
-  <View style={styles.container}>
-    <Text style={styles.message}>{message}</Text>
-    {onRetry && (
-      <TouchableOpacity style={styles.btn} onPress={onRetry}>
-        <Text style={styles.btnText}>Réessayer</Text>
-      </TouchableOpacity>
-    )}
-  </View>
-);
+const ErrorMessage = ({ message, onRetry }) => {
+  const { t, isRTL } = useI18n();
+
+  return (
+    <View style={styles.container}>
+      <Text style={[styles.message, isRTL && styles.textRight]}>{message}</Text>
+      {onRetry ? (
+        <TouchableOpacity style={styles.btn} onPress={onRetry}>
+          <Text style={styles.btnText}>{t("common.retry")}</Text>
+        </TouchableOpacity>
+      ) : null}
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -34,6 +39,9 @@ const styles = StyleSheet.create({
   btnText: {
     color: "#fff",
     fontWeight: "700",
+  },
+  textRight: {
+    textAlign: "right",
   },
 });
 

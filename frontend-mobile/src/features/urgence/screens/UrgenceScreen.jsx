@@ -1,11 +1,11 @@
 import React from "react";
 import {
-  View,
-  Text,
   FlatList,
-  StyleSheet,
   RefreshControl,
+  StyleSheet,
+  Text,
   TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -15,6 +15,7 @@ import EmergencyContactCard from "../components/EmergencyContactCard";
 import Loader from "../../../components/loader";
 import ErrorMessage from "../../../components/errorMessage";
 import EmptyState from "../../../components/emptyState";
+import useI18n from "../../../i18n/useI18n";
 
 const IconRetour = () => (
   <Text style={{ fontSize: 22, color: "#1E293B", lineHeight: 24 }}>←</Text>
@@ -23,14 +24,13 @@ const IconRetour = () => (
 const UrgenceScreen = () => {
   const { contacts, loading, error, refetch } = useEmergency();
   const navigation = useNavigation();
+  const { t, isRTL } = useI18n();
 
   if (loading) return <Loader />;
-  if (error)   return <ErrorMessage message={error} onRetry={refetch} />;
+  if (error) return <ErrorMessage message={error} onRetry={refetch} />;
 
   return (
     <SafeAreaView style={styles.container}>
-
-      {/* ── Header ── */}
       <View style={styles.header}>
         <TouchableOpacity
           style={styles.backBtn}
@@ -44,23 +44,28 @@ const UrgenceScreen = () => {
             <MaterialIcons name="warning" size={20} color="#E53E3E" />
           </View>
           <View>
-            <Text style={styles.headerTitle}>Contacts d'Urgence</Text>
-            <Text style={styles.headerSubtitle}>
-              {contacts.length} contact{contacts.length !== 1 ? "s" : ""} disponible{contacts.length !== 1 ? "s" : ""}
+            <Text style={[styles.headerTitle, isRTL && { textAlign: "right" }]}>
+              {t("urgence.title")}
+            </Text>
+            <Text style={[styles.headerSubtitle, isRTL && { textAlign: "right" }]}>
+              {t("urgence.availableContacts", { count: contacts.length })}
             </Text>
           </View>
         </View>
       </View>
 
-      {/* ── Banner ── */}
       <View style={styles.banner}>
-        <MaterialIcons name="info-outline" size={16} color="#92400E" style={{ marginRight: 8 }} />
-        <Text style={styles.bannerText}>
-          En cas d'urgence, contactez directement l'un des numéros ci-dessous.
+        <MaterialIcons
+          name="info-outline"
+          size={16}
+          color="#92400E"
+          style={{ marginRight: 8 }}
+        />
+        <Text style={[styles.bannerText, isRTL && { textAlign: "right" }]}>
+          {t("urgence.bannerText")}
         </Text>
       </View>
 
-      {/* ── Liste ── */}
       <FlatList
         data={contacts}
         keyExtractor={(item) => item.id?.toString()}
@@ -69,11 +74,8 @@ const UrgenceScreen = () => {
         refreshControl={
           <RefreshControl refreshing={loading} onRefresh={refetch} tintColor="#E53E3E" />
         }
-        ListEmptyComponent={
-          <EmptyState message="Aucun contact d'urgence disponible." />
-        }
+        ListEmptyComponent={<EmptyState message={t("urgence.emptyContacts")} />}
       />
-
     </SafeAreaView>
   );
 };

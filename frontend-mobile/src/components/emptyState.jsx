@@ -1,12 +1,17 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
+import useI18n from "../i18n/useI18n";
 
-const EmptyState = ({ message }) => (
-  <View style={styles.container}>
-    <Text style={styles.emoji}>📭</Text>
-    <Text style={styles.message}>{message}</Text>
-  </View>
-);
+const EmptyState = ({ message }) => {
+  const { isRTL } = useI18n();
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.emoji}>📭</Text>
+      <Text style={[styles.message, isRTL && styles.textRight]}>{message}</Text>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -24,6 +29,9 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: "#9CA3AF",
     textAlign: "center",
+  },
+  textRight: {
+    textAlign: "right",
   },
 });
 

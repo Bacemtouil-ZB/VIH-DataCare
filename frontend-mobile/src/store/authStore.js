@@ -1,4 +1,4 @@
-import { create } from "zustand"; //Zustand = mémoire globale de  application
+import { create } from "zustand";
 import storageService from "../services/storage.service";
 import authApi from "../api/auth.api";
 
@@ -11,9 +11,11 @@ const useAuthStore = create((set) => ({
 
   login: async (username, password) => {
     set({ isLoading: true });
+
     try {
       const data = await authApi.login(username, password);
       await storageService.setToken(data.token);
+
       set({
         user: data.user,
         token: data.token,
@@ -21,12 +23,16 @@ const useAuthStore = create((set) => ({
         mustChangePassword: data.mustChangePassword,
         isLoading: false,
       });
+
       return { success: true, mustChangePassword: data.mustChangePassword };
     } catch (error) {
+      const apiMessage = error.response?.data?.message;
       set({ isLoading: false });
+
       return {
         success: false,
-        message: error.response?.data?.message || "Connexion échouée",
+        message: apiMessage,
+        messageKey: apiMessage ? undefined : "auth.loginFailed",
       };
     }
   },
@@ -40,6 +46,7 @@ const useAuthStore = create((set) => ({
     try {
       const token = await storageService.getToken();
       if (!token) return;
+
       const data = await authApi.getMe();
       set({
         user: data.user,

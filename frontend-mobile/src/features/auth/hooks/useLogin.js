@@ -9,7 +9,11 @@ const useLogin = () => {
     const result = await login(username, password);
 
     if (!result.success) {
-      return { success: false, message: result.message };
+      return {
+        success: false,
+        message: result.message,
+        messageKey: result.messageKey,
+      };
     }
 
     if (result.mustChangePassword) {

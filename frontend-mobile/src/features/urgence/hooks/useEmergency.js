@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { getEmergencyContacts } from "../../../api/emergency.api";
+import useI18n from "../../../i18n/useI18n";
 
 export const useEmergency = () => {
+  const { t } = useI18n();
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading]   = useState(true);
   const [error, setError]       = useState(null);
@@ -13,7 +15,7 @@ export const useEmergency = () => {
       const response = await getEmergencyContacts();
       setContacts(response.data);
     } catch (err) {
-      setError("Impossible de charger les contacts d'urgence.");
+      setError(err.response?.data?.message || t("urgence.loadError"));
     } finally {
       setLoading(false);
     }
@@ -21,7 +23,7 @@ export const useEmergency = () => {
 
   useEffect(() => {
     fetchContacts();
-  }, []);
+  }, [t]);
 
   return { contacts, loading, error, refetch: fetchContacts };
 };

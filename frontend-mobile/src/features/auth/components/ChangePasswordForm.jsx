@@ -1,71 +1,74 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  ActivityIndicator,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import styles from '../styles/changePassword.styles';
-import colors from '../../../constants/colors';
+import React, { useState } from "react";
+import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import styles from "../styles/changePassword.styles";
+import colors from "../../../constants/colors";
+import useI18n from "../../../i18n/useI18n";
 
 const ChangePasswordForm = ({ onSubmit, isLoading }) => {
-  const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const { t, isRTL } = useI18n();
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showNew, setShowNew] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const handleSubmit = async () => {
-    setError('');
+    setError("");
 
     if (!newPassword.trim() || !confirmPassword.trim()) {
-      setError('Veuillez remplir tous les champs');
+      setError(t("auth.requiredFields"));
       return;
     }
 
     if (newPassword.length < 8) {
-      setError('Le mot de passe doit contenir au moins 8 caractères');
+      setError(t("auth.passwordMinLength"));
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setError('Les mots de passe ne correspondent pas');
+      setError(t("auth.passwordsDoNotMatch"));
       return;
     }
 
     const result = await onSubmit(newPassword);
 
     if (result && !result.success) {
-      setError(result.message);
+      if (result.message) {
+        setError(result.message);
+        return;
+      }
+
+      if (result.messageKey) {
+        setError(t(result.messageKey));
+        return;
+      }
+
+      setError(t("auth.changePasswordFailed"));
     }
   };
 
   return (
     <View style={styles.form}>
-
-      {/* Info box */}
-      <View style={styles.infoBox}>
+      <View style={[styles.infoBox, isRTL && styles.rtlRow]}>
         <Ionicons name="information-circle-outline" size={20} color={colors.primary} />
-        <Text style={styles.infoText}>
-          Pour votre sécurité, veuillez choisir un nouveau mot de passe personnel.
-        </Text>
+        <Text style={[styles.infoText, isRTL && styles.textAlignRight]}>{t("changePassword.info")}</Text>
       </View>
 
-      {/* New password */}
       <View style={styles.inputWrapper}>
-        <Text style={styles.label}>Nouveau mot de passe</Text>
-        <View style={styles.inputContainer}>
+        <Text style={[styles.label, isRTL && styles.textAlignRight]}>
+          {t("changePassword.newPasswordLabel")}
+        </Text>
+        <View style={[styles.inputContainer, isRTL && styles.rtlRow]}>
           <Ionicons
             name="lock-closed-outline"
             size={20}
             color={colors.textSecondary}
-            style={styles.inputIcon}
+            style={[styles.inputIcon, isRTL && styles.inputIconRtl]}
           />
           <TextInput
-            style={styles.input}
-            placeholder="Minimum 8 caractères"
+            style={[styles.input, isRTL && styles.textAlignRight]}
+            placeholder={t("changePassword.newPasswordPlaceholder")}
             placeholderTextColor={colors.textLight}
             value={newPassword}
             onChangeText={setNewPassword}
@@ -74,7 +77,7 @@ const ChangePasswordForm = ({ onSubmit, isLoading }) => {
           />
           <TouchableOpacity onPress={() => setShowNew(!showNew)}>
             <Ionicons
-              name={showNew ? 'eye-off-outline' : 'eye-outline'}
+              name={showNew ? "eye-off-outline" : "eye-outline"}
               size={20}
               color={colors.textSecondary}
             />
@@ -82,19 +85,20 @@ const ChangePasswordForm = ({ onSubmit, isLoading }) => {
         </View>
       </View>
 
-      {/* Confirm password */}
       <View style={styles.inputWrapper}>
-        <Text style={styles.label}>Confirmer le mot de passe</Text>
-        <View style={styles.inputContainer}>
+        <Text style={[styles.label, isRTL && styles.textAlignRight]}>
+          {t("changePassword.confirmPasswordLabel")}
+        </Text>
+        <View style={[styles.inputContainer, isRTL && styles.rtlRow]}>
           <Ionicons
             name="lock-closed-outline"
             size={20}
             color={colors.textSecondary}
-            style={styles.inputIcon}
+            style={[styles.inputIcon, isRTL && styles.inputIconRtl]}
           />
           <TextInput
-            style={styles.input}
-            placeholder="Répétez le mot de passe"
+            style={[styles.input, isRTL && styles.textAlignRight]}
+            placeholder={t("changePassword.confirmPasswordPlaceholder")}
             placeholderTextColor={colors.textLight}
             value={confirmPassword}
             onChangeText={setConfirmPassword}
@@ -103,7 +107,7 @@ const ChangePasswordForm = ({ onSubmit, isLoading }) => {
           />
           <TouchableOpacity onPress={() => setShowConfirm(!showConfirm)}>
             <Ionicons
-              name={showConfirm ? 'eye-off-outline' : 'eye-outline'}
+              name={showConfirm ? "eye-off-outline" : "eye-outline"}
               size={20}
               color={colors.textSecondary}
             />
@@ -111,15 +115,13 @@ const ChangePasswordForm = ({ onSubmit, isLoading }) => {
         </View>
       </View>
 
-      {/* Error */}
       {error ? (
-        <View style={styles.errorContainer}>
+        <View style={[styles.errorContainer, isRTL && styles.rtlRow]}>
           <Ionicons name="alert-circle-outline" size={16} color={colors.danger} />
-          <Text style={styles.errorText}>{error}</Text>
+          <Text style={[styles.errorText, isRTL && styles.textAlignRight]}>{error}</Text>
         </View>
       ) : null}
 
-      {/* Submit */}
       <TouchableOpacity
         style={[styles.button, isLoading && styles.buttonDisabled]}
         onPress={handleSubmit}
@@ -128,10 +130,9 @@ const ChangePasswordForm = ({ onSubmit, isLoading }) => {
         {isLoading ? (
           <ActivityIndicator color={colors.white} />
         ) : (
-          <Text style={styles.buttonText}>Confirmer</Text>
+          <Text style={styles.buttonText}>{t("changePassword.submitButton")}</Text>
         )}
       </TouchableOpacity>
-
     </View>
   );
 };

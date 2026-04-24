@@ -1,157 +1,48 @@
-// // ============================================================
-// //  useSuivi.js — sécurisé contre les réponses undefined
-// // ============================================================
-
-// import { useState, useEffect } from "react";
-// import useAuthStore from "../../../store/authStore";
-// import {
-//   getGraphiqueCD4,
-//   getGraphiqueCV,
-//   getPeriodesARV,
-// } from "../../../api/suivi.api";
-
-// // ── Helpers ───────────────────────────────────────────────────
-// const formatDateAxe = (dateStr) => {
-//   if (!dateStr) return "";
-//   const date = new Date(dateStr);
-//   return date.toLocaleDateString("fr-FR", { month: "short", year: "2-digit" });
-// };
-
-// export const prepareDataCD4 = (points) => {
-//   if (!Array.isArray(points)) return [];
-//   return points.map((p) => ({
-//     ...p,
-//     date:         p.date,
-//     dateFormatee: formatDateAxe(p.date),
-//     x:            new Date(p.date).getTime(),
-//     y:            p.cd4_absolu,
-//   }));
-// };
-
-// export const prepareDataCV = (points) => {
-//   if (!Array.isArray(points)) return [];
-//   return points.map((p) => ({
-//     ...p,
-//     date:         p.date,
-//     dateFormatee: formatDateAxe(p.date),
-//     x:            new Date(p.date).getTime(),
-//     y:            p.charge_virale_valeur,
-//     yLog:         p.charge_virale_valeur > 0 ? p.charge_virale_valeur : 1,
-//   }));
-// };
-
-// // ── État initial ──────────────────────────────────────────────
-// const INITIAL_STATE = {
-//   cd4:     [],
-//   cv:      [],
-//   periodes: [],
-// };
-
-// // ── Hook ──────────────────────────────────────────────────────
-// const useSuivi = () => {
-//   const numero = useAuthStore((state) => state.user?.numero);
-//   const [graphiques, setGraphiques] = useState(INITIAL_STATE);
-//   const [loading,    setLoading]    = useState(false);
-//   const [error,      setError]      = useState(null);
-
-//   useEffect(() => {
-//     if (!numero) return;
-
-//     const fetchGraphiques = async () => {
-//       setLoading(true);
-//       setError(null);
-//       try {
-//         const [resCD4, resCV, resPeriodes] = await Promise.all([
-//           getGraphiqueCD4(numero),
-//           getGraphiqueCV(numero),
-//           getPeriodesARV(numero),
-//         ]);
-
-
-//         setGraphiques({
-//           cd4:     prepareDataCD4(resCD4?.data),
-//           cv:      prepareDataCV(resCV?.data),
-//           periodes: Array.isArray(resPeriodes?.data) ? resPeriodes.data : [],
-//         });
-//       } catch (err) {
-//         console.log("useSuivi ERROR:", err.message, err.stack);
-//         setError(err.message || "Erreur lors du chargement des graphiques");
-//         setGraphiques(INITIAL_STATE);
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchGraphiques();
-//   }, [numero]);
-
-//   return { graphiques, loading, error };
-// };
-
-// export default useSuivi;
-
-// ============================================================
-//  useSuivi.js — sécurisé + gestion 403 (permission refusée)
-// ============================================================
-
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import useAuthStore from "../../../store/authStore";
-import {
-  getGraphiqueCD4,
-  getGraphiqueCV,
-  getPeriodesARV,
-} from "../../../api/suivi.api";
-
-// ── Helpers ───────────────────────────────────────────────────
-const formatDateAxe = (dateStr) => {
-  if (!dateStr) return "";
-  const date = new Date(dateStr);
-  return date.toLocaleDateString("fr-FR", { month: "short", year: "2-digit" });
-};
+import useI18n from "../../../i18n/useI18n";
+import { getGraphiqueCD4, getGraphiqueCV, getPeriodesARV } from "../../../api/suivi.api";
 
 export const prepareDataCD4 = (points) => {
   if (!Array.isArray(points)) return [];
-  return points.map((p) => ({
-    ...p,
-    date:         p.date,
-    dateFormatee: formatDateAxe(p.date),
-    x:            new Date(p.date).getTime(),
-    y:            p.cd4_absolu,
+
+  return points.map((point) => ({
+    ...point,
+    x: new Date(point.date).getTime(),
+    y: point.cd4_absolu,
   }));
 };
 
 export const prepareDataCV = (points) => {
   if (!Array.isArray(points)) return [];
-  return points.map((p) => ({
-    ...p,
-    date:         p.date,
-    dateFormatee: formatDateAxe(p.date),
-    x:            new Date(p.date).getTime(),
-    y:            p.charge_virale_valeur,
-    yLog:         p.charge_virale_valeur > 0 ? p.charge_virale_valeur : 1,
+
+  return points.map((point) => ({
+    ...point,
+    x: new Date(point.date).getTime(),
+    y: point.charge_virale_valeur,
+    yLog: point.charge_virale_valeur > 0 ? point.charge_virale_valeur : 1,
   }));
 };
 
-// ── État initial ──────────────────────────────────────────────
-const INITIAL_STATE = {
-  cd4:     [],
-  cv:      [],
+const INITIAL_GRAPH_STATE = {
+  cd4: [],
+  cv: [],
   periodes: [],
 };
 
 const INITIAL_PERMISSIONS = {
-  can_view_cd4:        true,
+  can_view_cd4: true,
   can_view_viral_load: true,
 };
 
-// ── Hook ──────────────────────────────────────────────────────
 const useSuivi = () => {
   const numero = useAuthStore((state) => state.user?.numero);
+  const { t } = useI18n();
 
-  const [graphiques,  setGraphiques]  = useState(INITIAL_STATE);
+  const [graphiques, setGraphiques] = useState(INITIAL_GRAPH_STATE);
   const [permissions, setPermissions] = useState(INITIAL_PERMISSIONS);
-  const [loading,     setLoading]     = useState(false);
-  const [error,       setError]       = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!numero) return;
@@ -159,6 +50,7 @@ const useSuivi = () => {
     const fetchGraphiques = async () => {
       setLoading(true);
       setError(null);
+
       try {
         const [resCD4, resCV, resPeriodes] = await Promise.all([
           getGraphiqueCD4(numero),
@@ -166,29 +58,26 @@ const useSuivi = () => {
           getPeriodesARV(numero),
         ]);
 
-        // ── Permissions : false si le backend a retourné 403 ──
         setPermissions({
-          can_view_cd4:        !resCD4?.forbidden,
+          can_view_cd4: !resCD4?.forbidden,
           can_view_viral_load: !resCV?.forbidden,
         });
 
         setGraphiques({
-          cd4:     prepareDataCD4(resCD4?.data),
-          cv:      prepareDataCV(resCV?.data),
+          cd4: prepareDataCD4(resCD4?.data),
+          cv: prepareDataCV(resCV?.data),
           periodes: Array.isArray(resPeriodes?.data) ? resPeriodes.data : [],
         });
-
       } catch (err) {
-        console.log("useSuivi ERROR:", err.message, err.stack);
-        setError(err.message || "Erreur lors du chargement des graphiques");
-        setGraphiques(INITIAL_STATE);
+        setError(err.message || t("suivi.loadError"));
+        setGraphiques(INITIAL_GRAPH_STATE);
       } finally {
         setLoading(false);
       }
     };
 
     fetchGraphiques();
-  }, [numero]);
+  }, [numero, t]);
 
   return { graphiques, permissions, loading, error };
 };
