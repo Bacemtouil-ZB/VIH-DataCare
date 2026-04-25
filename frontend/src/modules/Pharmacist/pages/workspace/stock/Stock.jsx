@@ -15,11 +15,13 @@ export default function Stock() {
         showAddForm={logic.showAddForm}
         setShowAddForm={logic.setShowAddForm}
         addForm={logic.addForm}
-        setAddForm={logic.setAddForm}
+        addErrors={logic.addErrors}
+        handleAddFormChange={logic.handleAddFormChange}
         editingId={logic.editingId}
         editingMode={logic.editingMode}
         editingQuantity={logic.editingQuantity}
-        setEditingQuantity={logic.setEditingQuantity}
+        quantityErrors={logic.quantityErrors}
+        handleEditingQuantityChange={logic.handleEditingQuantityChange}
         showHistory={logic.showHistory}
         setShowHistory={logic.setShowHistory}
         loading={logic.loading}

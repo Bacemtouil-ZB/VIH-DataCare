@@ -24,6 +24,7 @@ const ACTIVITE_PROFESSIONNELLE_VALUES = [
   "sans_emploi",
   "retraite",
   "personne_au_foyer",
+  "professionnelle_du_sexe",
 ];
 
 const PROBLEME_VALUES = [

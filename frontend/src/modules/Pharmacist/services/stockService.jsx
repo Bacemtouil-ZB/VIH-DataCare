@@ -7,13 +7,22 @@ const normalizeItems = (payload) => {
 };
 
 const buildServiceError = (error, fallbackMessage) => {
-  const message =
-    error?.response?.data?.message ||
-    error?.response?.data?.error ||
-    error?.message ||
-    fallbackMessage;
+  const payload = error?.response?.data;
 
-  return new Error(message);
+  if (payload) {
+    return {
+      ...payload,
+      message:
+        payload.message ||
+        payload.error ||
+        error?.message ||
+        fallbackMessage,
+    };
+  }
+
+  return {
+    message: error?.message || fallbackMessage,
+  };
 };
 //getAll
 export const getStockItems = async () => {

@@ -50,14 +50,14 @@ const FEATURES = [
 
 function FeaturesSection() {
   return (
-    <SectionShell id="features" className="border-y border-slate-200 bg-slate-50/80 py-14 md:py-18">
+    <SectionShell id="features" className="border-y border-slate-200 bg-slate-50/80 py-7 md:py-9">
       <SectionHeading
         badge="Fonctionnalites"
         title="Des fonctionnalites concretes pour accompagner tout le parcours de prise en charge"
         description="Chaque module a ete pense pour rendre le logiciel plus utile, plus simple a utiliser et plus efficace pour le suivi quotidien des patients."
       />
 
-      <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {FEATURES.map((feature, index) => (
           <InfoCard
             key={feature.title}
@@ -67,6 +67,7 @@ function FeaturesSection() {
             title={feature.title}
             description={feature.description}
             tone={index === 0 ? "strong" : "default"}
+            size="sm"
           />
         ))}
       </div>

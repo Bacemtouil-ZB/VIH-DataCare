@@ -58,9 +58,13 @@ export const filterPatients = (patients, { search, filter, rdvFilter, rdvMap }) 
   if (!Array.isArray(patients)) return [];
 
   return patients.filter((p) => {
+    const q = search.toLowerCase();
     const matchSearch =
-      p.name?.toLowerCase().includes(search.toLowerCase()) ||
-      p.numero?.toLowerCase().includes(search.toLowerCase());
+      p.name?.toLowerCase().includes(q) ||
+      p.surname?.toLowerCase().includes(q) ||
+      `${p.name} ${p.surname}`.toLowerCase().includes(q) ||
+      `${p.surname} ${p.name}`.toLowerCase().includes(q) ||
+      p.numero?.toLowerCase().includes(q);
 
     const matchHospit = filter === "" || p.hospitalisation === filter;
 

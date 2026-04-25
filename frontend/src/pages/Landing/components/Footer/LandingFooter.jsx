@@ -38,8 +38,7 @@ function LandingFooter() {
         <div className="mt-6 flex flex-col gap-1 border-t border-slate-200 pt-4 text-xs text-slate-500 md:flex-row md:items-center md:justify-between">
           <span>Une landing qui met en valeur la simplicite, le suivi complet, la protection et la fiabilite du logiciel.</span>
           <span>Copyright 2026 VIH DataCare. Tous droits reserves.</span>
-          <span>Solution dediee aux equipes de sante et au suivi institutionnel.</span>
-
+          <span>With love Chayma MANNAI & Bacem TOUIL.</span>
         </div>
       </div>
     </footer>

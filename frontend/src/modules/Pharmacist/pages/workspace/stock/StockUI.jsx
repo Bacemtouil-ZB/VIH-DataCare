@@ -1,6 +1,7 @@
 import {
   ActionButton,
   Badge,
+  FieldError,
   FieldLabel,
   HistoriqueAccordeon,
   HistoriqueActions,
@@ -12,28 +13,33 @@ import {
 } from "../../../../../shared/components";
 import { formatDateTimeFr } from "../../../../../shared/utils/logiqueTableHistory";
 
-// ── Boutons + / - inline ──────────────────────────────────────
-function QuantityEditPanel({ item, editingMode, editingQuantity, setEditingQuantity, saving, saveQuantity, cancelEditQuantity }) {
+function QuantityEditPanel({
+  item,
+  editingMode,
+  editingQuantity,
+  quantityErrors,
+  handleEditingQuantityChange,
+  saving,
+  saveQuantity,
+  cancelEditQuantity,
+}) {
   const isDecrement = editingMode === "decrement";
-  const accentBg    = isDecrement ? "#fee2e2" : "#dcfce7";
   const accentColor = isDecrement ? "#991b1b" : "#166534";
-  const label       = isDecrement ? "Retirer du stock" : "Ajouter au stock";
-  const verb        = isDecrement ? "−" : "+";
+  const label = isDecrement ? "Retirer du stock" : "Ajouter au stock";
+  const verb = isDecrement ? "-" : "+";
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", minWidth: "180px" }}>
-      {/* Label contextuel */}
       <span style={{ fontSize: "0.72rem", fontWeight: 700, color: accentColor, letterSpacing: "0.04em" }}>
         {verb} {label}
       </span>
 
-      {/* Quantité actuelle → aperçu */}
       <span style={{ fontSize: "0.78rem", color: "#64748b" }}>
         Stock actuel :&nbsp;
         <strong style={{ color: "#0f172a" }}>{item.quantity}</strong>
         {editingQuantity !== "" && Number(editingQuantity) > 0 && (
           <span style={{ color: accentColor, fontWeight: 700 }}>
-            &nbsp;{isDecrement ? "→" : "→"}&nbsp;
+            &nbsp;-&gt;&nbsp;
             {isDecrement
               ? Math.max(0, item.quantity - Number(editingQuantity))
               : item.quantity + Number(editingQuantity)}
@@ -41,16 +47,15 @@ function QuantityEditPanel({ item, editingMode, editingQuantity, setEditingQuant
         )}
       </span>
 
-      {/* Input delta */}
       <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
         <Input
           type="number"
           min="1"
-          className="form-control form-control-sm ph-qty-input"
+          className={`form-control form-control-sm ph-qty-input ${quantityErrors.quantite ? "is-invalid" : ""}`}
           style={{ width: "80px", borderColor: accentColor }}
           value={editingQuantity}
-          onChange={(e) => setEditingQuantity(e.target.value)}
-          placeholder="Qté"
+          onChange={handleEditingQuantityChange}
+          placeholder="Qte"
           disabled={saving}
           autoFocus
         />
@@ -64,26 +69,35 @@ function QuantityEditPanel({ item, editingMode, editingQuantity, setEditingQuant
         />
         <ActionButton
           action="annuler"
-          label="✕"
+          label="X"
           onClick={cancelEditQuantity}
           size="sm"
           showIcon={false}
           disabled={saving}
         />
       </div>
+
+      {quantityErrors.quantite && <FieldError error={quantityErrors.quantite} />}
+      {quantityErrors._form && <FieldError error={quantityErrors._form} />}
     </div>
   );
 }
 
-// ── Composant principal ───────────────────────────────────────
 export default function StockUI({
-  search,          setSearch,
-  showAddForm,     setShowAddForm,
-  addForm,         setAddForm,
+  search,
+  setSearch,
+  showAddForm,
+  setShowAddForm,
+  addForm,
+  addErrors,
+  handleAddFormChange,
   editingId,
   editingMode,
-  editingQuantity, setEditingQuantity,
-  showHistory,     setShowHistory,
+  editingQuantity,
+  quantityErrors,
+  handleEditingQuantityChange,
+  showHistory,
+  setShowHistory,
   loading,
   saving,
   error,
@@ -98,11 +112,10 @@ export default function StockUI({
 }) {
   return (
     <>
-      {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div className="ph-stock-header">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <div className="ph-stock-title">
-            <h2>Gestion du stock de médicaments</h2>
+            <h2>Gestion du stock de medicaments</h2>
           </div>
           <ActionButton
             action="add"
@@ -115,56 +128,75 @@ export default function StockUI({
         </div>
       </div>
 
-      {/* ── Erreur ─────────────────────────────────────────────────────────── */}
       {error && <p className="ph-stock-error">{error}</p>}
 
-      {/* ── Formulaire ajout ────────────────────────────────────────────────── */}
       {showAddForm && (
         <div className="ph-stock-add-card">
-          <div className="ph-stock-add-grid">
-            <div className="ph-med-field">
-              <FieldLabel required>Code médicament</FieldLabel>
+          <div className="ph-stock-add-grid" style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-start", gap: "1rem" }}>
+            <div className="ph-med-field" style={{ flex: "0 0 160px" }}>
+              <FieldLabel required>Code medicament</FieldLabel>
               <Input
                 type="text"
-                className="form-control"
+                className={`form-control ${addErrors.medicamentCode ? "is-invalid" : ""}`}
                 value={addForm.medicamentCode}
-                onChange={(e) => setAddForm((prev) => ({ ...prev, medicamentCode: e.target.value }))}
+                onChange={handleAddFormChange("medicamentCode")}
                 placeholder="Ex: TDF, 3TC, DTG..."
                 disabled={saving}
               />
+              <FieldError error={addErrors.medicamentCode} />
             </div>
-            <div className="ph-comp-field">
-              <FieldLabel required>Médicament</FieldLabel>
+
+            <div className="ph-comp-field" style={{ flex: "0 0 260px", minWidth: 0 }}>
+              <FieldLabel required>Medicament</FieldLabel>
               <Input
                 type="text"
-                className="form-control"
+                className={`form-control ${addErrors.medicamentComposition ? "is-invalid" : ""}`}
                 value={addForm.medicamentComposition}
-                onChange={(e) => setAddForm((prev) => ({ ...prev, medicamentComposition: e.target.value }))}
+                onChange={handleAddFormChange("medicamentComposition")}
                 placeholder="Ex: Tenofovir (TDF)"
                 disabled={saving}
               />
+              <FieldError error={addErrors.medicamentComposition} />
             </div>
-            <div className="ph-qty-field">
-              <FieldLabel required>Quantité initiale</FieldLabel>
+
+            <div className="ph-qty-field" style={{ flex: "0 0 180px" }}>
+              <FieldLabel required>Quantite initiale</FieldLabel>
               <Input
                 type="number"
                 min="1"
-                className="form-control ph-add-qty-input"
+                className={`form-control ph-add-qty-input ${addErrors.quantityToAdd ? "is-invalid" : ""}`}
                 value={addForm.quantityToAdd}
-                onChange={(e) => setAddForm((prev) => ({ ...prev, quantityToAdd: e.target.value }))}
+                onChange={handleAddFormChange("quantityToAdd")}
                 placeholder="Ex: 100"
                 disabled={saving}
               />
+              <FieldError error={addErrors.quantityToAdd} />
             </div>
-            <div className="ph-stock-add-actions">
-              <ActionButton action="save" label={saving ? "Enregistrement..." : "Enregistrer"} onClick={handleAddMedication} disabled={saving || loading} size="sm" showIcon={false} />
-              <ActionButton action="annuler" label="Annuler" onClick={cancelAddForm} size="sm" showIcon={false} disabled={saving} />
+
+            <div className="ph-stock-add-actions" style={{ flex: "0 0 auto", marginLeft: "auto", alignSelf: "flex-end", paddingBottom: "2px" }}>
+              <ActionButton
+                action="save"
+                label={saving ? "Enregistrement..." : "Enregistrer"}
+                onClick={handleAddMedication}
+                disabled={saving || loading}
+                size="sm"
+                showIcon={false}
+              />
+              <ActionButton
+                action="annuler"
+                label="Annuler"
+                onClick={cancelAddForm}
+                size="sm"
+                showIcon={false}
+                disabled={saving}
+              />
             </div>
           </div>
+
+          {addErrors._form && <FieldError error={addErrors._form} className="mt-2" />}
         </div>
       )}
 
-      {/* ── SearchBar ──────────────────────────────────────────────────────── */}
       <div className="ph-stock-search-wrapper">
         <SearchBar
           value={search}
@@ -174,9 +206,8 @@ export default function StockUI({
         />
       </div>
 
-      {/* ── Tableau ────────────────────────────────────────────────────────── */}
       <HistoriqueAccordeon
-        title="Stock des médicaments"
+        title="Stock des medicaments"
         count={filteredItems.length}
         showCount={true}
         open={showHistory}
@@ -187,29 +218,28 @@ export default function StockUI({
           <Spinner />
         ) : (
           <HistoriqueTable
-            headers={["Code", "Médicament", "Quantité", "Dernière maj", "Alerte", "Action"]}
+            headers={["Code", "Medicament", "Quantite", "Derniere maj", "Alerte", "Action"]}
             items={filteredItems}
-            emptyMessage="Aucun médicament en stock pour le moment."
+            emptyMessage="Aucun medicament en stock pour le moment."
             renderRow={(item) => {
               const isEditing = editingId === item.id;
+
               return (
                 <tr key={item.id}>
-                  {/* Code */}
                   <td>
                     <Badge bg="#dbeafe" color="#1e40af">{item.code}</Badge>
                   </td>
 
-                  {/* Médicament */}
                   <td className="ph-comp-col">{item.composition}</td>
 
-                  {/* Quantité — affiche le panel d'édition ou la valeur */}
                   <td>
                     {isEditing ? (
                       <QuantityEditPanel
                         item={item}
                         editingMode={editingMode}
                         editingQuantity={editingQuantity}
-                        setEditingQuantity={setEditingQuantity}
+                        quantityErrors={quantityErrors}
+                        handleEditingQuantityChange={handleEditingQuantityChange}
                         saving={saving}
                         saveQuantity={saveQuantity}
                         cancelEditQuantity={cancelEditQuantity}
@@ -221,20 +251,15 @@ export default function StockUI({
                     )}
                   </td>
 
-                  {/* Dernière maj */}
                   <td>{formatDateTimeFr(item.updatedAt, "-")}</td>
 
-                  {/* Alerte stock */}
                   <td>
                     <StockAlert quantity={item.quantity} />
                   </td>
 
-                  {/* Actions */}
                   <td>
                     {isEditing ? null : (
                       <div className="ph-actions" style={{ display: "flex", alignItems: "center", gap: "0.4rem", flexWrap: "nowrap" }}>
-
-                        {/* Bouton + */}
                         <button
                           type="button"
                           className="btn btn-sm"
@@ -255,7 +280,6 @@ export default function StockUI({
                           +
                         </button>
 
-                        {/* Bouton − */}
                         <button
                           type="button"
                           className="btn btn-sm"
@@ -273,10 +297,9 @@ export default function StockUI({
                             padding: "0.3rem 0.65rem",
                           }}
                         >
-                          −
+                          -
                         </button>
 
-                        {/* Supprimer */}
                         <HistoriqueActions
                           onDelete={() => handleDeleteMedication(item.id)}
                         />

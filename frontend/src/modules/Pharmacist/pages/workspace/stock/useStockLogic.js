@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { confirmDelete } from "../../../../../shared/utils/uiAlerts.js";
+import { clearFieldError } from "../../../../../shared/components/Forms/FieldLabel/clearFieldError";
 import {
   getStockItems,
   createStockItem as createStockItemApi,
@@ -16,6 +17,18 @@ const getErrorMessage = (error, fallbackMessage) => {
   return fallbackMessage;
 };
 
+const mapValidationErrors = (error, fieldMap = {}) => {
+  if (!error?.errors || !Array.isArray(error.errors)) return null;
+
+  const formatted = {};
+  error.errors.forEach((item) => {
+    const fieldName = fieldMap[item.field] || item.field;
+    formatted[fieldName] = item.message;
+  });
+
+  return formatted;
+};
+
 export function useStockLogic(numero) {
   const [search, setSearch] = useState("");
   const [stockItems, setStockItems] = useState([]);
@@ -28,6 +41,8 @@ export function useStockLogic(numero) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [addErrors, setAddErrors] = useState({});
+  const [quantityErrors, setQuantityErrors] = useState({});
 
   const refreshStock = async () => {
     const rows = await getStockItems();
@@ -69,27 +84,45 @@ export function useStockLogic(numero) {
     );
   }, [stockItems, search]);
 
+  const handleAddFormChange = (fieldName, errorField = fieldName) => (e) => {
+    const value = e.target.value;
+    setAddForm((prev) => ({ ...prev, [fieldName]: value }));
+    clearFieldError(errorField, setAddErrors);
+    clearFieldError("_form", setAddErrors);
+  };
+
+  const handleEditingQuantityChange = (e) => {
+    setEditingQuantity(e.target.value);
+    clearFieldError("quantite", setQuantityErrors);
+    clearFieldError("_form", setQuantityErrors);
+  };
+
   const handleAddMedication = async () => {
     const { medicamentCode, medicamentComposition, quantityToAdd } = addForm;
+    const fieldErrors = {};
 
     if (!medicamentCode.trim()) {
-      toast.error("Veuillez saisir un code de medicament.");
-      return;
+      fieldErrors.medicamentCode = "Le code du medicament est requis";
     }
 
     if (!medicamentComposition.trim()) {
-      toast.error("Veuillez saisir la composition du medicament.");
-      return;
+      fieldErrors.medicamentComposition = "La composition du medicament est requise";
     }
 
     const quantity = Number(quantityToAdd);
     if (!Number.isInteger(quantity) || quantity <= 0) {
-      toast.error("La quantite initiale doit etre un entier strictement positif.");
+      fieldErrors.quantityToAdd =
+        "La quantite initiale doit etre un entier strictement positif";
+    }
+
+    if (Object.keys(fieldErrors).length > 0) {
+      setAddErrors(fieldErrors);
       return;
     }
 
     try {
       setSaving(true);
+      setAddErrors({});
       await createStockItemApi({
         code: medicamentCode.trim().toUpperCase(),
         composition: medicamentComposition.trim(),
@@ -99,6 +132,22 @@ export function useStockLogic(numero) {
       cancelAddForm();
       toast.success("Medicament ajoute avec succes");
     } catch (err) {
+      const validationErrors = mapValidationErrors(err, {
+        code: "medicamentCode",
+        composition: "medicamentComposition",
+        quantite: "quantityToAdd",
+      });
+
+      if (validationErrors) {
+        setAddErrors(validationErrors);
+        return;
+      }
+
+      if (err?.message) {
+        setAddErrors({ _form: err.message });
+        return;
+      }
+
       toast.error(getErrorMessage(err, "Erreur lors de l'ajout au stock."));
     } finally {
       setSaving(false);
@@ -108,6 +157,7 @@ export function useStockLogic(numero) {
   const cancelAddForm = () => {
     setShowAddForm(false);
     setAddForm(INITIAL_ADD_FORM);
+    setAddErrors({});
   };
 
   const handleDeleteMedication = async (id) => {
@@ -134,30 +184,37 @@ export function useStockLogic(numero) {
     setEditingId(item.id);
     setEditingMode("increment");
     setEditingQuantity("");
+    setQuantityErrors({});
   };
 
   const beginDecrement = (item) => {
     setEditingId(item.id);
     setEditingMode("decrement");
     setEditingQuantity("");
+    setQuantityErrors({});
   };
 
   const cancelEditQuantity = () => {
     setEditingId(null);
     setEditingMode(null);
     setEditingQuantity("");
+    setQuantityErrors({});
   };
 
   const saveQuantity = async (item) => {
     const delta = Number(editingQuantity);
     if (!Number.isInteger(delta) || delta <= 0) {
-      toast.error("Veuillez saisir un entier strictement positif.");
+      setQuantityErrors({
+        quantite: "Veuillez saisir un entier strictement positif.",
+      });
       return;
     }
 
     const current = Number.isFinite(Number(item?.quantity)) ? Number(item.quantity) : 0;
     if (editingMode === "decrement" && delta > current) {
-      toast.error(`La quantite a retirer ne peut pas depasser le stock actuel (${current}).`);
+      setQuantityErrors({
+        quantite: `La quantite a retirer ne peut pas depasser le stock actuel (${current}).`,
+      });
       return;
     }
 
@@ -165,6 +222,7 @@ export function useStockLogic(numero) {
 
     try {
       setSaving(true);
+      setQuantityErrors({});
       await updateStockQuantityApi(item.id, newQuantity);
       await refreshStock();
       cancelEditQuantity();
@@ -174,6 +232,18 @@ export function useStockLogic(numero) {
           : `Stock augmente de ${delta} unite(s)`
       );
     } catch (err) {
+      const validationErrors = mapValidationErrors(err);
+
+      if (validationErrors) {
+        setQuantityErrors(validationErrors);
+        return;
+      }
+
+      if (err?.message) {
+        setQuantityErrors({ _form: err.message });
+        return;
+      }
+
       toast.error(getErrorMessage(err, "Erreur lors de la mise a jour."));
     } finally {
       setSaving(false);
@@ -187,10 +257,14 @@ export function useStockLogic(numero) {
     setShowAddForm,
     addForm,
     setAddForm,
+    addErrors,
+    handleAddFormChange,
     editingId,
     editingMode,
     editingQuantity,
     setEditingQuantity,
+    quantityErrors,
+    handleEditingQuantityChange,
     showHistory,
     setShowHistory,
     loading,

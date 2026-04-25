@@ -4,10 +4,9 @@ import {
   updateConclusionService,
   getConclusionDetailsService,
 } from "../services/doctorConclusionsService.js";
+import { logAction } from "../services/auditService.js";
 
- // dosn't need audit logs because each doctor can only see and modify their own conclusions, so no risk of unauthorized access or modifications by other users.
-
-const toStatusCode = (message = "") => { 
+const toStatusCode = (message = "") => {
   if (/invalide|introuvable|obligatoire/i.test(message)) return 400;
   return 500;
 };
@@ -15,13 +14,22 @@ const toStatusCode = (message = "") => {
 export const createConclusionController = async (req, res) => {
   try {
     const doctor_id = req.user.id;
-    const numero = req.params.numero; // patient numero
+    const numero = req.params.numero;
     const { content } = req.body;
 
     const data = await createConclusionService({
       numero,
       doctor_id,
       content,
+    });
+
+    await logAction(req, {
+      module: "DOCTOR_CONCLUSION",
+      action: "DOCTOR_CONCLUSION_CREATE",
+      patient_id: data.conclusion?.patient_id || null,
+      entity_id: data.conclusion?.id || null,
+      old_data: null,
+      new_data: data.conclusion || data,
     });
 
     res.status(201).json(data);
@@ -44,6 +52,15 @@ export const listConclusionsByPatientController = async (req, res) => {
       offset,
     });
 
+    await logAction(req, {
+      module: "DOCTOR_CONCLUSION",
+      action: "DOCTOR_CONCLUSION_LIST_VIEW",
+      patient_id: data.conclusions?.[0]?.patient_id || null,
+      entity_id: null,
+      old_data: null,
+      new_data: { numero, limit, offset },
+    });
+
     res.json(data);
   } catch (error) {
     res.status(toStatusCode(error.message)).json({
@@ -57,6 +74,15 @@ export const getConclusionDetailsController = async (req, res) => {
     const id = Number(req.params.id);
 
     const data = await getConclusionDetailsService({ id });
+
+    await logAction(req, {
+      module: "DOCTOR_CONCLUSION",
+      action: "DOCTOR_CONCLUSION_VIEW",
+      patient_id: data.conclusion?.patient_id || null,
+      entity_id: data.conclusion?.id || id,
+      old_data: null,
+      new_data: null,
+    });
 
     res.json(data);
   } catch (error) {
@@ -76,6 +102,15 @@ export const updateConclusionController = async (req, res) => {
       id,
       doctor_id,
       content,
+    });
+
+    await logAction(req, {
+      module: "DOCTOR_CONCLUSION",
+      action: "DOCTOR_CONCLUSION_UPDATE",
+      patient_id: data.conclusion?.patient_id || null,
+      entity_id: data.conclusion?.id || id,
+      old_data: null,
+      new_data: data.conclusion || data,
     });
 
     res.json(data);
