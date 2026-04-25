@@ -1,5 +1,5 @@
-﻿//cheked 15/04/2026
-import { ActionButton, FieldError } from "../../../../../../shared/components"; 
+//cheked 15/04/2026
+import { ActionButton, FieldError } from "../../../../../../shared/components";
 import { FieldLabel } from "../../../../../../shared/components";
 import {
   HistoriqueAccordeon,
@@ -35,20 +35,20 @@ export default function SignesCliniquesUI({
   isModifying,
   saving,
   taille,
-  handleTailleChange,                                     
+  handleTailleChange,
   poids,
-  handlePoidsChange,                                       
+  handlePoidsChange,
   imc,
   appareils,
   autresSignes,
   appareilSel,
   description,
-  setAppareilSel,
-  setDescription,
+  handleAppareilChange,
+  handleDescriptionChange,
   ajouterAutreSigne,
   supprimerAutreSigne,
   modifierDescription,
-  errors,                                                   
+  errors,
   handleSave,
 }) {
   return (
@@ -60,10 +60,10 @@ export default function SignesCliniquesUI({
           labelModify="Modifier le signe clinique"
         >
           <p className="text-uppercase fw-bold text-secondary mb-3 ec-th-sm">
-            Mesures anthropométriques
+            Mesures anthropometriques
           </p>
-          <div className="d-flex gap-4 flex-wrap mb-4 pb-4 border-bottom">
 
+          <div className="d-flex gap-4 flex-wrap mb-4 pb-4 border-bottom">
             <div className="ec-flex-input">
               <FieldLabel>Taille (cm)</FieldLabel>
               <input
@@ -73,9 +73,9 @@ export default function SignesCliniquesUI({
                 min={1}
                 max={250}
                 value={taille}
-                onChange={handleTailleChange}              
+                onChange={handleTailleChange}
               />
-              <FieldError error={errors.taille} />        
+              <FieldError error={errors.taille} />
             </div>
 
             <div className="ec-flex-input">
@@ -87,9 +87,9 @@ export default function SignesCliniquesUI({
                 min={1}
                 max={300}
                 value={poids}
-                onChange={handlePoidsChange}              
+                onChange={handlePoidsChange}
               />
-              <FieldError error={errors.poids} />         
+              <FieldError error={errors.poids} />
             </div>
 
             <div className="ec-flex-input-l">
@@ -104,14 +104,13 @@ export default function SignesCliniquesUI({
             autresSignes={autresSignes}
             appareilSelectionne={appareilSel}
             descriptionSigne={description}
-            onAppareilChange={setAppareilSel}
-            onDescriptionChange={setDescription}
+            onAppareilChange={handleAppareilChange}
+            onDescriptionChange={handleDescriptionChange}
             onAjouter={ajouterAutreSigne}
             onSupprimer={supprimerAutreSigne}
             onModifierDescription={modifierDescription}
           />
 
-          {/* Erreur générale (ex: erreur métier backend sans champ précis) */}
           {errors._form && (
             <div className="mt-2">
               <FieldError error={errors._form} />
@@ -138,7 +137,7 @@ export default function SignesCliniquesUI({
         <HistoriqueTable
           headers={HISTORY_HEADERS}
           items={historique}
-          emptyMessage="Aucun signe clinique enregistré"
+          emptyMessage="Aucun signe clinique enregistre"
           renderRow={(s) => {
             const si = s.taille && s.poids ? calcIMC(+s.taille, +s.poids) : null;
             return (
@@ -168,12 +167,12 @@ export default function SignesCliniquesUI({
       {detailSigne && (
         <FormulaireWrapper
           isModifying={false}
-          labelCreate="Détails du signe clinique"
-          labelModify="Détails du signe clinique"
+          labelCreate="Details du signe clinique"
+          labelModify="Details du signe clinique"
         >
           <div className="ec-readonly-block">
             <p className="text-uppercase fw-bold text-secondary mb-3 ec-th-sm">
-              Mesures anthropométriques
+              Mesures anthropometriques
             </p>
             <div className="d-flex gap-4 flex-wrap mb-4 pb-4 border-bottom">
               <Field label="Taille (cm)" value={detailSigne.taille} />
@@ -224,7 +223,7 @@ export default function SignesCliniquesUI({
               className="btn btn-sm btn-outline-secondary"
               onClick={() => setDetailSigne(null)}
             >
-              Fermer détails
+              Fermer details
             </button>
           </div>
         </FormulaireWrapper>

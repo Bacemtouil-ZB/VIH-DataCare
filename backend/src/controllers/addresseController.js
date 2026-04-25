@@ -2,10 +2,12 @@ import {
   fetchAllAddresses,
   fetchFormData,
 } from "../services/addresseService.js";
+import { logAction } from "../services/auditService.js";
 
 export const listAllAddresses = async (req, res) => {
   try {
     const addresses = await fetchAllAddresses();
+
     res.json({ success: true, addresses });
   } catch (error) {
     console.error(error);
@@ -16,6 +18,7 @@ export const listAllAddresses = async (req, res) => {
 export const getFormData = async (req, res) => {
   try {
     const data = await fetchFormData();
+
     res.json({ success: true, ...data });
   } catch (error) {
     console.error("Erreur getFormData:", error);

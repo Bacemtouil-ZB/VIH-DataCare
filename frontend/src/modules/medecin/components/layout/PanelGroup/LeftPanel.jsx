@@ -144,7 +144,7 @@ export default function LeftPanel() {
         </div>
 
         <div className="info-row">
-          <span>Traitement</span>
+          <span>Dernier traitement</span>
           <span>{data.dernier_traitement ?? "—"}</span>
         </div>
 

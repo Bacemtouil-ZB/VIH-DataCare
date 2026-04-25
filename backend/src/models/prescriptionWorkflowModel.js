@@ -360,55 +360,18 @@ export const validerAvecModification = async (id, periodeModifiee) => {
 
 // ── SUPPRIMER PRESCRIPTIONS EXPIRÉES > 48H ───────────────────
 export const supprimerPrescriptionsExpirees = async () => {
-  const client = await pool.connect();
-  try {
-    await client.query("BEGIN");
-
-    // 1. Changer envoyee → non_validee après 48h
-    await client.query(`
-      UPDATE prescription_medicale
-      SET statut = 'non_validee', updated_at = NOW()
-      WHERE statut = 'envoyee'
-        AND created_at < NOW() - INTERVAL '48 hours';
-    `);
-
-    // 2. Chercher toutes les non_validee à supprimer
-    const { rows: cibles } = await client.query(`
-      SELECT id FROM prescription_medicale
-      WHERE statut = 'non_validee';
-    `);
-
-    if (cibles.length === 0) {
-      await client.query("COMMIT");
-      return [];
-    }
-
-    const ids = cibles.map((r) => r.id);
-
-    // 3. Supprimer lignes
-    await client.query(
-      `DELETE FROM prescription_lignes WHERE prescription_id = ANY($1::int[]);`,
-      [ids]
-    );
-
-    // 4. Supprimer prescriptions
-    const { rows: supprimees } = await client.query(
-      `DELETE FROM prescription_medicale
-       WHERE id = ANY($1::int[])
-       RETURNING id, patient_id, created_at;`,
-      [ids]
-    );
-
-    await client.query("COMMIT");
-    return supprimees;
-  } catch (error) {
-    await client.query("ROLLBACK");
-    throw error;
-  } finally {
-    client.release();
-  }
+  // Met à jour statut envoyee → non_validee après 48h (pas de suppression)
+  const { rows: mises_a_jour } = await pool.query(`
+    UPDATE prescription_medicale
+    SET statut = 'non_validee', updated_at = NOW()
+    WHERE statut = 'envoyee'
+      AND created_at < NOW() - INTERVAL '48 hours'
+    RETURNING id, patient_id, created_at;
+  `);
+ 
+  return mises_a_jour;
 };
-
+ 
 // ── GET dernière prescription par patient ─────────────────────
 export const findLastPrescriptionPerPatient = async () => {
   const query = `

@@ -1,4 +1,4 @@
-﻿//cheked 15/04/2026
+//cheked 15/04/2026
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { confirmAction, alertError } from "../../../../../../shared/utils/uiAlerts";
@@ -18,9 +18,33 @@ import {
   openFormForCreate,
   showDetailMode,
 } from "../../../../../../shared/utils/logiqueTableHistory";
-
 import { clearFieldError } from "../../../../../../shared/components/Forms/FieldLabel/clearFieldError";
 
+const DIRECT_FIELD_ERRORS = new Set(["taille", "poids"]);
+
+const formatValidationErrors = (error) => {
+  if (!error?.errors || !Array.isArray(error.errors)) return null;
+
+  const formatted = {};
+  const formMessages = [];
+
+  error.errors.forEach((item) => {
+    if (DIRECT_FIELD_ERRORS.has(item.field)) {
+      formatted[item.field] = item.message;
+      return;
+    }
+
+    if (!formMessages.includes(item.message)) {
+      formMessages.push(item.message);
+    }
+  });
+
+  if (formMessages.length > 0) {
+    formatted._form = formMessages.join(" ");
+  }
+
+  return formatted;
+};
 
 export function useSignesCliniquesLogic(numero, examenId) {
   const [loading, setLoading] = useState(true);
@@ -49,7 +73,6 @@ export function useSignesCliniquesLogic(numero, examenId) {
     [taille, poids],
   );
 
-  // ====== Reset formulaire ======
   const resetForm = () => {
     setSigneId(FORM_SC_INIT.signeId);
     setIsModifying(FORM_SC_INIT.isModifying);
@@ -61,9 +84,9 @@ export function useSignesCliniquesLogic(numero, examenId) {
     setErrors({});
   };
 
-  // ====== Chargement initial ======
   useEffect(() => {
     if (!numero) return;
+
     (async () => {
       setLoading(true);
       try {
@@ -81,28 +104,36 @@ export function useSignesCliniquesLogic(numero, examenId) {
     })();
   }, [numero]);
 
-  // ====== Wrappers avec clearFieldError ======
   const handleTailleChange = (e) => {
     setTaille(e.target.value);
     clearFieldError("taille", setErrors);
+    clearFieldError("_form", setErrors);
   };
 
   const handlePoidsChange = (e) => {
     setPoids(e.target.value);
     clearFieldError("poids", setErrors);
+    clearFieldError("_form", setErrors);
   };
 
-  // ====== Cancel ======
+  const handleAppareilChange = (value) => {
+    setAppareilSel(value);
+    clearFieldError("_form", setErrors);
+  };
+
+  const handleDescriptionChange = (value) => {
+    setDescription(value);
+    clearFieldError("_form", setErrors);
+  };
+
   const handleCancel = () => {
     handleCancelForm(setShowForm, resetForm, toast);
   };
 
-  // ====== Ouvrir en mode création ======
   const openCreate = () => {
     openFormForCreate(setDetailSigne, resetForm, setShowForm);
   };
 
-  // ====== Ouvrir en mode modification ======
   const handleEdit = async (s) => {
     setDetailSigne(null);
     setSigneId(s.id);
@@ -120,31 +151,29 @@ export function useSignesCliniquesLogic(numero, examenId) {
     showDetailMode(setShowForm, setDetailSigne, s);
   };
 
-  // ====== Autres signes ======
   const ajouterAutreSigne = () => {
     const { error, item } = buildAutreSigneItem(appareils, appareilSel, description);
     if (error) return toast.error(error);
+
     setAutresSignes((prev) => [...prev, item]);
     setAppareilSel("");
     setDescription("");
+    setErrors((prev) => ({ ...prev, _form: null }));
   };
 
   const supprimerAutreSigne = async (id) => {
-    const ok = await confirmAction("Supprimer ce signe ?", "Cette action est irréversible.");
+    const ok = await confirmAction("Supprimer ce signe ?", "Cette action est irreversible.");
     if (!ok) return;
     setAutresSignes((prev) => removeAutreSigneById(prev, id));
-    toast.success("Signe supprimé");
+    toast.success("Signe supprime");
   };
 
   const modifierDescription = (id, nouvelleDesc) => {
     setAutresSignes((prev) => updateAutreSigneDescription(prev, id, nouvelleDesc));
-    toast.success("Description mise à jour");
+    toast.success("Description mise a jour");
   };
 
-  // ====== Soumission ======
   const handleSave = async () => {
-
-    // ── Validation frontend (miroir exact du backend) ────────────────────────
     const fieldErrors = {};
 
     if (taille !== "" && taille !== null) {
@@ -153,6 +182,7 @@ export function useSignesCliniquesLogic(numero, examenId) {
         fieldErrors.taille = "Taille invalide (1-250 cm)";
       }
     }
+
     if (poids !== "" && poids !== null) {
       const p = +poids;
       if (isNaN(p) || p < 1 || p > 300) {
@@ -171,40 +201,31 @@ export function useSignesCliniquesLogic(numero, examenId) {
     try {
       const payload = {
         examen_clinique_id: examenId,
-
-        // ← Omis si vide — évite d'envoyer null qui bypasse le validator backend
         ...(taille !== "" && taille !== null && { taille: +taille }),
-        ...(poids  !== "" && poids  !== null && { poids:  +poids  }),
-
-        autres_signes: autresSignes.map(({ appareil_id, description: d }) => ({
+        ...(poids !== "" && poids !== null && { poids: +poids }),
+        autres_signes: autresSignes.map(({ appareil_id, description: currentDescription }) => ({
           appareil_id,
-          description: d,
+          description: currentDescription,
         })),
       };
 
       if (isModifying && signeId) {
         await updateSigneClinique(signeId, payload);
-        toast.success("Signes cliniques mis à jour");
+        toast.success("Signes cliniques mis a jour");
       } else {
         const res = await createSigneClinique(payload);
         setSigneId(res?.signe?.id || null);
-        toast.success("Signes cliniques enregistrés");
+        toast.success("Signes cliniques enregistres");
       }
 
       setShowForm(false);
       resetForm();
       const hr = await getSigneCliniqueByNumeroDossier(numero);
       setHistorique(hr?.signes || []);
-
     } catch (e) {
-
-
-      if (e?.errors && Array.isArray(e.errors)) {
-        const errorObj = {};
-        e.errors.forEach((err) => {
-          errorObj[err.field] = err.message;
-        });
-        setErrors(errorObj);
+      const formattedErrors = formatValidationErrors(e);
+      if (formattedErrors) {
+        setErrors(formattedErrors);
         return;
       }
 
@@ -213,9 +234,7 @@ export function useSignesCliniquesLogic(numero, examenId) {
         return;
       }
 
-      // Cas 3 — fallback inattendu (réseau, serveur indisponible)
       alertError("Erreur lors de l'enregistrement");
-
     } finally {
       setSaving(false);
     }
@@ -238,8 +257,10 @@ export function useSignesCliniquesLogic(numero, examenId) {
     setAutresSignes,
     appareilSel,
     setAppareilSel,
+    handleAppareilChange,
     description,
     setDescription,
+    handleDescriptionChange,
     appareils,
     historique,
     detailSigne,

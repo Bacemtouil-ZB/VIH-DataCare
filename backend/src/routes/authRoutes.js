@@ -17,7 +17,7 @@ import { protect } from "../middlewares/authMiddleware.js";
 import {
   loginLimiter,
   registerLimiter,
-  forgotPasswordLimiter,
+  //forgotPasswordLimiter,
   resetPasswordLimiter,
 } from "../middlewares/rateLimiters/authRateLimiter.js";
 
@@ -27,7 +27,7 @@ router.post("/login", loginLimiter, loginController);
 router.post("/register", registerLimiter, registerController);
 router.post(
   "/forgot-password",
-  forgotPasswordLimiter,
+  //forgotPasswordLimiter,
   forgotPasswordController,
 );
 router.post("/reset-password", resetPasswordLimiter, resetPasswordController);

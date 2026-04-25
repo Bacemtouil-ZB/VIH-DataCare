@@ -41,7 +41,7 @@ export const createPatient = async (patientData, userId) => {
     const patient = await createPatientModel(client, data, userId);
     return patient;
   } finally {
-    client.release();
+    client.release();// TOUJOURS libérer la connexion
   }
 };
 

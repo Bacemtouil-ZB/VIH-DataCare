@@ -1,5 +1,3 @@
-// controllers/biController.js
-
 import {
   getNouveauxMaladesSummary as getNouveauxMaladesSummaryService,
   refreshNouveauxMaladesMVs,

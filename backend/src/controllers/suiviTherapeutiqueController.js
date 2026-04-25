@@ -3,15 +3,25 @@ import {
   getSuiviByNumero,
   syncSuiviStatuts,
 } from "../services/suiviTherapeutiqueService.js";
+import { logAction } from "../services/auditService.js";
 
-// ── GET suivi par patientId ───────────────────────────────────
 export const getSuiviByPatientController = async (req, res) => {
   try {
     const { patientId } = req.params;
     const suivis = await getSuiviByPatient(parseInt(patientId, 10));
+
+    await logAction(req, {
+      module: "SUIVI_THERAPEUTIQUE",
+      action: "SUIVI_THERAPEUTIQUE_VIEW_BY_PATIENT",
+      patient_id: Number(patientId),
+      entity_id: null,
+      old_data: null,
+      new_data: null,
+    });
+
     res.status(200).json({
       success: true,
-      count:   suivis.length,
+      count: suivis.length,
       suivis,
     });
   } catch (error) {
@@ -19,14 +29,22 @@ export const getSuiviByPatientController = async (req, res) => {
   }
 };
 
-// ── GET suivi par numéro de dossier ───────────────────────────
 export const getSuiviByNumeroController = async (req, res) => {
   try {
     const { numeroDossier } = req.params;
     const suivis = await getSuiviByNumero(numeroDossier);
+
+    await logAction(req, {
+      module: "SUIVI_THERAPEUTIQUE",
+      action: "SUIVI_THERAPEUTIQUE_VIEW_BY_NUMERO",
+      entity_id: null,
+      old_data: null,
+      new_data: { numeroDossier },
+    });
+
     res.status(200).json({
       success: true,
-      count:   suivis.length,
+      count: suivis.length,
       suivis,
     });
   } catch (error) {
@@ -34,13 +52,21 @@ export const getSuiviByNumeroController = async (req, res) => {
   }
 };
 
-// ── POST /sync — synchronisation statuts (cron ou appel manuel) ──
 export const syncStatutsController = async (req, res) => {
   try {
     const updated = await syncSuiviStatuts();
+
+    await logAction(req, {
+      module: "SUIVI_THERAPEUTIQUE",
+      action: "SUIVI_THERAPEUTIQUE_SYNC",
+      entity_id: null,
+      old_data: null,
+      new_data: { updatedCount: updated.length },
+    });
+
     res.status(200).json({
       success: true,
-      message: `${updated.length} ligne(s) mise(s) à jour`,
+      message: `${updated.length} ligne(s) mise(s) Ã  jour`,
       updated,
     });
   } catch (error) {

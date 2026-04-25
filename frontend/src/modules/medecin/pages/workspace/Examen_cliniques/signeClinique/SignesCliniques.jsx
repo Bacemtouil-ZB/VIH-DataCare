@@ -51,8 +51,8 @@ export default function SignesCliniques() {
         autresSignes={logic.autresSignes}
         appareilSel={logic.appareilSel}
         description={logic.description}
-        setAppareilSel={logic.setAppareilSel}
-        setDescription={logic.setDescription}
+        handleAppareilChange={logic.handleAppareilChange}
+        handleDescriptionChange={logic.handleDescriptionChange}
         ajouterAutreSigne={logic.ajouterAutreSigne}
         supprimerAutreSigne={logic.supprimerAutreSigne}
         modifierDescription={logic.modifierDescription}
