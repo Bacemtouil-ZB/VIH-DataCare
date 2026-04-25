@@ -5,6 +5,7 @@ import {
   NOTIF_CLICK_EXPIRY_MS,
   NOTIF_ICON_MAP,
   NOTIF_TITLE_MAP,
+  NOTIF_TITLE_COLOR_MAP,
 } from "./notificationConstants.js";
 
 // ── localStorage — lecture ────────────────────────────────────
@@ -52,8 +53,9 @@ export const isNotifVisible = (notif) => {
 export const enrichNotif = (raw, readIds) => ({
   ...raw,
   isRead:  readIds.includes(raw.notif_id),
-  icon:    NOTIF_ICON_MAP[raw.type]  ?? "bi bi-bell",
-  title:   NOTIF_TITLE_MAP[raw.type] ?? "Notification",
+  icon:       NOTIF_ICON_MAP[raw.type]        ?? "bi bi-bell",
+  title:      NOTIF_TITLE_MAP[raw.type]       ?? "Notification",
+  titleClass: NOTIF_TITLE_COLOR_MAP[raw.type] ?? "",
   // message déjà construit par le backend dans buildNotifications()
 });
 

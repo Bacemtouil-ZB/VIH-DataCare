@@ -356,7 +356,7 @@ export const recalculerTousLesStatuts = async () => {
 export const getLeftPanelData = async (numero) => {
   const raw = stripNumeroPrefix(numero);
   const withPrefix = `F-${raw}`;
-
+ 
   const { rows } = await pool.query(`
     SELECT
       -- Info patient
@@ -366,7 +366,7 @@ export const getLeftPanelData = async (numero) => {
       p.surname,
       p.birthdate,
       p.hospitalisation,
-
+ 
       -- Statut suivi_therapeutique dernière ligne
       (
         SELECT st.statut_patient
@@ -375,22 +375,21 @@ export const getLeftPanelData = async (numero) => {
         ORDER BY st.created_at DESC
         LIMIT 1
       ) AS statut_suivi,
-
-      -- Dernier traitement
+ 
+      -- Dernier traitement (prescription la plus récente uniquement)
       (
         SELECT STRING_AGG(pl.medicament_nom_snapshot, ', ' ORDER BY pl.id)
         FROM prescription_lignes pl
-        INNER JOIN prescription_medicale pm ON pm.id = pl.prescription_id
-        WHERE pm.patient_id = p.id
-          AND pm.statut IN ('delivree', 'modifie')
-          AND pm.date_delivrance = (
-            SELECT MAX(pm2.date_delivrance)
-            FROM prescription_medicale pm2
-            WHERE pm2.patient_id = p.id
-              AND pm2.statut IN ('delivree', 'modifie')
-          )
+        WHERE pl.prescription_id = (
+          SELECT pm.id
+          FROM prescription_medicale pm
+          WHERE pm.patient_id = p.id
+            AND pm.statut IN ('delivree', 'modifie')
+          ORDER BY pm.date_delivrance DESC NULLS LAST, pm.id DESC
+          LIMIT 1
+        )
       ) AS dernier_traitement,
-
+ 
       -- Dernière charge virale
       (
         SELECT rb.charge_virale_valeur
@@ -400,7 +399,7 @@ export const getLeftPanelData = async (numero) => {
         ORDER BY rb.date_charge_virale_vih DESC NULLS LAST, rb.created_at DESC
         LIMIT 1
       ) AS derniere_charge_virale,
-
+ 
       (
         SELECT rb.date_charge_virale_vih
         FROM resultats_biologiques rb
@@ -409,7 +408,7 @@ export const getLeftPanelData = async (numero) => {
         ORDER BY rb.date_charge_virale_vih DESC NULLS LAST, rb.created_at DESC
         LIMIT 1
       ) AS date_charge_virale,
-
+ 
       -- Dernier CD4
       (
         SELECT rb.cd4_absolu
@@ -419,7 +418,7 @@ export const getLeftPanelData = async (numero) => {
         ORDER BY rb.date_cd4_cd8 DESC NULLS LAST, rb.created_at DESC
         LIMIT 1
       ) AS dernier_cd4_absolu,
-
+ 
       (
         SELECT rb.cd4_pourcent
         FROM resultats_biologiques rb
@@ -428,7 +427,7 @@ export const getLeftPanelData = async (numero) => {
         ORDER BY rb.date_cd4_cd8 DESC NULLS LAST, rb.created_at DESC
         LIMIT 1
       ) AS dernier_cd4_pourcent,
-
+ 
       (
         SELECT rb.date_cd4_cd8
         FROM resultats_biologiques rb
@@ -437,10 +436,10 @@ export const getLeftPanelData = async (numero) => {
         ORDER BY rb.date_cd4_cd8 DESC NULLS LAST, rb.created_at DESC
         LIMIT 1
       ) AS date_cd4
-
+ 
     FROM patients p
     WHERE p.numero = $1 OR p.numero = $2;
   `, [withPrefix, raw]);
-
+ 
   return rows[0] ?? null;
 };

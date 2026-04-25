@@ -40,3 +40,13 @@ export const NOTIF_ICON_MAP = {
   rdv_manque:               "bi bi-calendar-x",
   rdv_proche:               "bi bi-calendar-check",
 };
+// ── Couleur du titre selon le type ────────────────────────────
+export const NOTIF_TITLE_COLOR_MAP = {
+  delivrance:               "notif-title-green",
+  en_retard:                "notif-title-orange",
+  perdu_de_vue:             "notif-title-red",
+  alerte:                   "notif-title-red",
+  prescription_non_validee: "notif-title-orange",
+  rdv_manque:               "notif-title-red",
+  rdv_proche:               "notif-title-blue",
+};

@@ -7,7 +7,7 @@ import usePatientsPage    from "./usePatientsPage.js";
 import useNotifications   from "./notification/useNotifications.js";
 import { daysUntil, getRdvBarWidth, getDaysLabel } from "./patientsPageHelpers.js";
 import { HOSPITALISATION_OPTIONS, RDV_FILTER_OPTIONS, TABLE_COLUMNS} from "./patientsPageConstants.js";
-import { NOTIF_ICON_MAP } from "./notification/notificationConstants.js";
+import { NOTIF_ICON_MAP, NOTIF_TITLE_COLOR_MAP } from "./notification/notificationConstants.js";
 import { formatNotifDate } from "./notification/notificationHelpers.js";
 
 import "./PatientsPage.css";
@@ -89,7 +89,7 @@ function NotificationBell({
                   </div>
 
                   <div className="notif-content">
-                    <div className="notif-title">{notif.title}</div>
+                    <div className={`notif-title ${NOTIF_TITLE_COLOR_MAP[notif.type] ?? ""}`}>{notif.title}</div>
                     <div className="notif-message">{notif.message}</div>
                     {/* ── Date ── */}
                       <div className="notif-date">

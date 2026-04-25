@@ -622,3 +622,9 @@ tbody tr:hover {
   font-size: 11px; color: var(--color-text-tertiary);
   display: flex; align-items: center; gap: 4px; margin-bottom: 4px;
 }
+
+/* ── Couleurs titres notifications ──────────────────────────── */
+.notif-title-red    { color: #dc2626; }
+.notif-title-orange { color: #ea580c; }
+.notif-title-green  { color: #16a34a; }
+.notif-title-blue   { color: #2563eb; }

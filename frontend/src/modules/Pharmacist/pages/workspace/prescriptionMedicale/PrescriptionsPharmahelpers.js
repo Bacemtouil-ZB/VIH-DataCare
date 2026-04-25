@@ -50,9 +50,15 @@ export const resolvePrescriptionBadge = (statutPrescription) => {
 
 export const filterPrescriptions = (patients, search) => {
   if (!Array.isArray(patients)) return [];
+
+  // Exclure les prescriptions non_validee (expirées > 48h)
+  const visible = patients.filter(
+    (p) => (p.statutPrescription || "").toLowerCase() !== "non_validee"
+  );
+
   const q = (search || "").trim().toLowerCase();
-  if (!q) return patients;
-  return patients.filter((p) =>
+  if (!q) return visible;
+  return visible.filter((p) =>
     p.patientName?.toLowerCase().includes(q)    ||
     p.patientSurname?.toLowerCase().includes(q) ||
     p.numeroDossier?.toLowerCase().includes(q)  ||
