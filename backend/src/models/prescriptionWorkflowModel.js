@@ -4,7 +4,7 @@ const STATUTS_PROTEGES = ['decede', 'decede_sida', 'transfere', 'standard_inacti
 const STATUTS_ALERTE   = ['decede', 'decede_sida', 'transfere'];
 
 
-const normalizeNumero = (n) => {
+const normalizeNumero = (n) => { // check util 
   if (!n) return { withPrefix: null, raw: null };
   const raw = String(n).replace(/^F-/i, "").trim(); 
   return { withPrefix: `F-${raw}`, raw };
@@ -29,7 +29,7 @@ const PRESCRIPTION_SELECT = `
       json_agg(
         json_build_object(
           'medicament_id',            pl.medicament_id,
-          'medicament_nom_snapshot',  pl.medicament_nom_snapshot
+          'medicament_nom_snapshot',  pl.medicament_nom_snapshot --- danger de doublon avec stock_medicaments.code, mais c'est voulu pour garder un historique même si le stock change
         )
       ) FILTER (WHERE pl.id IS NOT NULL),
       '[]'
@@ -471,9 +471,8 @@ export const recalculerEcartEtStatuts = async () => {
 
       // 3. Déterminer statut
       let nouveauStatut;
-      if (ecart <= 2)        nouveauStatut = 'actif';
-      else if (ecart <= 179) nouveauStatut = 'en_retard';
-      else                   nouveauStatut = 'perdu_de_vue';
+      if (2 <= ecart && ecart <= 179) nouveauStatut = 'en_retard';
+      else   nouveauStatut = 'perdu_de_vue';
 
       // 4. Mettre à jour suivi_therapeutique
       await client.query(

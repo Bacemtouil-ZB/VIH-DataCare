@@ -1,0 +1,219 @@
+📘 GUIDE COMPLET DE RÉDACTION ET RÉDUCTION — RAPPORT PFE INFORMATIQUE
+
+🔴 RÈGLES GLOBALES (valables pour toutes les sections)
+R1 — 1 phrase = 1 idée
+❌ "Le projet vise à développer une solution qui permet de gérer les dossiers et de suivre les traitements et d'envoyer des alertes"
+✅ "Le projet vise à développer une solution de gestion des dossiers médicaux. Elle intègre un système de suivi des traitements et d'alertes biologiques."
+R2 — Zéro répétition entre sections
+
+Résumé ≠ Abstract ≠ Introduction ≠ Conclusion
+Chaque section apporte une valeur différente
+Une info déjà dite → ne pas répéter
+
+R3 — Zéro opinion personnelle
+❌ "nous pensons", "il semble", "nous croyons"
+✅ Style factuel, neutre, académique
+R4 — Précision obligatoire
+❌ "ce projet améliore certains aspects"
+✅ "ce projet réduit le temps de saisie des dossiers médicaux"
+R5 — Zéro jargon inutile
+❌ "système distribué scalable hautement disponible"
+✅ Expliquer clairement, compréhensible pour un non-expert
+R6 — Chaque information doit avoir une utilité
+Si une phrase ne répond pas à : pourquoi c'est là ? → supprimer
+
+📄 RÈGLES PAR SECTION
+
+1️⃣ Remerciements
+Objectif : remercier les personnes impliquées de façon sincère et concise
+✅ Bon ordre :
+
+Encadrante académique
+Encadrant professionnel
+Partenaires médicaux (médecins, personnel hospitalier)
+Jury
+Famille
+
+Règles spécifiques :
+
+Court : 15 à 20 lignes maximum
+Ton humain, pas robotique
+Pas de détails techniques
+Pas de "nous avons fait", "nous avons développé"
+Famille → toujours en dernier, ton personnel et chaleureux
+
+❌ Fautes classiques :
+
+Trop long → fatigue le lecteur
+Placeholders oubliés ex: [Nom de l'encadrant]
+Répéter les mêmes formules pour chaque personne
+
+
+2️⃣ Résumé / Abstract
+Objectif : donner une vue complète du projet en minimum de mots
+✅ Structure stricte :
+
+Contexte + problème
+Solution proposée (sans détails techniques)
+Technologie principale
+Résultat ou apport attendu
+
+Règles spécifiques :
+
+150 à 200 mots maximum
+Pas de listes, pas de figures, pas de citations
+Pas de répétition entre Résumé et Abstract (même contenu, autre langue)
+Tous les acteurs mentionnés : médecin, pharmacien, analyste, patient
+Technologies clés mentionnées : PERN, MVC, React Native
+Mots-clés : 5 à 7, pertinents et variés
+
+❌ Fautes classiques :
+
+Dépasser 200 mots
+Oublier un acteur principal
+Répéter mot pour mot dans l'Abstract
+Mots-clés trop génériques ex: "informatique", "web"
+Affirmer des résultats non encore obtenus
+
+
+3️⃣ Introduction Générale
+Objectif : amener le lecteur vers la problématique et justifier le projet
+✅ Structure stricte :
+
+Accroche : contexte mondial/tunisien avec chiffre ou fait concret
+Contexte spécifique : situation à l'hôpital Farhat Hached
+Problème identifié : fichiers Excel, manque de traçabilité...
+Problématique : formulée en question italique
+Objectif général : une seule phrase, sans détailler la solution
+Méthodologie : Scrum + GIMSI en une phrase
+
+Règles spécifiques :
+
+Ne pas décrire la solution en détail → c'est le rôle du résumé
+Ne pas lister les chapitres → le sommaire suffit
+Problématique toujours en italique
+Accroche jamais vague
+
+❌ Fautes classiques :
+
+Répéter le résumé dans l'introduction
+Première phrase trop courte ou trop vague
+Oublier l'application mobile
+Oublier l'analyste
+Lister les chapitres inutilement
+Majuscule inutile ex: "ce Projet"
+
+
+4️⃣ Chapitres (contenu technique)
+Objectif : expliquer le travail réalisé de façon structurée et justifiée
+✅ Structure de chaque chapitre :
+
+Introduction du chapitre (3-4 lignes max)
+Contenu structuré
+Conclusion du chapitre (3-4 lignes max, lien vers chapitre suivant)
+
+Règles spécifiques :
+Besoins :
+
+Séparer clairement : fonctionnels / décisionnels / non fonctionnels
+Tous les acteurs présents : médecin, pharmacien, analyste, administrateur, patient
+Besoins décisionnels = indicateurs BI : charge virale, CD4, statistiques par âge/sexe...
+
+Architecture :
+
+Diagramme obligatoire
+Expliquer MVC clairement
+Expliquer pourquoi PERN et pas autre chose
+Mentionner React Native et son lien avec le backend
+
+Backlog :
+
+Priorités cohérentes
+Complexité remplie pour tous les items (pas de ?)
+User stories bien formulées : "En tant que X, je veux Y afin de Z"
+
+Planification sprints :
+
+Tâches concrètes et détaillées
+Durée cohérente avec complexité
+Cohérence avec le backlog
+
+Maquettes :
+
+Images présentes, pas manquantes
+Légendes claires
+
+❌ Fautes classiques :
+
+Besoins décisionnels vides
+Complexité ? dans le backlog
+Tâches des sprints vides
+Images manquantes
+Diagramme de déploiement absent
+Introduction/conclusion de chapitre absentes
+
+
+5️⃣ Conclusion Générale
+Objectif : synthétiser le travail et ouvrir sur des perspectives
+✅ Structure stricte :
+
+Rappel de la problématique (1 phrase)
+Synthèse de la solution développée (2-3 phrases)
+Résultats obtenus ou apports (mesurables si possible)
+Limites du projet (honnêteté académique)
+Perspectives d'évolution (2-3 idées concrètes)
+
+Règles spécifiques :
+
+Jamais de nouvelles informations
+Résultats honnêtes : si projet non terminé → "vise à" pas "a prouvé"
+Limites obligatoires : un rapport sans limites n'est pas crédible
+Perspectives concrètes et liées au projet
+
+❌ Fautes classiques :
+
+Section entièrement vide ou en placeholders
+Affirmer des résultats non prouvés
+Oublier les limites
+Perspectives trop vagues ex: "améliorer le système"
+
+
+6️⃣ Bibliographie
+Règles spécifiques :
+
+Format cohérent pour toutes les références
+Toutes les références citées dans le texte doivent apparaître ici
+Pas de références non citées dans le texte
+Sources fiables : pas de Wikipédia comme référence principale
+Logos d'outils ne sont pas des références bibliographiques valides
+
+❌ Fautes classiques :
+
+Citer des logos comme références ex: [PostgreSQL logo]
+Références incomplètes sans auteur ou date
+Mélange de formats
+
+
+🎯 CHECKLIST FINALE AVANT SOUMISSION
+Contenu :
+
+ Remerciements : complets, courts, humains
+ Résumé : 150-200 mots, tous acteurs présents
+ Abstract : fidèle au résumé, même longueur
+ Introduction : accroche forte, problématique en italique, pas de répétition
+ Besoins décisionnels : remplis avec indicateurs BI
+ Backlog : pas de ?, user stories complètes
+ Sprints : tâches concrètes remplies
+ Maquettes : images présentes
+ Diagramme déploiement : présent
+ Conclusion : synthèse + limites + perspectives
+ Bibliographie : format cohérent, sources fiables
+
+Style :
+
+ Zéro répétition entre sections
+ Zéro opinion personnelle
+ Phrases courtes et précises
+ Tous les acteurs mentionnés partout
+ Application mobile mentionnée partout
+ Résultats honnêtes (pas d'affirmations non prouvées)

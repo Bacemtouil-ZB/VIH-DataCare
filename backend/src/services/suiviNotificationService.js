@@ -22,7 +22,7 @@ export const buildNotifications = async () => {
 
     switch (row.type) {
       case "delivrance":
-        message = `${patientLabel} · traitement délivré`;
+        message = `${patientLabel} · traitement délivré `;
         rdv_url = `/medecin/patient/${row.patient_numero}/workspace/rendez-vous`;
         break;
       case "en_retard":

@@ -41,15 +41,4 @@ CREATE TRIGGER update_patients_updated_at
     EXECUTE FUNCTION update_patients_updated_at();
 
 
----- 21/04/2026
-ALTER TABLE patients DROP CONSTRAINT patients_status_check;
 
-ALTER TABLE patients ADD CONSTRAINT patients_status_check 
-CHECK (
-  status IS NULL OR
-  TRIM(status) = ANY (ARRAY[
-    'standard', 'standard_inactif',
-    'migrant', 'migrant_inactif',
-    'decede', 'decede_sida', 'transfere'
-  ])
-);
