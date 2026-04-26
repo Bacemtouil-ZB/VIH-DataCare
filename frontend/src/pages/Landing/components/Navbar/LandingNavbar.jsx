@@ -15,18 +15,6 @@ function LandingNavbar() {
             <div className="flex w-full items-center justify-between gap-4 px-5 py-3 md:px-8 md:py-3 lg:px-10">
 
         <div className="flex items-center gap-1.5">
-          <div className="flex items-center gap-0">
-            <img
-              src={farhatHachedLogo}
-              alt="Logo Hopital Farhat Hached"
-              className="h-[3rem] w-auto object-contain -mr-1"
-            />
-            <img
-              src={ministereLogo}
-              alt="Logo ministere de la Sante"
-              className="h-[3.4rem] w-auto object-contain -mr-1"
-            />
-          </div>
           <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#E8F5E9] shadow-sm ring-1 ring-[#C8E6C9]/70">
             <i className="bi bi-heart-pulse-fill text-3xl text-[#1B5E20]"></i>
           </div>
@@ -35,8 +23,20 @@ function LandingNavbar() {
               VIH DataCare
             </span>
             <span className="mt-1 text-xs text-slate-500">
-              Hopital Farhat Hached - Sousse, Tunisie
+              Hopital Farhat Hached - Sousse
             </span>
+          </div>
+          <div className="ml-2 flex items-center gap-0">
+            <img
+              src={farhatHachedLogo}
+              alt="Logo Hopital Farhat Hached"
+              className="h-[2.7rem] w-auto object-contain -mr-1"
+            />
+            <img
+              src={ministereLogo}
+              alt="Logo ministere de la Sante"
+              className="h-[3.4rem] w-auto object-contain -mr-1"
+            />
           </div>
         </div>
 

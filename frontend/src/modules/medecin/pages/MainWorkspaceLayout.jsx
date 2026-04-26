@@ -19,6 +19,30 @@ export default function MainWorkspaceLayout() {
   const [leftClosed, setLeftClosed] = useState(false);
   const [rightClosed, setRightClosed] = useState(false);
 
+  const handleLeftHandleClick = () => {
+    if (leftClosed) leftRef.current?.expand();
+  };
+
+  const handleRightHandleClick = () => {
+    if (rightClosed) rightRef.current?.expand();
+  };
+
+  const toggleLeftPanel = () => {
+    if (leftClosed) {
+      leftRef.current?.expand();
+      return;
+    }
+    leftRef.current?.collapse();
+  };
+
+  const toggleRightPanel = () => {
+    if (rightClosed) {
+      rightRef.current?.expand();
+      return;
+    }
+    rightRef.current?.collapse();
+  };
+
   return (
     <div className="workspace-container"
     >
@@ -30,6 +54,7 @@ export default function MainWorkspaceLayout() {
         <Panel
           ref={leftRef}
           defaultSize={18}
+          collapsedSize={0}
           minSize={0}
           maxSize={18}
           collapsible
@@ -43,7 +68,8 @@ export default function MainWorkspaceLayout() {
         {/* LEFT HANDLE */}
         <PanelResizeHandle
           className={`resize-handle ${leftClosed ? "collapsed" : ""}`}
-          onDoubleClick={() => leftRef.current?.expand()}
+          onClick={handleLeftHandleClick}
+          onDoubleClick={toggleLeftPanel}
         >
           {leftClosed && <span className="handle-arrow">›</span>}
         </PanelResizeHandle>
@@ -58,7 +84,8 @@ export default function MainWorkspaceLayout() {
         {/* RIGHT HANDLE */}
         <PanelResizeHandle
           className={`resize-handle ${rightClosed ? "collapsed" : ""}`}
-          onDoubleClick={() => rightRef.current?.expand()}
+          onClick={handleRightHandleClick}
+          onDoubleClick={toggleRightPanel}
         >
           {rightClosed && <span className="handle-arrow">‹</span>}
         </PanelResizeHandle>
@@ -68,6 +95,7 @@ export default function MainWorkspaceLayout() {
         <Panel
           ref={rightRef}
           defaultSize={18}
+          collapsedSize={0}
           minSize={0}
           maxSize={18}
           collapsible
