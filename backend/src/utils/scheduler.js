@@ -1,5 +1,5 @@
 import cron from "node-cron";
-import { refreshNouveauxMaladesMVs }  from "../services/biService.js";
+import { refreshAllMaterializedViews }  from "../services/biService.js";
 import { recalculerTousLesStatuts }   from "../models/patientModel.js";
 import { recalculerEcartEtStatuts }   from "../models/prescriptionWorkflowModel.js";
 import { cleanupNotifications }       from "../models/suiviNotificationModel.js";
@@ -10,7 +10,7 @@ export const startBiRefreshJob = () => {
   cron.schedule("0 2 * * *", async () => {
     console.log("[BI Job] Refresh MVs démarré —", new Date().toISOString());
     try {
-      await refreshNouveauxMaladesMVs();
+      await refreshAllMaterializedViews();
       console.log("[BI Job] Refresh terminé avec succès");
     } catch (err) {
       console.error("[BI Job] Erreur refresh :", err.message);

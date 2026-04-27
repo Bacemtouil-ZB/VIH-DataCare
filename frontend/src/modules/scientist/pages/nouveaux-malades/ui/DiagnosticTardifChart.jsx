@@ -2,8 +2,13 @@ import { Card, Empty }                        from "antd";
 import { BarChart, Bar, XAxis, YAxis,
          Tooltip, Legend, CartesianGrid,
          ResponsiveContainer }                from "recharts";
-import { CD4_COLORS }                         from "../constants/chartColors";
-import { SEUILS_CD4, SEUILS_CD4_LABELS }      from "../constants/seuilsCd4";
+
+// Nouvelles clés CD4 issues du backend : lt200 / entre_200_350 / gt350
+const CD4_BARS = [
+  { key: "lt200",         label: "CD4 < 200",     color: "#ff4d4f" },
+  { key: "entre_200_350", label: "CD4 200–350",   color: "#fa8c16" },
+  { key: "gt350",         label: "CD4 > 350",     color: "#52c41a" },
+];
 
 const DiagnosticTardifChart = ({ data, loading }) => (
   <Card
@@ -34,13 +39,13 @@ const DiagnosticTardifChart = ({ data, loading }) => (
             />
             <Tooltip />
             <Legend />
-            {SEUILS_CD4.map((seuil) => (
+            {CD4_BARS.map(({ key, label, color }) => (
               <Bar
-                key={seuil}
-                dataKey={seuil}
-                name={SEUILS_CD4_LABELS[seuil]}
+                key={key}
+                dataKey={key}
+                name={label}
                 stackId="cd4"
-                fill={CD4_COLORS[seuil]}
+                fill={color}
               />
             ))}
           </BarChart>

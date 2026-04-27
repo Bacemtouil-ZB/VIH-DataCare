@@ -1,38 +1,29 @@
-// routes/biRoutes.js
-
-import express from "express";
+import express from 'express';
 import {
-  getNouveauxMaladesSummary,
+  getNouveauxMalades,
+  getFileActive,
+  getAnnees,
   refreshMVs,
-  getAnneesDisponibles
-
-} from "../controllers/biController.js";
+} from '../controllers/biController.js';
 import { protect, authorizeAnalyste } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-// ── Nouveaux malades ──────────────────────────────────────────
-router.get(
-  "/nouveaux-malades/summary",
-  protect,
-  authorizeAnalyste,
-  getNouveauxMaladesSummary
-);
+;
 
-// ── Refresh MVs  ───────────────────────────
-router.post(
-  "/refresh",
-  protect,
-  authorizeAnalyste,
-  refreshMVs
-);
+// GET /api/bi/annees
+// Années disponibles depuis v_dim_temps
+router.get('/annees', getAnnees);
 
-router.get(
-  "/annees-disponibles",
-  protect,
-  authorizeAnalyste,
-  getAnneesDisponibles
-);
+// GET /api/bi/nouveaux-malades?annee=2025
+// GET /api/bi/nouveaux-malades?annee=2025&trimestre=1
+router.get('/nouveaux-malades', getNouveauxMalades);
 
+// GET /api/bi/file-active?annee=2025
+router.get('/file-active', protect, getFileActive);
+
+// POST /api/bi/refresh
+
+router.post('/refresh', protect,authorizeAnalyste, refreshMVs);
 
 export default router;

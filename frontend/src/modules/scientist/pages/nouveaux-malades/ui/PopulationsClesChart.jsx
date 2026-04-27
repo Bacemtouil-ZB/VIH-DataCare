@@ -1,60 +1,91 @@
-import { Card, Empty, Row, Col, Table } from "antd";
+import { Card, Empty, Row, Col, Tabs } from "antd";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from "recharts";
 
-const COLUMNS = [
-  { title: "Groupe",   dataIndex: "groupe", key: "groupe" },
-  { title: "< 25 ans", dataIndex: "lt25",   key: "lt25"   },
-  { title: "≥ 25 ans", dataIndex: "gte25",  key: "gte25"  },
-  { title: "Total",    dataIndex: "total",  key: "total",
-    render: (v) => <strong>{v}</strong> },
-];
+// ── Couleurs par groupe ──────────────────────────────────────
+const GENDER_COLORS = {
+  homme:      "#1890ff",
+  femme:      "#eb2f96",
+  transgenre: "#722ed1",
+};
 
+// ── Mini bar groupé pour drill-down ──────────────────────────
+const DetailBar = ({ data = [] }) => (
+  <div style={{ width: "82%", margin: "0 auto" }}>
+    <ResponsiveContainer width="100%" height={160}>
+      <BarChart data={data} margin={{ top: 4, right: 8, bottom: 4, left: 0 }}>
+        <CartesianGrid strokeDasharray="3 3" vertical={false} />
+        <XAxis dataKey="tranche" tick={{ fontSize: 10 }} />
+        <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
+        <Tooltip />
+        <Legend wrapperStyle={{ fontSize: 10 }} />
+        <Bar dataKey="homme"      name="Hommes"      fill={GENDER_COLORS.homme}      radius={[2,2,0,0]} />
+        <Bar dataKey="femme"      name="Femmes"      fill={GENDER_COLORS.femme}      radius={[2,2,0,0]} />
+        <Bar dataKey="transgenre" name="Transgenres" fill={GENDER_COLORS.transgenre} radius={[2,2,0,0]} />
+      </BarChart>
+    </ResponsiveContainer>
+  </div>
+);
+
+// ── Composant principal ───────────────────────────────────────
 const PopulationsClesChart = ({ data, loading }) => {
   if (!data) return <Card loading={loading} size="small" />;
   if (!data.pieData?.length) return <Empty description="Aucune donnée" />;
 
-  const tableData = [
-    { key: "hsh",         groupe: "HSH",        ...data.hsh         },
-    { key: "udi",         groupe: "UDI",         ...data.udi         },
-    { key: "transgenres", groupe: "Transgenres", ...data.transgenres },
-  ];
+  const { pieData, detail = {} } = data;
+
+  // Onglets drill-down : un par groupe (hsh / udi / ps / transgenres)
+  const tabItems = [
+    { key: "hsh",         label: "HSH",         data: detail.hsh         },
+    { key: "udi",         label: "UDI",         data: detail.udi         },
+    { key: "ps",          label: "PS",          data: detail.ps          },
+    { key: "transgenres", label: "Transgenres", data: detail.transgenres },
+  ]
+    .filter((t) => t.data?.length)
+    .map((t) => ({
+      key:      t.key,
+      label:    t.label,
+      children: (
+        <DetailBar data={t.data} />
+      ),
+    }));
 
   return (
-    <Card title="Ventilation selon le profil des patients" size="small" loading={loading}>
+    <Card
+      title="Ventilation selon le profil des patients"
+      size="small"
+      loading={loading}
+    >
       <Row gutter={[16, 16]} align="middle">
 
-        <Col xs={24} md={10}>
+        {/* Donut global */}
+        <Col xs={24} md={8}>
           <ResponsiveContainer width="100%" height={220}>
             <PieChart>
               <Pie
-                data={data.pieData}
+                data={pieData}
                 dataKey="value"
                 nameKey="name"
                 cx="50%"
                 cy="50%"
+                innerRadius={50}
                 outerRadius={80}
                 label={({ name, percent }) =>
                   `${name} ${(percent * 100).toFixed(0)}%`
                 }
               >
-                {data.pieData.map((entry) => (
+                {pieData.map((entry) => (
                   <Cell key={entry.name} fill={entry.fill} />
                 ))}
               </Pie>
               <Tooltip />
-              {/* ✅ Legend supprimé — remplacé par le tableau à droite */}
             </PieChart>
           </ResponsiveContainer>
         </Col>
 
-        <Col xs={24} md={14}>
-          <Table
-            columns={COLUMNS}
-            dataSource={tableData}
-            pagination={false}
-            size="small"
-            bordered
-          />
+        {/* Drill-down par groupe */}
+        <Col xs={24} md={16}>
+          <Tabs size="small" items={tabItems} />
         </Col>
 
       </Row>

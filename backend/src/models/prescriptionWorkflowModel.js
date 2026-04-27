@@ -428,13 +428,16 @@ export const recalculerEcartEtStatuts = async () => {
 
     for (const suivi of suivis) {
       // 2. Calculer écart
-      const ecart = Math.floor(
+      let ecart = Math.floor(
         (new Date() - new Date(suivi.date_prochaine_prise)) / (1000 * 60 * 60 * 24)
       );
+      // Si écart négatif (prochaine prise dans le futur), on considère 0
+      if (ecart < 0) ecart = 0;
+
 
       // 3. Déterminer statut
       let nouveauStatut;
-      if (2 <= ecart && ecart <= 179) nouveauStatut = 'en_retard';
+      if (2 <= ecart && ecart <= 179) nouveauStatut = 'en_retard'; // error [Statuts Job] Erreur : la nouvelle ligne de la relation « suivi_therapeutique » viole la contrainte de vérification « suivi_therapeutique_date_ecart_check »
       else   nouveauStatut = 'perdu_de_vue';
 
       // 4. Mettre à jour suivi_therapeutique

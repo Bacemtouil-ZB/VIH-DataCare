@@ -81,19 +81,13 @@ const Sidebar = () => {
     {
       to: "/analyste/statistiques",
       icon: "bi-graph-up",
-      label: "Statistiques",
+      label: "File active",
       end : true,
     },
     {
       to: "nouveaux-malades",
-      icon: "bi-speedometer2",
+      icon: "bi-graph-up",
       label: "nouveaux-malades",
-      end : true,
-    },
-     {
-      to: "rapports",
-      icon: "bi-file-earmark-text",
-      label: "Rapports",
       end : true,
     },
     {

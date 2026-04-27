@@ -1,52 +1,81 @@
-import {
-  getNouveauxMaladesSummary as getNouveauxMaladesSummaryService,
-  refreshNouveauxMaladesMVs,
-  getAnneesDisponibles as getAnneesDisponiblesService,
-} from "../services/biService.js";
+// ============================================================
+// biController.js
+// ============================================================
 
-// ── Wrapper handle — même pattern que ton projet ──────────────
+import {
+  getNouveauxMaladesSummary,
+  getFileActiveSummary,
+  getAnneesDisponibles,
+  refreshAllMaterializedViews,
+} from '../services/biService.js';
+
+// ============================================================
+// HELPERS INTERNES
+// ============================================================
+
+// Wrapper uniforme pour tous les controllers
 const handle = (fn) => async (req, res) => {
   try {
-    const result = await fn(req, res);
-    res.json({ success: true, data: result });
+    const data = await fn(req, res);
+    return res.status(200).json({ success: true, data });
   } catch (err) {
-    console.error("❌ ERREUR DÉTAILLÉE :", err);
-    res
-      .status(err.status || 500)
-      .json({ success: false, message: err.message || "Erreur serveur" });
+    console.error('[BI Controller]', err.message);
+    return res.status(500).json({ success: false, message: err.message });
   }
 };
 
-// ── Validation params — annee obligatoire, trimestre optionnel
+// Parse et valide annee + trimestre depuis req.query
 const parsePeriode = (query) => {
-  const annee     = query.annee     ? parseInt(query.annee)     : null;
-  const trimestre = query.trimestre ? parseInt(query.trimestre) : null;
+  const annee = parseInt(query.annee, 10);
+  if (!annee || isNaN(annee) || annee < 2000 || annee > 2100) {
+    throw new Error('Paramètre annee invalide ou manquant (ex: ?annee=2025)');
+  }
 
-  if (!annee) {
-    throw { status: 400, message: "Le paramètre annee est obligatoire" };
-  }
-  if (isNaN(annee) || annee < 2000 || annee > 2100) {
-    throw { status: 400, message: "Année invalide" };
-  }
-  if (trimestre !== null && (isNaN(trimestre) || trimestre < 1 || trimestre > 4)) {
-    throw { status: 400, message: "Trimestre doit être entre 1 et 4" };
+  const trimestre = query.trimestre ? parseInt(query.trimestre, 10) : null;
+  if (trimestre !== null && ![1, 2, 3, 4].includes(trimestre)) {
+    throw new Error('Paramètre trimestre invalide — valeurs acceptées : 1, 2, 3, 4');
   }
 
   return { annee, trimestre };
 };
 
-// ── Nouveaux malades — summary complet ───────────────────────
-export const getNouveauxMaladesSummary = handle(async (req) => {
+// Parse et valide annee uniquement
+const parseAnnee = (query) => {
+  const annee = parseInt(query.annee, 10);
+  if (!annee || isNaN(annee) || annee < 2000 || annee > 2100) {
+    throw new Error('Paramètre annee invalide ou manquant (ex: ?annee=2025)');
+  }
+  return { annee };
+};
+
+
+// ============================================================
+// CONTROLLERS
+// ============================================================
+
+// GET /api/bi/nouveaux-malades?annee=2025&trimestre=1
+// trimestre optionnel — NULL = rapport annuel complet
+export const getNouveauxMalades = handle(async (req) => {
   const { annee, trimestre } = parsePeriode(req.query);
-  return await getNouveauxMaladesSummaryService({ annee, trimestre });
+  return await getNouveauxMaladesSummary({ annee, trimestre });
 });
 
-// ── Refresh MVs — admin uniquement ───────────────────────────
+
+// GET /api/bi/file-active?annee=2025
+export const getFileActive = handle(async (req) => {
+  const { annee } = parseAnnee(req.query);
+  return await getFileActiveSummary({ annee });
+});
+
+
+// GET /api/bi/annees
+export const getAnnees = handle(async () => {
+  return await getAnneesDisponibles();
+});
+
+
+// POST /api/bi/refresh
+// Admin uniquement — géré dans les routes via adminMiddleware
 export const refreshMVs = handle(async () => {
-  await refreshNouveauxMaladesMVs();
-  return { refreshedAt: new Date().toISOString() };
-});
-
-export const getAnneesDisponibles = handle(async () => {
-  return await getAnneesDisponiblesService();
+  return await refreshAllMaterializedViews();
 });
