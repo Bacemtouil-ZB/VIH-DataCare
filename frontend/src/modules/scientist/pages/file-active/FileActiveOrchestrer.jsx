@@ -1,4 +1,4 @@
-import { Row, Col, Spin, Alert, Typography } from "antd";
+import { Row, Col, Spin, Alert, Typography, Space } from "antd";
 import useFileActiveDashboard      from "./hooks/useFileActiveDashboard";
 
 import KpiFileActiveCards          from "./ui/KpiFileActiveCards";
@@ -9,10 +9,12 @@ import DecesChart                  from "./ui/DecesChart";
 import RetentionChart              from "./ui/RetentionChart";
 import TransfertsMigrantsChart     from "./ui/TransfertsMigrantsChart";
 
+import RefreshButton from "../../components/RefreshButton";
+
 import styles from "./css/fileActive.module.css";
 
 const FileActiveOrchestrer = () => {
-  const { annee, chartData, loading, error } = useFileActiveDashboard();
+  const { annee, chartData, loading, error, refreshing, lastRefreshedAt, handleRefresh } = useFileActiveDashboard();
 
   if (loading && !chartData) {
     return (
@@ -38,10 +40,17 @@ const FileActiveOrchestrer = () => {
   return (
     <div className={styles.page}>
 
-      {/* ── En-tête ── */}
-      <Typography.Title level={5} style={{ margin: "0 0 16px", color: "#595959" }}>
-        File active — {annee}
-      </Typography.Title>
+      {/* ── En-tête + Refresh ── */}
+      <Space style={{ width: "100%", justifyContent: "space-between", marginBottom: 16 }}>
+        <Typography.Title level={5} style={{ margin: 0, color: "#595959" }}>
+          File active — {annee}
+        </Typography.Title>
+        <RefreshButton
+          refreshing={refreshing}
+          onRefresh={handleRefresh}
+          lastRefreshedAt={lastRefreshedAt}
+        />
+      </Space>
 
       {/* ── KPI cards ── */}
       <div style={{ marginBottom: 20 }}>

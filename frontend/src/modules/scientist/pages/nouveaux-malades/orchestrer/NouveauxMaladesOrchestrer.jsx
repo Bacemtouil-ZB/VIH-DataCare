@@ -89,7 +89,7 @@ const NouveauxMaladesOrchestrer = () => {
     
       <div style={{ marginTop: 16 }}>
         <PopulationsClesChart
-          data={chartData?.populationsCles || {}}
+          data={chartData?.populationsCles ?? null}
           loading={loading}
         />
       </div>

@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo } from "react";
-import { getFileActiveSummary } from "../../../services/biService.js";
+import { useState, useEffect, useMemo, useCallback } from "react";
+import { getFileActiveSummary, refreshBiMVs } from "../../../services/biService.js";
 
 // ── Helper KPI — somme depuis total_file_active ──────────────
 // [{ tranche, homme, femme, transgenre, total }]
@@ -16,18 +16,40 @@ const useFileActiveDashboard = () => {
 
   const [rawData, setRawData] = useState(null);
   const [error,   setError]   = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [refreshing,      setRefreshing]      = useState(false);
+  const [lastRefreshedAt, setLastRefreshedAt] = useState(null);
 
-  useEffect(() => {
+  const fetchData = useCallback(() => {
     let cancelled = false;
+
+    setLoading(true);
+    setError(null);
 
     getFileActiveSummary({ annee })
       .then((res) => { if (!cancelled) setRawData(res.data); })
-      .catch((err) => { if (!cancelled) setError(err.message); });
+      .catch((err) => { if (!cancelled) setError(err.message); })
+      .finally(() => { if (!cancelled) setLoading(false); });
 
     return () => { cancelled = true; };
   }, [annee]);
 
-  const loading = rawData === null && error === null;
+  useEffect(() => {
+    return fetchData();
+  }, [fetchData]);
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      const res = await refreshBiMVs();
+      setLastRefreshedAt(res.data.timestamp);
+      await fetchData();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [fetchData]);
 
   const chartData = useMemo(() => {
     if (!rawData) return null;
@@ -46,7 +68,7 @@ const useFileActiveDashboard = () => {
     };
   }, [rawData]);
 
-  return { annee, chartData, loading, error };
+  return { annee, chartData, loading, error, refreshing, lastRefreshedAt, handleRefresh };
 };
 
 export default useFileActiveDashboard;

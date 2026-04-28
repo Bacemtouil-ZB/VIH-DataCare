@@ -1,5 +1,5 @@
-import { Select, Space, Typography, Button, Tooltip } from "antd";
-import { ReloadOutlined } from "@ant-design/icons";
+import { Select, Space, Typography } from "antd";
+import RefreshButton from "../../../components/RefreshButton";
 
 const TRIMESTRES = [
   { label: "Annuel", value: "" },
@@ -28,16 +28,13 @@ const FilterBar = ({
       <Select
         value={annee ?? undefined}
         onChange={onAnneeChange}
-        options={annees.map((a) => ({
-          label: String(a),
-          value: a,
-        }))}
+        options={annees.map((a) => ({ label: String(a), value: a }))}
         style={{ width: 120 }}
         placeholder="Année"
       />
 
       <Select
-        value={trimestre ?? ""}   // ✅ null → ""
+        value={trimestre ?? ""}
         onChange={onTrimestreChange}
         options={TRIMESTRES}
         style={{ width: 110 }}
@@ -45,24 +42,11 @@ const FilterBar = ({
     </Space>
 
     {/* RIGHT REFRESH */}
-    <Space>
-      {lastRefreshedAt && (
-        <Typography.Text type="secondary" style={{ fontSize: 12 }}>
-          MAJ : {new Date(lastRefreshedAt).toLocaleString("fr-FR")}
-        </Typography.Text>
-      )}
-
-      <Tooltip title="Recalculer les données">
-        <Button
-          icon={<ReloadOutlined spin={refreshing} />}
-          loading={refreshing}
-          onClick={onRefresh}
-          size="small"
-        >
-          Actualiser
-        </Button>
-      </Tooltip>
-    </Space>
+    <RefreshButton
+      refreshing={refreshing}
+      onRefresh={onRefresh}
+      lastRefreshedAt={lastRefreshedAt}
+    />
 
   </Space>
 );

@@ -193,6 +193,19 @@ export const findSuppressionLt50 = async ({ annee }) => {
   return rows;
 };
 
+// KPI 7b — CV ≥ 1000 (échec virologique)
+// Grille : gender × tranche_8
+export const findSuppressionGt1000 = async ({ annee }) => {
+  const { rows } = await pool.query(
+    `SELECT gender, tranche_8, COUNT(*) AS total
+     FROM mv_fait_file_active
+     WHERE annee = $1
+       AND statut_viral = 'gt1000'
+     GROUP BY gender, tranche_8`,
+    [annee]
+  );
+  return rows;
+};
 
 // KPI 9 — Décès liés au sida
 // Grille : gender × tranche_3
@@ -313,4 +326,24 @@ export const refreshAllMVs = async () => {
   for (const mv of mvs) {
     await pool.query(`REFRESH MATERIALIZED VIEW ${mv}`);
   }
+};
+
+// kpis pour nouveaux malades : 
+// biModel.js — vérifier que cette fonction existe et est exportée
+export const findClassificationCD4 = async ({ annee, trimestre }) => {
+  const { clause, params } = buildPeriodeFilter(annee, trimestre);
+  const { rows } = await pool.query(
+    `SELECT
+       tranche_8 AS tranche,
+       COUNT(*) FILTER (WHERE seuil_cd4 = 'lt200')       AS lt200,
+       COUNT(*) FILTER (WHERE seuil_cd4 = '200_350')     AS "200_350",
+       COUNT(*) FILTER (WHERE seuil_cd4 = 'gt350')       AS gt350,
+       COUNT(*) FILTER (WHERE seuil_cd4 = 'sans_mesure') AS sans_mesure
+     FROM mv_fait_nouveaux_malades
+     ${clause}
+     GROUP BY tranche_8
+     ORDER BY tranche_8`,
+    params
+  );
+  return rows;
 };

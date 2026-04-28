@@ -1,0 +1,77 @@
+
+/////1
+DO $$
+DECLARE
+    r RECORD;
+BEGIN
+    -- Disable constraints/triggers
+    SET session_replication_role = 'replica';
+
+    FOR r IN (
+        SELECT tablename 
+        FROM pg_tables 
+        WHERE schemaname = 'public'
+          AND tablename <> 'users'  -- exclude users table
+    ) LOOP
+        EXECUTE 'TRUNCATE TABLE public.' || quote_ident(r.tablename) || ' CASCADE';
+    END LOOP;
+
+    -- Now handle users table separately
+    -- Delete ONLY patients
+    DELETE FROM public.users
+    WHERE role = 'patient';
+
+    -- Optional: reset sequence if needed
+    -- ALTER SEQUENCE users_id_seq RESTART WITH 1;
+
+    -- Restore normal behavior
+    SET session_replication_role = 'DEFAULT';
+END $$;
+
+//2
+SET session_replication_role = 'origin';
+//3
+DO $$
+DECLARE
+    r RECORD;
+BEGIN
+    SET session_replication_role = 'replica';
+
+    FOR r IN (
+        SELECT tablename 
+        FROM pg_tables 
+        WHERE schemaname = 'public'
+          AND tablename NOT IN (
+            'governorates',
+            'postal_codes', 
+            'ref_appareil_fonctionnel'
+          )
+    ) LOOP
+        EXECUTE 'TRUNCATE TABLE public.' || quote_ident(r.tablename) || ' CASCADE';
+    END LOOP;
+
+    SET session_replication_role = 'origin';  -- ✅ corrigé
+END $$;
+
+
+//4
+------ voire si bd clean or not 
+
+SELECT tablename,
+       (xpath('/row/cnt/text()', 
+              query_to_xml('SELECT COUNT(*) AS cnt FROM ' || quote_ident(tablename), 
+                           false, true, '')))[1]::text::int AS nb_lignes
+FROM pg_tables
+WHERE schemaname = 'public'
+ORDER BY tablename;
+
+//5
+-- Activer l'extension d'abord
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+
+INSERT INTO public.users (nom, prenom, email, password, role, isactivated, must_change_password, username)
+VALUES
+  ('Admin',   'System', 'admin@vihcare.tn',      crypt('Vih123456', gen_salt('bf', 10)), 'admin',      true, false, 'admin'),
+  ('Dupont',  'Jean',   'medecin@vihcare.tn',    crypt('Vih123456', gen_salt('bf', 10)), 'medecin',    true, false, 'medecin'),
+  ('Martin',  'Sophie', 'analyste@vihcare.tn',   crypt('Vih123456', gen_salt('bf', 10)), 'analyste',   true, false, 'analyste'),
+  ('Bernard', 'Pierre', 'pharmacien@vihcare.tn', crypt('Vih123456', gen_salt('bf', 10)), 'pharmacien', true, false, 'pharmacien');

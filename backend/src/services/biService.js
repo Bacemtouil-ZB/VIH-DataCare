@@ -10,6 +10,7 @@ import {
   findCvControle,
   findSuppressionLt1000,
   findSuppressionLt50,
+  findSuppressionGt1000,
   findDecesSida,
   findDecesNormaux,
   findPerdusDeVue,
@@ -18,6 +19,7 @@ import {
   findMigrants,
   findAnneesDisponibles,
   refreshAllMVs,
+  findClassificationCD4
 } from '../models/biModel.js';
 
 // ============================================================
@@ -60,57 +62,39 @@ const toBarGroupe = (rows, tranches, trancheCol) => {
 };
 
 
-// Bar empilé — diagnostic tardif CD4
-// Recharts : <BarChart> avec stackId="a" sur lt200 / entre_200_350 / gt350
-// [{ tranche, lt200, entre_200_350, gt350 }]
-const toDiagnosticTardif = (rowsLt200, rows200350, rowsNouveaux) => {
+
+// ✅ CORRIGÉ — pivot direct depuis SQL, plus de calcul par soustraction
+const toDiagnosticTardif = (rowsClassification) => {
   const map = {};
   for (const t of TRANCHES_8) {
-    map[t] = { tranche: t, lt200: 0, entre_200_350: 0, gt350: 0 };
+    map[t] = {
+      tranche:     t,
+      lt200:       0,
+      "200_350":   0,   // ← était "entre_200_350"
+      gt350:       0,
+      sans_mesure: 0,   // ← ajouté
+    };
   }
-
-  // Dénominateur = total nouveaux dépistés par tranche
-  const totalMap = {};
-  for (const row of rowsNouveaux) {
-    const t = row.tranche_8;
-    if (!totalMap[t]) totalMap[t] = 0;
-    totalMap[t] += parseInt(row.total, 10);
-  }
-
-  for (const row of rowsLt200) {
-    const t = row.tranche_8;
+  for (const row of rowsClassification) {
+    const t = row.tranche;
     if (!map[t]) continue;
-    map[t].lt200 += parseInt(row.total, 10);
+    map[t].lt200       = parseInt(row.lt200,       10) || 0;
+    map[t]["200_350"]  = parseInt(row["200_350"],  10) || 0;
+    map[t].gt350       = parseInt(row.gt350,       10) || 0;
+    map[t].sans_mesure = parseInt(row.sans_mesure, 10) || 0;
   }
-
-  for (const row of rows200350) {
-    const t = row.tranche_8;
-    if (!map[t]) continue;
-    map[t].entre_200_350 += parseInt(row.total, 10);
-  }
-
-  for (const t of TRANCHES_8) {
-    const known = map[t].lt200 + map[t].entre_200_350;
-    map[t].gt350 = Math.max(0, (totalMap[t] || 0) - known);
-  }
-
   return TRANCHES_8.map((t) => map[t]);
 };
 
 
 // Bar empilé 100% — cascade virologique ONUSIDA
-// Recharts : <BarChart> avec stackId="v" sur 4 couches
-// [{ tranche, lt50, lt1000_only, gt1000, sans_mesure }]
-const toCascadeVirale = (rowsLt50, rowsLt1000, rowsTotal) => {
+// Recharts : <BarChart> avec stackId="v" sur 3 couches
+// [{ tranche, lt50, lt1000_only, gt1000 }]
+const toCascadeVirale = (rowsLt50, rowsLt1000, rowsGt1000) => {
+  // remplacer rowsTotal par rowsGt1000, supprimer _total
   const map = {};
   for (const t of TRANCHES_8) {
-    map[t] = { tranche: t, lt50: 0, lt1000_only: 0, gt1000: 0, sans_mesure: 0, _total: 0 };
-  }
-
-  for (const row of rowsTotal) {
-    const t = row.tranche_8;
-    if (!map[t]) continue;
-    map[t]._total += parseInt(row.total, 10);
+    map[t] = { tranche: t, lt50: 0, lt1000_only: 0, gt1000: 0 };
   }
 
   for (const row of rowsLt50) {
@@ -119,22 +103,21 @@ const toCascadeVirale = (rowsLt50, rowsLt1000, rowsTotal) => {
     map[t].lt50 += parseInt(row.total, 10);
   }
 
-  const lt1000Map = {};
   for (const row of rowsLt1000) {
     const t = row.tranche_8;
-    if (!lt1000Map[t]) lt1000Map[t] = 0;
-    lt1000Map[t] += parseInt(row.total, 10);
+    if (!map[t]) continue;
+    map[t].lt1000_only += parseInt(row.total, 10);
   }
 
-  for (const t of TRANCHES_8) {
-    const lt50   = map[t].lt50;
-    const lt1000 = lt1000Map[t] || 0;
-    const total  = map[t]._total;
+  for (const row of rowsGt1000) {
+    const t = row.tranche_8;
+    if (!map[t]) continue;
+    map[t].gt1000 += parseInt(row.total, 10);
+  }
 
-    map[t].lt1000_only = Math.max(0, lt1000 - lt50);
-    map[t].gt1000      = Math.max(0, total - lt1000);
-    map[t].sans_mesure = Math.max(0, total - lt50 - map[t].lt1000_only - map[t].gt1000);
-    delete map[t]._total;
+  // ✅ lt1000_only = lt1000 - lt50 (lt1000 inclut lt50)
+  for (const t of TRANCHES_8) {
+    map[t].lt1000_only = Math.max(0, map[t].lt1000_only - map[t].lt50);
   }
 
   return TRANCHES_8.map((t) => map[t]);
@@ -145,13 +128,20 @@ const toCascadeVirale = (rowsLt50, rowsLt1000, rowsTotal) => {
 // Recharts : <PieChart><Pie innerRadius={60}> avec dataKey="value"
 // [{ label, value }]
 const toDonut = (rowsHsh, rowsUdi, rowsPs, rowsTransgenres) => {
-  const sum = (rows) => rows.reduce((acc, r) => acc + parseInt(r.total, 10), 0);
-  return [
+  const sum = (rows = []) =>
+    rows.reduce((acc, r) => acc + (parseInt(r.total, 10) || 0), 0);
+
+  const donut = [
     { label: 'HSH',         value: sum(rowsHsh)         },
     { label: 'UDI',         value: sum(rowsUdi)         },
     { label: 'PS',          value: sum(rowsPs)          },
     { label: 'Transgenres', value: sum(rowsTransgenres) },
   ];
+
+  const total = donut.reduce((acc, d) => acc + d.value, 0);
+  if (total === 0) return [];
+
+  return donut;
 };
 
 
@@ -192,16 +182,14 @@ export const getNouveauxMaladesSummary = async ({ annee, trimestre }) => {
 
   const [
     rowsNouveaux,
-    rowsLt200,
-    rows200350,
+    rowsClassificationCD4,
     rowsHsh,
     rowsUdi,
     rowsPs,
     rowsTransgenres,
   ] = await Promise.all([
     findNouveauxDepistes(params),
-    findDiagnosticTardifLt200(params),
-    findDiagnosticTardif200350(params),
+    findClassificationCD4(params),
     findPopClesHsh(params),
     findPopClesUdi(params),
     findPopClesPs(params),
@@ -215,7 +203,7 @@ export const getNouveauxMaladesSummary = async ({ annee, trimestre }) => {
     nouveaux_depistes: toBarGroupe(rowsNouveaux, TRANCHES_8, 'tranche_8'),
 
     // KPI 2 + 3 — Bar empilé diagnostic tardif CD4
-    diagnostic_tardif: toDiagnosticTardif(rowsLt200, rows200350, rowsNouveaux),
+    diagnostic_tardif: toDiagnosticTardif(rowsClassificationCD4), // ✅ corrigé
 
     // KPI 4 — Donut total + détail tranche_2 pour drill-down
     populations_cles: {
@@ -243,6 +231,7 @@ export const getFileActiveSummary = async ({ annee }) => {
     rowsCvControle,
     rowsLt1000,
     rowsLt50,
+    rowsGt1000,
     rowsDecesSida,
     rowsDecesNormaux,
     rowsPerdus,
@@ -254,6 +243,7 @@ export const getFileActiveSummary = async ({ annee }) => {
     findCvControle(params),
     findSuppressionLt1000(params),
     findSuppressionLt50(params),
+     findSuppressionGt1000(params),
     findDecesSida(params),
     findDecesNormaux(params),
     findPerdusDeVue(params),
@@ -277,9 +267,8 @@ export const getFileActiveSummary = async ({ annee }) => {
     },
 
     // KPI 7 + 8 — Bar empilé 100% cascade virologique ONUSIDA
-    // 4 couches : lt50 / lt1000_only / gt1000 / sans_mesure
-    cascade_virale: toCascadeVirale(rowsLt50, rowsLt1000, rowsTotal),
-
+    // 3 couches : lt50 / lt1000_only / gt1000
+    cascade_virale: toCascadeVirale(rowsLt50, rowsLt1000, rowsGt1000),
     // KPI 9 + 10 — Bar groupé décès sida vs normaux par tranche_3
     deces: {
       sida:    toBarSimple(rowsDecesSida,    TRANCHES_3, 'tranche_3'),
