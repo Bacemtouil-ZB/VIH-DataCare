@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { NavLink } from 'react-router-dom';
 import './Sidebar.css';
 import AccountButton from '../UI/Button/AccountButton.jsx';
@@ -6,9 +6,9 @@ import { useAuth } from '../../hooks/useAuth.js';
 
 const Sidebar = () => {
   const { user } = useAuth();
-  const userRole = user?.role || 'medecin';
+  const userRole = user?.role ;
   
-  // Configuration des liens par rôle
+  // Configuration des liens par rÃ´le
   const roleLinks = {
     admin: [
       {
@@ -19,17 +19,23 @@ const Sidebar = () => {
       },
       {
         to: 'audit-logs',
-        icon: 'bi-exclamation-triangle',
+        icon: 'bi-clipboard-data',
         label: 'Audit patient',
-        end : true,
+        end: true,
       },
       {
-        to: 'dashboard',
-        icon: 'bi-speedometer2',
-        label: 'Dashboard',
-        end : true,   
+        to: 'contacts-urgence',
+        icon: 'bi-exclamation-triangle-fill',
+        label: 'Urgences',
+        end : true,
       },
-
+        {
+      to: "settings",
+      icon: "bi-person-gear",
+      label: "Gestion profil",
+      end: true,
+    },
+     
  
     ],
     
@@ -38,12 +44,6 @@ const Sidebar = () => {
       to: "/medecin/patients",
       icon: "bi-person-hearts",
       label: "Mes Patients",
-      end : true,
-    },
-    {
-      to: "dashboard",
-      icon: "bi-speedometer2",
-      label: "Dashboard",
       end : true,
     },
     {
@@ -57,9 +57,9 @@ const Sidebar = () => {
   pharmacien: [
 
     {
-      to: "ordonnances",
+      to: "prescriptions-medicales",
       icon: "bi-people-fill",
-      label: "Ordonnances",
+      label: "Prescriptions",
       end : true,
     },
     {
@@ -81,19 +81,13 @@ const Sidebar = () => {
     {
       to: "/analyste/statistiques",
       icon: "bi-graph-up",
-      label: "Statistiques",
+      label: "File active",
       end : true,
     },
     {
-      to: "rapports",
-      icon: "bi-file-earmark-text",
-      label: "Rapports",
-      end : true,
-    },
-    {
-      to: "dashboard",
-      icon: "bi-speedometer2",
-      label: "Dashboard",
+      to: "nouveaux-malades",
+      icon: "bi-graph-up",
+      label: "nouveaux-malades",
       end : true,
     },
     {
@@ -105,13 +99,13 @@ const Sidebar = () => {
   ],
   };
 
-  // Utiliser les liens personnalisés ou ceux du rôle
+  
   const links =  roleLinks[userRole] ;
 
   return (
     <div className="sidebar-custom d-flex flex-column" style={{ width: '240px', minHeight: '100vh' }}>
-      {/* Logo / En-tête avec cœur et VIHDataCare */}
-      <div className="sidebar-header py-3 px-4">
+      {/* Logo / En-tÃªte avec cÅ“ur et VIHDataCare */}
+      <div className="sidebar-header py-3 px-5">
         <div className="text-center sidebar-header-content">
           <div className="heart-icon-container mb-2">
             <i className="bi bi-heart-pulse-fill sidebar-heart-icon"></i>
@@ -145,7 +139,6 @@ const Sidebar = () => {
 
       {/* Section Footer */}
       <div className="sidebar-footer-section px-3 py-4 border-top">
-        {/* Bouton Déconnexion */}
         <AccountButton />
       </div>
     </div>
@@ -153,3 +146,4 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
+

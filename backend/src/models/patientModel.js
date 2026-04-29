@@ -1,6 +1,9 @@
+//cheked 15/04/2026
 import pool from "../config/db.js";
 import { createAddress, updateAddress } from "./addresseModel.js";
+import { stripNumeroPrefix } from "../utils/numero.js"; 
 
+// --------------------- GET PATIENT BY ID ---------------------
 export const getPatientById = async (id) => {
   const query = `
     SELECT
@@ -28,29 +31,28 @@ export const getPatientById = async (id) => {
   const result = await pool.query(query, [id]);
   return result.rows[0] || null;
 };
-
+// --------------------- GET PATIENT BY NUMERO ---------------------
 export const getPatientByNumero = async (numero) => {
   const query = `
     SELECT
       p.*,
 
-      -- Adresse IDs pour mise à jour
       p.birth_address_id,
       p.residence_address_id,
 
       -- Gouvernorat et code postal naissance
       bg.name AS birth_governorate,
-      bp.id AS birth_postal_code_id,    -- ID du code postal
-      bp.code AS birth_postal_code,     -- Code postal affichable
-      bp.place_name AS birth_place_name,-- ✅ (optional) name to display instead of code
+      bp.id AS birth_postal_code_id,    
+      bp.code AS birth_postal_code,    
+      bp.place_name AS birth_place_name,
 
       -- Gouvernorat et code postal résidence
       rg.name AS residence_governorate,
       rp.id AS residence_postal_code_id,
       rp.code AS residence_postal_code,
-      rp.place_name AS residence_place_name, -- ✅ (optional)
+      rp.place_name AS residence_place_name, -- (optional)
 
-      -- ✅ Exact address (résidence only, as you requested)
+      --  Exact address 
       r.exact_address AS exact_address,
 
       -- Créé et modifié par
@@ -88,6 +90,7 @@ export const getPatientByNumero = async (numero) => {
   const result = await pool.query(query, [numero]);
   return result.rows[0] || null;
 };
+
 // --------------------- GET ALL ---------------------
 export const getAllPatients = async (options = {}) => {
   const query = `
@@ -112,8 +115,13 @@ export const getAllPatients = async (options = {}) => {
 };
 
 // --------------------- CHECK NUMERO EXISTS ---------------------
+
 export const checkNumeroExists = async (numero) => {
-  const query = `SELECT COUNT(*) as count FROM patients WHERE numero = $1`;
+  const query = `
+    SELECT COUNT(*) as count 
+    FROM patients 
+    WHERE REPLACE(numero, 'F-', '') = REPLACE($1, 'F-', '')
+  `;
   const result = await pool.query(query, [numero]);
   return parseInt(result.rows[0].count, 10) > 0;
 };
@@ -125,9 +133,7 @@ export const countPatients = async () => {
   return parseInt(result.rows[0].count);
 };
 
-// ✅ Goal (as you chose): ONE form input "exact_address" stored ONLY in addresses.exact_address
-// (residence address row), NOT in patients table.
-
+// --------------------- CREATE ---------------------
 export const createPatient = async (client, patientData, userId) => {
   const {
     numero,
@@ -137,23 +143,23 @@ export const createPatient = async (client, patientData, userId) => {
     gender,
     birth_postal_code_id,
     residence_postal_code_id,
-    exact_address, // ✅ from form (residence exact address)
+    exact_address, 
     phone,
     hospitalisation,
-    status,
+    status,        // médecin peut envoyer uniquement les 4 administratifs
     remarks,
+    email,
+    whatsapp,
     doctor_id,
   } = patientData;
 
   // 1) Create addresses
-  // Birth: no exact_address stored
   const birth_address_id = await createAddress(
     client,
     birth_postal_code_id,
     null,
   );
 
-  // Residence: store exact_address in addresses.exact_address
   const residence_address_id = await createAddress(
     client,
     residence_postal_code_id,
@@ -161,16 +167,17 @@ export const createPatient = async (client, patientData, userId) => {
   );
 
   // 2) Create patient
-  //  Remove "exact_address" from patients insert (it belongs to addresses table now)
+  
   const patientResult = await client.query(
     `
       INSERT INTO patients (
         numero, name, surname, birthdate, gender,
         birth_address_id, residence_address_id,
-        phone, hospitalisation, status, remarks, doctor_id,
+        phone, hospitalisation, status, remarks,  email,
+    whatsapp, doctor_id,
         created_by, updated_by
       )
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)
       RETURNING *;
     `,
     [
@@ -183,8 +190,10 @@ export const createPatient = async (client, patientData, userId) => {
       residence_address_id,
       phone,
       hospitalisation,
-      status || "actif",
+      status === 'migrant' ? 'migrant' : 'standard', // par défaut 'standard' si pas 'migrant'
       remarks || null,
+      email || null,
+      whatsapp || null,
       doctor_id || null,
       userId,
       userId,
@@ -212,22 +221,26 @@ export const updatePatient = async (id, patientData, updatedBy) => {
       residence_address_id,
       birth_postal_code_id,
       residence_postal_code_id,
-      exact_address, //  update residence exact_address in addresses table
+      exact_address,
       phone,
       hospitalisation,
-      status,
+      status,        // médecin peut envoyer uniquement les 4 administratifs
       remarks,
+      email,
+      whatsapp,
       doctor_id,
     } = patientData;
 
+    // ── Validation statut : uniquement les 4 administratifs ──
+    const STATUTS_ADMIN = ['decede', 'decede_sida', 'transfere', 'migrant'];
+    const statutValide = status && STATUTS_ADMIN.includes(status) ? status : undefined;
+
     // 1) Update addresses
     if (birth_address_id && birth_postal_code_id) {
-      // Birth: only update postal_code_id (no exact address)
       await updateAddress(client, birth_address_id, birth_postal_code_id, null);
     }
 
     if (residence_address_id && residence_postal_code_id) {
-      // Residence: update postal_code_id + exact_address
       await updateAddress(
         client,
         residence_address_id,
@@ -236,37 +249,41 @@ export const updatePatient = async (id, patientData, updatedBy) => {
       );
     }
 
-    // 2) Update patient ( no exact_address column here)
+    // 2) Update patient
     const result = await client.query(
       `
       UPDATE patients
       SET 
-        numero = COALESCE($1, numero),
-        name = COALESCE($2, name),
-        surname = COALESCE($3, surname),
-        birthdate = COALESCE($4, birthdate),
-        gender = COALESCE($5, gender),
-        phone = COALESCE($6, phone),
+        numero         = COALESCE($1,  numero),
+        name           = COALESCE($2,  name),
+        surname        = COALESCE($3,  surname),
+        birthdate      = COALESCE($4,  birthdate),
+        gender         = COALESCE($5,  gender),
+        phone          = COALESCE($6,  phone),
         hospitalisation = COALESCE($7, hospitalisation),
-        status = COALESCE($8, status),
-        remarks = COALESCE($9, remarks),
-        doctor_id = COALESCE($10, doctor_id),
-        updated_by = $11,
-        updated_at = NOW()
-      WHERE id = $12
+        status         = COALESCE($8,  status),
+        remarks        = COALESCE($9,  remarks),
+        email          = COALESCE($10, email),
+        whatsapp       = COALESCE($11, whatsapp),
+        doctor_id      = COALESCE($12, doctor_id),
+        updated_by     = $13,
+        updated_at     = NOW()
+      WHERE id = $14
       RETURNING *;
       `,
       [
-        numero,
-        name,
-        surname,
-        birthdate,
-        gender,
-        phone,
-        hospitalisation, //  fixed: correct placeholder index
-        status || "actif",
-        remarks || null,
-        doctor_id || null,
+        numero        || null,
+        name          || null,
+        surname       || null,
+        birthdate     || null,
+        gender        || null,
+        phone         || null,
+        hospitalisation || null,
+        statutValide  || null,   // undefined/non-admin → null → COALESCE garde l'ancien
+        remarks       || null,
+        email         || null,
+        whatsapp      || null,
+        doctor_id     || null,
         updatedBy,
         id,
       ],
@@ -282,4 +299,147 @@ export const updatePatient = async (id, patientData, updatedBy) => {
   } finally {
     client.release();
   }
+};
+
+// fonction pour patient en_attente sans aucune ligne suivi depuis plus de 180 jours → on les passe en perdu_de_vue
+export const recalculerTousLesStatuts = async () => {
+  const { rows } = await pool.query(
+    `SELECT p.id, p.status
+     FROM patients p
+     LEFT JOIN suivi_therapeutique st ON st.patient_id = p.id
+     WHERE p.status IN ('standard', 'migrant')
+     AND st.id IS NULL
+     AND NOT EXISTS (
+       SELECT 1 FROM prescription_medicale pm
+       WHERE pm.patient_id = p.id
+       AND pm.statut = 'envoyee'
+       AND pm.created_at >= NOW() - INTERVAL '48 hours'  -- ✅ exclure seulement récentes
+     );`
+  );
+
+  if (rows.length === 0) return [];
+
+  const standardIds = rows.filter(r => r.status === 'standard').map(r => r.id);
+  const migrantIds  = rows.filter(r => r.status === 'migrant').map(r => r.id);
+
+  const updated = [];
+
+  if (standardIds.length > 0) {
+    const { rows: s } = await pool.query(
+      `UPDATE patients
+       SET status = 'standard_inactif', updated_at = NOW()
+       WHERE id = ANY($1::int[])
+       AND CURRENT_DATE - created_at::date >= 180
+       RETURNING id, status;`,
+      [standardIds]
+    );
+    updated.push(...s);
+  }
+
+  if (migrantIds.length > 0) {
+    const { rows: m } = await pool.query(
+      `UPDATE patients
+       SET status = 'migrant_inactif', updated_at = NOW()
+       WHERE id = ANY($1::int[])
+       AND CURRENT_DATE - created_at::date >= 180
+       RETURNING id, status;`,
+      [migrantIds]
+    );
+    updated.push(...m);
+  }
+
+  return updated;
+};
+
+
+// --------------------- GET LEFT PANEL DATA ---------------------
+export const getLeftPanelData = async (numero) => {
+  const raw = stripNumeroPrefix(numero);
+  const withPrefix = `F-${raw}`;
+ 
+  const { rows } = await pool.query(`
+    SELECT
+      -- Info patient
+      p.id              AS patient_id,
+      p.numero,
+      p.name,
+      p.surname,
+      p.birthdate,
+      p.hospitalisation,
+ 
+      -- Statut suivi_therapeutique dernière ligne
+      (
+        SELECT st.statut_patient
+        FROM suivi_therapeutique st
+        WHERE st.patient_id = p.id
+        ORDER BY st.created_at DESC
+        LIMIT 1
+      ) AS statut_suivi,
+ 
+      -- Dernier traitement (prescription la plus récente uniquement)
+      (
+        SELECT STRING_AGG(pl.medicament_nom_snapshot, ', ' ORDER BY pl.id)
+        FROM prescription_lignes pl
+        WHERE pl.prescription_id = (
+          SELECT pm.id
+          FROM prescription_medicale pm
+          WHERE pm.patient_id = p.id
+            AND pm.statut IN ('delivree', 'modifie')
+          ORDER BY pm.date_delivrance DESC NULLS LAST, pm.id DESC
+          LIMIT 1
+        )
+      ) AS dernier_traitement,
+ 
+      -- Dernière charge virale
+      (
+        SELECT rb.charge_virale_valeur
+        FROM resultats_biologiques rb
+        WHERE rb.patient_id = p.id
+          AND rb.charge_virale_valeur IS NOT NULL
+        ORDER BY rb.date_charge_virale_vih DESC NULLS LAST, rb.created_at DESC
+        LIMIT 1
+      ) AS derniere_charge_virale,
+ 
+      (
+        SELECT rb.date_charge_virale_vih
+        FROM resultats_biologiques rb
+        WHERE rb.patient_id = p.id
+          AND rb.charge_virale_valeur IS NOT NULL
+        ORDER BY rb.date_charge_virale_vih DESC NULLS LAST, rb.created_at DESC
+        LIMIT 1
+      ) AS date_charge_virale,
+ 
+      -- Dernier CD4
+      (
+        SELECT rb.cd4_absolu
+        FROM resultats_biologiques rb
+        WHERE rb.patient_id = p.id
+          AND rb.cd4_absolu IS NOT NULL
+        ORDER BY rb.date_cd4_cd8 DESC NULLS LAST, rb.created_at DESC
+        LIMIT 1
+      ) AS dernier_cd4_absolu,
+ 
+      (
+        SELECT rb.cd4_pourcent
+        FROM resultats_biologiques rb
+        WHERE rb.patient_id = p.id
+          AND rb.cd4_absolu IS NOT NULL
+        ORDER BY rb.date_cd4_cd8 DESC NULLS LAST, rb.created_at DESC
+        LIMIT 1
+      ) AS dernier_cd4_pourcent,
+ 
+      (
+        SELECT rb.date_cd4_cd8
+        FROM resultats_biologiques rb
+        WHERE rb.patient_id = p.id
+          AND rb.cd4_absolu IS NOT NULL
+        ORDER BY rb.date_cd4_cd8 DESC NULLS LAST, rb.created_at DESC
+        LIMIT 1
+      ) AS date_cd4
+ 
+    FROM patients p
+    WHERE p.numero = $1 OR p.numero = $2;
+  `, [withPrefix, raw]);
+ 
+  return rows[0] ?? null;
 };

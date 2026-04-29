@@ -1,4 +1,5 @@
-﻿import { useEffect, useState } from "react";
+﻿//cheked 15/04/2026
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { confirmAction, alertError } from "../../../../../../shared/utils/uiAlerts";
 import {
@@ -6,13 +7,19 @@ import {
   getObservationsByPatient,
   updateObservation,
 } from "../../../../services/examenCliniqueServices/observationService";
-import { formatDateFr, handleCancelForm, openFormForCreate, showDetailMode } from "../../../../../../shared/utils/logiqueTableHistory";
+import {
+  handleCancelForm,
+  openFormForCreate,
+  showDetailMode,
+} from "../../../../../../shared/utils/logiqueTableHistory";
+import { clearFieldError } from "../../../../../../shared/components/Forms/FieldLabel/clearFieldError";
 
 export function useObservationLogic(patientNumero, examenId) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [showHistory, setShowHistory] = useState(true);
+  const [errors, setErrors] = useState({});                
 
   const [observationId, setObservationId] = useState(null);
   const [isModifying, setIsModifying] = useState(false);
@@ -21,12 +28,15 @@ export function useObservationLogic(patientNumero, examenId) {
   const [historique, setHistorique] = useState([]);
   const [detailObservation, setDetailObservation] = useState(null);
 
+  // ====== Reset formulaire ======
   const resetForm = () => {
     setObservationId(null);
     setIsModifying(false);
     setRemarque("");
+    setErrors({});                                         
   };
 
+  // ====== Chargement initial ======
   useEffect(() => {
     if (!patientNumero) return;
     (async () => {
@@ -42,23 +52,33 @@ export function useObservationLogic(patientNumero, examenId) {
     })();
   }, [patientNumero]);
 
-  const handleCancel = () => {
-    handleCancelForm(setShowForm, resetForm, toast);
+  // ====== handleRemarqueChange ======
+  // Efface l'erreur du champ dès que l'utilisateur tape
+  const handleRemarqueChange = (e) => {
+    setRemarque(e.target.value);
+    clearFieldError("remarque", setErrors);
   };
 
-  const openCreate = () => openFormForCreate(setDetailObservation, resetForm, setShowForm);
+  // ====== Cancel ======
+  const handleCancel = () => {
+    handleCancelForm(setShowForm, resetForm, toast);
+    // resetForm inclut setErrors({})
+  };
 
+  // ====== Ouvrir en mode création ======
+  const openCreate = () => {
+    openFormForCreate(setDetailObservation, resetForm, setShowForm);
+    // resetForm inclut setErrors({})
+  };
+
+  // ====== Ouvrir en mode modification ======
   const handleEdit = async (obs) => {
-    const ok = await confirmAction(
-      "Modifier cette observation ?",
-      `Date : ${formatDateFr(obs.date_examen)} - ${obs.remarque?.slice(0, 60)}${obs.remarque?.length > 60 ? "..." : ""}`
-    );
-    if (!ok) return;
     setDetailObservation(null);
     setObservationId(obs.id);
     setIsModifying(true);
     setRemarque(obs.remarque || "");
     setShowForm(true);
+    setErrors({});                                         
     toast.info("Mode modification actif");
   };
 
@@ -66,18 +86,34 @@ export function useObservationLogic(patientNumero, examenId) {
     showDetailMode(setShowForm, setDetailObservation, obs);
   };
 
+  // ====== Soumission ======
   const handleSave = async () => {
-    if (!remarque.trim()) return toast.error("Veuillez saisir une remarque");
+
+    // ── Validation frontend ──────────────────────────────────────────────────
+    // → FieldError sous le textarea, pas de toast pour les erreurs de champ
+    if (!remarque.trim()) {
+      setErrors({ remarque: "Veuillez saisir une remarque" });
+      return;
+    }
+    if (remarque.trim().length < 5) {
+      setErrors({ remarque: "La remarque doit contenir au moins 5 caractères" });
+      return;
+    }
+
     if (!await confirmAction(
       isModifying ? "Enregistrer les modifications ?" : "Créer cette observation ?",
-      "Les données seront enregistrées dans le dossier patient."
+      "Les données seront enregistrées dans le dossier patient.",
     )) return;
 
     setSaving(true);
+    setErrors({});
+
     try {
       if (isModifying && observationId) {
         await updateObservation(observationId, { remarque: remarque.trim() });
-        setHistorique((prev) => prev.map((o) => (o.id === observationId ? { ...o, remarque: remarque.trim() } : o)));
+        setHistorique((prev) =>
+          prev.map((o) => (o.id === observationId ? { ...o, remarque: remarque.trim() } : o)),
+        );
         toast.success("Observation mise à jour");
       } else {
         await createObservation({ examen_clinique_id: examenId, remarque: remarque.trim() });
@@ -87,8 +123,30 @@ export function useObservationLogic(patientNumero, examenId) {
       }
       setShowForm(false);
       resetForm();
+
     } catch (e) {
-      await alertError(e?.message || "Erreur lors de l'enregistrement");
+
+      // Cas 1 — errors[] avec field (express-validator via handleValidation)
+      // → FieldError affiché sous le textarea
+      if (e?.errors && Array.isArray(e.errors)) {
+        const errorObj = {};
+        e.errors.forEach((err) => {
+          errorObj[err.field] = err.message;
+        });
+        setErrors(errorObj);
+        return;
+      }
+
+      // Cas 2 — message simple (erreur métier serveur)
+      // → FieldError sous remarque (seul champ du formulaire)
+      if (e?.message) {
+        setErrors({ remarque: e.message });
+        return;
+      }
+
+      // Cas 3 — fallback inattendu (réseau, serveur indisponible)
+      alertError("Erreur lors de l'enregistrement");
+
     } finally {
       setSaving(false);
     }
@@ -105,6 +163,8 @@ export function useObservationLogic(patientNumero, examenId) {
     observationId,
     remarque,
     setRemarque,
+    handleRemarqueChange,                                  
+    errors,                                                
     historique,
     detailObservation,
     setDetailObservation,
@@ -115,4 +175,3 @@ export function useObservationLogic(patientNumero, examenId) {
     handleSave,
   };
 }
-

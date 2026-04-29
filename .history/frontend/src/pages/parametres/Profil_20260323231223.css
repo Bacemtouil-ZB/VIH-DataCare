@@ -1,0 +1,310 @@
+/* ─── profil.css ──────────────────────────────────────────────────────────────── */
+
+/* ── Variables ────────────────────────────────────────────────────────────────── */
+:root {
+  --profil-bg:            #f8f9fb;
+  --profil-surface:       #ffffff;
+  --profil-border:        #e8eaed;
+  --profil-border-focus:  #16a34a;
+  --profil-border-error:  #ef4444;
+  --profil-text:          #111827;
+  --profil-muted:         #6b7280;
+  --profil-accent:        #16a34a;
+  --profil-accent-hover:  #15803d;
+  --profil-success:       #16a34a;
+  --profil-error:         #ef4444;
+  --profil-disabled:      #9ca3af;
+  --profil-shadow:        0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --profil-radius:        12px;
+  --profil-radius-sm:     8px;
+  --profil-font:          'DM Sans', 'Segoe UI', sans-serif;
+}
+
+/* ── Page ─────────────────────────────────────────────────────────────────────── */
+.profil-page {
+  min-height: 100vh;
+  padding: 2rem 1.5rem;
+  font-family: var(--profil-font);
+}
+
+.profil-container {
+  max-width: 880px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* ── Header Card ──────────────────────────────────────────────────────────────── */
+.profil-header-card {
+  background: var(--profil-surface);
+  border: 1px solid var(--profil-border);
+  border-radius: var(--profil-radius);
+  padding: 1.5rem 1.75rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  box-shadow: var(--profil-shadow);
+}
+
+.profil-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #dcfce7;
+  color: var(--profil-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+}
+
+.profil-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profil-header-name {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--profil-text);
+}
+
+.profil-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ── Badges ───────────────────────────────────────────────────────────────────── */
+.profil-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+
+.profil-badge--role {
+  background: #f0fdf4;
+  color: var(--profil-accent);
+}
+
+/* ── Grid ─────────────────────────────────────────────────────────────────────── */
+.profil-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+/* ── Card ─────────────────────────────────────────────────────────────────────── */
+.profil-card {
+  background: var(--profil-surface);
+  border: 1px solid var(--profil-border);
+  border-radius: var(--profil-radius);
+  padding: 1.5rem 1.75rem;
+  box-shadow: var(--profil-shadow);
+}
+
+.profil-card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--profil-border);
+}
+
+.profil-card-icon {
+  color: var(--profil-accent);
+}
+
+.profil-card-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--profil-text);
+}
+
+/* ── Form ─────────────────────────────────────────────────────────────────────── */
+.profil-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.profil-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.profil-form-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+}
+
+.profil-form-footer--end {
+  justify-content: flex-end;
+}
+
+.profil-unsaved-hint {
+  font-size: 11px;
+  color: #d97706;
+}
+
+/* ── Field ────────────────────────────────────────────────────────────────────── */
+.profil-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.profil-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--profil-muted);
+  letter-spacing: 0.2px;
+}
+
+.profil-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--profil-border);
+  border-radius: var(--profil-radius-sm);
+  background: #fafafa;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.profil-input-wrap:focus-within {
+  border-color: var(--profil-border-focus);
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.08);
+  background: #fff;
+}
+
+.profil-input-wrap--error {
+  border-color: var(--profil-border-error);
+}
+
+.profil-input-wrap--error:focus-within {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
+}
+
+.profil-input-icon {
+  position: absolute;
+  left: 0.7rem;
+  color: var(--profil-muted);
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.profil-input {
+  width: 100%;
+  padding: 0.6rem 0.85rem;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-family: var(--profil-font);
+  color: var(--profil-text);
+  outline: none;
+  box-sizing: border-box;
+}
+
+.profil-input--with-icon {
+  padding-left: 2.2rem;
+}
+
+.profil-input--with-toggle {
+  padding-left: 2.2rem;
+  padding-right: 2.4rem;
+}
+
+.profil-input::placeholder {
+  color: var(--profil-disabled);
+}
+
+.profil-eye-btn {
+  position: absolute;
+  right: 0.7rem;
+  background: none;
+  border: none;
+  color: var(--profil-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  transition: color 0.15s;
+}
+
+.profil-eye-btn:hover {
+  color: var(--profil-text);
+}
+
+.profil-error-msg {
+  font-size: 11px;
+  color: var(--profil-error);
+}
+
+.profil-hint-msg {
+  font-size: 11px;
+  color: var(--profil-muted);
+}
+
+/* ── Button ───────────────────────────────────────────────────────────────────── */
+.profil-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0.55rem 1.1rem;
+  border-radius: var(--profil-radius-sm);
+  border: none;
+  font-size: 13px;
+  font-family: var(--profil-font);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.profil-btn--primary {
+  background: var(--profil-accent);
+  color: #000000;
+}
+
+.profil-btn--primary:hover {
+  background: var(--profil-accent-hover);
+}
+
+.profil-btn:disabled,
+.profil-btn--disabled {
+  background: var(--profil-border);
+  color: var(--profil-disabled);
+  cursor: not-allowed;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .profil-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profil-row {
+    grid-template-columns: 1fr;
+  }
+
+  .profil-header-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

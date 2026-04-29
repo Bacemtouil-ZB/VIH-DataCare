@@ -1,3 +1,4 @@
+//cheked 15/04/2026
 import {
   HistoriqueAccordeon,
   HistoriqueActions,
@@ -8,10 +9,17 @@ import {
   AutresSignesSection,
   RasToggle,
 } from "../index";
-import { ActionButton } from "../../../../../../shared/components";
+import { ActionButton,  FieldError,                                              
+ } from "../../../../../../shared/components";
 import ToggleSwitch from "../../../../components/buttons/ToggleSwitch";
 import { formatDateFr } from "../../../../../../shared/utils/logiqueTableHistory";
-import { HISTORY_HEADERS ,SIGNES_KEYS, SIGNES_LABELS, SIGNES_INIT, getSignesPositifs } from "./signesFonctionnelsConstants";
+import {
+  HISTORY_HEADERS,
+  SIGNES_KEYS,
+  SIGNES_LABELS,
+  SIGNES_INIT,
+  getSignesPositifs,
+} from "./signesFonctionnelsConstants";
 
 export default function SignesFonctionnelsUI({
   historique,
@@ -37,12 +45,17 @@ export default function SignesFonctionnelsUI({
   ajouterAutreSigne,
   supprimerAutreSigne,
   modifierDescription,
+  errors,                                                  
   handleSave,
 }) {
   return (
     <>
       {showForm && (
-        <FormulaireWrapper isModifying={isModifying} labelCreate="Nouveau signe fonctionnel" labelModify="Modifier le signe fonctionnel">
+        <FormulaireWrapper
+          isModifying={isModifying}
+          labelCreate="Nouveau signe fonctionnel"
+          labelModify="Modifier le signe fonctionnel"
+        >
           <RasToggle
             checked={rasChecked}
             onChange={(v) => {
@@ -50,7 +63,9 @@ export default function SignesFonctionnelsUI({
               if (v) setSignes({ ...SIGNES_INIT });
             }}
           />
-          <p className="text-uppercase fw-bold text-secondary mb-3 ec-section-title-mini">Signes fonctionnels</p>
+          <p className="text-uppercase fw-bold text-secondary mb-3 ec-section-title-mini">
+            Signes fonctionnels
+          </p>
           <div className="row g-2 mb-4 pb-4 border-bottom">
             {SIGNES_KEYS.map((signeKey) => (
               <div key={signeKey} className="col-6 col-md-4 col-lg-3">
@@ -79,6 +94,17 @@ export default function SignesFonctionnelsUI({
             onSupprimer={supprimerAutreSigne}
             onModifierDescription={modifierDescription}
           />
+
+          {/*
+            Erreur générale backend : les champs de SF sont des toggles (pas d'inputs texte),
+            donc toute erreur du validator (signes.*, autres_signes.*) est affichée ici.
+          */}
+          {errors._form && (
+            <div className="mt-2">
+              <FieldError error={errors._form} />
+            </div>
+          )}
+
           <ActionButton
             action="save"
             block={true}
@@ -86,7 +112,6 @@ export default function SignesFonctionnelsUI({
             label={isModifying ? "Enregistrer les modifications" : "Enregistrer la fiche"}
             onClick={handleSave}
             showIcon={false}
-            height="40px"
           />
         </FormulaireWrapper>
       )}
@@ -110,12 +135,21 @@ export default function SignesFonctionnelsUI({
                   {s.ras ? (
                     <Badge bg="#dcfce7" color="#166534">RAS</Badge>
                   ) : pos.length > 0 ? (
-                    <div className="d-flex flex-wrap gap-1">{pos.map((n, i) => <Badge key={i} bg="#fef3c7" color="#92400e">{n}</Badge>)}</div>
+                    <div className="d-flex flex-wrap gap-1">
+                      {pos.map((n, i) => (
+                        <Badge key={i} bg="#fef3c7" color="#92400e">{n}</Badge>
+                      ))}
+                    </div>
                   ) : (
                     <small className="text-secondary">Aucun</small>
                   )}
                 </td>
-                <td><HistoriqueActions onDetails={() => handleShowDetails(s)} onEdit={() => handleEdit(s)} /></td>
+                <td>
+                  <HistoriqueActions
+                    onDetails={() => handleShowDetails(s)}
+                    onEdit={() => handleEdit(s)}
+                  />
+                </td>
               </tr>
             );
           }}
@@ -123,9 +157,15 @@ export default function SignesFonctionnelsUI({
       </HistoriqueAccordeon>
 
       {detailSigne && (
-        <FormulaireWrapper isModifying={false} labelCreate="Détails du signe fonctionnel" labelModify="Détails du signe fonctionnel">
+        <FormulaireWrapper
+          isModifying={false}
+          labelCreate="Détails du signe fonctionnel"
+          labelModify="Détails du signe fonctionnel"
+        >
           <div className="ec-readonly-block">
-            <p className="text-uppercase fw-bold text-secondary mb-3 ec-section-title-mini">Signes fonctionnels</p>
+            <p className="text-uppercase fw-bold text-secondary mb-3 ec-section-title-mini">
+              Signes fonctionnels
+            </p>
             <div className="row g-2 mb-4 pb-4 border-bottom">
               {SIGNES_KEYS.map((signeKey) => (
                 <div key={signeKey} className="col-6 col-md-4 col-lg-3">
@@ -141,7 +181,9 @@ export default function SignesFonctionnelsUI({
               ))}
             </div>
 
-            <p className="text-uppercase fw-bold text-secondary mb-3 ec-th-sm">Autres signes fonctionnels</p>
+            <p className="text-uppercase fw-bold text-secondary mb-3 ec-th-sm">
+              Autres signes fonctionnels
+            </p>
             {detailSigne.autres_signes?.length > 0 ? (
               <table className="table table-sm table-hover mb-4">
                 <thead className="table-light">
@@ -153,8 +195,12 @@ export default function SignesFonctionnelsUI({
                 <tbody>
                   {detailSigne.autres_signes.map((as, i) => (
                     <tr key={`${as.appareil || "app"}-${i}`}>
-                      <td className="ec-td-vmiddle"><Badge bg="#dbeafe" color="#1d4ed8">{as.appareil || "-"}</Badge></td>
-                      <td className="ec-td-vmiddle"><span className="ec-desc-text">{as.description || "-"}</span></td>
+                      <td className="ec-td-vmiddle">
+                        <Badge bg="#dbeafe" color="#1d4ed8">{as.appareil || "-"}</Badge>
+                      </td>
+                      <td className="ec-td-vmiddle">
+                        <span className="ec-desc-text">{as.description || "-"}</span>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -165,11 +211,15 @@ export default function SignesFonctionnelsUI({
           </div>
 
           <div className="d-flex justify-content-end">
-            <button className="btn btn-sm btn-outline-secondary" onClick={() => setDetailSigne(null)}>Fermer détails</button>
+            <button
+              className="btn btn-sm btn-outline-secondary"
+              onClick={() => setDetailSigne(null)}
+            >
+              Fermer détails
+            </button>
           </div>
         </FormulaireWrapper>
       )}
     </>
   );
 }
-

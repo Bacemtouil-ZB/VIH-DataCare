@@ -12,7 +12,7 @@ export default function HistoriqueTable({ headers, items, renderRow, emptyMessag
             ))}
           </tr>
         </thead>
-        <tbody>{items.map((item) => renderRow(item))}</tbody>
+        <tbody>{items.map((item, idx) => renderRow(item, idx))}</tbody>
       </table>
     </div>
   );

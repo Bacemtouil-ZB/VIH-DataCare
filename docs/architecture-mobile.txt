@@ -1,0 +1,280 @@
+Mobile App — Full Folder Architecture
+mobile-vihdatacare/
+│
+├── src/
+│   │
+│   ├── api/                        ← DATA LAYER
+│   │   ├── client.js               (axios instance, base URL, token injection)
+│   │   ├── auth.api.js             (login, getMe)
+│   │   ├── rendezvous.api.js       (getRendezvous)
+│   │   └── patient.api.js          (getProfile, updateProfile, savePushToken)
+│   │
+│   ├── features/                   ← FEATURE LAYER
+│   │   ├── auth/
+│   │   │   ├── screens/
+│   │   │   │   └── LoginScreen.jsx
+│   │   │   ├── components/
+│   │   │   │   └── LoginForm.jsx
+│   │   │   └── hooks/
+│   │   │       └── useLogin.js
+│   │   │
+│   │   ├── rendezvous/
+│   │   │   ├── screens/
+│   │   │   │   ├── RendezvousListScreen.jsx
+│   │   │   │   └── RendezvousDetailScreen.jsx
+│   │   │   ├── components/
+│   │   │   │   ├── RendezvousCard.jsx
+│   │   │   │   └── RendezvousStatusBadge.jsx
+│   │   │   └── hooks/
+│   │   │       └── useRendezvous.js
+│   │   │
+│   │   ├── reminders/
+│   │   │   ├── screens/
+│   │   │   │   ├── RemindersListScreen.jsx
+│   │   │   │   └── CreateReminderScreen.jsx
+│   │   │   ├── components/
+│   │   │   │   ├── ReminderCard.jsx
+│   │   │   │   └── ReminderForm.jsx
+│   │   │   └── hooks/
+│   │   │       └── useReminders.js
+│   │   │
+│   │   └── home/
+│   │       ├── screens/
+│   │       │   └── HomeScreen.jsx
+│   │       └── components/
+│   │           ├── NextAppointmentBanner.jsx
+│   │           └── TodayRemindersList.jsx
+│   │
+│   ├── components/                 ← SHARED/REUSABLE UI COMPONENTS
+│   │   ├── Button.jsx
+│   │   ├── Input.jsx
+│   │   ├── Card.jsx
+│   │   ├── Loader.jsx
+│   │   ├── EmptyState.jsx
+│   │   └── ErrorMessage.jsx
+│   │
+│   ├── navigation/                 ← NAVIGATION LAYER
+│   │   ├── AppNavigator.jsx        (root — decides auth vs app stack)
+│   │   ├── AuthStack.jsx           (login screen)
+│   │   └── AppTabs.jsx             (home, rendezvous, reminders)
+│   │
+│   ├── store/                      ← STATE MANAGEMENT
+│   │   ├── authStore.js            (user, token)
+│   │   └── reminderStore.js        (local reminders state)
+│   │
+│   ├── hooks/                      ← SHARED HOOKS
+│   │   ├── useAuth.js
+│   │   └── useNotifications.js
+│   │
+│   ├── services/                   ← SERVICES LAYER
+│   │   ├── storage.service.js      (SecureStore wrapper)
+│   │   ├── notification.service.js (Expo notifications)
+│   │   └── cache.service.js        (AsyncStorage for offline)
+│   │
+│   ├── constants/
+│   │   ├── colors.js
+│   │   ├── spacing.js
+│   │   └── config.js               (API base URL, env)
+│   │
+│   └── utils/
+│       ├── date.utils.js
+│       └── token.utils.js
+│
+├── assets/
+├── app.json
+├── App.jsx                         ← entry point
+└── .env
+
+| Category             | Package                                     | Role                     | Usage in Your App                                       |
+| -------------------- | ------------------------------------------- | ------------------------ | ------------------------------------------------------- |
+| **Navigation**       | `@react-navigation/native`                  | Core navigation system   | Manages navigation state across the app                 |
+|                      | `@react-navigation/stack`                   | Stack navigation         | Login → Home → Details flow                             |
+|                      | `@react-navigation/bottom-tabs`             | Tab navigation           | Main sections (Home, Rendez-vous, Profile, Reminders)   |
+|                      | `react-native-screens`                      | Performance optimization | Improves navigation performance using native components |
+|                      | `react-native-safe-area-context`            | Safe UI layout           | Prevents UI overlap with notch/status bar               |
+| **API / Networking** | `axios`                                     | HTTP client              | Calls backend API (login, rendez-vous, reminders)       |
+| **State Management** | `zustand`                                   | Global state manager     | Stores auth (token, user) and shared data               |
+| **Forms**            | `react-hook-form`                           | Form handling            | Manages inputs (login, profile, reminders)              |
+|                      | `zod`                                       | Data validation          | Validates form data (email, password, etc.)             |
+|                      | `@hookform/resolvers`                       | Integration tool         | Connects react-hook-form with zod                       |
+| **Storage**          | `@react-native-async-storage/async-storage` | Local storage            | Stores non-sensitive data (settings, cache)             |
+|                      | `expo-secure-store`                         | Secure storage           | Stores JWT token and sensitive data (VERY IMPORTANT)    |
+| **Mobile Features**  | `expo-notifications`                        | Notifications system     | Medication reminders, appointment alerts                |
+|                      | `expo-device`                               | Device info              | Detect device type, debugging, analytics                |
+
+/////--------------------------------------------------------
+
+src/
+├── api/
+│   ├── client.js
+│   ├── auth.api.js
+│   ├── rendezvous.api.js
+│   └── patient.api.js
+│
+├── features/
+│   ├── auth/
+│   │   ├── screens/        loginScreen.jsx
+│   │   ├── components/     loginForm.jsx
+│   │   └── hooks/          useLogin.js
+│   ├── home/
+│   │   ├── screens/        homeScreen.jsx
+│   │   └── components/     nextAppointmentBanner.jsx
+│   │                       todayRemindersList.jsx
+│   ├── rendezvous/
+│   │   ├── screens/        rendezvousListScreen.jsx
+│   │   │                   rendezvousDetailScreen.jsx
+│   │   ├── components/     rendezvousCard.jsx
+│   │   │                   rendezvousStatusBadge.jsx
+│   │   └── hooks/          useRendezvous.js
+│   └── reminders/
+│       ├── screens/        remindersListScreen.jsx
+│       │                   createReminderScreen.jsx
+│       ├── components/     reminderCard.jsx
+│       │                   reminderForm.jsx
+│       └── hooks/          useReminders.js
+│
+├── components/
+│   button.jsx  input.jsx  card.jsx
+│   loader.jsx  emptyState.jsx  errorMessage.jsx
+│
+├── navigation/
+│   appNavigator.jsx  authStack.jsx  appTabs.jsx
+│
+├── store/
+│   authStore.js  reminderStore.js
+│
+├── hooks/
+│   useAuth.js  useNotifications.js
+│
+├── services/
+│   storage.service.js
+│   notification.service.js
+│   cache.service.js
+│
+├── constants/
+│   colors.js  spacing.js  config.js
+│
+└── utils/
+    date.utils.js  token.utils.js
+
+
+----------------------------
+The Full Plan — Step by Step
+Phase 1 — Backend (you do this, I guide)
+1. Add 'patient' to role_enum
+2. Add must_change_password to users table
+3. Add username field to users table (stores numero)
+4. Add user_id to patients table
+5. Create /api/mobile/auth/login endpoint
+     → receives: { username, password }
+     → returns: { token, user, mustChangePassword }
+6. Create /api/mobile/auth/change-password endpoint
+     → receives: { newPassword }
+     → sets must_change_password = false
+7. Create /api/mobile/me endpoint
+     → reads Bearer token from header
+     → returns patient profile
+8. Update doctor's patient creation flow
+     → creates users record + patients record together
+     → generates temp password
+     → shows printable credentials card on web
+
+Phase 2 — Mobile Infrastructure (already done ✅)
+✅ Project setup
+✅ Folder structure
+✅ constants/ (colors, spacing, config)
+✅ services/storage.service.js
+✅ api/client.js
+✅ api/auth.api.js
+✅ store/authStore.js
+✅ Navigation skeleton
+✅ Placeholder screens
+
+Phase 3 — Auth Feature (mobile)
+1. Update auth.api.js
+     → login uses /mobile/auth/login
+     → sends username + password
+2. Update authStore.js
+     → handle mustChangePassword state
+3. Build loginScreen.jsx
+     → numero field + password field
+     → calls useLogin hook
+4. Build useLogin.js hook
+     → calls authStore.login()
+     → redirects based on mustChangePassword
+5. Build changePasswordScreen.jsx
+     → only shown on first login
+     → calls change-password endpoint
+     → then goes to home
+6. Update navigation
+     → add changePasswordScreen to AuthStack
+     → gate AppTabs behind mustChangePassword check
+
+Phase 4 — Home Feature (mobile)
+1. Build homeScreen.jsx
+     → shows patient name
+     → shows next rendez-vous banner
+     → shows today's reminders
+2. Build nextAppointmentBanner.jsx component
+3. Build todayRemindersList.jsx component
+
+Phase 5 — Rendez-vous Feature (mobile)
+1. Create rendezvous.api.js
+     → GET /api/mobile/rendezvous
+2. Create useRendezvous.js hook
+3. Build rendezvousListScreen.jsx
+     → list of appointments with status
+4. Build rendezvousDetailScreen.jsx
+5. Build rendezvousCard.jsx component
+6. Build rendezvousStatusBadge.jsx component
+7. Backend: GET /api/mobile/rendezvous
+     → returns only this patient's appointments
+
+Phase 6 — Reminders Feature (mobile)
+1. Create reminderStore.js (local state)
+2. Create useReminders.js hook
+3. Build remindersListScreen.jsx
+4. Build createReminderScreen.jsx
+5. Build reminderCard.jsx component
+6. Setup local notifications via notification.service.js
+     → schedule notification at reminder time
+     → cancel notification when reminder deleted
+
+Phase 7 — Push Notifications (mobile + backend)
+1. Build useNotifications.js hook
+     → gets Expo push token on login
+2. Update patient.api.js
+     → saves push token to backend
+3. Backend: store push token on users table
+4. Backend: scheduler checks rendez-vous
+     → sends push notification 24h before
+     → sends push notification 1h before
+
+Phase 8 — Polish & APK
+1. Shared components (button, input, card, loader...)
+2. Error handling across all screens
+3. Offline cache for rendez-vous
+4. Loading states everywhere
+5. Discreet mode / app lock (PIN)
+6. Build APK with EAS
+7. Generate QR code for distribution
+
+The Order We Follow
+Phase 1 (backend) → Phase 3 (login) → Phase 4 (home)
+→ Phase 5 (rendezvous) → Phase 6 (reminders)
+→ Phase 7 (notifications) → Phase 8 (polish + APK)
+
+One Rule Throughout
+Every time we start a new feature:
+
+Backend endpoint first
+API file on mobile
+Hook
+Screen
+Components
+
+Never skip the order.
+
+backend bib installed for mobie app 
+npm install expo-server-sdk 
+npm install node-cron

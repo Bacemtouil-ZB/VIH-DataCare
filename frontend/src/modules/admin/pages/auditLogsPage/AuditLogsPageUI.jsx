@@ -1,6 +1,13 @@
-import { fmt, prettyValue, txt } from "./helpers";
+﻿import { fmt, prettyValue, txt } from "./helpers";
+import { getModuleLabel, getActionLabel } from "./constante";
 import PageHeader from "../../components/PageHeader";
-import { ActionButton, HistoriqueActions,HistoriqueTable,Spinner,EmptyState} from "../../../../shared/components/index";
+import {
+  ActionButton,
+  FilterToolbar,
+  HistoriqueActions,
+  HistoriqueTable,
+  Spinner,
+} from "../../../../shared/components/index";
 
 const AuditLogsPageUI = ({
   patientNumeroInput,
@@ -32,77 +39,122 @@ const AuditLogsPageUI = ({
   prev,
   setOffset,
 }) => {
+
   const tableHeaders = ["Date", "Médecin", "Module", "Action", ""];
 
-  const renderLogRow = (l) => (
-    <tr key={l.id}>
-      <td className="audit__cell">{fmt(l.created_at)}</td>
-      <td className="audit__cell">
-        <div className="audit__strong">{txt(l.user_nom)} {txt(l.user_prenom)}</div>
-        <div className="audit__muted">{txt(l.user_email)}</div>
-      </td>
-      <td className="audit__cell">{txt(l.module)}</td>
-      <td className="audit__cell">{txt(l.action)}</td>
-      <td className="audit__cell audit__cell--right">
-        <HistoriqueActions onDetails={() => openDetails(l.id)} />
-      </td>
-    </tr>
-  );
+  const numeroError =
+    patientNumeroInput &&
+    !/^\d{4}-\d{4}$/.test(patientNumeroInput)
+      ? "Format invalide (ex: 0001-2025)"
+      : "";
+
+  const renderLogRow = (l) => {
+    return (
+      <tr key={l.id}>
+        <td className="audit__cell">{fmt(l.created_at)}</td>
+        <td className="audit__cell">
+          <div className="audit__strong">
+            {txt(l.user_nom)} {txt(l.user_prenom)}
+          </div>
+          <div className="audit__muted">{txt(l.user_email)}</div>
+        </td>
+        <td className="audit__cell">{getModuleLabel(l.module)}</td>
+        <td className="audit__cell">{getActionLabel(l.action)}</td>
+        <td className="audit__cell audit__cell--right">
+          <HistoriqueActions onDetails={() => openDetails(l.id)} />
+        </td>
+      </tr>
+    );
+  };
 
   const diffHeaders = ["Champ", "Ancien", "Nouveau"];
 
   const renderDiffRow = (r) => (
     <tr key={r.key} className={r.changed ? "auditDiff__row--changed" : ""}>
       <td className="auditDiff__cell auditDiff__key">{r.key}</td>
-      <td className="auditDiff__cell auditDiff__mono">{prettyValue(r.oldValue)}</td>
-      <td className="auditDiff__cell auditDiff__mono">{prettyValue(r.newValue)}</td>
+      <td className="auditDiff__cell auditDiff__mono">
+        {prettyValue(r.oldValue)}
+      </td>
+      <td className="auditDiff__cell auditDiff__mono">
+        {prettyValue(r.newValue)}
+      </td>
     </tr>
   );
+
+  const hasDiff = diffRows && diffRows.length > 0;
 
   return (
     <div className="audit audit--white">
       <header className="audit__header">
-        <PageHeader
-          title="Audit patient" 
-          noBorder
-        />
+        <PageHeader title="Audit patient" noBorder />
       </header>
 
       <div className="auditContainer">
         <section className="audit__card">
-          <form className="audit__row" onSubmit={onSearch}>
-            <div className="audit__field audit__field--grow">
-              <label className="audit__label">Numéro patient</label>
-              <input
-                className="audit__input"
-                value={patientNumeroInput}
-                onChange={(e) => setPatientNumeroInput(e.target.value)}
-                placeholder="Ex: VIH-2026-001"
-              />
-            </div>
-            <ActionButton
-              action="add"
-              label="Rechercher"
-              type="submit"
-              showIcon={false}
-            />
-            <ActionButton
-              action="annuler"
-              label="Reset"
-              type="button"
-              onClick={onReset}
-              variant="outline"
-              showIcon={false}
-            />
-          </form>
+          <FilterToolbar
+            className="audit__row"
+            items={[
+              {
+                type: "input",
+                label: "Numéro patient",
+                labelClassName: "audit__label",
+                wrapperClassName: "audit__field audit__field--grow",
+                className: `audit__input ${numeroError ? "input-error" : ""}`,
+                value: patientNumeroInput,
+                onChange: (e) => {
+                  let value = e.target.value.toUpperCase();
+                  value = value.replace(/[^\d-]/g, "");
+                  if (value.length > 4 && !value.includes("-")) {
+                    value = value.slice(0, 4) + "-" + value.slice(4);
+                  }
+                  setPatientNumeroInput(value);
+                },
+                placeholder: "Ex: 0001-2025",
+                error: numeroError,
+              },
+            ]}
+            actions={[
+              <ActionButton
+                key="search"
+                action="add"
+                label="Rechercher"
+                type="button"
+                onClick={onSearch}
+                showIcon={false}
+                disabled={!!numeroError}
+              />,
+              <ActionButton
+                key="reset"
+                action="annuler"
+                label="Reset"
+                type="button"
+                onClick={onReset}
+                variant="outline"
+                showIcon={false}
+              />,
+            ]}
+          />
 
-          <div className="audit__filters">
-            <div className="audit__field">
-              <label className="audit__label">Module</label>
-              <select
-                className="audit__input"
-                value={module}
-                onChange={(e) => {
+          {numeroError && (
+            <div
+              className="audit__error-message"
+              style={{ color: "red", marginTop: 4, marginLeft: 8, fontSize: "0.75rem" }}
+            >
+              {numeroError}
+            </div>
+          )}
+
+          <FilterToolbar
+            className="audit__filters"
+            items={[
+              {
+                type: "select",
+                label: "Module",
+                labelClassName: "audit__label",
+                wrapperClassName: "audit__field",
+                className: "audit__input",
+                value: module,
+                onChange: (e) => {
                   setOffset(0);
                   const nextModule = e.target.value;
                   setModule(nextModule);
@@ -110,49 +162,50 @@ const AuditLogsPageUI = ({
                     const actionModule = action.split("_").slice(0, -1).join("_");
                     if (actionModule !== nextModule) setAction("");
                   }
-                }}
-              >
-                <option value="">Tous</option>
-                {modules.map((m) => (
-                  <option key={m} value={m}>{m}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="audit__field">
-              <label className="audit__label">Action</label>
-              <select
-                className="audit__input"
-                value={action}
-                onChange={(e) => { setOffset(0); setAction(e.target.value); }}
-              >
-                <option value="">Toutes</option>
-                {actionsForModule.map((a) => (
-                  <option key={a} value={a}>{a}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className="audit__field">
-              <label className="audit__label">Du</label>
-              <input
-                className="audit__input"
-                type="date"
-                value={from}
-                onChange={(e) => { setOffset(0); setFrom(e.target.value); }}
-              />
-            </div>
-
-            <div className="audit__field">
-              <label className="audit__label">Au</label>
-              <input
-                className="audit__input"
-                type="date"
-                value={to}
-                onChange={(e) => { setOffset(0); setTo(e.target.value); }}
-              />
-            </div>
-          </div>
+                },
+                options: [
+                  { value: "", label: "Tous" },
+                  ...modules.map((m) => ({ value: m, label: getModuleLabel(m) })),
+                ],
+              },
+              {
+                type: "select",
+                label: "Action",
+                labelClassName: "audit__label",
+                wrapperClassName: "audit__field",
+                className: "audit__input",
+                value: action,
+                onChange: (e) => {
+                  setOffset(0);
+                  setAction(e.target.value);
+                },
+                options: [
+                  { value: "", label: "Toutes" },
+                  ...actionsForModule.map((a) => ({ value: a, label: getActionLabel(a) })),
+                ],
+              },
+              {
+                type: "input",
+                label: "Du",
+                labelClassName: "audit__label",
+                wrapperClassName: "audit__field",
+                className: "audit__input",
+                inputType: "date",
+                value: from,
+                onChange: (e) => { setOffset(0); setFrom(e.target.value); },
+              },
+              {
+                type: "input",
+                label: "Au",
+                labelClassName: "audit__label",
+                wrapperClassName: "audit__field",
+                className: "audit__input",
+                inputType: "date",
+                value: to,
+                onChange: (e) => { setOffset(0); setTo(e.target.value); },
+              },
+            ]}
+          />
         </section>
 
         <div className="auditSpacer" />
@@ -199,58 +252,86 @@ const AuditLogsPageUI = ({
         </section>
 
         {detailsOpen && (
-          <div className="auditModal__overlay" onClick={() => closeDetails()}>
+          <div className="auditModal__overlay" onClick={closeDetails}>
             <div
               className="auditModal auditModal--compact"
               onClick={(e) => e.stopPropagation()}
-              role="dialog"
-              aria-modal="true"
-              aria-label="Détails du log"
             >
               <div className="auditModal__header">
-                <div className="auditModal__title">
-                  <i className="bi bi-info-circle" /> Détails du log
-                </div>
-                <div className="auditModal__headerActions">
-                  <ActionButton
-                    action="annuler"
-                    label="Fermer"
-                    type="button"
-                    onClick={closeDetails}
-                    variant="outline"
-                    showIcon={true}
-                  />
-                </div>
+                <div className="auditModal__title">Détails du log</div>
+                <ActionButton
+                  action="annuler"
+                  label="Fermer"
+                  type="button"
+                  onClick={closeDetails}
+                  variant="outline"
+                  showIcon
+                />
               </div>
 
-              <div className="auditModal__body auditModal__body--scroll">
+              <div className="auditModal__body">
                 {detailsLoading ? (
                   <Spinner />
                 ) : !details ? (
-                  <EmptyState>Aucun détail.</EmptyState>
+                  <div>Aucun détail</div>
                 ) : (
                   <>
-                    <div className="auditModal__meta2">
-                      <div className="auditMetaRow">
-                        <div className="auditMetaRow__k">IP</div>
-                        <div className="auditMetaRow__v">{txt(details.ip_address)}</div>
+                    {/* ── Header informatif ── */}
+                    <div className="auditDetail__meta">
+                      <div className="auditDetail__meta-row">
+                        <span className="auditDetail__meta-label">Médecin</span>
+                        <span className="auditDetail__meta-value">
+                          {txt(details.user_nom)} {txt(details.user_prenom)}
+                          <span className="auditDetail__meta-muted">
+                            {" "}— {txt(details.user_email)}
+                          </span>
+                        </span>
                       </div>
-                      <div className="auditMetaRow">
-                        <div className="auditMetaRow__k">UA</div>
-                        <div className="auditMetaRow__v auditMetaRow__v--mono">{txt(details.user_agent)}</div>
+                      <div className="auditDetail__meta-row">
+                        <span className="auditDetail__meta-label">Rôle</span>
+                        <span className="auditDetail__meta-value">{txt(details.user_role)}</span>
                       </div>
+                      <div className="auditDetail__meta-row">
+                        <span className="auditDetail__meta-label">Date</span>
+                        <span className="auditDetail__meta-value">{fmt(details.created_at)}</span>
+                      </div>
+                      <div className="auditDetail__meta-row">
+                        <span className="auditDetail__meta-label">Module</span>
+                        <span className="auditDetail__meta-value">{getModuleLabel(details.module)}</span>
+                      </div>
+                      <div className="auditDetail__meta-row">
+                        <span className="auditDetail__meta-label">Action</span>
+                        <span className="auditDetail__meta-value">{getActionLabel(details.action)}</span>
+                      </div>
+                      {details.patient_numero && (
+                        <div className="auditDetail__meta-row">
+                          <span className="auditDetail__meta-label">Patient</span>
+                          <span className="auditDetail__meta-value">{details.patient_numero}</span>
+                        </div>
+                      )}
+                      {details.ip_address && (
+                        <div className="auditDetail__meta-row">
+                          <span className="auditDetail__meta-label">IP</span>
+                          <span className="auditDetail__meta-value auditDetail__meta-muted">{details.ip_address}</span>
+                        </div>
+                      )}
                     </div>
 
-                    <div className="auditModal__section">Comparaison (old_data vs new_data)</div>
+                    {/* ── Séparateur ── */}
+                    <div className="auditDetail__separator" />
 
-                    <div className="auditDiffTable">
+                    {/* ── Table diff old/new data ── */}
+                    {hasDiff ? (
                       <HistoriqueTable
                         headers={diffHeaders}
                         items={diffRows}
                         renderRow={renderDiffRow}
-                        emptyMessage="Aucune donnée à comparer."
                       />
-                    </div>
+                    ) : (
+                      <div className="auditDetail__no-diff">
+                        Aucune modification de données enregistrée pour cette action.
+                      </div>
+                    )}
                   </>
                 )}
               </div>

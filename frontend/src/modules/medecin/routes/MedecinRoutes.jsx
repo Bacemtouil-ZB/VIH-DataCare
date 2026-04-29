@@ -2,30 +2,34 @@
 import NewPatientGuard from "./NewPatientGuard.jsx";
 import ProtectedRoute from "../../../routes/ProtectedRoute";
 import { DashboardLayout } from "../../../shared/components";
-import PatientsPage from "../pages/PatientsPage";
-import DashboardMed from "../pages/DashboardMed";
+import PatientsPage from "../pages/patientsPage/PatientsPage";
 import ProfilPage from "../../../pages/parametres/profile";
 import MainWorkspaceLayout from "../pages/MainWorkspaceLayout";
 import ExamenLayout from "../pages/workspace/Examen_cliniques/ExamenClinique/ExamenLayout.jsx";
 import ObservationPage from "../pages/workspace/Examen_cliniques/Observation/ObservationPage.jsx";
-import HabitudesPage from "../pages/workspace/Examen_cliniques/HabitudeDeVie/HabitudesPage.jsx";
 import Profilpage from "../pages/workspace/Profil/ProfilPageWorkspace"
 import Social from "../pages/workspace/Social/SocialFormPage.jsx";
 import VIH from "../pages/workspace/VIH/VIH";
-import Antecedent from "../pages/workspace/Antecedents/Antecedent.jsx";
+import Antecedent from "../pages/workspace/Antecedents/AntecedentsLayout.jsx";
+import MedicalOrchestrer from "../pages/workspace/Antecedents/medical/MedicalOrchestrer.jsx";
+import FamilyOrchestrer from "../pages/workspace/Antecedents/family/FamilyOrchestrer.jsx";
+import GynecoOrchestrer from "../pages/workspace/Antecedents/gyneco/GynecoOrchestrer.jsx";
+import TherapeuticOrchestrer from "../pages/workspace/Antecedents/therapeutic/TherapeuticOrchestrer.jsx";
+import HabitudesVieOrchestrer from "../pages/workspace/Antecedents/habitudesVie/HabitudesVieOrchestrer.jsx";
+import SurgicalOrchestrer from "../pages/workspace/Antecedents/surgical/SurgicalOrchestrer.jsx";
+import TransfusionOrchestrer from "../pages/workspace/Antecedents/transfusion/TransfusionOrchestrer.jsx";
+import TpePrepOrchestrer from "../pages/workspace/Antecedents/tpePrep/TpePrepOrchestrer.jsx";
 import SignesFonctionnels from "../pages/workspace/Examen_cliniques/SigneFonction/SignesFonctionnels.jsx";
 import SignesCliniques from "../pages/workspace/Examen_cliniques/signeClinique/SignesCliniques.jsx";
-import ResultatsBiologiquesLayout from "../pages/workspace/resultats_biologiques/resultats_biologiquesLayout";
-import Standard from "../pages/workspace/resultats_biologiques/Standard";
-import Serologie from "../pages/workspace/resultats_biologiques/Serologie";
-import Microbiologie from "../pages/workspace/resultats_biologiques/Microbiologie";
+import ResultatsBiologiques from'../pages/workspace/resultats_biologiques/ResultatsBiologiques.jsx';
+import GenotypagePage from "../pages/workspace/resultats_biologiques/GenotypagePage.jsx";
 import PrescriptionExamens from "../pages/workspace/prescreption_dexamens/PrescriptionExamens";
 import PrescreptionMedical from "../pages/workspace/prescreption_medical/PrescreptionMedical";
 import Conclusion from "../pages/workspace/conclusion/Conclusion";
 import SuiviLayout from "../pages/workspace/suivi/SuiviLayout";
-import Dashbord from "../pages/workspace/suivi/Dashbord";
-import ControleTherapeutique from "../pages/workspace/suivi/controleTherapitique";
+import SuiviDashboard from "../pages/workspace/suivi/orchestrer/SuiviDashboard.jsx";
 import RendezVous from "../pages/workspace/Rendez_vous/RendezVous.jsx";
+import PermissionOrchestrer from "../pages/workspace/suivi/permisssions/permissionOrchestrer.jsx";
 
 const medecinRoutes = [
   {
@@ -38,7 +42,6 @@ const medecinRoutes = [
     children: [
       { index: true, element: <Navigate to="patients" replace /> }, // default /medecin
       { path: "patients", element: <PatientsPage /> },
-      { path: "dashboard", element: <DashboardMed /> },
       { path: "settings", element: <ProfilPage /> },
       
 
@@ -71,6 +74,17 @@ const medecinRoutes = [
      {
       path: "antecedents",
       element: <NewPatientGuard><Antecedent /></NewPatientGuard>,
+      children: [
+        { index: true, element: <Navigate to="medical" replace /> },
+        { path: "medical", element: <MedicalOrchestrer /> },
+        { path: "familial", element: <FamilyOrchestrer /> },
+        { path: "gyneco", element: <GynecoOrchestrer /> },
+        { path: "therapeutic", element: <TherapeuticOrchestrer /> },
+        { path: "habitudes-vie", element: <HabitudesVieOrchestrer /> },
+        { path: "surgical", element: <SurgicalOrchestrer /> },
+        { path: "transfusion", element: <TransfusionOrchestrer /> },
+        { path: "tpe-prep", element: <TpePrepOrchestrer /> },
+      ]
     },
     
     {
@@ -81,18 +95,16 @@ const medecinRoutes = [
         { path: "signesCliniques", element: <SignesCliniques /> },
         { path: "signesFonctionnels", element: <SignesFonctionnels /> },
         { path: "observation", element: <ObservationPage /> },
-        { path: "habitudes", element: <HabitudesPage /> },
       ],
     },
     {
       path: "biologie",
-      element: <NewPatientGuard><ResultatsBiologiquesLayout /></NewPatientGuard>,
-      children: [
-        { index: true, element: <Navigate to="standard" replace /> },
-        { path: "standard", element: <Standard /> },
-        { path: "serologie", element: <Serologie /> },
-        { path: "microbiologie", element: <Microbiologie /> },
-      ],
+      element: <NewPatientGuard><ResultatsBiologiques /></NewPatientGuard>,
+
+    },
+    {
+      path: "biologie/genotypage",
+      element: <NewPatientGuard><GenotypagePage /></NewPatientGuard>,
     },
     {
       path: "prescription-examens",
@@ -114,10 +126,9 @@ const medecinRoutes = [
       path: "suivi",
       element: <NewPatientGuard><SuiviLayout /></NewPatientGuard>,
       children: [
-        { index: true, element: <Navigate to="Dashbord" replace /> },
-        { path: "Dashbord", element: <Dashbord /> },
-        { path: "controleTherapeutique", element: <ControleTherapeutique /> },
-        { path: "habitudes", element: <HabitudesPage /> },
+        { index: true, element: <Navigate to="Dashboard" replace /> },
+        { path: "Dashboard", element: <SuiviDashboard /> },
+        { path: "Permissions",    element: <PermissionOrchestrer /> },       
       ],
     },
   ],

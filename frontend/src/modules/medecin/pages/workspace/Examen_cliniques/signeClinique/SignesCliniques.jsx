@@ -1,3 +1,4 @@
+//cheked 15/04/2026
 import { useOutletContext, useParams } from "react-router-dom";
 import { ActionButton } from "../../../../../../shared/components";
 import { Spinner } from "../index";
@@ -42,19 +43,20 @@ export default function SignesCliniques() {
         isModifying={logic.isModifying}
         saving={logic.saving}
         taille={logic.taille}
-        setTaille={logic.setTaille}
+        handleTailleChange={logic.handleTailleChange}      
         poids={logic.poids}
-        setPoids={logic.setPoids}
+        handlePoidsChange={logic.handlePoidsChange}        
         imc={logic.imc}
         appareils={logic.appareils}
         autresSignes={logic.autresSignes}
         appareilSel={logic.appareilSel}
         description={logic.description}
-        setAppareilSel={logic.setAppareilSel}
-        setDescription={logic.setDescription}
+        handleAppareilChange={logic.handleAppareilChange}
+        handleDescriptionChange={logic.handleDescriptionChange}
         ajouterAutreSigne={logic.ajouterAutreSigne}
         supprimerAutreSigne={logic.supprimerAutreSigne}
         modifierDescription={logic.modifierDescription}
+        errors={logic.errors}                              
         handleSave={logic.handleSave}
       />
     </div>

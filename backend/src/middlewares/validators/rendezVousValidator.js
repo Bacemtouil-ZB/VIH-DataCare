@@ -39,22 +39,6 @@ const validateDate = body("date")
     return true;
   });
 
-// ─── Heure (requis) ───────────────────────────────────────────────────────────
-
-const validateHeure = body("heure")
-  .trim()
-  .notEmpty()
-  .withMessage("L'heure du rendez-vous est requise")
-  .matches(/^([01]\d|2[0-3]):([0-5]\d)$/)
-  .withMessage("Format heure invalide (attendu: HH:MM)")
-  .custom((value) => {
-    // Valeur hors plage horaire médicale (ex: 00:00 à 04:00 suspect)
-    const [h] = value.split(":").map(Number);
-    if (h >= 0 && h < 5) {
-      throw new Error("Heure de rendez-vous inhabituelle (entre 00h et 05h)");
-    }
-    return true;
-  });
 
 // ─── Type (optionnel avec défaut) ─────────────────────────────────────────────
 
@@ -89,8 +73,8 @@ const validateStatut = body("statut")
 const validateCommentaire = body("commentaire")
   .optional({ nullable: true, checkFalsy: true })
   .trim()
-  .isLength({ max: 1000 })
-  .withMessage("Le commentaire ne peut pas dépasser 1000 caractères")
+  .isLength({ min: 1, })
+  .withMessage("Le commentaire ne peut pas être vide s'il est fourni")
   .custom((value) => {
     if (!value) return true;
     if (/\u0000|%00/.test(value)) throw new Error("Caractère interdit détecté");
@@ -104,7 +88,7 @@ const validateCommentaire = body("commentaire")
 
 export const validateCreateRendezVous = [
   validateDate,
-  validateHeure,
+  
   validateType,
   validateStatut,
   validateCommentaire,
@@ -113,7 +97,6 @@ export const validateCreateRendezVous = [
 
 export const validateUpdateRendezVous = [
   validateDate,
-  validateHeure,
   validateType,
   validateStatut,
   validateCommentaire,

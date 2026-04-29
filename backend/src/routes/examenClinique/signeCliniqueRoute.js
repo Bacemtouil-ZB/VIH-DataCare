@@ -1,3 +1,4 @@
+//cheked 15/04/2026
 import express from "express";
 import {
   createSigneCliniqueController,
@@ -5,15 +6,11 @@ import {
   updateSigneCliniqueController,
 } from "../../controllers/examenClinique/signeCliniqueController.js";
 import { protect, authorizeMedecin } from "../../middlewares/authMiddleware.js";
-//link validators for signes cliniques not yet implemented
-// import {
-//   validateSignesCliniques,
-//   validateAutreSigneClinique,
-// } from "../../middlewares/validators/examenCliniqueValidator.js";
+import { validateUpdateSignesCliniques,validateCreateSignesCliniques} from "../../middlewares/validators/examenValidator.js";
 
 const router = express.Router();
 
-router.post("/add", protect, authorizeMedecin, createSigneCliniqueController);
+router.post("/add", protect, authorizeMedecin, validateCreateSignesCliniques,createSigneCliniqueController);
 router.get(
   "/patient/:numeroDossier",
   protect,
@@ -24,6 +21,7 @@ router.put(
   "/update/:id",
   protect,
   authorizeMedecin,
+  validateUpdateSignesCliniques,
   updateSigneCliniqueController,
 );
 

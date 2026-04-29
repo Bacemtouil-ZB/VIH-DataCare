@@ -1,0 +1,161 @@
+/* contactsUrgence.css */
+
+.urg-page { background: #f8fafc; min-height: 100vh; padding: 2rem; }
+
+.urg-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--ec-green);
+  letter-spacing: -0.5px;
+}
+.urg-subtitle {
+  font-size: 0.85rem;
+  color: #94a3b8;
+  margin-top: 2px;
+}
+
+/* ── Stat card ── */
+.urg-stat-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 14px 24px;
+  text-align: center;
+  min-width: 90px;
+}
+.urg-stat-label { font-size: 0.72rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.urg-stat-value { font-size: 1.6rem; font-weight: 800; color: #1e293b; line-height: 1.1; }
+
+/* ── Card tableau ── */
+.urg-card {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* ── Modal ── */
+.urg-modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(15,23,42,0.45);
+  z-index: 1050;
+  display: flex; align-items: center; justify-content: center;
+  animation: urg-fadeIn 0.15s ease;
+}
+@keyframes urg-fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.urg-modal {
+  background: #fff;
+  border-radius: 14px;
+  width: 100%;
+  max-width: 520px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.18);
+  animation: urg-slideUp 0.2s ease;
+  overflow: hidden;
+}
+@keyframes urg-slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.urg-modal-header {
+  background: linear-gradient(135deg, var(--ec-green) 0%, #256643 100%);
+  padding: 18px 24px;
+  color: #fff;
+}
+.urg-modal-header h5 { font-weight: 700; font-size: 1rem; margin: 0; }
+.urg-modal-header p  { font-size: 0.78rem; opacity: 0.8; margin: 2px 0 0; }
+
+.urg-modal-header.danger {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+}
+
+.urg-modal-body { padding: 24px; }
+
+/* ── Formulaire ── */
+.urg-form-label { font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 4px; display: block; }
+.urg-form-control {
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  padding: 9px 12px;
+  width: 100%;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  color: #1e293b;
+}
+.urg-form-control:focus {
+  border-color: var(--ec-green);
+  box-shadow: 0 0 0 3px rgba(46,125,82,0.1);
+}
+.urg-form-control::placeholder { color: #cbd5e1; }
+
+.urg-input-icon { position: relative; }
+.urg-input-icon i {
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 0.85rem;
+  pointer-events: none;
+}
+.urg-input-icon .urg-form-control { padding-left: 32px; }
+.urg-input-icon textarea.urg-form-control { padding-left: 32px; padding-top: 10px; }
+
+/* ── Badges ── */
+.urg-badge-tel {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: #f0fdf4; color: var(--ec-green);
+  border: 1px solid #bbf7d0;
+  border-radius: 6px; padding: 2px 8px;
+  font-size: 0.75rem; font-weight: 600;
+}
+.urg-badge-wp {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: #f0fff4; color: #25d366;
+  border: 1px solid #a7f3d0;
+  border-radius: 6px; padding: 2px 8px;
+  font-size: 0.75rem; font-weight: 600;
+}
+.urg-badge-email {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: #eff6ff; color: #3b82f6;
+  border: 1px solid #bfdbfe;
+  border-radius: 6px; padding: 2px 8px;
+  font-size: 0.75rem; font-weight: 600;
+}
+
+/* ── Confirmation suppression ── */
+.urg-confirm-box {
+  background: #fff5f5;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+.urg-confirm-box p    { margin: 0; font-size: 0.88rem; color: #dc2626; }
+.urg-confirm-name     { font-weight: 700; }
+
+/* ── Alertes ── */
+.urg-alert {
+  border-radius: 8px; padding: 10px 14px;
+  font-size: 0.83rem; font-weight: 500;
+  display: flex; align-items: center;
+}
+.urg-alert-success { background: #f0fdf4; color: var(--ec-green); border: 1px solid #bbf7d0; }
+.urg-alert-error   { background: #fff5f5; color: #dc2626;         border: 1px solid #fecaca; }
+
+/* ── Tableau ── */
+.ec-th-sm {
+  font-size: 0.78rem; font-weight: 700;
+  color: #64748b; text-transform: uppercase;
+  letter-spacing: 0.4px; white-space: nowrap;
+}
+td { vertical-align: middle !important; font-size: 0.875rem; }
+
+/* ── Empty state ── */
+.urg-empty {
+  padding: 48px 0; text-align: center; color: #94a3b8;
+}
+.urg-empty i { font-size: 2.5rem; display: block; margin-bottom: 10px; }

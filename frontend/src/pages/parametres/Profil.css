@@ -1,0 +1,360 @@
+/* ─── profil.css ──────────────────────────────────────────────────────────────── */
+
+/* ── Variables ────────────────────────────────────────────────────────────────── */
+:root {
+  --profil-bg:            #f4f6f9;
+  --profil-surface:       #ffffff;
+  --profil-border:        #e8eaed;
+  --profil-border-focus:  #1B5E20;
+  --profil-border-error:  #ef4444;
+  --profil-text:          #111827;
+  --profil-muted:         #6b7280;
+  --profil-accent:        #1B5E20;
+  --profil-accent-hover:  #1B5E20;
+  --profil-accent-light:  #f0fdf4;
+  --profil-success:       #1B5E20;
+  --profil-error:         #ef4444;
+  --profil-disabled:      #9ca3af;
+  --profil-shadow:        0 1px 4px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
+  --profil-shadow-hover:  0 4px 16px rgba(0,0,0,0.10);
+  --profil-radius:        14px;
+  --profil-radius-sm:     9px;
+  --profil-font:          'DM Sans', 'Segoe UI', sans-serif;
+}
+
+/* ── Page ─────────────────────────────────────────────────────────────────────── */
+.profil-page {
+  min-height: 100vh;
+  background: var(--profil-bg);
+  padding: 2.5rem 1.5rem;
+  font-family: var(--profil-font);
+}
+
+.profil-container {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+/* ── Header Card ──────────────────────────────────────────────────────────────── */
+.profil-header-card {
+  background: var(--profil-surface);
+  border: 1px solid var(--profil-border);
+  border-radius: var(--profil-radius);
+  padding: 1.75rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  box-shadow: var(--profil-shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.profil-header-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #16a34a, #4ade80);
+  border-radius: var(--profil-radius) var(--profil-radius) 0 0;
+}
+
+.profil-avatar {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #bbf7d0, #dcfce7);
+  color: var(--profil-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 3px rgba(22,163,74,0.12);
+}
+
+.profil-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.profil-header-name {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--profil-text);
+  letter-spacing: -0.2px;
+}
+
+.profil-header-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ── Badges ───────────────────────────────────────────────────────────────────── */
+.profil-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.2px;
+}
+
+.profil-badge--role {
+  background: var(--profil-accent-light);
+  color: var(--profil-accent);
+  border: 1px solid #bbf7d0;
+}
+
+/* ── Grid ─────────────────────────────────────────────────────────────────────── */
+.profil-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.75rem;
+}
+
+/* ── Card ─────────────────────────────────────────────────────────────────────── */
+.profil-card {
+  background: var(--profil-surface);
+  border: 1px solid var(--profil-border);
+  border-radius: var(--profil-radius);
+  padding: 1.75rem 2rem;
+  box-shadow: var(--profil-shadow);
+  transition: box-shadow 0.2s;
+}
+
+.profil-card:hover {
+  box-shadow: var(--profil-shadow-hover);
+}
+
+.profil-card-header {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--profil-border);
+}
+
+.profil-card-icon {
+  color: var(--profil-accent);
+}
+
+.profil-card-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--profil-text);
+  letter-spacing: -0.1px;
+}
+
+/* ── Form ─────────────────────────────────────────────────────────────────────── */
+.profil-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.profil-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.85rem;
+}
+
+.profil-form-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 6px;
+  padding-top: 1rem;
+  border-top: 1px solid var(--profil-border);
+}
+
+.profil-form-footer--end {
+  justify-content: flex-end;
+}
+
+.profil-unsaved-hint {
+  font-size: 11.5px;
+  color: #d97706;
+  font-weight: 500;
+}
+
+/* ── Field ────────────────────────────────────────────────────────────────────── */
+.profil-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.profil-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--profil-muted);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.profil-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--profil-border);
+  border-radius: var(--profil-radius-sm);
+  background: #fafafa;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+
+.profil-input-wrap:focus-within {
+  border-color: var(--profil-border-focus);
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.10);
+  background: #fff;
+}
+
+.profil-input-wrap--error {
+  border-color: var(--profil-border-error);
+  background: #fff8f8;
+}
+
+.profil-input-wrap--error:focus-within {
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.08);
+}
+
+.profil-input-icon {
+  position: absolute;
+  left: 0.75rem;
+  color: var(--profil-muted);
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+
+.profil-input {
+  width: 100%;
+  padding: 0.65rem 0.9rem;
+  border: none;
+  background: transparent;
+  font-size: 13.5px;
+  font-family: var(--profil-font);
+  color: var(--profil-text);
+  outline: none;
+  box-sizing: border-box;
+}
+
+.profil-input--with-icon {
+  padding-left: 2.3rem;
+}
+
+.profil-input--with-toggle {
+  padding-left: 2.3rem;
+  padding-right: 2.6rem;
+}
+
+.profil-input::placeholder {
+  color: #c4c9d4;
+}
+
+.profil-eye-btn {
+  position: absolute;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  color: var(--profil-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 0;
+  transition: color 0.15s;
+}
+
+.profil-eye-btn:hover {
+  color: var(--profil-accent);
+}
+
+.profil-error-msg {
+  font-size: 11.5px;
+  color: var(--profil-error);
+  font-weight: 500;
+}
+
+.profil-hint-msg {
+  font-size: 11.5px;
+  color: var(--profil-muted);
+}
+
+/* ── Button ───────────────────────────────────────────────────────────────────── */
+.profil-btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  padding: 0.58rem 1.25rem !important;
+  border-radius: var(--profil-radius-sm) !important;
+  border: none !important;
+  font-size: 13px !important;
+  font-family: var(--profil-font) !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: background 0.15s, transform 0.1s, box-shadow 0.15s !important;
+  text-decoration: none !important;
+}
+
+.profil-btn--primary {
+  background: var(--profil-accent) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(22,163,74,0.20) !important;
+}
+
+.profil-btn--primary:hover {
+  background: var(--profil-accent-hover) !important;
+  color: #ffffff !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 12px rgba(22,163,74,0.28) !important;
+}
+
+.profil-btn--primary:active {
+  transform: translateY(0) !important;
+}
+
+.profil-btn:disabled,
+.profil-btn--disabled {
+  background: #e5e7eb !important;
+  color: #9ca3af !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .profil-page {
+    padding: 1.5rem 1rem;
+  }
+
+  .profil-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profil-row {
+    grid-template-columns: 1fr;
+  }
+
+  .profil-header-card {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.25rem 1.5rem;
+  }
+
+  .profil-card {
+    padding: 1.25rem 1.5rem;
+  }
+}

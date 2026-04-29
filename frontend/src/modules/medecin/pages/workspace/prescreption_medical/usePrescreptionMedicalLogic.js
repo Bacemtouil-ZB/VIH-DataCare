@@ -1,27 +1,31 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
-import { confirmAction, alertError } from "../../../../../shared/utils/uiAlerts";
+import { alertError } from "../../../../../shared/utils/uiAlerts";
+import { toInputDate } from "../../../../../shared/utils/dateHelpers";
 import {
   createPrescription,
   getPrescriptionsByNumeroDossier,
   getStockMedicaments,
-  updatePrescription,
-} from "../../../services/precriptionMedicalService.jsx";
+  validatePrescription,
+} from "../../../../../shared/services/prescriptionWorkflowService.jsx";
 import { INITIAL_FORM } from "./prescreptionMedicalConstants";
+import { clearFieldError } from "../../../../../shared/components/Forms/FieldLabel/clearFieldError";
 
-export function usePrescreptionMedicalLogic(numero) {
-  const [prescriptions, setPrescriptions] = useState([]);
-  const [stockItems, setStockItems] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [showForm, setShowForm] = useState(false);
-  const [showHistory, setShowHistory] = useState(true);
-  const [isModifying, setIsModifying] = useState(false);
-  const [editingId, setEditingId] = useState(null);
-  const [detailItem, setDetailItem] = useState(null);
-  const [formData, setFormData] = useState(INITIAL_FORM);
-  const [searchTerm, setSearchTerm] = useState("");
+export function usePrescreptionMedicalLogic(numero, currentUser) {
+  const [prescriptions,     setPrescriptions]    = useState([]);
+  const [stockItems,        setStockItems]        = useState([]);
+  const [loading,           setLoading]           = useState(true);
+  const [saving,            setSaving]            = useState(false);
+  const [showForm,          setShowForm]          = useState(false);
+  const [showHistory,       setShowHistory]       = useState(true);
+  const [detailItem,        setDetailItem]        = useState(null);
+  const [formData,          setFormData]          = useState(INITIAL_FORM);
+  const [searchTerm,        setSearchTerm]        = useState("");
+  const [searchDate,        setSearchDate]        = useState("");
+  const [confirmationModal, setConfirmationModal] = useState(null);
+  const [patient,           setPatient]           = useState(null);
 
+  // ── Chargement initial ────────────────────────────────────────
   useEffect(() => {
     if (!numero) return;
     const fetchAll = async () => {
@@ -33,8 +37,9 @@ export function usePrescreptionMedicalLogic(numero) {
         ]);
         setPrescriptions(presRes.prescriptions || []);
         setStockItems(stockRes.items || []);
-      } catch (err) {
-        alertError("Impossible de charger les données.");
+        setPatient(presRes.patient || null);
+      } catch {
+        alertError("Impossible de charger les donnees.");
       } finally {
         setLoading(false);
       }
@@ -42,125 +47,152 @@ export function usePrescreptionMedicalLogic(numero) {
     fetchAll();
   }, [numero]);
 
-  const selectedMed = useMemo(
-    () => stockItems.find((s) => String(s.id) === String(formData.medicament_id)),
-    [stockItems, formData.medicament_id]
-  );
+  // ── Dérivés ───────────────────────────────────────────────────
+  const medecinDisplayName = useMemo(() => {
+    const fullName = `${currentUser?.prenom || ""} ${currentUser?.nom || ""}`.trim();
+    return fullName || "Medecin";
+  }, [currentUser]);
 
+  // ── Filtered — plus de groupement, backend renvoie 1 ligne par ordonnance ──
   const filtered = useMemo(() => {
-    if (!searchTerm.trim()) return prescriptions;
-    const q = searchTerm.toLowerCase();
-    return prescriptions.filter(
-      (p) =>
-        p.traitement?.toLowerCase().includes(q) ||
-        p.statut?.toLowerCase().includes(q) ||
-        p.posologie?.toLowerCase().includes(q)
-    );
-  }, [prescriptions, searchTerm]);
+    const q     = searchTerm.trim().toLowerCase();
+    const dateQ = searchDate.trim();
 
+    return prescriptions.filter((p) => {
+      // les noms viennent depuis medicaments[]
+      const nomsStr = (p.medicaments || [])
+        .map((m) => m.medicament_nom_snapshot || "")
+        .join(", ")
+        .toLowerCase();
+
+      const matchesText =
+        !q ||
+        nomsStr.includes(q) ||
+        (p.statut || "").toLowerCase().includes(q);
+
+      if (!matchesText) return false;
+      if (!dateQ) return true;
+
+      const raw = p.date || p.created_at || "";
+      if (!raw) return false;
+      return toInputDate(raw) === dateQ;
+    });
+  }, [prescriptions, searchTerm, searchDate]);
+
+  // ── Helpers formulaire ────────────────────────────────────────
   const field = (key) => (e) =>
     setFormData((prev) => ({ ...prev, [key]: e.target.value }));
 
-  const resetForm = () => {
-    setFormData(INITIAL_FORM);
-    setIsModifying(false);
-    setEditingId(null);
-  };
+  const setMedicamentIds = (ids) =>
+    setFormData((prev) => ({ ...prev, medicament_ids: ids }));
+
+  const resetForm = () => setFormData(INITIAL_FORM);
 
   const openCreate = () => {
     setDetailItem(null);
+    setConfirmationModal(null);
     resetForm();
     setShowForm(true);
   };
 
-  const closeForm = (notify = true) => {
+  const closeForm = () => {
     resetForm();
     setShowForm(false);
+    setConfirmationModal(null);
   };
 
-  const handleMedSelect = (e) => {
-    const id = e.target.value;
-    const med = stockItems.find((s) => String(s.id) === String(id));
-    setFormData((prev) => ({
-      ...prev,
-      medicament_id: id,
-      traitement: med ? (med.code || med.composition || "") : "",
-    }));
-  };
+  const closeConfirmationModal = () => setConfirmationModal(null);
 
-  const openEdit = async (item) => {
-    const ok = await confirmAction(
-      "Modifier cette prescription ?",
-      `Médicament : ${item.traitement || "-"} - Date : ${item.date ? item.date.slice(0, 10) : "-"}`,
-    );
-    if (!ok) return;
-
-    setDetailItem(null);
-    setIsModifying(true);
-    setEditingId(item.id);
-    setFormData({
-      medicament_id: String(item.medicament_id || ""),
-      traitement: item.traitement || "",
-      posologie: item.posologie || "",
-      date: item.date ? item.date.slice(0, 10) : "",
-      quantite: item.quantite || "",
-      dosage: item.dosage || "",
-      remarque: item.remarque || "",
-    });
-    setShowForm(true);
-    toast.info("Mode modification activé");
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
-
+  // ── Détail ────────────────────────────────────────────────────
   const handleShowDetails = (item) => {
     setShowForm(false);
     resetForm();
     setDetailItem(item);
-    toast.info("Mode détails actif");
+    setConfirmationModal(null);
   };
 
-  const handleSubmit = async (e) => {
+  // ── Soumission → modal de confirmation ───────────────────────
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (!formData.medicament_id) {
-      toast.warning("Veuillez sélectionner un médicament.");
+
+    if (!formData.medicament_ids.length) {
+      toast.warning("Veuillez selectionner au moins un medicament.");
       return;
     }
-    if (!formData.date) {
-      toast.warning("La date est obligatoire.");
+    if (!formData.periode || Number(formData.periode) <= 0) {
+      toast.warning("La duree prescrite doit etre superieure a 0.");
       return;
     }
-    const ok = await confirmAction(
-      isModifying ? "Enregistrer les modifications ?" : "Créer cette prescription ?",
-      "Les données seront enregistrées dans le dossier patient.",
+
+    const selectedMeds = stockItems.filter((s) =>
+      formData.medicament_ids.includes(String(s.id))
     );
-    if (!ok) return;
+
+    const traitementsLabel = selectedMeds
+      .map((m) => m.code || m.composition || "Medicament")
+      .join(", ");
+
+    setConfirmationModal({
+      data: {
+        patient:    patient
+          ? `${patient.surname || ""} ${patient.name || ""}`.trim()
+          : "-",
+        dossier:    numero || "-",
+        traitement: traitementsLabel || "-",
+        posologie:  formData.posologie || "-",
+        periode:    formData.periode ? `${formData.periode} jours` : "-",
+        remarque:   formData.remarque || "-",
+        _medicament_ids: formData.medicament_ids,
+        _posologie:      formData.posologie || null,
+        _periode:        Number(formData.periode),
+        _remarque:       formData.remarque   || null,
+      },
+    });
+  };
+
+  // ── Confirmation → UN SEUL POST avec tableau de médicaments ──
+  const confirmPrescription = async () => {
+    if (!confirmationModal) return;
+    const { _medicament_ids, _posologie, _periode, _remarque } =
+      confirmationModal.data;
 
     try {
       setSaving(true);
-      if (isModifying) {
-        const { statut: _s, ...formWithoutStatut } = formData;
-        const res = await updatePrescription(editingId, {
-          ...formWithoutStatut,
-          numero_dossier: numero,
-        });
-        setPrescriptions((prev) =>
-          prev.map((p) => (p.id === editingId ? res.prescription : p))
-        );
-        toast.success("Prescription mise à jour.");
-      } else {
-        const { statut: _s2, ...formWithoutStatut2 } = formData;
-        const res = await createPrescription({
-          ...formWithoutStatut2,
-          numero_dossier: numero,
-        });
-        setPrescriptions((prev) => [res.prescription, ...prev]);
-        toast.success("Prescription créée avec succès.");
+
+      const result = await createPrescription({
+        numero_dossier:  numero,
+        medicament_ids:  _medicament_ids.map(Number),
+        posologie:       _posologie,
+        periode:         _periode,
+        remarque:        _remarque,
+      });
+
+      // backend renvoie 1 prescription avec medicaments[]
+      const newPrescription = result.prescription;
+      if (newPrescription) {
+        setPrescriptions((prev) => [newPrescription, ...prev]);
       }
-      closeForm(false);
+
+      toast.success("Prescription envoyee a la pharmacie.");
+      setConfirmationModal(null);
+      closeForm();
     } catch (err) {
-      alertError(err?.response?.data?.message || "Erreur lors de l'enregistrement.");
+      alertError(err?.message || "Erreur lors de l'enregistrement.");
     } finally {
       setSaving(false);
+    }
+  };
+
+  // ── Validation pharmacien ─────────────────────────────────────
+  const handleValidate = async (prescriptionId) => {
+    try {
+      const res = await validatePrescription(prescriptionId);
+      setPrescriptions((prev) =>
+        prev.map((p) => (p.id === prescriptionId ? res.prescription : p))
+      );
+      toast.success("Prescription validee avec succes.");
+    } catch (err) {
+      alertError(err?.message || "Erreur lors de la validation.");
     }
   };
 
@@ -170,24 +202,22 @@ export function usePrescreptionMedicalLogic(numero) {
     loading,
     saving,
     showForm,
-    showHistory,
-    setShowHistory,
-    isModifying,
-    editingId,
-    detailItem,
-    setDetailItem,
+    showHistory,        setShowHistory,
+    detailItem,         setDetailItem,
     formData,
-    setFormData,
-    searchTerm,
-    setSearchTerm,
-    selectedMed,
+    searchTerm,         setSearchTerm,
+    searchDate,         setSearchDate,
     filtered,
+    confirmationModal,
+    medecinDisplayName,
     field,
-    openCreate,
+      openCreate,
     closeForm,
-    handleMedSelect,
-    openEdit,
     handleShowDetails,
     handleSubmit,
+    closeConfirmationModal,
+    confirmPrescription,
+    handleValidate,
+    setMedicamentIds,
   };
 }

@@ -1,0 +1,479 @@
+-- ============================================================
+--  VIEW v2 : vue_suivi_patient
+--  Correction : dates séparées pour CD4 et CV
+--  Chaque courbe utilise sa propre date de laboratoire
+-- ============================================================
+
+
+-- ── ÉTAPE 1 : Périodes ARV réelles (inchangée) ──────────────────────────────
+
+CREATE OR REPLACE VIEW vue_periodes_arv AS
+WITH prescriptions_ordonnees AS (
+  SELECT
+    pm.patient_id,
+    pm.date                          AS date_prescription,
+    pm.medicament_id,
+    sm.composition                   AS nom_medicament,
+    sm.code                          AS code_medicament,
+    LAG(pm.medicament_id) OVER (
+      PARTITION BY pm.patient_id
+      ORDER BY pm.date, pm.id
+    )                                AS medicament_precedent
+  FROM prescription_medicale pm
+  LEFT JOIN stock_medicaments sm ON sm.id = pm.medicament_id
+),
+changements_reels AS (
+  SELECT *
+  FROM prescriptions_ordonnees
+  WHERE
+    medicament_precedent IS NULL
+    OR medicament_id != medicament_precedent
+)
+SELECT
+  patient_id,
+  medicament_id,
+  nom_medicament,
+  code_medicament,
+  date_prescription                  AS date_debut,
+  LEAD(date_prescription) OVER (
+    PARTITION BY patient_id
+    ORDER BY date_prescription
+  ) - INTERVAL '1 day'              AS date_fin
+FROM changements_reels;
+
+
+-- ── ÉTAPE 2 : Points CD4 (une ligne par mesure CD4) ─────────────────────────
+
+CREATE OR REPLACE VIEW vue_points_cd4 AS
+SELECT
+  rb.id                              AS resultat_id,
+  rb.patient_id,
+  rb.date_cd4_cd8                    AS date_point,
+  rb.cd4_absolu,
+  rb.cd4_pourcent,
+
+  -- traitement actif à la date du CD4
+  arv.nom_medicament                 AS traitement,
+  arv.code_medicament                AS traitement_code,
+  arv.date_debut                     AS traitement_date_debut,
+  arv.date_fin                       AS traitement_date_fin
+
+FROM resultats_biologiques rb
+LEFT JOIN vue_periodes_arv arv
+  ON  arv.patient_id = rb.patient_id
+  AND rb.date_cd4_cd8 >= arv.date_debut
+  AND (
+    arv.date_fin IS NULL
+    OR rb.date_cd4_cd8 <= arv.date_fin
+  )
+WHERE rb.date_cd4_cd8 IS NOT NULL
+  AND rb.cd4_absolu   IS NOT NULL
+ORDER BY rb.patient_id, rb.date_cd4_cd8 ASC;
+
+
+-- ── ÉTAPE 3 : Points CV (une ligne par mesure charge virale) ────────────────
+
+CREATE OR REPLACE VIEW vue_points_cv AS
+SELECT
+  rb.id                              AS resultat_id,
+  rb.patient_id,
+  rb.date_charge_virale_vih          AS date_point,
+  rb.charge_virale_valeur,
+
+  -- traitement actif à la date de la CV
+  arv.nom_medicament                 AS traitement,
+  arv.code_medicament                AS traitement_code,
+  arv.date_debut                     AS traitement_date_debut,
+  arv.date_fin                       AS traitement_date_fin
+
+FROM resultats_biologiques rb
+LEFT JOIN vue_periodes_arv arv
+  ON  arv.patient_id = rb.patient_id
+  AND rb.date_charge_virale_vih >= arv.date_debut
+  AND (
+    arv.date_fin IS NULL
+    OR rb.date_charge_virale_vih <= arv.date_fin
+  )
+WHERE rb.date_charge_virale_vih   IS NOT NULL
+  AND rb.charge_virale_valeur     IS NOT NULL
+ORDER BY rb.patient_id, rb.date_charge_virale_vih ASC;
+
+
+-- ── ÉTAPE 4 : VIEW principale — tableau Zone 3 ──────────────────────────────
+--
+-- Une ligne = une entrée resultats_biologiques
+-- Affiche les deux dates séparément
+-- date_tri = pour ORDER BY uniquement (pas pour les graphiques)
+
+CREATE OR REPLACE VIEW vue_suivi_patient AS
+SELECT
+  rb.id,
+  rb.patient_id,
+  rb.bilan_id,
+
+  -- ── dates séparées (correctes depuis labo) ───────────────────────────
+  rb.date_cd4_cd8                    AS date_cd4,
+  rb.date_charge_virale_vih          AS date_cv,
+
+  -- date de tri uniquement (pas affichée comme date de résultat)
+  COALESCE(
+    rb.date_cd4_cd8,
+    rb.date_charge_virale_vih
+  )                                  AS date_tri,
+
+  -- ── biologie clé ─────────────────────────────────────────────────────
+  rb.cd4_absolu,
+  rb.cd4_pourcent,
+  rb.charge_virale_valeur,
+  rb.hemoglobine,
+  rb.plaquettes,
+  rb.globules_blancs,
+  rb.lymphocytes,
+
+  -- ── type bilan ───────────────────────────────────────────────────────
+  CASE
+    WHEN be.bilan_initial_complet = TRUE THEN 'Initial'
+    ELSE 'Suivi'
+  END                                AS type_bilan,
+
+  -- ── traitement actif (basé sur date_tri) ─────────────────────────────
+  arv.nom_medicament                 AS traitement,
+  arv.code_medicament                AS traitement_code,
+  arv.date_debut                     AS traitement_date_debut,
+  arv.date_fin                       AS traitement_date_fin,
+
+  -- ── statut automatique ────────────────────────────────────────────────
+  CASE
+    WHEN rb.cd4_absolu < 200
+         OR rb.charge_virale_valeur > 1000  THEN 'Critique'
+    WHEN rb.cd4_absolu BETWEEN 200 AND 500  THEN 'Moyen'
+    WHEN rb.cd4_absolu > 500               THEN 'Bon'
+    ELSE                                        'Inconnu'
+  END                                AS statut,
+
+  rb.observations
+
+FROM resultats_biologiques rb
+LEFT JOIN bilan_examens be
+  ON be.id = rb.bilan_id
+LEFT JOIN vue_periodes_arv arv
+  ON  arv.patient_id = rb.patient_id
+  AND COALESCE(rb.date_cd4_cd8, rb.date_charge_virale_vih) >= arv.date_debut
+  AND (
+    arv.date_fin IS NULL
+    OR COALESCE(rb.date_cd4_cd8, rb.date_charge_virale_vih) <= arv.date_fin
+  )
+ORDER BY date_tri DESC;
+
+
+-- ============================================================
+--  REQUÊTES BACKEND PAR ZONE
+-- ============================================================
+
+-- Zone 1 — KPIs : dernier CD4 + dernière CV (peuvent être des lignes différentes)
+--
+-- Dernier CD4 :
+-- SELECT cd4_absolu, cd4_pourcent, date_cd4
+-- FROM vue_suivi_patient
+-- WHERE patient_id = $1 AND cd4_absolu IS NOT NULL
+-- ORDER BY date_cd4 DESC LIMIT 1;
+--
+-- Dernière CV :
+-- SELECT charge_virale_valeur, date_cv
+-- FROM vue_suivi_patient
+-- WHERE patient_id = $1 AND charge_virale_valeur IS NOT NULL
+-- ORDER BY date_cv DESC LIMIT 1;
+
+
+-- Zone 2 — Graphique CD4 (utiliser vue_points_cd4)
+-- SELECT date_point, cd4_absolu, traitement
+-- FROM vue_points_cd4
+-- WHERE patient_id = $1
+-- ORDER BY date_point ASC;
+
+-- Zone 2 — Graphique CV (utiliser vue_points_cv)
+-- SELECT date_point, charge_virale_valeur, traitement
+-- FROM vue_points_cv
+-- WHERE patient_id = $1
+-- ORDER BY date_point ASC;
+
+-- Zone 2 — Périodes ARV pour zones colorées sur graphiques
+-- SELECT nom_medicament, code_medicament, date_debut, date_fin
+-- FROM vue_periodes_arv
+-- WHERE patient_id = $1
+-- ORDER BY date_debut ASC;
+
+-- Zone 3 — Tableau chronologique complet
+-- SELECT * FROM vue_suivi_patient
+-- WHERE patient_id = $1
+-- ORDER BY date_tri DESC;
+------------------------------
+Bien sûr ! Voici l'explication complète étape par étape avec des données réelles :
+
+Données de base (ce qu'on a dans les tables)
+resultats_biologiques
+id | patient_id | cd4_absolu | date_cd4_cd8 | charge_virale | date_charge_virale_vih
+---|------------|------------|--------------|---------------|----------------------
+ 1 |          1 |        120 |   01/07/2024 |        167000 |           01/07/2024
+ 2 |          1 |        350 |   05/10/2024 |            23 |           01/10/2024
+ 3 |          1 |       NULL |         NULL |            14 |           03/01/2025
+prescription_medicale
+id | patient_id | medicament_id | date
+---|------------|---------------|------------
+ 1 |          1 |             5 | 01/01/2024   ← Atripla
+ 2 |          1 |             5 | 01/04/2024   ← Atripla (répétition)
+ 3 |          1 |             5 | 01/07/2024   ← Atripla (répétition)
+ 4 |          1 |             8 | 01/09/2024   ← Biktarvy (changement !)
+
+ÉTAPE 1 — vue_periodes_arv
+1a — LAG détecte les changements
+date        | medicament | LAG(medicament) | changement ?
+------------|------------|-----------------|-------------
+01/01/2024  | Atripla    | NULL            | ✅ OUI (première)
+01/04/2024  | Atripla    | Atripla         | ❌ NON (répétition)
+01/07/2024  | Atripla    | Atripla         | ❌ NON (répétition)
+01/09/2024  | Biktarvy   | Atripla         | ✅ OUI (changement réel)
+👉 On garde uniquement les lignes ✅
+1b — LEAD calcule la date_fin
+date_debut  | medicament | LEAD(date_debut)     | date_fin
+------------|------------|----------------------|-------------------
+01/01/2024  | Atripla    | 01/09/2024           | 31/08/2024
+01/09/2024  | Biktarvy   | NULL                 | NULL (en cours)
+Résultat final vue_periodes_arv
+patient_id | medicament | date_debut | date_fin
+-----------|------------|------------|----------
+         1 | Atripla    | 01/01/2024 | 31/08/2024
+         1 | Biktarvy   | 01/09/2024 | NULL
+
+ÉTAPE 2 — vue_points_cd4
+On prend chaque mesure CD4 et on cherche quel traitement était actif ce jour-là :
+date_cd4_cd8 | cd4_absolu | traitement actif ce jour ?
+-------------|------------|---------------------------
+01/07/2024   |        120 | Atripla    (Jan→Août)  ✅
+05/10/2024   |        350 | Biktarvy   (Sep→...)   ✅
+-- ligne 3 ignorée car date_cd4_cd8 = NULL
+Résultat vue_points_cd4
+patient_id | date_point | cd4_absolu | traitement
+-----------|------------|------------|----------
+         1 | 01/07/2024 |        120 | Atripla
+         1 | 05/10/2024 |        350 | Biktarvy
+👉 Recharts utilise ça pour tracer la courbe CD4 avec les zones colorées par traitement.
+
+ÉTAPE 3 — vue_points_cv
+Même logique mais avec date_charge_virale_vih :
+date_cv      | cv_valeur | traitement actif ce jour ?
+-------------|-----------|---------------------------
+01/07/2024   |    167000 | Atripla    (Jan→Août)  ✅
+01/10/2024   |        23 | Biktarvy   (Sep→...)   ✅
+03/01/2025   |        14 | Biktarvy   (Sep→...)   ✅
+Résultat vue_points_cv
+patient_id | date_point | charge_virale | traitement
+-----------|------------|---------------|----------
+         1 | 01/07/2024 |        167000 | Atripla
+         1 | 01/10/2024 |            23 | Biktarvy
+         1 | 03/01/2025 |            14 | Biktarvy
+👉 Recharts utilise ça pour tracer la courbe CV.
+
+ÉTAPE 4 — vue_suivi_patient (tableau Zone 3)
+Ici on regroupe tout par entrée resultats_biologiques — une ligne = un bilan :
+id | date_cd4   | date_cv    | cd4 | cv     | traitement | statut
+---|------------|------------|-----|--------|------------|--------
+ 1 | 01/07/2024 | 01/07/2024 | 120 | 167000 | Atripla    | Critique
+ 2 | 05/10/2024 | 01/10/2024 | 350 |     23 | Biktarvy   | Moyen
+ 3 | NULL       | 03/01/2025 | NULL|     14 | Biktarvy   | Inconnu
+
+Résumé visuel — qui utilise quoi
+vue_periodes_arv
+      │
+      ├──► vue_points_cd4  ──► Recharts courbe CD4
+      │
+      ├──► vue_points_cv   ──► Recharts courbe CV
+      │
+      └──► vue_suivi_patient ──► Tableau Zone 3 + KPIs Zone 1
+C'est clair maintenant ? On passe au backend ? 😊
+
+-----------------------------------
+Parfait ! On va lire le code ligne par ligne avec des exemples concrets.
+
+vue_periodes_arv — explication ligne par ligne
+sqlWITH prescriptions_ordonnees AS (
+👉 On crée une table temporaire appelée prescriptions_ordonnees
+sql  SELECT
+    pm.patient_id,
+    pm.date AS date_prescription,
+    pm.medicament_id,
+    sm.composition AS nom_medicament,
+    sm.code AS code_medicament,
+```
+👉 On prend depuis `prescription_medicale` (alias `pm`) :
+- l'id du patient
+- la date de prescription
+- l'id du médicament
+
+👉 On joint `stock_medicaments` (alias `sm`) pour avoir le nom :
+```
+pm.medicament_id = 5  →  sm.composition = "Atripla"
+pm.medicament_id = 8  →  sm.composition = "Biktarvy"
+sql    LAG(pm.medicament_id) OVER (
+      PARTITION BY pm.patient_id
+      ORDER BY pm.date, pm.id
+    ) AS medicament_precedent
+```
+👉 `PARTITION BY pm.patient_id` = on travaille **patient par patient** séparément
+
+👉 `ORDER BY pm.date, pm.id` = on trie par date, puis par id si même date
+
+👉 `LAG(pm.medicament_id)` = donne le `medicament_id` de la ligne **précédente**
+
+Résultat concret :
+```
+date        | medicament_id | medicament_precedent
+------------|---------------|--------------------
+01/01/2024  |     5(Atripla)|  NULL        ← pas de ligne avant
+01/04/2024  |     5(Atripla)|  5(Atripla)  ← ligne précédente = même
+01/07/2024  |     5(Atripla)|  5(Atripla)  ← ligne précédente = même
+01/09/2024  |    8(Biktarvy)|  5(Atripla)  ← ligne précédente = différent !
+sql  FROM prescription_medicale pm
+  LEFT JOIN stock_medicaments sm ON sm.id = pm.medicament_id
+),
+👉 LEFT JOIN = même si le médicament n'existe pas dans stock, on garde la ligne (avec NULL)
+
+sqlchangements_reels AS (
+  SELECT *
+  FROM prescriptions_ordonnees
+  WHERE
+    medicament_precedent IS NULL
+    OR medicament_id != medicament_precedent
+)
+```
+👉 On filtre — on garde seulement :
+- `medicament_precedent IS NULL` = première prescription du patient
+- `medicament_id != medicament_precedent` = vrai changement de médicament
+
+Résultat concret :
+```
+date        | medicament_id | medicament_precedent | gardé ?
+------------|---------------|----------------------|--------
+01/01/2024  |     5(Atripla)|  NULL                | ✅ OUI
+01/04/2024  |     5(Atripla)|  5(Atripla)          | ❌ NON
+01/07/2024  |     5(Atripla)|  5(Atripla)          | ❌ NON
+01/09/2024  |    8(Biktarvy)|  5(Atripla)          | ✅ OUI
+
+sqlSELECT
+  patient_id,
+  medicament_id,
+  nom_medicament,
+  code_medicament,
+  date_prescription AS date_debut,
+👉 La date de prescription devient date_debut de la période
+sql  LEAD(date_prescription) OVER (
+    PARTITION BY patient_id
+    ORDER BY date_prescription
+  ) - INTERVAL '1 day' AS date_fin
+```
+👉 `LEAD(date_prescription)` = prend la date de la ligne **suivante**
+
+👉 `- INTERVAL '1 day'` = on recule d'un jour pour que les périodes ne se chevauchent pas
+
+Résultat concret :
+```
+date_debut  | LEAD(date_debut) | - 1 jour  = date_fin
+------------|------------------|------------------------
+01/01/2024  | 01/09/2024       | 31/08/2024
+01/09/2024  | NULL             | NULL  ← encore actif
+```
+
+**Résultat final `vue_periodes_arv` :**
+```
+patient_id | nom_medicament | date_debut | date_fin
+-----------|----------------|------------|----------
+         1 | Atripla        | 01/01/2024 | 31/08/2024
+         1 | Biktarvy       | 01/09/2024 | NULL
+
+vue_points_cd4 — explication ligne par ligne
+sqlSELECT
+  rb.id AS resultat_id,
+  rb.patient_id,
+  rb.date_cd4_cd8 AS date_point,
+  rb.cd4_absolu,
+  rb.cd4_pourcent,
+👉 On prend depuis resultats_biologiques uniquement les colonnes CD4
+sql  arv.nom_medicament AS traitement,
+  arv.code_medicament AS traitement_code,
+  arv.date_debut AS traitement_date_debut,
+  arv.date_fin AS traitement_date_fin
+👉 On va chercher dans vue_periodes_arv le traitement actif
+sqlFROM resultats_biologiques rb
+LEFT JOIN vue_periodes_arv arv
+  ON  arv.patient_id = rb.patient_id
+👉 On joint sur le même patient
+sql  AND rb.date_cd4_cd8 >= arv.date_debut
+👉 La date du CD4 doit être après le début du traitement
+sql  AND (
+    arv.date_fin IS NULL
+    OR rb.date_cd4_cd8 <= arv.date_fin
+  )
+```
+👉 Et soit le traitement est **encore actif** (date_fin NULL), soit la date CD4 est **avant** la fin
+
+Exemple concret :
+```
+date_cd4    | arv.date_debut | arv.date_fin | condition respectée ?
+------------|----------------|--------------|----------------------
+01/07/2024  | 01/01/2024     | 31/08/2024   | ✅ Jan≤Jul≤Août → Atripla
+05/10/2024  | 01/09/2024     | NULL         | ✅ Sep≤Oct→en cours → Biktarvy
+sqlWHERE rb.date_cd4_cd8 IS NOT NULL
+  AND rb.cd4_absolu   IS NOT NULL
+```
+👉 On ignore les lignes sans date CD4 ou sans valeur CD4
+
+**Résultat final `vue_points_cd4` :**
+```
+patient_id | date_point | cd4_absolu | traitement
+-----------|------------|------------|----------
+         1 | 01/07/2024 |        120 | Atripla
+         1 | 05/10/2024 |        350 | Biktarvy
+
+vue_points_cv fonctionne exactement pareil mais avec date_charge_virale_vih et charge_virale_valeur à la place de date_cd4_cd8 et cd4_absolu.
+
+
+
+///////*************/*************/**************
+
+Bonne question ! En réalité on a 3 VIEWs + vue_suivi_patient qui dépend des autres. Laisse-moi expliquer pourquoi chacune existe :
+
+Les 4 VIEWs et leur rôle
+vue_periodes_arv
+│
+│  → utilisée PAR les autres VIEWs
+│  → calcule les périodes Atripla / Biktarvy
+│  → c'est la BASE de tout
+│
+├──► vue_points_cd4
+│       → uniquement pour le graphique CD4
+│       → date propre : date_cd4_cd8
+│
+├──► vue_points_cv
+│       → uniquement pour le graphique CV
+│       → date propre : date_charge_virale_vih
+│
+└──► vue_suivi_patient
+        → pour le tableau Zone 3 + KPIs Zone 1
+        → une ligne par bilan complet
+
+Pourquoi pas une seule VIEW ?
+Parce que CD4 et CV ont des dates différentes — c'est ce qu'on a décidé ensemble.
+Si on force tout dans une seule VIEW :
+sql-- ❌ problème
+SELECT
+  date_cd4_cd8,           -- 05/10/2024
+  date_charge_virale_vih, -- 01/10/2024  ← date différente !
+  cd4_absolu,
+  charge_virale_valeur
+👉 Recharts ne sait pas comment tracer deux courbes avec des dates différentes sur le même axe X depuis une seule ligne.
+👉 Donc on sépare en deux VIEWs indépendantes — chacune avec sa propre colonne date_point — et Recharts trace chaque courbe séparément.
+
+En résumé :
+VIEWPourquoi séparéevue_periodes_arvbase commune réutilisée partoutvue_points_cd4date propre CD4 pour Rechartsvue_points_cvdate propre CV pour Rechartsvue_suivi_patienttableau + KPIs, une ligne par bilan
+
+-----> 03/04/2026 amelioration fait dans logique check migration 

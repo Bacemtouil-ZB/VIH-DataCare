@@ -1,11 +1,13 @@
+//cheked 15/04/2026
+// helper functions for signes cliniques form and history management (used in useSignesClinique and SignesFonction.jsx)
+import { toFrDate, toFrDateTime } from "./dateHelpers";
+
 export function formatDateFr(dateValue, fallback = "N/A") {
-  if (!dateValue) return fallback;
-  return new Date(dateValue).toLocaleDateString("fr-FR");
+  return toFrDate(dateValue, fallback);
 }
 
 export function formatDateTimeFr(dateValue, fallback = "-") {
-  if (!dateValue) return fallback;
-  return new Date(dateValue).toLocaleString("fr-FR");
+  return toFrDateTime(dateValue, fallback);
 }
 
 export function handleCancelForm(setShowForm, resetForm, ) {

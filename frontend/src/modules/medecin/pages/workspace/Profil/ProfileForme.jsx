@@ -1,6 +1,8 @@
+// cheked 15/04/2026
 import "./ProfilForme.css";
 import { ActionButton, FieldLabel,FieldError, Input, RadioGroup, Spinner } from "../../../../../shared/components";
 import { confirmAction } from "../../../../../shared/utils/uiAlerts.js";
+import { STATUTS_ADMINISTRATIFS, STATUTS_LABELS, STATUTS_COLORS , STATUTS_CREATION } from './profileConstants.js';
 
 export default function ProfileForme({
   loading,
@@ -37,37 +39,72 @@ export default function ProfileForme({
   return (
     <div className="form-card">
       <form onSubmit={handleSubmit} className="form-grid">
-        <div className="form-group">
-          <FieldLabel required>Numéro dossier</FieldLabel>
-          <Input
-            name="numero"
-            value={formData.numero || ""}
-            onChange={handleNumeroChange}
-            disabled={!canEditNumero}
-            required
-            placeholder="Ex: 0001-2026"
-          />
-          {numeroHasError && (
-            <span className="error-text">Format invalide : ex. 0001-2025</span>
-          )}
-          {errors.numero && <FieldError error={errors.numero} />}
-        </div>
+        <div className="form-row">
+            <div className="form-group">
+              <FieldLabel required>Numéro dossier</FieldLabel>
+              <Input
+                name="numero"
+                value={formData.numero || ""}
+                onChange={handleNumeroChange}
+                disabled={!canEditNumero}
+                required
+                placeholder="Ex: 0001-2026"
+              />
+              {numeroHasError && (
+                <span className="error-text">Format invalide : ex. 0001-2026</span>
+              )}
+              {errors.numero && <FieldError error={errors.numero} />}
+            </div>
 
-        <div className="form-group">
-          <FieldLabel required>Hospitalisation</FieldLabel>
-          <select
-            name="hospitalisation"
-            value={formData.hospitalisation || "interne"}
-            onChange={handleHospitalisationChange}
-            disabled={!isEditing}
-            required
-          >
-            <option value="interne">Interne</option>
-            <option value="externe">Externe</option>
-          </select>
-          {errors.hospitalisation && <FieldError error={errors.hospitalisation} />}
-        </div>
+            <div className="form-group">
+              <FieldLabel required>Hospitalisation</FieldLabel>
+              <select
+                name="hospitalisation"
+                value={formData.hospitalisation || "interne"}
+                onChange={handleHospitalisationChange}
+                disabled={!isEditing}
+                required
+              >
+                <option value="interne">Interne</option>
+                <option value="externe">Externe</option>
+              </select>
+              {errors.hospitalisation && <FieldError error={errors.hospitalisation} />}
+            </div>
 
+           <div className="form-group">
+            <FieldLabel>Statut</FieldLabel>
+            {isNew ? (
+              <select
+                name="status"
+                value={formData.status || ""}
+                onChange={handleChange}
+              >
+                <option value="">Sélectionner</option>
+                {STATUTS_CREATION.map((s) => (
+                  <option key={s.value} value={s.value}>{s.label}</option>
+                ))}
+              </select>
+            ) : isEditing ? (
+              <select
+                name="status"
+                value={formData.status || ""}
+                onChange={handleChange}
+              >
+                <option value="">Sélectionner</option> //dans bd c'est en attente stade par defaut.
+                {STATUTS_ADMINISTRATIFS.map((s) => (
+                  <option key={s.value} value={s.value}>{s.label}</option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type="text"
+                value={STATUTS_LABELS[formData.status] || 'Normal'}
+                disabled
+                readOnly
+              />
+            )}
+          </div>
+        </div>
         <div className="form-group">
           <FieldLabel required>Nom</FieldLabel>
           <Input
@@ -120,6 +157,8 @@ export default function ProfileForme({
             options={[
               { label: "Homme", value: "homme" },
               { label: "Femme", value: "femme" },
+              { label: "Transgenre", value: "transgenre" },
+
             ]}
           />
         </div>
@@ -136,8 +175,19 @@ export default function ProfileForme({
           />
           {errors.phone && <FieldError error={errors.phone} />}
         </div>
-
-        <br />
+        
+        <div className="form-group">
+          <FieldLabel>whatsapp </FieldLabel>
+          <Input
+            name="whatsapp"
+            value={formData.whatsapp || ""}
+            onChange={handleChange}
+            pattern="^[24597][0-9]{7}$"
+            title="Numéro tunisien invalide "
+            disabled={!isEditing}
+          />
+          {errors.whatsapp && <FieldError error={errors.whatsapp} />}
+        </div>
 
         <div className="form-group">
           <FieldLabel>Gouvernorat naissance</FieldLabel>
@@ -153,7 +203,7 @@ export default function ProfileForme({
         </div>
 
         <div className="form-group">
-          <FieldLabel>Code postal naissance</FieldLabel>
+          <FieldLabel>Délégation de naissance</FieldLabel>
           <select
             name="birth_postal_code_id"
             value={formData.birth_postal_code_id || ""}
@@ -169,13 +219,12 @@ export default function ProfileForme({
         </div>
 
         <div className="form-group">
-          <FieldLabel required>Gouvernorat résidence</FieldLabel>
+          <FieldLabel >Gouvernorat résidence</FieldLabel>
           <select
             name="residence_governorate"
             value={formData.residence_governorate || ""}
             onChange={handleChange}
             disabled={!isEditing}
-            required
           >
             <option value="">Sélectionner</option>
             {renderGovernorateOptions()}
@@ -183,13 +232,13 @@ export default function ProfileForme({
         </div>
 
         <div className="form-group">
-          <FieldLabel required>Code postal résidence</FieldLabel>
+          <FieldLabel >Délégation de résidence</FieldLabel>
           <select
             name="residence_postal_code_id"
             value={formData.residence_postal_code_id || ""}
             onChange={handleChange}
             disabled={!isEditing || !formData.residence_governorate}
-            required
+            
           >
             <option value="">
               {formData.residence_governorate ? "Sélectionner" : "Choisir d'abord un gouvernorat"}
@@ -199,26 +248,26 @@ export default function ProfileForme({
           {errors.residence_postal_code_id && <FieldError error={errors.residence_postal_code_id} />}
         </div>
 
-        <div className="form-group full-width">
-          <FieldLabel>Adresse exacte</FieldLabel>
+        <div className="form-group ">
+          <FieldLabel>Email</FieldLabel>
           <Input
-            name="exact_address"
-            value={formData.exact_address || ""}
+            type="email"          
+            name="email"
+            value={formData.email || ""}
             onChange={handleChange}
             disabled={!isEditing}
-            placeholder="Rue, immeuble, étage, numéro..."
           />
-          {errors.exact_address && <FieldError error={errors.exact_address} />}
+          {errors.email && <FieldError error={errors.email} />}
         </div>
 
         <div className="form-group">
-          <FieldLabel required>Médecin traitant</FieldLabel>
+          <FieldLabel >Médecin traitant</FieldLabel>
           <select
             name="doctor_id"
             value={formData.doctor_id || ""}
             onChange={handleChange}
             disabled={!isEditing}
-            required
+            
           >
             <option value="">Sélectionner</option>
             {doctors.map((doc) => (

@@ -1,0 +1,299 @@
+﻿/* ── Container ──────────────────────────────────────────────── */
+.prescriptions-page-container {
+  --sp-1: 0.25rem;
+  --sp-2: 0.5rem;
+  --sp-3: 0.75rem;
+  --sp-4: 1rem;
+  width: 100%;
+  padding: var(--sp-4) 1.25rem;
+  background: transparent;
+  color: #0f172a;
+}
+
+/* ── Header ─────────────────────────────────────────────────── */
+.prescriptions-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.875rem;
+  margin-bottom: 1.1rem;
+}
+
+.page-title {
+  font-size: 1.08rem;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #0f172a;
+  margin: 0;
+}
+
+/* ── Search ─────────────────────────────────────────────────── */
+.prescription-search.sh-searchbar { width: min(236px, 100%); }
+
+.prescription-search .sh-searchbar-input,
+.search-input {
+  width: 100%;
+  max-width: 236px;
+  border-color: #e2e8f0 !important;
+  padding: 0.5rem 0.72rem !important;
+  font-size: 0.82rem !important;
+}
+
+.prescription-search .sh-searchbar-input:focus,
+.search-input:focus {
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.08) !important;
+}
+
+/* ── Table wrapper ──────────────────────────────────────────── */
+.prescription-acc-body {
+  padding: 0 !important;
+  background: #ffffff !important;
+  overflow: hidden;
+}
+
+.prescription-acc-body .table-responsive {
+  overflow-x: auto;
+  overflow-y: visible;
+  padding-bottom: 0.2rem;
+}
+
+/* ── Table ──────────────────────────────────────────────────── */
+.prescriptions-page-container .table {
+  width: max(100%, 1080px);
+  table-layout: fixed;
+  min-width: 1080px;
+  margin-bottom: 0;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Headers ────────────────────────────────────────────────── */
+.prescriptions-page-container .table thead th {
+  background: #f8fafc;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.66rem 0.56rem;
+  border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
+  text-align: left;
+}
+
+/* ── Cells ──────────────────────────────────────────────────── */
+.prescriptions-page-container .table tbody td {
+  padding: 0.62rem 0.56rem;
+  color: #0f172a;
+  vertical-align: middle;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.82rem;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.prescriptions-page-container .table tbody tr:hover {
+  background: #f8fafc;
+}
+
+/* ── Largeurs colonnes — 7 colonnes dans 100% ───────────────── */
+.col-date      { width: 92px;  min-width: 92px;  white-space: nowrap; color: #6b7280; }
+.col-patient   { width: 170px; min-width: 170px; }
+.col-traitement{ width: 165px; min-width: 165px; }
+.col-prise     { width: 140px; min-width: 140px; }
+.col-statut    { width: 180px; min-width: 180px; }
+.col-rdv       { width: 110px; min-width: 110px; }
+.col-action    { width: 230px; min-width: 230px; text-align: center; white-space: nowrap; }
+
+.prescriptions-page-container .table thead th.col-date,
+.prescriptions-page-container .table tbody td.col-date {
+  padding-left: 0.36rem;
+  padding-right: 0.3rem;
+}
+
+.prescriptions-page-container .table thead th.col-patient,
+.prescriptions-page-container .table tbody td.col-patient {
+  padding-left: 0.4rem;
+  padding-right: 0.4rem;
+}
+
+/* Keep action buttons fully visible even when other cells are ellipsized */
+.prescriptions-page-container .table tbody td.col-action {
+  position: sticky;
+  right: 0;
+  z-index: 2;
+  background: #ffffff;
+  box-shadow: -8px 0 10px -12px rgba(15, 23, 42, 0.5);
+  overflow: visible;
+  text-overflow: clip;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  padding-left: 0.28rem;
+  padding-right: 0.28rem;
+}
+
+.prescriptions-page-container .table thead th:last-child {
+  position: sticky;
+  right: 0;
+  z-index: 3;
+  background: #f8fafc;
+  box-shadow: -8px 0 10px -12px rgba(15, 23, 42, 0.5);
+}
+
+.prescriptions-page-container .table tbody tr:hover td.col-action {
+  background: #f8fafc;
+}
+
+.col-action .d-flex {
+  width: 100%;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+  gap: 0.28rem !important;
+}
+
+.col-action .btn,
+.col-action .ec-action-btn {
+  width: auto;
+  min-height: 28px;
+  padding: 0.22rem 0.42rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1.1;
+  border-radius: 8px;
+  white-space: nowrap;
+}
+
+.col-action .ec-action-btn span {
+  white-space: nowrap;
+}
+
+.col-action .ec-btn-details {
+  border-color: #cbd5e1;
+  color: #334155;
+  background: #ffffff;
+}
+
+.col-action .ec-btn-details:hover {
+  border-color: #94a3b8;
+  color: #0f172a;
+  background: #f8fafc;
+}
+
+/* ── Patient cell ───────────────────────────────────────────── */
+.patient-nom {
+  display: block;
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 0.82rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.patient-dossier {
+  display: block;
+  font-size: 0.7rem;
+  color: #94a3b8;
+  margin-top: 0.15rem;
+}
+
+/* ── Prise cell ─────────────────────────────────────────────── */
+.prise-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.22rem;
+  align-items: flex-start;
+}
+
+.td-empty { color: #cbd5e1; }
+
+/* ── Dates ──────────────────────────────────────────────────── */
+.date-retard {
+  display: inline-block;
+  padding: 0.2rem 0.45rem;
+  background: #fee2e2;
+  color: #991b1b;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  border: 1px solid #fecaca;
+  white-space: nowrap;
+}
+
+.date-future {
+  display: inline-block;
+  padding: 0.2rem 0.45rem;
+  background: #f0fdf4;
+  color: #166534;
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  border: 1px solid #bbf7d0;
+  white-space: nowrap;
+}
+
+/* ── Statut cell fusionnée ──────────────────────────────────── */
+.statut-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.24rem;
+  align-items: flex-start;
+}
+
+.statut-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  align-items: flex-start;
+}
+
+.ecart-badge {
+  font-size: 0.65rem;
+  color: #dc2626;
+  font-weight: 700;
+}
+
+/* ── RDV simple date ───────────────────────────────────────── */
+.rdv-date {
+  display: inline-block;
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: #334155;
+  white-space: nowrap;
+}
+
+.rdv-none {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-style: italic;
+  line-height: 1.25;
+}
+
+/* ── États loading / error ──────────────────────────────────── */
+.loading-state,
+.error-state   { display: flex; flex-direction: column; align-items: center; gap: 1rem; padding: 3rem; }
+.spinner       { width: 2rem; height: 2rem; border: 3px solid #e2e8f0; border-top-color: #3b82f6; border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.error-message { color: #dc2626; font-weight: 500; }
+.btn-retry     { padding: 0.4rem 1.2rem; background: #3b82f6; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 1024px) {
+  .prescriptions-header  { flex-direction: column; align-items: stretch; }
+  .prescription-search,
+  .search-input          { width: 100%; max-width: none; }
+
+  .prescriptions-page-container .table {
+    min-width: 1080px;
+  }
+
+  .col-action {
+    min-width: 230px;
+  }
+}

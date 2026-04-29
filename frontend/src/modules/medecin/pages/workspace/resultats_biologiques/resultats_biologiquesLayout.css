@@ -1,16 +1,9 @@
-.resultats-biologiques-container {
+/* Container */
+.antecedents-container {
   display: flex;
   flex-direction: column;
   height: 100%;
   padding: 20px;
-}
-
-/* Title */
-.resultats-biologiques-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #1f2937;
-  margin-bottom: 15px;
 }
 
 /* Tabs container */

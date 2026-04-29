@@ -1,0 +1,9 @@
+design patterns de dashboards : 
+Z → résumé rapide
+F → analyse principale
+Holy Grail → structure app
+Cascade → VIH logique
+Bento → homepage
+Master-detail → patients
+Waterfall → explication flux
+Time series → évolution

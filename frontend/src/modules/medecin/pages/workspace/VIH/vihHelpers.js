@@ -34,11 +34,8 @@ export const buildFormFromVihData = (vihData) => {
     type_depistage: vihData.type_depistage || "",
     circonstance_decouverte: vihData.circonstance_decouverte || "",
     date_derniere_negative: formatDate(vihData.date_derniere_negative),
-    date_contamination: formatDate(vihData.date_contamination),
     date_vih_positif: formatDate(vihData.date_vih_positif),
     stade_cdc: vihData.stade_cdc || "",
-    debut_stade_c: formatDate(vihData.debut_stade_c),
     typage_hla_b5701: vihData.typage_hla_b5701 || "",
-    profil_seroconversion: vihData.profil_seroconversion ?? null,
   };
 };

@@ -1,0 +1,87 @@
+Mobile App — Full Folder Architecture
+mobile-vihdatacare/
+│
+├── src/
+│   │
+│   ├── api/                        ← DATA LAYER
+│   │   ├── client.js               (axios instance, base URL, token injection)
+│   │   ├── auth.api.js             (login, getMe)
+│   │   ├── rendezvous.api.js       (getRendezvous)
+│   │   └── patient.api.js          (getProfile, updateProfile, savePushToken)
+│   │
+│   ├── features/                   ← FEATURE LAYER
+│   │   ├── auth/
+│   │   │   ├── screens/
+│   │   │   │   └── LoginScreen.jsx
+│   │   │   ├── components/
+│   │   │   │   └── LoginForm.jsx
+│   │   │   └── hooks/
+│   │   │       └── useLogin.js
+│   │   │
+│   │   ├── rendezvous/
+│   │   │   ├── screens/
+│   │   │   │   ├── RendezvousListScreen.jsx
+│   │   │   │   └── RendezvousDetailScreen.jsx
+│   │   │   ├── components/
+│   │   │   │   ├── RendezvousCard.jsx
+│   │   │   │   └── RendezvousStatusBadge.jsx
+│   │   │   └── hooks/
+│   │   │       └── useRendezvous.js
+│   │   │
+│   │   ├── reminders/
+│   │   │   ├── screens/
+│   │   │   │   ├── RemindersListScreen.jsx
+│   │   │   │   └── CreateReminderScreen.jsx
+│   │   │   ├── components/
+│   │   │   │   ├── ReminderCard.jsx
+│   │   │   │   └── ReminderForm.jsx
+│   │   │   └── hooks/
+│   │   │       └── useReminders.js
+│   │   │
+│   │   └── home/
+│   │       ├── screens/
+│   │       │   └── HomeScreen.jsx
+│   │       └── components/
+│   │           ├── NextAppointmentBanner.jsx
+│   │           └── TodayRemindersList.jsx
+│   │
+│   ├── components/                 ← SHARED/REUSABLE UI COMPONENTS
+│   │   ├── Button.jsx
+│   │   ├── Input.jsx
+│   │   ├── Card.jsx
+│   │   ├── Loader.jsx
+│   │   ├── EmptyState.jsx
+│   │   └── ErrorMessage.jsx
+│   │
+│   ├── navigation/                 ← NAVIGATION LAYER
+│   │   ├── AppNavigator.jsx        (root — decides auth vs app stack)
+│   │   ├── AuthStack.jsx           (login screen)
+│   │   └── AppTabs.jsx             (home, rendezvous, reminders)
+│   │
+│   ├── store/                      ← STATE MANAGEMENT
+│   │   ├── authStore.js            (user, token)
+│   │   └── reminderStore.js        (local reminders state)
+│   │
+│   ├── hooks/                      ← SHARED HOOKS
+│   │   ├── useAuth.js
+│   │   └── useNotifications.js
+│   │
+│   ├── services/                   ← SERVICES LAYER
+│   │   ├── storage.service.js      (SecureStore wrapper)
+│   │   ├── notification.service.js (Expo notifications)
+│   │   └── cache.service.js        (AsyncStorage for offline)
+│   │
+│   ├── constants/
+│   │   ├── colors.js
+│   │   ├── spacing.js
+│   │   └── config.js               (API base URL, env)
+│   │
+│   └── utils/
+│       ├── date.utils.js
+│       └── token.utils.js
+│
+├── assets/
+├── app.json
+├── App.jsx                         ← entry point
+└── .env
+

@@ -3,7 +3,7 @@ import { handleValidation } from "./handleValidation.js";
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const TUNISIAN_PHONE_REGEX = /^[24597][0-9]{7}$/;
-const NUMERO_DOSSIER_REGEX = /^\d{4}-\d{4}$/;
+const NUMERO_DOSSIER_REGEX = /^F-\d{4}-\d{4}$|^\d{4}-\d{4}$/;
 const NAME_REGEX = /^[A-Za-zÀ-ÖØ-öø-ÿ\s'\-]+$/;
 const FORBIDDEN_PATTERNS =
   /<[^>]*>|javascript:|on\w+=|script|SELECT\s+|INSERT\s+|DROP\s+|UPDATE\s+|DELETE\s+|UNION\s+|--|\$\{|\{\{/i;
@@ -17,22 +17,24 @@ const containsMalicious = (value) => {
 
 // ─── Numéro Dossier ───────────────────────────────────────────────────────────
 
-const validateNumero = body("numero")
+export const validateNumero = body("numero")
   .trim()
   .notEmpty()
   .withMessage("Le numéro de dossier est requis")
-  .isLength({ min: 9, max: 9 })
-  .withMessage(
-    "Le numéro doit avoir exactement le format XXXX-XXXX (9 caractères)",
-  )
+  .isLength({ min: 9, max: 11 }) // 9 pour XXXX-XXXX, 11 pour F-XXXX-XXXX
+  .withMessage("Le numéro doit avoir le format XXXX-XXXX ou F-XXXX-XXXX")
   .matches(NUMERO_DOSSIER_REGEX)
-  .withMessage("Format invalide : ex. 0001-2026")
+  .withMessage("Format invalide : ex. 0001-2026 ou F-0001-2026")
   .custom((value) => {
     // Null bytes / encodage malveillant
     if (/\u0000|%00/.test(value)) throw new Error("Caractère interdit détecté");
-    // Séquence répétitive
-    if (/^(.)\1+$/.test(value.replace("-", "")))
-      throw new Error("Numéro invalide");
+
+    // Supprime le F- pour vérifier séquence répétitive
+    const cleaned = value.replace(/^F-/, "");
+
+    if (/^(.)\1+$/.test(cleaned.replace("-", "")))
+      throw new Error("Numéro invalide : séquence répétitive");
+
     return true;
   });
 
@@ -136,10 +138,9 @@ const validateGender = body("gender")
   .trim()
   .notEmpty()
   .withMessage("Le genre est requis")
-  .isIn(["homme", "femme"])
-  .withMessage("Le genre doit être 'homme' ou 'femme'")
+  .isIn(["homme", "femme", "transgenre"])
+  .withMessage("Le genre doit être 'homme' ou 'femme' ou 'transgenre'")
   .custom((value) => {
-    // Valeurs booléennes ou numériques mal typées
     if (typeof value === "boolean" || typeof value === "number") {
       throw new Error("Type de valeur invalide pour le genre");
     }
@@ -186,7 +187,18 @@ const validatePhone = body("phone")
 
     return true;
   });
+// ───Email ────────────────────────────────────────────────────────────────
+export const validateEmail = body("email")
+.optional({ nullable: true, checkFalsy: true })
+  .isEmail()
+  .withMessage("Format d'email invalide")
+  .normalizeEmail() // Normalisation de l'email pour enlever les espaces superflus et traiter les variantes de majuscules/minuscules
+  .custom((value) => {
+    // Null bytes / encodage malveillant
+    if (/\u0000|%00/.test(value)) throw new Error("Caractère interdit détecté");
 
+    return true;
+  });
 // ─── Hospitalisation ──────────────────────────────────────────────────────────
 
 const validateHospitalisation = body("hospitalisation")
@@ -233,9 +245,7 @@ const validateBirthPostalCode = body("birth_postal_code_id")
 // ─── Gouvernorat résidence (requis) ───────────────────────────────────────────
 
 const validateResidenceGovernorat = body("residence_governorate")
-  .trim()
-  .notEmpty()
-  .withMessage("Le gouvernorat de résidence est requis")
+  .optional({ nullable: true, checkFalsy: true })
   .isLength({ max: 100 })
   .withMessage("Gouvernorat de résidence trop long")
   .custom((value) => {
@@ -248,8 +258,7 @@ const validateResidenceGovernorat = body("residence_governorate")
 // ─── Code postal résidence (requis) ───────────────────────────────────────────
 
 const validateResidencePostalCode = body("residence_postal_code_id")
-  .notEmpty()
-  .withMessage("Le code postal de résidence est requis")
+  .optional({ nullable: true, checkFalsy: true })
   .custom((value) => {
     if (isNaN(value) || !Number.isInteger(Number(value))) {
       throw new Error("Code postal de résidence invalide");
@@ -269,19 +278,6 @@ const validateExactAddress = body("exact_address")
     if (!value) return true;
     if (/\u0000|%00/.test(value)) throw new Error("Caractère interdit détecté");
     containsMalicious(value);
-    return true;
-  });
-
-// ─── Médecin traitant (requis) ────────────────────────────────────────────────
-
-const validateDoctorId = body("doctor_id")
-  .notEmpty()
-  .withMessage("Le médecin traitant est requis")
-  .custom((value) => {
-    if (isNaN(value) || !Number.isInteger(Number(value))) {
-      throw new Error("Identifiant médecin invalide");
-    }
-    if (Number(value) <= 0) throw new Error("Identifiant médecin invalide");
     return true;
   });
 
@@ -315,9 +311,10 @@ export const validateCreatePatient = [
   validateResidenceGovernorat,
   validateResidencePostalCode,
   validateExactAddress,
-  validateDoctorId,
   validateRemarks,
+  validateEmail,
   handleValidation,
+  
 ];
 
 export const validateUpdatePatient = [
@@ -332,7 +329,7 @@ export const validateUpdatePatient = [
   validateResidenceGovernorat,
   validateResidencePostalCode,
   validateExactAddress,
-  validateDoctorId,
   validateRemarks,
+  validateEmail,
   handleValidation,
 ];

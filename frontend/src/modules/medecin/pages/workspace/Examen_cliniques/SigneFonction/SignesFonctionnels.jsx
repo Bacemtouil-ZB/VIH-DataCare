@@ -1,3 +1,4 @@
+//cheked 15/04/2026
 import { useOutletContext } from "react-router-dom";
 import { ActionButton } from "../../../../../../shared/components";
 import { Spinner } from "../index";
@@ -53,6 +54,7 @@ export default function SignesFonctionnels() {
         ajouterAutreSigne={logic.ajouterAutreSigne}
         supprimerAutreSigne={logic.supprimerAutreSigne}
         modifierDescription={logic.modifierDescription}
+        errors={logic.errors}                              
         handleSave={logic.handleSave}
       />
     </div>

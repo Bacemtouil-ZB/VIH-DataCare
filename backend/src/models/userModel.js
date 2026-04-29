@@ -44,18 +44,24 @@ export const updateUserActivationStatus = async (userId, isactivated) => {
   const result = await pool.query(query, values);
   return result.rows[0];
 };
-/// a reviser :
-/**
- * Récupère tous les utilisateurs (pour l'admin)
 
- */
 export const getAllUsers = async () => {
-  // Récupérer tous les utilisateurs sauf ceux dont le rôle est 'admin'
   const query = `
-    SELECT id, nom, prenom, email, role, isactivated, created_at, updated_at
-    FROM users
-    WHERE role != 'admin'
-    ORDER BY created_at DESC
+    SELECT 
+      u.id,
+      u.role,
+      u.isactivated,
+      u.created_at,
+      u.updated_at,
+      -- Pour les patients : prendre les données de la table patients
+      -- Pour les autres roles : prendre les données de la table users
+      COALESCE(p.name, u.nom)       AS nom,
+      COALESCE(p.surname, u.prenom) AS prenom,
+      COALESCE(p.email, u.email)    AS email
+    FROM users u
+    LEFT JOIN patients p ON p.user_id = u.id
+    WHERE u.role != 'admin'
+    ORDER BY u.created_at DESC
   `;
 
   const result = await pool.query(query);
@@ -100,4 +106,29 @@ export const getAllDoctors = async () => {
     console.error("Erreur getAllDoctors:", error);
     throw error;
   }
+};
+//gestion du profil : update user info (nom, prenom, email, password)
+// Récupérer un utilisateur par ID
+export const findUserById = async (userId) => {
+  const query = "SELECT * FROM users WHERE id = $1";
+  const result = await pool.query(query, [userId]);
+  return result.rows[0] || null;
+};
+
+// Mettre à jour les infos personnelles (nom, prenom, email)
+export const updateUserInfo = async (userId, { nom, prenom, email }) => {
+  const normalizedEmail = email.trim().toLowerCase();
+  const query = `
+    UPDATE users
+    SET nom = $1, prenom = $2, email = $3, updated_at = NOW()
+    WHERE id = $4
+    RETURNING id, nom, prenom, email, role, isactivated, updated_at;
+  `;
+  const result = await pool.query(query, [
+    nom,
+    prenom,
+    normalizedEmail,
+    userId,
+  ]);
+  return result.rows[0] || null;
 };

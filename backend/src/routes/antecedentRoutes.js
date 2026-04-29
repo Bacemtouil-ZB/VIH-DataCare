@@ -1,119 +1,77 @@
-import { Router } from "express";
-import { protect, authorizeMedecin } from "../middlewares/authMiddleware.js";
+//cheked 15/04/2026
+import express from "express";
+import { getFamilyController, createFamilyController, updateFamilyController } from "../controllers/antecedents/familyController.js";
+import { getGynecoController, createGynecoController, updateGynecoController } from "../controllers/antecedents/gynecoController.js";
+import { getHabitudesVieController, createHabitudesVieController, updateHabitudesVieController } from "../controllers/antecedents/habitudesVieController.js";
+import { getMedicalController, createMedicalController, updateMedicalController } from "../controllers/antecedents/medicalController.js";
+import { getSurgicalController, createSurgicalController, updateSurgicalController, deleteSurgicalController } from "../controllers/antecedents/surgicalController.js";
+import { getTherapeuticController, createTherapeuticController, updateTherapeuticController } from "../controllers/antecedents/therapeuticController.js";
+import { getTpePrepController, createTpePrepController, updateTpePrepController, deleteTpePrepController } from "../controllers/antecedents/tpePrepController.js";
+import { getTransfusionController, createTransfusionController, updateTransfusionController, deleteTransfusionController } from "../controllers/antecedents/transfusionController.js";
+import { protect , authorizeMedecin} from "../middlewares/authMiddleware.js";
+import {validateCreateTpePrep,validateCreateTransfusion,validateFamily,validateGyneco,validateHabitudesVie,validateMedical,validateTherapeutic,validateUpdateSurgical,
+    validateUpdateTpePrep,validateUpdateTransfusion,validateCreateSurgical,} from "../middlewares/validators/antecedentsvalidator.js";
 
-import {
-  getActiveAntecedentHeader,
-  postNewAntecedentVersion,
-  // 1-1
-  getMedical,
-  putMedical,
-  getInfectious,
-  putInfectious,
-  getTherapeutic,
-  putTherapeutic,
-  getFamily,
-  putFamily,
-  getGyneco,
-  putGyneco,
-  // 1-N
-  getSurgical,
-  putSurgical,
-  getTransfusion,
-  putTransfusion,
-  getAes,
-  putAes,
-  // versions
-  getAntecedentVersions,
-  getAntecedentVersionSnapshot,
-} from "../controllers/antecedentController.js";
 
-const router = Router();
+   const router = express.Router();
+    
+// ─────────────────────────────────────────────
+// Antécédent Familial
+// ─────────────────────────────────────────────
+router.get("/family/:patientId",    protect,authorizeMedecin, getFamilyController);
+router.post("/family/:patientId",   protect,authorizeMedecin, validateFamily, createFamilyController);
+router.put("/family/:patientId",    protect,authorizeMedecin, updateFamilyController);
 
-// Header active (info version/status)
-router.get(
-  "/:numero/active",
-  protect,
-  authorizeMedecin,
-  getActiveAntecedentHeader,
-);
+// ─────────────────────────────────────────────
+// Antécédent Gynécologique
+// ─────────────────────────────────────────────
+router.get("/gyneco/:patientId",    protect,authorizeMedecin, getGynecoController);
+router.post("/gyneco/:patientId",   protect,authorizeMedecin, validateGyneco, createGynecoController);
+router.put("/gyneco/:patientId",    protect,authorizeMedecin, updateGynecoController);
 
-// Create new version (archive active + new header)
-router.post(
-  "/:numero/version",
-  protect,
-  authorizeMedecin,
-  postNewAntecedentVersion,
-);
+// ─────────────────────────────────────────────
+// Habitudes de Vie
+// ─────────────────────────────────────────────
+router.get("/habitudes-vie/:patientId",   protect,authorizeMedecin, getHabitudesVieController);
+router.post("/habitudes-vie/:patientId",  protect,authorizeMedecin, validateHabitudesVie, createHabitudesVieController);
+router.put("/habitudes-vie/:patientId",   protect,authorizeMedecin, updateHabitudesVieController);
 
-// 1-1 sections
-router.get("/:numero/active/medical", protect, authorizeMedecin, getMedical);
-router.put("/:numero/active/medical", protect, authorizeMedecin, putMedical);
+// ─────────────────────────────────────────────
+// Antécédent Médical
+// ─────────────────────────────────────────────
+router.get("/medical/:patientId",   protect,authorizeMedecin, getMedicalController);
+router.post("/medical/:patientId",  protect,authorizeMedecin, validateMedical, createMedicalController);
+router.put("/medical/:patientId",   protect,authorizeMedecin, updateMedicalController);
 
-router.get(
-  "/:numero/active/infectious",
-  protect,
-  authorizeMedecin,
-  getInfectious,
-);
-router.put(
-  "/:numero/active/infectious",
-  protect,
-  authorizeMedecin,
-  putInfectious,
-);
+// ─────────────────────────────────────────────
+// Antécédent Chirurgical
+// ─────────────────────────────────────────────
+router.get("/surgical/:patientId",  protect,authorizeMedecin, getSurgicalController);
+router.post("/surgical/:patientId", protect,authorizeMedecin, validateCreateSurgical, createSurgicalController);
+router.put("/surgical/:id",         protect,authorizeMedecin, validateUpdateSurgical, updateSurgicalController);
+router.delete("/surgical/:id",      protect,authorizeMedecin, deleteSurgicalController);
 
-router.get(
-  "/:numero/active/therapeutic",
-  protect,
-  authorizeMedecin,
-  getTherapeutic,
-);
-router.put(
-  "/:numero/active/therapeutic",
-  protect,
-  authorizeMedecin,
-  putTherapeutic,
-);
+// ─────────────────────────────────────────────
+// Antécédent Thérapeutique
+// ─────────────────────────────────────────────
+router.get("/therapeutic/:patientId",   protect,authorizeMedecin, getTherapeuticController);
+router.post("/therapeutic/:patientId",  protect,authorizeMedecin, validateTherapeutic, createTherapeuticController);
+router.put("/therapeutic/:patientId",   protect,authorizeMedecin,  updateTherapeuticController);
 
-router.get("/:numero/active/family", protect, authorizeMedecin, getFamily);
-router.put("/:numero/active/family", protect, authorizeMedecin, putFamily);
+// ─────────────────────────────────────────────
+// Antécédent TPE/PrEP
+// ─────────────────────────────────────────────
+router.get("/tpe-prep/:patientId",  protect,authorizeMedecin, getTpePrepController);
+router.post("/tpe-prep/:patientId", protect,authorizeMedecin, validateCreateTpePrep, createTpePrepController);
+router.put("/tpe-prep/:id",         protect,authorizeMedecin, validateUpdateTpePrep, updateTpePrepController);
+router.delete("/tpe-prep/:id",      protect,authorizeMedecin , deleteTpePrepController);
 
-router.get("/:numero/active/gyneco", protect, authorizeMedecin, getGyneco);
-router.put("/:numero/active/gyneco", protect, authorizeMedecin, putGyneco);
-
-// 1-N sections (replace list)
-router.get("/:numero/active/surgical", protect, authorizeMedecin, getSurgical);
-router.put("/:numero/active/surgical", protect, authorizeMedecin, putSurgical);
-
-router.get(
-  "/:numero/active/transfusion",
-  protect,
-  authorizeMedecin,
-  getTransfusion,
-);
-router.put(
-  "/:numero/active/transfusion",
-  protect,
-  authorizeMedecin,
-  putTransfusion,
-);
-
-router.get("/:numero/active/aes", protect, authorizeMedecin, getAes);
-router.put("/:numero/active/aes", protect, authorizeMedecin, putAes);
-
-//------------------- versions-----
-// NEW: versions list + snapshot
-router.get(
-  "/:numero/versions",
-  protect,
-  authorizeMedecin,
-  getAntecedentVersions,
-);
-router.get(
-  "/:numero/versions/:versionNumber",
-  protect,
-  authorizeMedecin,
-  getAntecedentVersionSnapshot,
-);
+// ─────────────────────────────────────────────
+// Antécédent Transfusion
+// ─────────────────────────────────────────────
+router.get("/transfusion/:patientId",   protect,authorizeMedecin, getTransfusionController);
+router.post("/transfusion/:patientId",  protect,authorizeMedecin, validateCreateTransfusion, createTransfusionController);
+router.put("/transfusion/:id",          protect,authorizeMedecin, validateUpdateTransfusion, updateTransfusionController);
+router.delete("/transfusion/:id",       protect,authorizeMedecin, deleteTransfusionController);
 
 export default router;

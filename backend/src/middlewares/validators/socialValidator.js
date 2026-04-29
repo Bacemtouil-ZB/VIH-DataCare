@@ -24,6 +24,7 @@ const ACTIVITE_PROFESSIONNELLE_VALUES = [
   "sans_emploi",
   "retraite",
   "personne_au_foyer",
+  "professionnelle_du_sexe",
 ];
 
 const PROBLEME_VALUES = [
@@ -55,9 +56,7 @@ const validateSituationSocial = body("situation_social")
 // ─── Niveau d'étude (requis) ──────────────────────────────────────────────────
 
 const validateNiveauEtude = body("niveau_etude")
-  .trim()
-  .notEmpty()
-  .withMessage("Le niveau d'étude est requis")
+  .optional({ nullable: true, checkFalsy: true })
   .isIn(NIVEAU_ETUDE_VALUES)
   .withMessage("Niveau d'étude invalide")
   .custom((value) => {
@@ -70,9 +69,7 @@ const validateNiveauEtude = body("niveau_etude")
 // ─── Activité professionnelle (requis) ───────────────────────────────────────
 
 const validateActiviteProfessionnelle = body("activite_professionnelle")
-  .trim()
-  .notEmpty()
-  .withMessage("L'activité professionnelle est requise")
+  .optional({ nullable: true, checkFalsy: true })
   .isIn(ACTIVITE_PROFESSIONNELLE_VALUES)
   .withMessage("Activité professionnelle invalide")
   .custom((value) => {

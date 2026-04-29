@@ -1,3 +1,4 @@
+//cheked 15/04/2026
 import express from "express";
 import {
   createPatientController,
@@ -5,12 +6,12 @@ import {
   checkNumeroExistsController,
   getAllPatientsController,
   updatePatientController,
+  getLeftPanelController,
 } from "../controllers/patientController.js";
 
 import {
   protect,
   authorizeMedecin,
-  authorizePharmacien,
 } from "../middlewares/authMiddleware.js";
 
 import {
@@ -29,8 +30,8 @@ const router = express.Router();
 router.get(
   "/check/:numero",
   protect,
-  checkNumeroExistsController,
   checkNumerolimiter,
+  checkNumeroExistsController,
 );
 
 router.get(
@@ -65,5 +66,8 @@ router.put(
   updatePatientLimiter,
   updatePatientController,
 );
+
+//-- left panel data
+router.get("/:numero/left-panel", getLeftPanelController);
 
 export default router;

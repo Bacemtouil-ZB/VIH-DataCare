@@ -1,3 +1,4 @@
+// cheked 15/04/2026
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -8,13 +9,13 @@ import {
   updateSocial,
 } from "../../../services/socialServices.jsx";
 import { INITIAL_SOCIAL_FORM_DATA } from "./socialForm.constants.js";
-import { clearFieldError } from "../../../shared/utils/clearFieldError.js";
+import { clearFieldError } from "../../../../../shared/components/Forms/FieldLabel/clearFieldError";
 
 export function useSocialLogic() {
   const { numero } = useParams();
   const [loading, setLoading] = useState(true);
-  const [ficheExists, setFicheExists] = useState(false); // ← fiche existe en DB
-  const [isEditing, setIsEditing] = useState(false); // ← mode modification UI
+  const [ficheExists, setFicheExists] = useState(false); 
+  const [isEditing, setIsEditing] = useState(false); 
   const [formData, setFormData] = useState(INITIAL_SOCIAL_FORM_DATA);
   const [savedFormData, setSavedFormData] = useState(INITIAL_SOCIAL_FORM_DATA);
   const [errors, setErrors] = useState({});
@@ -48,11 +49,11 @@ export function useSocialLogic() {
 
           setFormData(mapped);
           setSavedFormData(mapped);
-          setFicheExists(true); // ← fiche trouvée
-          setIsEditing(false); // ← mode lecture par défaut
+          setFicheExists(true); 
+          setIsEditing(false);
         } else {
-          setFicheExists(false); // ← nouvelle fiche
-          setIsEditing(true); // ← mode saisie direct
+          setFicheExists(false); 
+          setIsEditing(true); 
           setFormData(INITIAL_SOCIAL_FORM_DATA);
           setSavedFormData(INITIAL_SOCIAL_FORM_DATA);
         }

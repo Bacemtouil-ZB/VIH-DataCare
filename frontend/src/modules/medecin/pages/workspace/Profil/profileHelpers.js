@@ -1,3 +1,4 @@
+// cheked 15/04/2026
 export const sanitizeText = (value) =>
   typeof value === "string" ? value.replace(/[<>]/g, "") : value;
 
@@ -21,15 +22,22 @@ export const normalizeNumero = (raw) => {
   let result = `${part1}-${part2}`;
 
   // Bloquer année > année actuelle
-  if (part2.length === 4) {
-    const currentYear = new Date().getFullYear();
-    const typedYear = parseInt(part2, 10);
-    if (typedYear > currentYear) {
-      part2 = String(currentYear);
-      result = `${part1}-${part2}`;
-    }
+ if (part2.length === 4) {
+  const currentYear = new Date().getFullYear();
+  const typedYear = Number(part2);
+
+  // clamp future year
+  if (typedYear > currentYear) {
+    part2 = String(currentYear);
   }
 
+  // optional: enforce minimum year
+  if (typedYear < 1500) {
+    part2 = "1500";
+  }
+
+  result = `${part1}-${part2}`;
+}
   return result;
 };
 export const isNumeroValid = (numero) => {

@@ -1,33 +1,47 @@
-﻿import { useEffect, useMemo, useState } from "react";
-import { toast } from "react-toastify";
-import { confirmAction, alertError } from "../../../../../shared/utils/uiAlerts";
-import { openFormForCreate, showDetailMode } from "../../../../../shared/utils/logiqueTableHistory";
+﻿import { useEffect, useMemo, useState } from "react"; // there's another hook for estimating next prise reference.
+import { toast } from "react-toastify";               // usedateestimee
+import {
+  confirmAction,
+  alertError,
+} from "../../../../../shared/utils/uiAlerts";
+import {
+  openFormForCreate,
+  showDetailMode,
+} from "../../../../../shared/utils/logiqueTableHistory";
 import {
   createRendezvous,
   getRendezvousByNumeroDossier,
   updateRendezvous,
 } from "../../../services/rendezvousService";
-import { toInputDate, toInputTime } from "../../../../../shared/utils/dateHelpers";
-import { INITIAL_FORM,getStatusStyle  } from "./rendezVousConstants";
+import {
+  //toFrDate,
+  toInputDate,
+  toInputTime,
+} from "../../../../../shared/utils/dateHelpers";
+import { INITIAL_FORM }    from "./rendezVousConstants";
+import { getStatusStyle }  from "./rendezVousHelpers";  // ← pickProchainePriseReference supprimé
+// import { clearFieldError } from "../../../../../shared/components/Forms/FieldLabel/clearFieldError";
 
 export function useRendezVousLogic(numero) {
-  const [searchDate, setSearchDate] = useState("");
-  const [showForm, setShowForm] = useState(false);
+  const [searchDate,  setSearchDate]  = useState("");
+  const [showForm,    setShowForm]    = useState(false);
   const [showHistory, setShowHistory] = useState(true);
   const [isModifying, setIsModifying] = useState(false);
-  const [editingId, setEditingId] = useState(null);
-  const [detailRdv, setDetailRdv] = useState(null);
-  const [formData, setFormData] = useState(INITIAL_FORM);
-  const [rendezVous, setRendezVous] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [editingId,   setEditingId]   = useState(null);
+  const [detailRdv,   setDetailRdv]   = useState(null);
+  const [formData,    setFormData]    = useState(INITIAL_FORM);
+  const [rendezVous,  setRendezVous]  = useState([]);
+  const [loading,     setLoading]     = useState(true);
+const [errors, setErrors] = useState({});
 
+  // ── Fetch RDV uniquement ──
   useEffect(() => {
     if (!numero) return;
     const fetchData = async () => {
       try {
         setLoading(true);
-        const res = await getRendezvousByNumeroDossier(numero);
-        setRendezVous(res.rendezvous || []);
+        const rdvRes = await getRendezvousByNumeroDossier(numero);
+        setRendezVous(rdvRes.rendezvous || []);
       } catch (err) {
         toast.error(err?.message || "Erreur lors du chargement des rendez-vous");
       } finally {
@@ -48,26 +62,22 @@ export function useRendezVousLogic(numero) {
     setEditingId(null);
   };
 
-  const openCreate = () => openFormForCreate(setDetailRdv, resetForm, setShowForm);
+  const openCreate = () =>
+    openFormForCreate(setDetailRdv, resetForm, setShowForm);
 
-  const closeForm = (notify = true) => {
+  const closeForm = () => {
     resetForm();
     setShowForm(false);
   };
 
   const openEdit = async (item) => {
-    const ok = await confirmAction(
-      "Modifier ce rendez-vous ?",
-      `Date : ${new Date(item.date).toLocaleDateString("fr-FR")} - Heure : ${item.heure}`,
-    );
-    if (!ok) return;
-
+    
     setDetailRdv(null);
     setFormData({
-      date: toInputDate(item.date),
-      heure: toInputTime(item.heure),
-      type: item.type || "",
-      statut: item.statut || "",
+      date:        toInputDate(item.date),
+      heure:       toInputTime(item.heure),
+      type:        item.type        || "",
+      statut:      item.statut      || "",
       commentaire: item.commentaire || "",
     });
     setIsModifying(true);
@@ -78,8 +88,8 @@ export function useRendezVousLogic(numero) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.date || !formData.heure) {
-      toast.error("Date et heure sont obligatoires");
+    if (!formData.date) {
+      toast.error("Date est obligatoire");
       return;
     }
 
@@ -90,21 +100,36 @@ export function useRendezVousLogic(numero) {
     if (!ok) return;
 
     try {
+      const payload = {
+        ...formData,
+        heure:       formData.heure?.trim()       || null,
+        commentaire: formData.commentaire?.trim() || null,
+      };
+
       if (isModifying && editingId) {
-        const res = await updateRendezvous(editingId, formData);
+        const res = await updateRendezvous(editingId, payload);
         setRendezVous((prev) =>
           prev.map((r) => (r.id === editingId ? res.rendezvous : r)),
         );
         toast.success("Rendez-vous mis à jour");
       } else {
-        const res = await createRendezvous({ ...formData, numero_dossier: numero });
+        const res = await createRendezvous({ ...payload, numero_dossier: numero });
         setRendezVous((prev) => [res.rendezvous, ...prev]);
         toast.success("Rendez-vous enregistré");
       }
-      closeForm(false);
-    } catch (err) {
-      await alertError(err?.message || "Erreur lors de l'enregistrement");
-    }
+      closeForm();
+} catch (err) {
+  // Gestion des erreurs de validation structurées (backend)
+  if (err?.errors && Array.isArray(err.errors)) {
+    const formattedErrors = {};
+    err.errors.forEach((e) => {
+      formattedErrors[e.field] = e.message;
+    });
+    setErrors(formattedErrors);
+  } else {
+    await alertError(err?.message || "Erreur lors de l'enregistrement");
+  }
+}
   };
 
   const handleShowDetails = (item) => {
@@ -113,17 +138,13 @@ export function useRendezVousLogic(numero) {
   };
 
   return {
-    searchDate,
-    setSearchDate,
+    searchDate,   setSearchDate,
     showForm,
-    showHistory,
-    setShowHistory,
+    showHistory,  setShowHistory,
     isModifying,
     editingId,
-    detailRdv,
-    setDetailRdv,
-    formData,
-    setFormData,
+    detailRdv,    setDetailRdv,
+    formData,     setFormData,
     rendezVous,
     filtered,
     loading,
@@ -133,5 +154,7 @@ export function useRendezVousLogic(numero) {
     handleSubmit,
     handleShowDetails,
     statusStyle: getStatusStyle,
+      errors,
+  setErrors,
   };
 }

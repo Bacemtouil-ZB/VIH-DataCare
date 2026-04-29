@@ -1,0 +1,11 @@
+Analyse GIMSI + Best Practices Santé Publique
+La méthode GIMSI préconise que le graphe doit servir la décision, pas la décoration. En santé publique épidémiologique, les standards OMS/ONUSIDA dictent des choix précis.
+
+Choix graphes par KPI
+KPIGrapheJustification GIMSI/SantéNouveaux dépistés par tranche d'âgeBar groupé (gender × tranche)Comparaison catégorielle multi-variable — standard épidémioDiagnostic tardif CD4 < 200Bar empilé (lt200 + 200_350 superposés)Montre la proportion du tardif sur le totalDiagnostic tardif CD4 200-350Intégré dans le bar empilé ci-dessusMême décision, même graphePopulations clés (HSH/UDI/PS/Trans)Donut avec valeur centrale = totalPart relative de chaque population cléTotal file active par trancheBar horizontalPyramide des âges — lecture naturelle en santéCV de contrôleBar groupé + ligne de référence (cible 95%)Standard ONUSIDA 95-95-95Suppression CV < 1000 et < 50Bar empilé 100% (lt50 / lt1000 / gt1000 / sans_mesure)Cascade virologique — format OMSDécès sida / normauxBar groupé tranche_3Faibles effectifs — pie trompeurPerdus de vue / RécupérésBar avec delta (perdu vs récupéré côte à côte)Mesure l'effort de rétentionTransfertsBar simple tranche_3Effectifs faibles, comparaison directeMigrantsBar simple tranche_3IdemÉvolution annuelle (tous KPI)Line chart multi-sériesTendance temporelle — décision stratégique
+
+
+
+STEP 2 — biService.js terminé.
+Résumé des formats produits par KPI :
+KPIFormat RechartsHelperNouveaux dépistésBarChart groupétoBarGroupeDiagnostic tardif CD4BarChart empilé 3 couchestoDiagnosticTardifPopulations clésPieChart donut + détail drill-downtoDonutFile active pyramideBarChart layout="vertical"toBarGroupeCV contrôleBarChart + signal cible_95 pour ReferenceLinetoBarGroupeCascade viraleBarChart empilé 100% — 4 couches ONUSIDAtoCascadeViraleDécès sida/normauxBarChart groupé côte à côtetoBarSimpleRétentionBarChart delta perdus vs récupéréstoDeltaTransferts / MigrantsBarChart simpletoBarSimple

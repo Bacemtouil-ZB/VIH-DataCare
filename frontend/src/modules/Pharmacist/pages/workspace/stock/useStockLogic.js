@@ -1,36 +1,57 @@
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-toastify";
 import { confirmDelete } from "../../../../../shared/utils/uiAlerts.js";
+import { clearFieldError } from "../../../../../shared/components/Forms/FieldLabel/clearFieldError";
 import {
   getStockItems,
-  createStockItem     as createStockItemApi,
+  createStockItem as createStockItemApi,
   updateStockQuantity as updateStockQuantityApi,
-  deleteStockItem     as deleteStockItemApi,
+  deleteStockItem as deleteStockItemApi,
 } from "../../../services/stockService.jsx";
 import { toUiStockItem, INITIAL_ADD_FORM } from "./stockConstants.js";
 
-export function useStockLogic(numero) {
-  // ── États ──────────────────────────────────────────────────────────────────
-  const [search,           setSearch]           = useState("");
-  const [stockItems,       setStockItems]        = useState([]);
-  const [showAddForm,      setShowAddForm]       = useState(false);
-  const [addForm,          setAddForm]           = useState(INITIAL_ADD_FORM);
-  const [editingId,        setEditingId]         = useState(null);
-  const [editingQuantity,  setEditingQuantity]   = useState("");
-  const [showHistory,      setShowHistory]       = useState(true);
-  const [loading,          setLoading]           = useState(true);
-  const [saving,           setSaving]            = useState(false);
-  const [error,            setError]             = useState("");
+const getErrorMessage = (error, fallbackMessage) => {
+  if (typeof error === "string" && error.trim()) return error;
+  if (typeof error?.message === "string" && error.message.trim()) return error.message;
+  if (typeof error?.error === "string" && error.error.trim()) return error.error;
+  return fallbackMessage;
+};
 
-  // ── Refresh ────────────────────────────────────────────────────────────────
+const mapValidationErrors = (error, fieldMap = {}) => {
+  if (!error?.errors || !Array.isArray(error.errors)) return null;
+
+  const formatted = {};
+  error.errors.forEach((item) => {
+    const fieldName = fieldMap[item.field] || item.field;
+    formatted[fieldName] = item.message;
+  });
+
+  return formatted;
+};
+
+export function useStockLogic(numero) {
+  const [search, setSearch] = useState("");
+  const [stockItems, setStockItems] = useState([]);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [addForm, setAddForm] = useState(INITIAL_ADD_FORM);
+  const [editingId, setEditingId] = useState(null);
+  const [editingMode, setEditingMode] = useState(null);
+  const [editingQuantity, setEditingQuantity] = useState("");
+  const [showHistory, setShowHistory] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [addErrors, setAddErrors] = useState({});
+  const [quantityErrors, setQuantityErrors] = useState({});
+
   const refreshStock = async () => {
     const rows = await getStockItems();
     setStockItems(Array.isArray(rows) ? rows.map(toUiStockItem) : []);
   };
 
-  // ── Chargement initial ─────────────────────────────────────────────────────
   useEffect(() => {
     let alive = true;
+
     const loadData = async () => {
       try {
         setLoading(true);
@@ -40,57 +61,94 @@ export function useStockLogic(numero) {
         setStockItems(Array.isArray(rows) ? rows.map(toUiStockItem) : []);
       } catch (err) {
         if (!alive) return;
-        setError(err?.message || "Erreur lors du chargement du stock.");
+        setError(getErrorMessage(err, "Erreur lors du chargement du stock."));
       } finally {
         if (alive) setLoading(false);
       }
     };
+
     loadData();
-    return () => { alive = false; };
+    return () => {
+      alive = false;
+    };
   }, [numero]);
 
-  // ── Filtrage ───────────────────────────────────────────────────────────────
   const filteredItems = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    if (!q) return stockItems;
+    const query = search.trim().toLowerCase();
+    if (!query) return stockItems;
+
     return stockItems.filter(
       (item) =>
-        item.code.toLowerCase().includes(q) ||
-        item.composition.toLowerCase().includes(q)
+        item.code.toLowerCase().includes(query) ||
+        item.composition.toLowerCase().includes(query)
     );
   }, [stockItems, search]);
 
-  // ── Ajouter médicament ─────────────────────────────────────────────────────
+  const handleAddFormChange = (fieldName, errorField = fieldName) => (e) => {
+    const value = e.target.value;
+    setAddForm((prev) => ({ ...prev, [fieldName]: value }));
+    clearFieldError(errorField, setAddErrors);
+    clearFieldError("_form", setAddErrors);
+  };
+
+  const handleEditingQuantityChange = (e) => {
+    setEditingQuantity(e.target.value);
+    clearFieldError("quantite", setQuantityErrors);
+    clearFieldError("_form", setQuantityErrors);
+  };
+
   const handleAddMedication = async () => {
     const { medicamentCode, medicamentComposition, quantityToAdd } = addForm;
+    const fieldErrors = {};
 
     if (!medicamentCode.trim()) {
-      toast.error("Veuillez saisir un code de médicament.");
-      return;
+      fieldErrors.medicamentCode = "Le code du medicament est requis";
     }
+
     if (!medicamentComposition.trim()) {
-      toast.error("Veuillez saisir la composition du médicament.");
-      return;
+      fieldErrors.medicamentComposition = "La composition du medicament est requise";
     }
-    const q = Number(quantityToAdd);
-    if (!Number.isInteger(q) || q < 0) {
-      toast.error("La quantité doit être un entier positif.");
+
+    const quantity = Number(quantityToAdd);
+    if (!Number.isInteger(quantity) || quantity <= 0) {
+      fieldErrors.quantityToAdd =
+        "La quantite initiale doit etre un entier strictement positif";
+    }
+
+    if (Object.keys(fieldErrors).length > 0) {
+      setAddErrors(fieldErrors);
       return;
     }
 
     try {
       setSaving(true);
+      setAddErrors({});
       await createStockItemApi({
-        code:        medicamentCode.trim().toUpperCase(),
+        code: medicamentCode.trim().toUpperCase(),
         composition: medicamentComposition.trim(),
-        quantite:    q,
+        quantite: quantity,
       });
       await refreshStock();
       cancelAddForm();
-      toast.success("Médicament ajouté avec succès");
+      toast.success("Medicament ajoute avec succes");
     } catch (err) {
-      const msg = err?.response?.data?.message || err?.message || "Erreur lors de l'ajout au stock.";
-      toast.error(msg);
+      const validationErrors = mapValidationErrors(err, {
+        code: "medicamentCode",
+        composition: "medicamentComposition",
+        quantite: "quantityToAdd",
+      });
+
+      if (validationErrors) {
+        setAddErrors(validationErrors);
+        return;
+      }
+
+      if (err?.message) {
+        setAddErrors({ _form: err.message });
+        return;
+      }
+
+      toast.error(getErrorMessage(err, "Erreur lors de l'ajout au stock."));
     } finally {
       setSaving(false);
     }
@@ -99,13 +157,13 @@ export function useStockLogic(numero) {
   const cancelAddForm = () => {
     setShowAddForm(false);
     setAddForm(INITIAL_ADD_FORM);
+    setAddErrors({});
   };
 
-  // ── Supprimer médicament ───────────────────────────────────────────────────
   const handleDeleteMedication = async (id) => {
     const confirmed = await confirmDelete(
-      "Supprimer ce médicament ?",
-      "Êtes-vous sûr de vouloir supprimer ce médicament du stock ?"
+      "Supprimer ce medicament ?",
+      "Etes-vous sur de vouloir supprimer ce medicament du stock ?"
     );
     if (!confirmed) return;
 
@@ -113,57 +171,102 @@ export function useStockLogic(numero) {
       setSaving(true);
       await deleteStockItemApi(id);
       await refreshStock();
-      toast.success("Médicament supprimé avec succès");
-      if (editingId === id) {
-        setEditingId(null);
-        setEditingQuantity("");
-      }
+      toast.success("Medicament supprime avec succes");
+      if (editingId === id) cancelEditQuantity();
     } catch (err) {
-      const msg = err?.response?.data?.message || err?.message || "Erreur lors de la suppression.";
-      toast.error(msg);
+      toast.error(getErrorMessage(err, "Erreur lors de la suppression."));
     } finally {
       setSaving(false);
     }
   };
 
-  // ── Modifier quantité ──────────────────────────────────────────────────────
-  const beginEditQuantity = (item) => {
+  const beginIncrement = (item) => {
     setEditingId(item.id);
-    setEditingQuantity(String(item.quantity));
+    setEditingMode("increment");
+    setEditingQuantity("");
+    setQuantityErrors({});
+  };
+
+  const beginDecrement = (item) => {
+    setEditingId(item.id);
+    setEditingMode("decrement");
+    setEditingQuantity("");
+    setQuantityErrors({});
   };
 
   const cancelEditQuantity = () => {
     setEditingId(null);
+    setEditingMode(null);
     setEditingQuantity("");
+    setQuantityErrors({});
   };
 
   const saveQuantity = async (item) => {
-    const q = Number(editingQuantity);
-    if (!Number.isInteger(q) || q < 0) {
-      toast.error("La quantité doit être un entier positif.");
+    const delta = Number(editingQuantity);
+    if (!Number.isInteger(delta) || delta <= 0) {
+      setQuantityErrors({
+        quantite: "Veuillez saisir un entier strictement positif.",
+      });
       return;
     }
+
+    const current = Number.isFinite(Number(item?.quantity)) ? Number(item.quantity) : 0;
+    if (editingMode === "decrement" && delta > current) {
+      setQuantityErrors({
+        quantite: `La quantite a retirer ne peut pas depasser le stock actuel (${current}).`,
+      });
+      return;
+    }
+
+    const newQuantity = editingMode === "decrement" ? current - delta : current + delta;
+
     try {
       setSaving(true);
-      await updateStockQuantityApi(item.id, q);
+      setQuantityErrors({});
+      await updateStockQuantityApi(item.id, newQuantity);
       await refreshStock();
       cancelEditQuantity();
-      toast.success("Quantité mise à jour avec succès");
+      toast.success(
+        editingMode === "decrement"
+          ? `Stock diminue de ${delta} unite(s)`
+          : `Stock augmente de ${delta} unite(s)`
+      );
     } catch (err) {
-      const msg = err?.response?.data?.message || err?.message || "Erreur lors de la mise à jour.";
-      toast.error(msg);
+      const validationErrors = mapValidationErrors(err);
+
+      if (validationErrors) {
+        setQuantityErrors(validationErrors);
+        return;
+      }
+
+      if (err?.message) {
+        setQuantityErrors({ _form: err.message });
+        return;
+      }
+
+      toast.error(getErrorMessage(err, "Erreur lors de la mise a jour."));
     } finally {
       setSaving(false);
     }
   };
 
   return {
-    search,          setSearch,
-    showAddForm,     setShowAddForm,
-    addForm,         setAddForm,
+    search,
+    setSearch,
+    showAddForm,
+    setShowAddForm,
+    addForm,
+    setAddForm,
+    addErrors,
+    handleAddFormChange,
     editingId,
-    editingQuantity, setEditingQuantity,
-    showHistory,     setShowHistory,
+    editingMode,
+    editingQuantity,
+    setEditingQuantity,
+    quantityErrors,
+    handleEditingQuantityChange,
+    showHistory,
+    setShowHistory,
     loading,
     saving,
     error,
@@ -171,7 +274,8 @@ export function useStockLogic(numero) {
     handleAddMedication,
     cancelAddForm,
     handleDeleteMedication,
-    beginEditQuantity,
+    beginIncrement,
+    beginDecrement,
     cancelEditQuantity,
     saveQuantity,
   };

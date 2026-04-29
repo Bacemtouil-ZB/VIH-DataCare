@@ -1,0 +1,170 @@
+/* ─── profil.css (minimal clean white) ───────────────────────────────────────── */
+
+/* ── Variables ──────────────────────────────────────────────────────────────── */
+:root {
+  --profil-bg:            #ffffff;
+  --profil-surface:       #ffffff;
+  --profil-border:        #f1f5f9;
+  --profil-border-focus:  #2563eb;
+  --profil-text:          #0f172a;
+  --profil-muted:         #94a3b8;
+  --profil-accent:        #2563eb;
+  --profil-accent-hover:  #1d4ed8;
+  --profil-success:       #16a34a;
+  --profil-error:         #ef4444;
+  --profil-shadow:        0 1px 2px rgba(0,0,0,0.04);
+  --profil-radius:        10px;
+  --profil-font:          'Inter', sans-serif;
+}
+
+/* ── Page ───────────────────────────────────────────────────────────────────── */
+.profil-page {
+  min-height: 100vh;
+  background: var(--profil-bg);
+  padding: 2rem 1.5rem;
+  font-family: var(--profil-font);
+}
+
+/* ── Container ──────────────────────────────────────────────────────────────── */
+.profil-container {
+  max-width: 820px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* ── Header ─────────────────────────────────────────────────────────────────── */
+.profil-header-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--profil-border);
+}
+
+.profil-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #eff6ff;
+  color: var(--profil-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.profil-header-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--profil-text);
+}
+
+.profil-date-meta {
+  font-size: 12px;
+  color: var(--profil-muted);
+}
+
+/* ── Grid ───────────────────────────────────────────────────────────────────── */
+.profil-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+}
+
+/* ── Card (minimal) ─────────────────────────────────────────────────────────── */
+.profil-card {
+  padding: 1.25rem 0;
+  border-bottom: 1px solid var(--profil-border);
+}
+
+.profil-card-header {
+  margin-bottom: 1rem;
+}
+
+.profil-card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--profil-text);
+}
+
+/* ── Form ───────────────────────────────────────────────────────────────────── */
+.profil-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.profil-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+/* ── Field ─────────────────────────────────────────────────────────────────── */
+.profil-label {
+  font-size: 12px;
+  color: var(--profil-muted);
+}
+
+/* cleaner input */
+.profil-input-wrap {
+  border-bottom: 1px solid var(--profil-border);
+  transition: border-color 0.2s;
+}
+
+.profil-input-wrap:focus-within {
+  border-color: var(--profil-border-focus);
+}
+
+.profil-input {
+  width: 100%;
+  padding: 0.5rem 0;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  color: var(--profil-text);
+  outline: none;
+}
+
+/* remove heavy icons spacing */
+.profil-input--with-icon {
+  padding-left: 0;
+}
+
+.profil-input::placeholder {
+  color: var(--profil-muted);
+}
+
+/* ── Messages ──────────────────────────────────────────────────────────────── */
+.profil-error-msg {
+  font-size: 11px;
+  color: var(--profil-error);
+}
+
+/* ── Button (clean minimal) ───────────────────────────────────────────────── */
+.profil-btn {
+  padding: 0.5rem 1rem;
+  font-size: 13px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.profil-btn--primary {
+  background: var(--profil-accent);
+  color: white;
+}
+
+.profil-btn--primary:hover {
+  background: var(--profil-accent-hover);
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .profil-grid,
+  .profil-row {
+    grid-template-columns: 1fr;
+  }
+}

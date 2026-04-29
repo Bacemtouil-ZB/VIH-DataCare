@@ -1,3 +1,4 @@
+//cheked 15/04/2026
 import express from "express";
 import {
   createSignesFonctionnelsController,
@@ -7,10 +8,9 @@ import {
 } from "../../controllers/examenClinique/signeFonctinController.js";
 import { protect, authorizeMedecin } from "../../middlewares/authMiddleware.js";
 //link validators for signes fonctionnels not yet implemented
-// import {
-//   validateSignesFonctionnels,
-//   validateAutreSigneFonctionnel,
-// } from "../../middlewares/validators/examenCliniqueValidator.js";
+ import {
+validateCreateSignesFonctionnels,validateUpdateSignesFonctionnels
+} from "../../middlewares/validators/examenValidator.js";
 const router = express.Router();
 
 router.get("/appareils", protect, getAppareilsController);
@@ -25,14 +25,14 @@ router.get(
 router.post(
   "/add",
   protect,
-  authorizeMedecin,
+  authorizeMedecin,validateCreateSignesFonctionnels,
   createSignesFonctionnelsController,
 );
 
 router.put(
   "/update/:examenId",
   protect,
-  authorizeMedecin,
+  authorizeMedecin,validateUpdateSignesFonctionnels,
   updateSignesFonctionnelsController,
 );
 

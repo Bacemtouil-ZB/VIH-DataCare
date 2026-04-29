@@ -1,3 +1,4 @@
+// cheked 15/04/2026
 export const PROBLEME_OPTIONS = [
   { value: "precarite_logement", label: "Précarité logement" },
   {
@@ -25,6 +26,7 @@ export const ACTIVITE_OPTIONS = [
   { value: "sans_emploi", label: "Sans emploi" },
   { value: "retraite", label: "Retraité(e)" },
   { value: "personne_au_foyer", label: "Personne au foyer" },
+   { value: "professionnelle_du_sexe", label: "Professionnelle du sexe (PS)" },
 ];
 
 export const SITUATION_SOCIAL_OPTIONS = [

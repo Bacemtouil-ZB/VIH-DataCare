@@ -1,0 +1,74 @@
+.workspace-header {
+  
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* LEFT */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.workspace-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+/* RIGHT */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.header-time {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* ICON BUTTON */
+.icon-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease;
+}
+
+.icon-btn:hover {
+  background-color: #f3f4f6;
+}
+
+/* LOGOUT subtle danger */
+.icon-btn.danger:hover {
+  background-color: #fef2f2;
+  color: #dc2626;
+}
+/* remove link styling */
+.icon-btn {
+  text-decoration: none;
+  color: #374151; /* normal icon color */
+}
+
+
+.icon-btn.active {
+  color: #374151;
+}
+
+/* hover */
+.icon-btn:hover {
+  background-color: #f3f4f6;
+  color: #111827;
+}

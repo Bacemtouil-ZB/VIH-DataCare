@@ -1,3 +1,4 @@
+//cheked 15/04/2026
 import { createExamenClinique, getExamensByNumeroDossier, updateExamenClinique } from "../../models/examenClinique/examenCliniqueModel.js";
 import { getPatientByNumero } from "../../models/patientModel.js";
 import { logAction } from "../../services/auditService.js";

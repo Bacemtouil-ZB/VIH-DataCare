@@ -14,7 +14,7 @@ import { generateToken } from "../utils/jwt.js";
 import {
   sendUserCredentialsEmail,
   sendPasswordResetEmail,
-} from "./mailService.js";
+} from "../utils/mailer.js";
 
 export const loginUser = async (email, password) => {
   // Vérifier si l'utilisateur existe
@@ -46,7 +46,7 @@ export const loginUser = async (email, password) => {
       role: user.role,
       isActivated,
     },
-    "30d",
+    "8h",
   );
 
   //  Supprimer le mot de passe avant retour
@@ -59,7 +59,7 @@ export const loginUser = async (email, password) => {
   };
 };
 
-// register sans role
+// register 
 export const registerUser = async (
   nom,
   prenom,
@@ -88,19 +88,14 @@ export const registerUser = async (
     false,
   );
 
-  try {
-    await sendUserCredentialsEmail({
-      to: email,
-      nom,
-      prenom,
-      password,
-      role,
-    });
-  } catch (error) {
-    console.error("Erreur envoi email identifiants:", error.message);
-  }
+  // Email en arrière-plan — ne bloque pas l'inscription
+  setImmediate(() => {
+    sendUserCredentialsEmail({ to: email, nom, prenom, password, role })
+      .catch((error) =>
+        console.error("Erreur envoi email identifiants:", error.message),
+      );
+  });
 
-  // Ne pas retourner le mot de passe
   const { password: _, ...userWithoutPassword } = user;
   return userWithoutPassword;
 };

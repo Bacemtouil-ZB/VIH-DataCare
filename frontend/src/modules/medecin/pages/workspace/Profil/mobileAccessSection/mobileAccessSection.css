@@ -1,0 +1,464 @@
+:root {
+  --ma-green-700: #155a3e;
+  --ma-green-600: #1a6b4a;
+  --ma-green-500: #279a6f;
+  --ma-ink-900: #1f2937;
+  --ma-ink-700: #374151;
+  --ma-ink-500: #6b7280;
+  --ma-surface-100: #f8fafc;
+  --ma-border: #e5e7eb;
+  --ma-warning-bg: #fff7e8;
+  --ma-warning-fg: #a16207;
+  --ma-danger-bg: #fef2f2;
+  --ma-danger-fg: #b91c1c;
+}
+
+/* Header alignment (used in ProfilPageWorkspace) */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+/* ── Button trigger ──────────────────────────────────────── */
+/* ── Button trigger ──────────────────────────────────────── */
+.mobile-access-trigger {
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px 0 10px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1.5px solid #e5e7eb;
+  background: #ffffff;
+  color: #1f2937;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+}
+
+.mobile-access-trigger:hover {
+  border-color: #0F6E56;
+  background: #f8fafc;
+}
+
+.mobile-access-trigger:active {
+  transform: scale(0.98);
+}
+
+.mobile-access-trigger:focus-visible {
+  outline: 2px solid rgba(15, 110, 86, 0.3);
+  outline-offset: 2px;
+}
+
+.mobile-access-trigger:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Phone icon wrapped in a teal circle */
+.mobile-access-trigger > i.bi-phone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #E1F5EE;
+  color: #0F6E56;
+  font-size: 13px;
+}
+
+/* Status badge (the circle at the end) */
+.mobile-access-trigger .trigger-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: none;
+  box-shadow: none;
+}
+
+.mobile-access-trigger .trigger-badge.active {
+  background: #E1F5EE;
+  color: #085041;
+}
+
+.mobile-access-trigger .trigger-badge.inactive {
+  background: #FCEBEB;
+  color: #791F1F;
+}
+
+.mobile-access-trigger .trigger-badge.none {
+  background: #F1EFE8;
+  color: #888780;
+}
+
+.trigger-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.trigger-badge i,
+.trigger-icon i {
+  font-size: 11px;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .mobile-access-trigger {
+    width: 100%;
+    justify-content: space-between;
+    padding: 0 12px 0 10px;
+  }
+}
+/* ── Modal overlay ───────────────────────────────────────── */
+.mobile-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at 15% 20%, rgba(26, 107, 74, 0.16), transparent 35%),
+    radial-gradient(circle at 80% 85%, rgba(37, 191, 107, 0.12), transparent 42%),
+    rgba(10, 14, 20, 0.56);
+  backdrop-filter: blur(2px);
+}
+
+/* ── Modal box ───────────────────────────────────────────── */
+.mobile-modal-box {
+  width: min(560px, 100%);
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  padding: 24px;
+  border: 1px solid var(--ma-border);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: ma-modal-in 0.2s ease-out;
+}
+
+@keyframes ma-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.mobile-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.mobile-modal-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ma-ink-900);
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.mobile-modal-title i {
+  color: var(--ma-green-600);
+  font-size: 18px;
+}
+
+.mobile-modal-close {
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ma-ink-500);
+  font-size: 18px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.mobile-modal-close:hover {
+  background: #f3f4f6;
+  color: var(--ma-ink-900);
+}
+
+.mobile-modal-close:focus-visible {
+  outline: 3px solid rgba(26, 107, 74, 0.25);
+  outline-offset: 1px;
+}
+
+/* ── Patient info ────────────────────────────────────────── */
+.mobile-modal-patient {
+  border: 1px solid var(--ma-border);
+  border-radius: 12px;
+  background: linear-gradient(180deg, #fbfdff, #f4f8fb);
+  padding: 12px 14px;
+}
+
+.mobile-modal-patient-name {
+  color: var(--ma-ink-900);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.mobile-modal-patient-numero {
+  color: var(--ma-ink-700);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* ── Status badge / user ─────────────────────────────────── */
+.mobile-status-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.mobile-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.mobile-status-badge.active {
+  background-color: #e8f9f0;
+  border-color: #b7ebcd;
+  color: #0f7a4f;
+}
+
+.mobile-status-badge.inactive {
+  background-color: #fef2f2;
+  border-color: #fecaca;
+  color: #b91c1c;
+}
+
+.mobile-status-badge.none {
+  background-color: #f3f4f6;
+  border-color: #e5e7eb;
+  color: #4b5563;
+}
+
+.mobile-status-username {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--ma-ink-700);
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--ma-surface-100);
+  border: 1px solid var(--ma-border);
+  border-radius: 999px;
+  padding: 5px 10px;
+}
+
+/* ── Action buttons ──────────────────────────────────────── */
+.mobile-modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.btn-mobile-create,
+.btn-mobile-reset,
+.btn-mobile-deactivate,
+.btn-print {
+  width: 100%;
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.16s ease, filter 0.16s ease, background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.btn-mobile-create,
+.btn-print {
+  border: 1px solid transparent;
+  color: #fff;
+  background: linear-gradient(135deg, var(--ma-green-600), var(--ma-green-500));
+}
+
+.btn-mobile-create:hover,
+.btn-print:hover {
+  filter: brightness(1.05);
+  transform: translateY(-1px);
+}
+
+.btn-mobile-reset {
+  border: 1px solid #f59e0b;
+  color: #b45309;
+  background: #fffbeb;
+}
+
+.btn-mobile-reset:hover {
+  background: #fef3c7;
+}
+
+.btn-mobile-deactivate {
+  border: 1px solid #ef4444;
+  color: #b91c1c;
+  background: #fef2f2;
+}
+
+.btn-mobile-deactivate:hover {
+  background: #fee2e2;
+}
+
+.btn-mobile-create:active,
+.btn-mobile-reset:active,
+.btn-mobile-deactivate:active,
+.btn-print:active {
+  transform: translateY(0);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Credentials box ─────────────────────────────────────── */
+.credentials-box {
+  border: 1px solid var(--ma-border);
+  border-radius: 12px;
+  background: linear-gradient(180deg, #ffffff, #f8fafc);
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.credential-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 14px;
+}
+
+.credential-label {
+  color: var(--ma-ink-500);
+  font-weight: 600;
+}
+
+.credential-value {
+  color: var(--ma-ink-900);
+  font-weight: 700;
+  text-align: right;
+  word-break: break-word;
+}
+
+.credential-password {
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 15px;
+  letter-spacing: 1.2px;
+  color: var(--ma-green-700);
+}
+
+.credentials-warning {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #fcd34d;
+  border-radius: 10px;
+  background: var(--ma-warning-bg);
+  color: var(--ma-warning-fg);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  padding: 10px 12px;
+}
+
+.credentials-print-row {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-print {
+  width: auto;
+  padding: 0 16px;
+}
+
+/* ── Error ───────────────────────────────────────────────── */
+.mobile-error {
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  background: var(--ma-danger-bg);
+  color: var(--ma-danger-fg);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 12px;
+}
+
+/* Generic icon spacing only inside this feature */
+.mobile-modal-box .bi,
+.mobile-access-trigger .bi {
+  vertical-align: middle;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .mobile-access-trigger {
+    width: 100%;
+    justify-content: space-between;
+    padding: 10px 12px;
+  }
+
+  .mobile-modal-overlay {
+    padding: 10px;
+  }
+
+  .mobile-modal-box {
+    width: 100%;
+    max-height: calc(100vh - 20px);
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .mobile-status-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .credential-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .credential-value {
+    text-align: left;
+  }
+}

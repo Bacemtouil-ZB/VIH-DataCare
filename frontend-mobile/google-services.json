@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "243300601885",
+    "project_id": "vihdatacare",
+    "storage_bucket": "vihdatacare.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:243300601885:android:e340ab94a9ccd10c6976f4",
+        "android_client_info": {
+          "package_name": "com.zb9.vihdatacare"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6oWw2aWJa0BUrz0CsV41UhZ8tw7rwUw8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

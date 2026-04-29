@@ -1,3 +1,4 @@
+//cheked 15/04/2026
 import {
   createSignesFonctionnels as createSignesService,
   getSignesByNumeroDossier as getSignesByNumeroService,
@@ -13,7 +14,7 @@ export const createSignesFonctionnelsController = async (req, res) => {
     const result = await createSignesService(data, userId);
 
     await logAction(req, {
-      module: "SIGNES_FONCTIONNELS",
+      module: "SIGNE_FONCTIONNEL",
       action: "SIGNE_FONCTIONNEL_CREATE",
       patient_id: result.patient_id,
       entity_id: result.id,
@@ -28,38 +29,19 @@ export const createSignesFonctionnelsController = async (req, res) => {
     });
   } catch (error) {
     console.error("Create signes fonctionnels error:", error.message);
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(400).json({ success: false, message: error.message });
   }
 };
 
+// Pas de log VIEW — risque autosave
 export const getSignesByPatientController = async (req, res) => {
   try {
     const { numero } = req.params;
     const signes = await getSignesByNumeroService(numero);
-    const firstSigne = Array.isArray(signes) && signes.length > 0 ? signes[0] : null;
-
-    await logAction(req, {
-      module: "SIGNES_FONCTIONNELS",
-      action: "SIGNE_FONCTIONNEL_VIEW",
-      patient_id: firstSigne?.patient_id ?? null,
-      entity_id: firstSigne?.id ?? null,
-      old_data: null,
-      new_data: null,
-    });
-
-    res.status(200).json({
-      success: true,
-      signes,
-    });
+    res.status(200).json({ success: true, signes });
   } catch (error) {
     console.error("Get signes by patient error:", error.message);
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(400).json({ success: false, message: error.message });
   }
 };
 
@@ -69,14 +51,20 @@ export const updateSignesFonctionnelsController = async (req, res) => {
     const data = req.body;
     const userId = req.user.id;
 
+    // old_data AVANT modification
+    const old_signes = await getSignesByNumeroService(data.numero);
+    const old_data = Array.isArray(old_signes) && old_signes.length > 0
+      ? old_signes[0]
+      : null;
+
     const signes = await updateSignesService(parseInt(examenId, 10), data, userId);
 
     await logAction(req, {
-      module: "SIGNES_FONCTIONNELS",
+      module: "SIGNE_FONCTIONNEL",
       action: "SIGNE_FONCTIONNEL_UPDATE",
       patient_id: signes.patient_id,
       entity_id: signes.id,
-      old_data: null,
+      old_data: old_data,
       new_data: signes,
     });
 
@@ -87,26 +75,16 @@ export const updateSignesFonctionnelsController = async (req, res) => {
     });
   } catch (error) {
     console.error("Update signes error:", error.message);
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(400).json({ success: false, message: error.message });
   }
 };
 
 export const getAppareilsController = async (req, res) => {
   try {
     const appareils = await getAppareils();
-
-    res.status(200).json({
-      success: true,
-      appareils,
-    });
+    res.status(200).json({ success: true, appareils });
   } catch (error) {
     console.error("Get appareils error:", error.message);
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
+    res.status(400).json({ success: false, message: error.message });
   }
 };

@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { getPatientByNumero } from "../../../services/patientService";
-import { getThreeLastPrise } from "../../../services/ordonnanceService";
+//import { getThreeLastPrise } from "../../../services/prescriptionWorkflowService";
 import "./LeftPanel.css";
 
 export default function LeftPanel() {
@@ -45,7 +45,7 @@ export default function LeftPanel() {
       case "en fin de suivi":
         return "badge-info";
       case "decede":
-      case "décédé":
+      case "dÃ©cÃ©dÃ©":
         return "badge-danger";
       default:
         return "badge-neutral";
@@ -74,7 +74,7 @@ export default function LeftPanel() {
 
         const [patientResponse, prisesResponse] = await Promise.all([
           getPatientByNumero(numero),
-          getThreeLastPrise(numero),
+          //getThreeLastPrise(numero),
         ]);
 
         setPatientData(patientResponse?.patient || null);

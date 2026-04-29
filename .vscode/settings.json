@@ -1,0 +1,8 @@
+{
+  "json.schemas": [
+    {
+      "fileMatch": ["/frontend-mobile/.markdownlint.json"],
+      "url": "../schemas/markdownlint-config-schema.json"
+    }
+  ]
+}

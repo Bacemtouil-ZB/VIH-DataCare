@@ -1,15 +1,15 @@
-﻿import { useEffect, useState } from "react";
+﻿//cheked 15/04/2026
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { confirmAction } from "../../../../../../shared/utils/uiAlerts";
+import { confirmAction, alertError } from "../../../../../../shared/utils/uiAlerts";
 import {
   getAppareils,
   getSignesByPatient,
   createSignesFonctionnels,
   updateSignesFonctionnels,
 } from "../../../../services/examenCliniqueServices/signesFonctionService";
-import { SIGNES_KEYS, FORM_SF_INIT, getSignesPositifs } from "./signesFonctionnelsConstants";
+import { SIGNES_KEYS, FORM_SF_INIT } from "./signesFonctionnelsConstants";
 import {
-  formatDateFr,
   mapAutresSignesFromApi,
   buildAutreSigneItem,
   removeAutreSigneById,
@@ -18,13 +18,13 @@ import {
   openFormForCreate,
   showDetailMode,
 } from "../../../../../../shared/utils/logiqueTableHistory";
-import { parseApiError } from "../index";
 
 export function useSignesFonctionnelsLogic(patientNumero, examenId) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [showHistory, setShowHistory] = useState(true);
+  const [errors, setErrors] = useState({});                
 
   const [signesId, setSignesId] = useState(FORM_SF_INIT.signesId);
   const [isModifying, setIsModifying] = useState(FORM_SF_INIT.isModifying);
@@ -38,6 +38,7 @@ export function useSignesFonctionnelsLogic(patientNumero, examenId) {
   const [historique, setHistorique] = useState([]);
   const [detailSigne, setDetailSigne] = useState(null);
 
+  // ====== Reset formulaire ======
   const resetForm = () => {
     setSignesId(FORM_SF_INIT.signesId);
     setIsModifying(FORM_SF_INIT.isModifying);
@@ -46,8 +47,10 @@ export function useSignesFonctionnelsLogic(patientNumero, examenId) {
     setAutresSignes(FORM_SF_INIT.autresSignes);
     setAppareilSel(FORM_SF_INIT.appareilSel);
     setDescription(FORM_SF_INIT.description);
+    setErrors({});                                         
   };
 
+  // ====== Chargement initial ======
   useEffect(() => {
     if (!patientNumero) return;
     (async () => {
@@ -67,20 +70,20 @@ export function useSignesFonctionnelsLogic(patientNumero, examenId) {
     })();
   }, [patientNumero]);
 
+  // ====== Cancel ======
   const handleCancel = () => {
     handleCancelForm(setShowForm, resetForm, toast);
+    // resetForm inclut setErrors({})
   };
 
-  const openCreate = () => openFormForCreate(setDetailSigne, resetForm, setShowForm);
+  // ====== Ouvrir en mode création ======
+  const openCreate = () => {
+    openFormForCreate(setDetailSigne, resetForm, setShowForm);
+    // resetForm inclut setErrors({})
+  };
 
+  // ====== Ouvrir en mode modification ======
   const handleEdit = async (signeRow) => {
-    const pos = getSignesPositifs(signeRow);
-    const ok = await confirmAction(
-      "Modifier ce signe fonctionnel ?",
-      `Date : ${formatDateFr(signeRow.date_examen)}${pos.length ? " - " + pos.slice(0, 4).join(", ") : ""}`
-    );
-    if (!ok) return;
-
     setDetailSigne(null);
     setSignesId(signeRow.id);
     setIsModifying(true);
@@ -90,6 +93,7 @@ export function useSignesFonctionnelsLogic(patientNumero, examenId) {
     setAppareilSel("");
     setDescription("");
     setShowForm(true);
+    setErrors({});                                        
     toast.info("Mode modification activé");
   };
 
@@ -97,6 +101,7 @@ export function useSignesFonctionnelsLogic(patientNumero, examenId) {
     showDetailMode(setShowForm, setDetailSigne, signeRow);
   };
 
+  // ====== Autres signes ======
   const ajouterAutreSigne = () => {
     const { error, item } = buildAutreSigneItem(appareils, appareilSel, description, true);
     if (error) return toast.error(error);
@@ -117,13 +122,20 @@ export function useSignesFonctionnelsLogic(patientNumero, examenId) {
     toast.success("Description mise à jour");
   };
 
+  // ====== Soumission ======
   const handleSave = async () => {
     setSaving(true);
+    setErrors({});
+
     try {
       const payload = {
         signes: { ...signes, ras: rasChecked },
-        autres_signes: autresSignes.map(({ appareil_id, description: d }) => ({ appareil_id: parseInt(appareil_id, 10), description: d })),
+        autres_signes: autresSignes.map(({ appareil_id, description: d }) => ({
+          appareil_id: parseInt(appareil_id, 10),
+          description: d,
+        })),
       };
+
       if (isModifying && signesId) {
         await updateSignesFonctionnels(signesId, payload);
         toast.success("Signes fonctionnels mis à jour");
@@ -131,12 +143,38 @@ export function useSignesFonctionnelsLogic(patientNumero, examenId) {
         await createSignesFonctionnels({ ...payload, examen_clinique_id: examenId });
         toast.success("Signes fonctionnels enregistrés");
       }
+
       setShowForm(false);
       resetForm();
       const hr = await getSignesByPatient(patientNumero);
       setHistorique(hr?.signes || []);
+
     } catch (e) {
-      toast.error(parseApiError(e));
+
+      // Cas 1 — errors[] avec field (express-validator via handleValidation)
+      // → FieldError général car les champs (signes.*, autres_signes.*) ne sont pas des inputs texte visibles
+      if (e?.errors && Array.isArray(e.errors)) {
+        const errorObj = {};
+        e.errors.forEach((err) => {
+          errorObj[err.field] = err.message;
+        });
+        // Expose aussi le premier message sous _form pour affichage général
+        const firstError = e.errors[0];
+        errorObj._form = firstError?.message || "Erreur de validation";
+        setErrors(errorObj);
+        return;
+      }
+
+      // Cas 2 — message simple (erreur métier serveur)
+      // → FieldError général sous le formulaire
+      if (e?.message) {
+        setErrors({ _form: e.message });
+        return;
+      }
+
+      // Cas 3 — fallback inattendu (réseau, serveur indisponible)
+      alertError("Erreur lors de l'enregistrement");
+
     } finally {
       setSaving(false);
     }
@@ -163,6 +201,7 @@ export function useSignesFonctionnelsLogic(patientNumero, examenId) {
     historique,
     detailSigne,
     setDetailSigne,
+    errors,                                                
     openCreate,
     handleCancel,
     handleEdit,
@@ -173,4 +212,3 @@ export function useSignesFonctionnelsLogic(patientNumero, examenId) {
     handleSave,
   };
 }
-

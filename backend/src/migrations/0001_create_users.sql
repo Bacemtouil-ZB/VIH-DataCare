@@ -20,3 +20,18 @@ BEGIN
     RETURN NEW;
 END;
 $$ language 'plpgsql';
+
+--for mobile app
+ALTER TABLE users 
+ADD COLUMN must_change_password BOOLEAN DEFAULT false;
+
+ALTER TABLE users 
+ADD COLUMN username VARCHAR(100) UNIQUE; -- don't touch email for web app, add username for mobile app
+
+--nom et prenom ne sont pas obligatoires pour les utilisateurs de l'application mobile, donc on les rend optionnels 
+ALTER TABLE users ALTER COLUMN nom DROP NOT NULL;
+ALTER TABLE users ALTER COLUMN prenom DROP NOT NULL;
+ALTER TABLE users ALTER COLUMN email DROP NOT NULL;
+
+-- Add a column for storing the Expo push token : work as device identifier for mobile app to send push notifications
+ALTER TABLE users ADD COLUMN expo_push_token VARCHAR(255);

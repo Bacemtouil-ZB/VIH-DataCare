@@ -1,3 +1,5 @@
+//cheked 15/04/2026
+import pool from "../config/db.js";
 import {
   createPatient as createPatientModel,
   getPatientById as getPatientByIdModel,
@@ -7,9 +9,10 @@ import {
   checkNumeroExists,
   countPatients,
 } from "../models/patientModel.js";
-import { stripNumeroPrefix, canonicalNumero } from "../utils/numero.js";
-import pool from "../config/db.js";
 
+import { stripNumeroPrefix, canonicalNumero } from "../utils/numero.js"; // évites les doublons (F-123 vs 123)
+
+//------------createPatient------------
 export const createPatient = async (patientData, userId) => {
   const client = await pool.connect();
   try {
@@ -23,7 +26,7 @@ export const createPatient = async (patientData, userId) => {
         throw new Error(`Le numéro de dossier ${data.numero} existe déjà`);
     }
 
-    if (patientData.birthdate) {
+    if (patientData.birthdate) { // validation de la date de naissance it should be in validator not here !
       const birth = new Date(patientData.birthdate);
       const today = new Date();
       const minDate = new Date("1900-01-01");
@@ -38,9 +41,11 @@ export const createPatient = async (patientData, userId) => {
     const patient = await createPatientModel(client, data, userId);
     return patient;
   } finally {
-    client.release();
+    client.release();// TOUJOURS libérer la connexion
   }
 };
+
+//------------getPatientById------------
 
 export const getPatientById = async (id) => {
   const patient = await getPatientByIdModel(id);
@@ -50,6 +55,8 @@ export const getPatientById = async (id) => {
   }
   return patient;
 };
+
+//------------getPatientByNumero------------
 
 export const getPatientByNumero = async (numero) => {
   const raw = stripNumeroPrefix(numero);
@@ -65,8 +72,10 @@ export const getPatientByNumero = async (numero) => {
   return patient;
 };
 
+//------------checkPatientNumeroExists------------
+
 export const checkPatientNumeroExists = async (numero) => {
-  const rawNumero = normalizeNumero(numero);
+  const rawNumero = stripNumeroPrefix(numero);
 
   const exists = await checkNumeroExists(rawNumero);
   if (exists) {
@@ -75,7 +84,8 @@ export const checkPatientNumeroExists = async (numero) => {
   }
   return { exists: false, patient: null };
 };
-
+  
+//------------getAllPatients------------  
 export const getAllPatients = async (options = {}) => {
   const patients = await getAllPatientsModel(options);
   const total = await countPatients();
@@ -87,7 +97,7 @@ export const getAllPatients = async (options = {}) => {
   };
 };
 
-// export const updatePatient = async (id, patientData, userId) => {
+//------------updatePatient------------
 export const updatePatient = async (id, patientData, userId) => {
   const patient = await getPatientByIdModel(id);
   if (!patient) throw new Error("Patient non trouvé");
@@ -112,4 +122,33 @@ export const updatePatient = async (id, patientData, userId) => {
   }
 
   return await updatePatientModel(id, data, userId);
+};
+
+
+//------------getLeftPanel------------
+import { getLeftPanelData } from "../models/patientModel.js";
+
+export const getLeftPanel = async (numero) => {
+  const data = await getLeftPanelData(numero);
+  if (!data) throw new Error("Patient non trouvé");
+
+  return {
+    patient_id:      data.patient_id,
+    numero:          data.numero,
+    name:            data.name,
+    surname:         data.surname,
+    birthdate:       data.birthdate,
+    hospitalisation: data.hospitalisation,
+    statut_suivi:    data.statut_suivi ?? null,
+    dernier_traitement: data.dernier_traitement ?? "Aucun",
+    charge_virale: {
+      valeur: data.derniere_charge_virale ?? null,
+      date:   data.date_charge_virale     ?? null,
+    },
+    cd4: {
+      absolu:   data.dernier_cd4_absolu   ?? null,
+      pourcent: data.dernier_cd4_pourcent ?? null,
+      date:     data.date_cd4             ?? null,
+    },
+  };
 };

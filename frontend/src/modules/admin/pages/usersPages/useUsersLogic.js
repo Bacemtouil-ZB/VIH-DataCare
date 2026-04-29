@@ -1,6 +1,3 @@
-// ── useUsersLogic.js ─────────────────────────────────────────────────────────
-// Hook custom — toute la logique métier de UsersPage
-
 import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { confirmAction } from "../../../../shared/utils/uiAlerts.js";
@@ -28,6 +25,7 @@ export function useUsersLogic() {
     try {
       setLoading(true);
       const res = await getUsers();
+      console.log("USERS BACKEND:", res?.users);
       setUsers(res?.users || []);
     } catch (err) {
       console.error("Erreur récupération utilisateurs :", err);
@@ -76,11 +74,6 @@ export function useUsersLogic() {
 
   const handleChangeRole = async () => {
     if (!selectedUser || !newRole) return;
-    const ok = await confirmAction(
-      "Confirmer la modification ?",
-      `Voulez-vous changer le rôle de ${selectedUser.prenom || ""} ${selectedUser.nom || ""} en "${newRole}" ?`,
-    );
-    if (!ok) return;
 
     try {
       setActionLoading(selectedUser.id);
@@ -95,6 +88,8 @@ export function useUsersLogic() {
       setActionLoading(null);
     }
   };
+
+  
 
   // ── Filtrage ────────────────────────────────────────────────────────────
   const q = query.trim().toLowerCase();
@@ -114,12 +109,18 @@ export function useUsersLogic() {
   const activeUsers   = users.filter((u) => u.isactivated).length;
   const inactiveUsers = totalUsers - activeUsers;
 
+// ── Options pour modal (sans patient) ────────────────────────────────
+  const roleOptionsForModal = ROLE_OPTIONS.filter(
+    (role) => role.value !== "patient"
+  );
+
   return {
     // données
     filteredUsers,
     loading,
     actionLoading,
     roleOptions: ROLE_OPTIONS,
+    roleOptionsForModal,
     totals: { totalUsers, activeUsers, inactiveUsers },
     // filtres
     query,       setQuery,

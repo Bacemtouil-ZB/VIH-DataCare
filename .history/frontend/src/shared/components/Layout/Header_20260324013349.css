@@ -1,0 +1,115 @@
+/* ═══════════════════════════════════════════════════════
+   Header.css — VIHDataCare · Clinical Precision
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Shell ────────────────────────────────────────────── */
+.header-custom {
+  background: var(--white);
+  border-bottom: 1px solid var(--color-border);
+  height: var(--header-height);
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  display: flex;
+  align-items: center;
+}
+
+.header-inner {
+  width: 100%;
+  height: 100%;
+  padding: 0 var(--space-6);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-4);
+}
+
+/* ── Greeting ─────────────────────────────────────────── */
+.header-greeting {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-md);
+  line-height: 1;
+}
+
+.greeting-text {
+  color: var(--color-text-secondary);
+  font-weight: var(--weight-regular);
+}
+
+.greeting-name {
+  color: var(--color-text-primary);
+  font-weight: var(--weight-semi);
+}
+
+/* ── Divider ──────────────────────────────────────────── */
+.header-divider {
+  width: 1px;
+  height: 18px;
+  background: var(--color-border);
+  flex-shrink: 0;
+}
+
+/* ── Time Badge ───────────────────────────────────────── */
+.time-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background: var(--green-50);
+  border: 1px solid var(--green-100);
+  padding: 5px var(--space-3);
+  border-radius: var(--radius-md);
+  font-size: var(--text-sm);
+  line-height: 1;
+  white-space: nowrap;
+  transition: var(--transition-base);
+}
+
+.time-badge i {
+  color: var(--color-primary);
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.time-time {
+  color: var(--color-text-primary);
+  font-weight: var(--weight-semi);
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  letter-spacing: 0.2px;
+}
+
+.time-sep {
+  color: var(--gray-300);
+  font-weight: var(--weight-light);
+}
+
+.time-date {
+  color: var(--color-text-secondary);
+  font-weight: var(--weight-regular);
+  text-transform: capitalize;
+}
+
+/* ── Responsive ───────────────────────────────────────── */
+@media (max-width: 768px) {
+  .header-inner {
+    padding: 0 var(--space-4);
+    gap: var(--space-3);
+  }
+
+  .header-greeting,
+  .header-divider {
+    display: none;
+  }
+
+  .time-date {
+    display: none;
+  }
+
+  .time-badge {
+    font-size: var(--text-xs);
+    padding: 4px 10px;
+  }
+}

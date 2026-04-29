@@ -1,0 +1,125 @@
+import { Table, Tag, Spin, Empty } from "antd";
+import {
+  formatDate,
+  formatCD4,
+  formatCV,
+  formatCreatinine,
+  getCD4AntColor,
+  getCVAntColor,
+  getCreatinineAntColor,
+} from "../../helpers/suiviHelpers";
+import {
+  COULEURS_TYPE_BILAN,
+  UNITES,
+  MESSAGES_VIDES,
+} from "../../constants/suiviConstants";
+
+const TableauSuivi = ({ data = [], loading }) => {
+  const columns = [
+    {
+      title: "Date CD4",
+      dataIndex: "date_cd4",
+      key: "date_cd4",
+      width: 110,
+      render: (val) => formatDate(val),
+      sorter: (a, b) => new Date(a.date_tri) - new Date(b.date_tri),
+      defaultSortOrder: "descend",
+    },
+    {
+      title: "Date CV",
+      dataIndex: "date_cv",
+      key: "date_cv",
+      width: 110,
+      render: (val) => formatDate(val),
+    },
+    {
+      title: `CD4 (${UNITES.CD4})`,
+      dataIndex: "cd4_absolu",
+      key: "cd4_absolu",
+      width: 120,
+      render: (val) => (
+        <span style={{ color: `var(--ant-color-${getCD4AntColor(val)})`, fontWeight: 500 }}>
+          {formatCD4(val)}
+        </span>
+      ),
+      sorter: (a, b) => (a.cd4_absolu ?? 0) - (b.cd4_absolu ?? 0),
+    },
+    {
+      title: `CV (${UNITES.CV})`,
+      dataIndex: "charge_virale_valeur",
+      key: "charge_virale_valeur",
+      width: 140,
+      render: (val) => (
+        <span style={{ color: `var(--ant-color-${getCVAntColor(val)})`, fontWeight: 500 }}>
+          {formatCV(val)}
+        </span>
+      ),
+      sorter: (a, b) => (a.charge_virale_valeur ?? 0) - (b.charge_virale_valeur ?? 0),
+    },
+    {
+      title: `Créatinine (${UNITES.CREATININE})`,
+      dataIndex: "creatinine",
+      key: "creatinine",
+      width: 130,
+      render: (val) => (
+        <span style={{ color: `var(--ant-color-${getCreatinineAntColor(val)})` }}>
+          {formatCreatinine(val)}
+        </span>
+      ),
+    },
+    {
+      title: "Traitement ARV",
+      dataIndex: "traitement",
+      key: "traitement",
+      width: 150,
+      ellipsis: true,
+      render: (val, row) =>
+        val ? (
+          <span title={val} style={{ fontSize: 12 }}>
+            {row.traitement_code ?? val}
+          </span>
+        ) : (
+          <span style={{ color: "var(--color-text-tertiary)" }}>---</span>
+        ),
+    },
+    {
+      title: "Type",
+      dataIndex: "type_bilan",
+      key: "type_bilan",
+      width: 90,
+      render: (val) => (
+        <Tag color={COULEURS_TYPE_BILAN[val] ?? "default"}>
+          {val}
+        </Tag>
+      ),
+      filters: [
+        { text: "Initial", value: "Initial" },
+        { text: "Contrôle", value: "Contrôle" },
+      ],
+      onFilter: (value, record) => record.type_bilan === value,
+    },
+  ];
+
+  if (loading) {
+    return (
+      <div style={{ textAlign: "center", padding: "40px 0" }}>
+        <Spin size="large" />
+      </div>
+    );
+  }
+
+  return (
+    <Table
+      dataSource={data}
+      columns={columns}
+      rowKey="id"
+      size="small"
+      pagination={{ pageSize: 10, showSizeChanger: true }}
+      locale={{ emptyText: <Empty description={MESSAGES_VIDES.tableau} /> }}
+      scroll={{ x: 900 }}
+      style={{ marginTop: 8 }}
+    />
+  );
+};
+
+export default TableauSuivi;

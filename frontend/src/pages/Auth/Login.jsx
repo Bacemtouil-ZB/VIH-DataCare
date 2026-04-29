@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../shared/hooks/useAuth.js';
 import { toast } from "react-toastify";
@@ -8,7 +8,7 @@ const Login = () => {
   const location = useLocation();
   const { handleLogin, user, error, setError, loading } = useAuth();
 
-  const [formData, setFormData] = useState({ email: '', password: '', rememberMe: false });
+  const [formData, setFormData] = useState({ email: '', password: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -33,8 +33,8 @@ const Login = () => {
     navigate(location.pathname, { replace: true, state: {} });
   }, [location.pathname, location.state, navigate]);
 
-  const handleChange = ({ target: { name, value, type, checked } }) =>
-    setFormData(prev => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+  const handleChange = ({ target: { name, value } }) =>
+    setFormData(prev => ({ ...prev, [name]: value }));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -54,6 +54,14 @@ const Login = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 flex items-center justify-center p-6">
+      <Link
+        to="/"
+        aria-label="Retour a l'accueil"
+        className="absolute left-8 top-8 inline-flex h-10 w-10 items-center justify-center rounded-full bg-white text-gray-600 no-underline shadow-md transition-all hover:-translate-y-0.5 hover:text-gray-800 hover:no-underline hover:shadow-lg"
+      >
+        <span aria-hidden="true" className="text-xl leading-none">&larr;</span>
+      </Link>
+
       <div className="flex max-w-4xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden">
 
         {/* Gauche */}
@@ -62,7 +70,7 @@ const Login = () => {
           <p className="text-base opacity-90 leading-relaxed mb-8">
             Rejoignez notre plateforme et découvrez une nouvelle expérience.
           </p>
-          <Link to="/signup" className="bg-white text-green-600 font-semibold py-3 px-10 rounded-lg text-center hover:bg-gray-50 transition-all">
+          <Link to="/signup" className="bg-white text-green-600 font-semibold py-3 px-10 rounded-lg text-center no-underline hover:bg-gray-50 hover:no-underline transition-all">
             S'INSCRIRE
           </Link>
         </div>
@@ -101,11 +109,6 @@ const Login = () => {
             </div>
 
             <div className="flex items-center justify-between">
-              <label className="flex items-center cursor-pointer">
-                <input type="checkbox" name="rememberMe" checked={formData.rememberMe} onChange={handleChange}
-                  className="w-4 h-4 text-green-500 rounded" disabled={isSubmitting} />
-                <span className="ml-2 text-sm text-gray-600">Se souvenir de moi</span>
-              </label>
               <Link to="/forgot-password" className="text-sm text-green-600 hover:text-green-700 font-medium">
                 Mot de passe oublié ?
               </Link>

@@ -51,7 +51,7 @@ INSERT INTO ref_appareil_fonctionnel (libelle, ordre) VALUES
 ('Dermatologique', 3),
 ('Digestif', 4),
 ('Génito-Urinaire', 5),
-('Neuro-ostéo-musculaire', 6),
+('Neurologie', 6),
 ('ORL', 7),
 ('Ophtalmologique', 8),
 ('Pleuro-Pulmonaire', 9),

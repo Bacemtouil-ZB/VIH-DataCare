@@ -1,0 +1,4 @@
+{
+  "$schema": "../schemas/markdownlint-config-schema.json",
+  "default": true
+}

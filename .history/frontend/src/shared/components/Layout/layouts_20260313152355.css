@@ -1,0 +1,50 @@
+.sh-searchbar {
+  min-width: 240px;
+}
+
+.sh-searchbar-input {
+  border: 2px solid #d1d5db !important;
+  border-radius: 0.5rem !important;
+  font-size: 0.95rem !important;
+  padding: 0.72rem 1rem !important;
+}
+
+.sh-searchbar-input:focus {
+  border-color: #10b981 !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1) !important;
+}
+
+.sh-stat-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 0.9rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.sh-stat-label {
+  color: #64748b;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.sh-stat-value {
+  font-size: 1.45rem;
+  line-height: 1;
+}
+
+.sh-stat-success {
+  color: #166534;
+}
+
+.sh-stat-warning {
+  color: #c2410c;
+}
+
+.sh-stat-danger {
+  color: #991b1b;
+}
+

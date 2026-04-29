@@ -1,19 +1,17 @@
+// cheked 15/04/2026
 import {
   createPatient as createPatientService,
-  //getPatientById as getPatientByIdService,
   getPatientByNumero as getPatientByNumeroService,
   checkPatientNumeroExists,
   getAllPatients as getAllPatientsService,
   updatePatient as updatePatientService,
-  //searchPatient as searchPatientService,
-  //updatePatientLastVisit as updatePatientLastVisitService,
 } from "../services/patientService.js";
+
 import { logAction } from "../services/auditService.js";
 
 export const createPatientController = async (req, res) => {
   try {
     const patientData = req.body;
-    console.log(req.body);
     const userId = req.user.id;
 
     const patient = await createPatientService(patientData, userId);
@@ -146,49 +144,25 @@ export const updatePatientController = async (req, res) => {
   }
 };
 
-// export const searchPatientController = async (req, res) => {
-//   try {
-//     const searchParams = {
-//       birthdate: req.query.birthdate,
-//       numero: req.query.numero,
-//       lastVisitFrom: req.query.lastVisitFrom,
-//       lastVisitTo: req.query.lastVisitTo,
-//       name: req.query.name,
-//       surname: req.query.surname,
-//     };
 
-//     const patients = await searchPatientService(searchParams);
+//------------getLeftPanelData------------
+import { getLeftPanel } from "../services/patientService.js";
 
-//     res.status(200).json({
-//       success: true,
-//       count: patients.length,
-//       patients,
-//     });
-//   } catch (error) {
-//     console.error("Search patient error:", error.message);
-//     res.status(400).json({
-//       success: false,
-//       message: error.message,
-//     });
-//   }
-// };
+export const getLeftPanelController = async (req, res) => {
+  try {
+    const { numero } = req.params;
+    if (!numero) {
+      return res.status(400).json({ success: false, message: "Numéro de dossier requis" });
+    }
 
-// export const updateLastVisitController = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const patient = await updatePatientLastVisitService(parseInt(id));
+    const data = await getLeftPanel(numero);
+    return res.status(200).json({ success: true, data });
 
-//     res.status(200).json({
-//       success: true,
-//       message: "Date de dernière visite mise à jour",
-//       patient,
-//     });
-//   } catch (error) {
-//     console.error("Update last visit error:", error.message);
-//     const statusCode = error.message === "Patient non trouvé" ? 404 : 400;
-//     res.status(statusCode).json({
-//       success: false,
-//       message: error.message,
-//     });
-//   }
-// };
+  } catch (err) {
+    if (err.message === "Patient non trouvé") {
+      return res.status(404).json({ success: false, message: err.message });
+    }
+    console.error("[LeftPanel] Erreur:", err.message);
+    return res.status(500).json({ success: false, message: "Erreur serveur" });
+  }
+};

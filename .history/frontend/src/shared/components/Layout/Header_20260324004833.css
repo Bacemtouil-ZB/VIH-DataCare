@@ -1,0 +1,99 @@
+/* ── Header ───────────────────────────────────────────────────────────────── */
+.header-custom {
+  background: #ffffff;
+  box-shadow: inset 0 -1px 0 rgba(123, 126, 131, 0.12);
+  padding: 0 1.5rem;
+  height: 56px;
+  position: sticky;
+  top: 0;
+  z-index: 999;
+}
+
+.header-inner {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+}
+
+/* ── Greeting ─────────────────────────────────────────────────────────────── */
+.header-greeting {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+}
+
+.greeting-text {
+  color: #6b7280;
+  font-weight: 400;
+}
+
+.greeting-name {
+  color: #111827;
+  font-weight: 600;
+}
+
+/* ── Divider ──────────────────────────────────────────────────────────────── */
+.header-divider {
+  width: 1px;
+  height: 20px;
+  background: #e5e7eb;
+  flex-shrink: 0;
+}
+
+/* ── Time Badge ───────────────────────────────────────────────────────────── */
+.time-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f4fdf6;
+  border: 1px solid #bbf7d0;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #374151;
+  font-weight: 500;
+}
+
+.time-badge i {
+  color: #138a36;
+  font-size: 13px;
+}
+
+.time-time {
+  color: #111827;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.time-sep {
+  color: #d1d5db;
+  font-weight: 400;
+}
+
+.time-date {
+  color: #6b7280;
+  font-weight: 400;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .header-greeting {
+    display: none;
+  }
+
+  .header-divider {
+    display: none;
+  }
+
+  .time-date {
+    display: none;
+  }
+
+  .time-badge {
+    font-size: 12px;
+    padding: 5px 10px;
+  }
+}

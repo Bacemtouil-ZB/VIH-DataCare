@@ -1,14 +1,11 @@
-import { useState, useEffect, useMemo } from "react";
+﻿import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { getPatientByNumero } from "../../../services/patientServices";
-import { getThreeLastPrise } from "../../../services/ordonnancesService";
+import { getPatientLeftPanel } from "../../../services/patientServices";
 import "./LeftPanel.css";
 
 export default function LeftPanel() {
   const { numero } = useParams();
-
-  const [patientData, setPatientData] = useState(null);
-  const [derniersPrises, setDerniersPrises] = useState([]);
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -19,105 +16,65 @@ export default function LeftPanel() {
       return;
     }
 
-    // Creating a new patient: left panel shows empty state
     if (numero === "new") {
-      setPatientData(null);
-      setDerniersPrises([]);
+      setData(null);
       setError(null);
       setLoading(false);
       return;
     }
 
-    const fetchPatientData = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
-
-        const patientResponse = await getPatientByNumero(numero);
-        if (patientResponse?.success && patientResponse.patient) {
-          setPatientData(patientResponse.patient);
+        const response = await getPatientLeftPanel(numero);
+        if (response?.success && response.data) {
+          setData(response.data);
         } else {
-          setPatientData(null);
+          setData(null);
           setError("Patient non trouvé");
         }
-
-        try {
-          const prisesResponse = await getThreeLastPrise(numero);
-          if (prisesResponse?.success && Array.isArray(prisesResponse.prises)) {
-            setDerniersPrises(prisesResponse.prises);
-          } else {
-            setDerniersPrises([]);
-          }
-        } catch (err) {
-          // Not fatal (patient can exist without prises)
-          setDerniersPrises([]);
-          console.log("Pas de prises trouvées:", err);
-        }
       } catch (err) {
-        console.error("Erreur chargement patient:", err);
-        setPatientData(null);
-        setDerniersPrises([]);
+        console.error("Erreur chargement left panel:", err);
+        setData(null);
         setError(err?.message || "Erreur lors du chargement");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchPatientData();
+    fetchData();
   }, [numero]);
 
-  const calculateAge = (dateNaissance) => {
-    if (!dateNaissance) return "N/A";
-    const birth = new Date(dateNaissance);
-    const today = new Date();
-
-    let age = today.getFullYear() - birth.getFullYear();
-    const monthDiff = today.getMonth() - birth.getMonth();
-
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-      age--;
-    }
-    return age;
-  };
-
   const formatDate = (date) => {
-    if (!date) return "N/A";
+    if (!date) return "—";
     return new Date(date).toLocaleDateString("fr-FR");
   };
 
-  // nom = surname, prenom = name
   const getInitials = (nom, prenom) => {
     if (!nom || !prenom) return "??";
     return `${prenom.charAt(0)}${nom.charAt(0)}`.toUpperCase();
   };
 
-  const getStatutBadgeClass = (status) => {
-    switch (status?.toLowerCase()) {
-      case "en cours de suivi":
-      case "actif":
-        return "badge-active";
-      case "perdu de vue":
-        return "badge-danger";
-      case "en fin de suivi":
-        return "badge-info";
-      default:
-        return "badge-neutral";
+  const getStatutBadgeClass = (statut) => {
+    switch (statut?.toLowerCase()) {
+      case "actif":     return "badge-active";
+      case "en_retard": return "badge-warning";
+      case "perdu_de_vue": return "badge-danger";
+      case "recupere":  return "badge-info";
+      default:          return "badge-neutral";
     }
   };
 
-  // Mobile-first logic: photo comes from backend (stored as URL or derived from photo_key)
-  const patientPhotoUrl = useMemo(() => {
-    if (!patientData) return null;
-
-    // Accept a few possible field names to be future-proof
-    return (
-      patientData.photo_url ||
-      patientData.photoUrl ||
-      patientData.avatar_url ||
-      patientData.avatarUrl ||
-      null
-    );
-  }, [patientData]);
+  const getStatutLabel = (statut) => {
+    switch (statut?.toLowerCase()) {
+      case "actif":        return "Actif";
+      case "en_retard":    return "En retard";
+      case "perdu_de_vue": return "Perdu de vue";
+      case "recupere":     return "Récupéré";
+      default:             return "En attente";
+    }
+  };
 
   if (loading) {
     return (
@@ -134,13 +91,13 @@ export default function LeftPanel() {
     return (
       <div className="patient-panel">
         <div className="error-container">
-          <p className="error-message">⚠️ {error}</p>
+          <p className="error-message">! {error}</p>
         </div>
       </div>
     );
   }
 
-  if (!patientData) {
+  if (!data) {
     return (
       <div className="patient-panel">
         <div className="empty-state">
@@ -152,75 +109,72 @@ export default function LeftPanel() {
 
   return (
     <div className="patient-panel">
-      <div className="patient-header">
-        <div className="photo-upload-container">
-          {patientPhotoUrl ? (
-            <div className="patient-photo-wrapper">
-              <img src={patientPhotoUrl} alt="Patient" className="patient-photo" />
-            </div>
-          ) : (
-            <div className="patient-avatar">
-              {getInitials(patientData.surname, patientData.name)}
-            </div>
-          )}
-        </div>
 
+      {/* ── Header ───────────────────────────────────────── */}
+      <div className="patient-header">
+        <div className="patient-avatar">
+          {getInitials(data.surname, data.name)}
+        </div>
         <h2 className="patient-name">
-          {patientData.surname} {patientData.name}
+          {data.surname} {data.name}
         </h2>
-        <p className="patient-id">Dossier: {patientData.numero || numero}</p>
+        <p className="patient-id">Dossier: {data.numero || numero}</p>
       </div>
 
+      {/* ── Infos ────────────────────────────────────────── */}
       <div className="patient-info">
+
         <div className="info-row">
           <span>Date de naissance</span>
-          <span>{formatDate(patientData.birthdate || patientData.date_naissance)}</span>
+          <span>{formatDate(data.birthdate)}</span>
         </div>
-
-        <div className="info-row">
-          <span>Âge</span>
-          <span>{calculateAge(patientData.birthdate || patientData.date_naissance)} ans</span>
-        </div>
-
-        {patientData.phone && (
-          <div className="info-row">
-            <span>Téléphone</span>
-            <span>{patientData.phone}</span>
-          </div>
-        )}
 
         <div className="info-row">
           <span>Hospitalisation</span>
-          <span className={patientData.hospitalisation === "interne" ? "badge-danger" : "badge-active"}>
-            {patientData.hospitalisation}
+          <span className={data.hospitalisation === "interne" ? "badge-danger" : "badge-active"}>
+            {data.hospitalisation}
           </span>
         </div>
 
         <div className="info-row">
           <span>Statut</span>
-          <span className={getStatutBadgeClass(patientData.status)}>
-            {patientData.status || "Actif"}
+          <span className={getStatutBadgeClass(data.statut_suivi)}>
+            {getStatutLabel(data.statut_suivi)}
           </span>
         </div>
-      </div>
 
-      {Array.isArray(derniersPrises) && derniersPrises.length > 0 && (
-        <div className="dernieres-prises">
-          <h3 className="section-title">Dernières prises</h3>
-          <div className="prises-list">
-            {derniersPrises.map((prise, index) => (
-              <div key={prise.id || index} className="prise-item">
-                <div className="prise-header">
-                  <span className="prise-numero">#{index + 1}</span>
-                  <span className="prise-date">{formatDate(prise.date_prochaine_prise)}</span>
-                </div>
-                <div className="prise-traitement">{prise.nom_traitement}</div>
-                <div className="prise-quantite">Quantité: {prise.quantite_prescrite}</div>
-              </div>
-            ))}
-          </div>
+        <div className="info-row">
+          <span>Dernier traitement</span>
+          <span>{data.dernier_traitement ?? "—"}</span>
         </div>
-      )}
+
+        {/* ── Charge virale ────────────────────────────── */}
+        <div className="info-row">
+          <span>Charge virale</span>
+          <span>
+            {data.charge_virale?.valeur != null
+              ? `${data.charge_virale.valeur} cp/mL`
+              : "—"}
+            {data.charge_virale?.date && (
+              <span className="info-date"> · {formatDate(data.charge_virale.date)}</span>
+            )}
+          </span>
+        </div>
+
+        {/* ── CD4 ──────────────────────────────────────── */}
+        <div className="info-row">
+          <span>CD4</span>
+          <span>
+            {data.cd4?.absolu != null
+              ? `${data.cd4.absolu} cell/mm³${data.cd4.pourcent != null ? ` (${data.cd4.pourcent}%)` : ""}`
+              : "—"}
+            {data.cd4?.date && (
+              <span className="info-date"> · {formatDate(data.cd4.date)}</span>
+            )}
+          </span>
+        </div>
+
+      </div>
     </div>
   );
 }

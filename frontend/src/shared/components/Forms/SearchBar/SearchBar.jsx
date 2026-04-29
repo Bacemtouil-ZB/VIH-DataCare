@@ -10,6 +10,8 @@ export default function SearchBar({
   wrapperClassName = "",
   type = "text",
   height = "auto",
+  width = "auto",
+  max,
 }) {
   return (
     <div className={`mb-3 ${wrapperClassName}`}>
@@ -20,7 +22,8 @@ export default function SearchBar({
         onChange={onChange}
         placeholder={placeholder}
         className={`sh-searchbar-input ${inputClassName}`}
-        style={{ height }}
+        max={max}
+        style={{ height, width }}
       />
     </div>
   );

@@ -1,4 +1,5 @@
-﻿import { useEffect, useState } from "react";
+﻿// cheked 15/04/2026
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { confirmEdit } from "../../../../../shared/utils/uiAlerts";
 import {
@@ -9,11 +10,10 @@ import {
 } from "../../../services/vihService";
 import {
   buildFormFromVihData,
-  getVihValidationError,
   serializeModesContamination,
 } from "./vihHelpers";
 import { FORM_INIT, REQUIRED_FIELDS } from "./vihConstants";
-import { clearFieldError } from "../../../shared/utils/clearFieldError.js";
+import { clearFieldError } from "../../../../../shared/components/Forms/FieldLabel/clearFieldError";
 
 export function useVihLogic(numero) {
   const [patientId, setPatientId] = useState(null);
@@ -25,7 +25,7 @@ export function useVihLogic(numero) {
   const [formData, setFormData] = useState(FORM_INIT);
   const [isModesOpen, setIsModesOpen] = useState(false);
 
-  // Chargement initial patient + VIH
+  // ====== Chargement initial patient + VIH ======
   useEffect(() => {
     if (!numero) return;
     (async () => {
@@ -53,16 +53,25 @@ export function useVihLogic(numero) {
     })();
   }, [numero]);
 
-  // Initialiser le formulaire à partir des données VIH
+  // ====== Initialiser le formulaire à partir des données VIH ======
   useEffect(() => {
     setFormData(buildFormFromVihData(vihData));
   }, [vihData]);
 
-  // Soumission des données VIH
+  // ====== Soumission des données VIH ======
   const submitVihData = async (payload) => {
-    const errorMessage = getVihValidationError(payload, REQUIRED_FIELDS);
-    if (errorMessage) {
-      toast.error(errorMessage);
+
+    // ── Validation frontend des champs requis ──────────────────────────────
+    // Chaque champ manquant → FieldError sous le champ
+    const fieldErrors = {};
+    for (const field of REQUIRED_FIELDS) {
+      const value = payload[field.key];
+      if (!value || (Array.isArray(value) && value.length === 0)) {
+        fieldErrors[field.key] = `${field.label} est obligatoire`;
+      }
+    }
+    if (Object.keys(fieldErrors).length > 0) {
+      setErrors(fieldErrors);
       return;
     }
 
@@ -83,11 +92,12 @@ export function useVihLogic(numero) {
       setFormData(vihRes?.vih || {});
       setIsEditMode(false);
       window.scrollTo({ top: 0, behavior: "smooth" });
+
     } catch (error) {
       console.error("Erreur soumission:", error);
 
-      // Cas 1 — errors[] avec field (express-validator)
-      // → FieldError affiché sous chaque champ
+      // Cas 1 — errors[] avec field (express-validator via handleValidation)
+      // → FieldError affiché sous chaque champ concerné
       if (error?.errors && Array.isArray(error.errors)) {
         const errorObj = {};
         error.errors.forEach((e) => {
@@ -96,62 +106,62 @@ export function useVihLogic(numero) {
         setErrors(errorObj);
         return;
       }
-      // Cas 2 — message simple (validateDateLogic — cohérence entre champs)
-      // → toast car erreur concerne 2 champs en même temps
+      // Cas 2 — message simple (validateDateLogic — cohérence entre les deux dates) 
       if (error?.message) {
-        toast.error(error.message);
+        setErrors({ date_derniere_negative: error.message }); //
         return;
       }
 
-      // Cas 3 — fallback
+      // Cas 3 — fallback inattendu
       toast.error("Une erreur s'est produite lors de l'enregistrement");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Mise à jour des champs du formulaire
+  // ====== Mise à jour des champs du formulaire ======
   const handleFieldChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => {
-      let nextValue = type === "checkbox" ? checked : value;
-      if (name === "profil_seroconversion") {
-        nextValue = value === "true" || value === true;
-      }
-      const next = { ...prev, [name]: nextValue };
-      if (name === "stade_cdc" && !String(nextValue).startsWith("C")) {
-        next.debut_stade_c = "";
-      }
-      return next;
+      const nextValue = type === "checkbox" ? checked : value;
+      return { ...prev, [name]: nextValue };
     });
 
-    // Supprime automatiquement l'erreur de ce champ
+    // Supprime automatiquement l'erreur du champ modifié
     clearFieldError(name, setErrors);
   };
 
-  // Gestion modes contamination
+  // ====== Gestion modes contamination ======
   const handleModesChange = (values) => {
     setFormData((prev) => ({ ...prev, mode_contamination: values }));
   };
+
   const handleToggleMode = (option) => {
     setFormData((prev) => {
       const selected =
         Array.isArray(prev.mode_contamination) ? prev.mode_contamination : [];
       const nextModes =
-        selected.includes(option) ?
-          selected.filter((v) => v !== option)
-        : [...selected, option];
+        selected.includes(option)
+          ? selected.filter((v) => v !== option)
+          : [...selected, option];
       return { ...prev, mode_contamination: nextModes };
     });
+
+    // Efface l'erreur dès que l'utilisateur sélectionne ou désélectionne un mode
+    clearFieldError("mode_contamination", setErrors);
   };
+
   const handleRemoveMode = (opt) => {
     setFormData((prev) => ({
       ...prev,
       mode_contamination: prev.mode_contamination.filter((v) => v !== opt),
     }));
+
+    // Efface l'erreur si le champ avait été validé et qu'on retire un mode
+    clearFieldError("mode_contamination", setErrors);
   };
 
-  // Formulaire submit
+  // ====== Formulaire submit ======
   const handleFormSubmit = (e) => {
     e.preventDefault();
     submitVihData({
@@ -162,7 +172,7 @@ export function useVihLogic(numero) {
     });
   };
 
-  // Edition / cancel
+  // ====== Edition / cancel ======
   const handleEdit = async () => {
     const confirmed = await confirmEdit(
       "Modifier la fiche VIH ?",
@@ -172,7 +182,9 @@ export function useVihLogic(numero) {
       setIsEditMode(true);
     }
   };
+
   const handleCancel = () => {
+    setFormData(buildFormFromVihData(vihData)); // restaure les données sauvegardées
     setIsEditMode(false);
     setErrors({});
   };
@@ -181,16 +193,17 @@ export function useVihLogic(numero) {
     vihData,
     isLoading,
     isLoadingPage,
-    errors, // ← erreurs backend exposées pour FieldError
+    errors,
     isEditMode,
     isCreateMode: !vihData,
     formData,
     selectedModes:
-      Array.isArray(formData.mode_contamination) ? formData.mode_contamination
-      : formData.mode_contamination ? [formData.mode_contamination]
-      : [],
+      Array.isArray(formData.mode_contamination)
+        ? formData.mode_contamination
+        : formData.mode_contamination
+          ? [formData.mode_contamination]
+          : [],
     isDisabled: !isEditMode && !!vihData,
-    isStadeC: (formData.stade_cdc || "").startsWith("C"),
     handleFieldChange,
     handleModesChange,
     handleToggleMode,

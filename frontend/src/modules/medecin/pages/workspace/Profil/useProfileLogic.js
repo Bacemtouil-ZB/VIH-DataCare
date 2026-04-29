@@ -1,3 +1,4 @@
+// cheked 15/04/2026
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -8,6 +9,7 @@ import {
   getPatientByNumero,
   getAllDoctors,
   getFormData,
+  checkPatientNumero,
 } from "../../../services/patientServices.jsx";
 import {
   sanitizeText,
@@ -15,13 +17,14 @@ import {
   isNumeroValid,
   filterPostalCodesByGovernorate,
 } from "./profileHelpers.js";
+
 // Utilitaire pour effacer l'erreur d'un champ spécifique
-import { clearFieldError } from "../../../shared/utils/clearFieldError.js";
+import { clearFieldError } from "../../../../../shared/components/Forms/FieldLabel/clearFieldError";
 
 export function useProfileLogic() {
   const { numero } = useParams();
   const navigate = useNavigate();
-  const isNew = numero === "new"; // si "new", on est en création, sinon édition
+  const isNew = numero === "new";
 
   const [loading, setLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(isNew);
@@ -47,7 +50,10 @@ export function useProfileLogic() {
     residence_postal_code_id: "",
     exact_address: "",
     phone: "",
+    status: "",
     hospitalisation: "interne",
+    email: "",
+    whatsapp: "",
     doctor_id: "",
     remarks: "",
   });
@@ -103,7 +109,10 @@ export function useProfileLogic() {
             residence_postal_code_id: patient.residence_postal_code_id || "",
             exact_address: patient.exact_address || "",
             phone: patient.phone || "",
+            status: patient.status || "",
             hospitalisation: patient.hospitalisation || "externe",
+            email: patient.email || "",
+            whatsapp: patient.whatsapp || "",
             doctor_id: patient.doctor_id || "",
             remarks: patient.remarks || "",
           };
@@ -196,49 +205,71 @@ export function useProfileLogic() {
     });
   };
 
-  // ====== Submit ======
+  // ====== Soumission formulaire ======
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setErrors({}); // reset erreurs
+
     try {
-      setLoading(true);
-      if (!isNew) {
+      if (numero === "new") {
+        //-------check numéro validité avant création-------
+        const { exists } = await checkPatientNumero(formData.numero);
+        if (exists) {
+          setErrors({
+            numero: `Ce numéro appartient déjà à un autre patient`,
+          });
+          return;
+        }
+
+        // --- Création ---
+        const response = await createPatient(formData);
+        toast.success("Patient créé avec succès");
+
+        // Met à jour le formData avec les infos du patient créé
+        setFormData(response.patient);
+
+        // Passe en mode édition après création
+        setIsEditing(false);
+
+        // Navigue vers le profil du nouveau patient
+        navigate(
+          `/medecin/patient/${response.patient.numero}/workspace/profil`,
+          { replace: true }, // remplace l'URL pour éviter "new" dans le path
+        );
+      } else {
+        // --- Mise à jour ---
         const confirmed = await confirmAction(
           "Enregistrer les modifications ?",
           "Les changements seront appliqués au dossier patient.",
         );
-        if (!confirmed) {
-          return;
-        }
-      }
-      if (isNew) {
-        const response = await createPatient(formData);
-        toast.success("Patient créé avec succès");
-        navigate(
-          `/medecin/patient/${response.patient.numero}/workspace/profil`,
-        );
-      } else {
-        const response = await updatePatient(formData.id, formData);
-        const updatedPatient = response?.patient;
+        if (!confirmed) return;
+
+        await updatePatient(formData.id, formData);
         toast.success("Patient mis à jour avec succès");
-        setIsEditing(false);
+       
+        // Sauvegarde les données mises à jour
         setSavedFormData(formData);
-        navigate(`/medecin/patient/${updatedPatient.numero}/workspace/profil`, {
-          replace: true,
-        });
+        setIsEditing(false);
+
+        // Navigue vers le même profil (remplace l'URL pour éviter rechargement inutile)
+        navigate(
+    `/medecin/patient/${formData.numero}/workspace/profil`,
+    { replace: true },
+  );
       }
     } catch (err) {
+      // Gestion des erreurs du backend
       if (err?.errors && Array.isArray(err.errors)) {
         const formattedErrors = {};
-
         err.errors.forEach((e) => {
           formattedErrors[e.field] = e.message;
         });
-
         setErrors(formattedErrors);
-        return;
+      } else {
+        toast.error("Une erreur est survenue. Veuillez réessayer.");
+        console.error(err);
       }
-
-      toast.error(err?.message || "Erreur lors de l'enregistrement");
     } finally {
       setLoading(false);
     }

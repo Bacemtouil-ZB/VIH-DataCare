@@ -1,5 +1,6 @@
+// cheked 15/04/2026
 import pool from "../config/db.js";
-
+//---------get social by numero----------
 export const getSocialByNumero = async (numero) => {
   const query = `
     SELECT 
@@ -18,7 +19,7 @@ export const getSocialByNumero = async (numero) => {
 
   if (!row) return null;
 
-  // 🔥 CONVERSION PROPRE ENUM[] → JS ARRAY
+  // CONVERSION PROPRE ENUM[] → JS ARRAY
   if (typeof row.probleme === "string") {
     row.probleme = row.probleme
       .replace(/^{|}$/g, "") // enlève { }
@@ -29,6 +30,7 @@ export const getSocialByNumero = async (numero) => {
   return row;
 };
 
+//---------create social----------
 // Créer une fiche sociale
 export const createSocial = async (numero, socialData) => {
   // Récupérer l'ID du patient à partir du numéro
@@ -81,6 +83,7 @@ export const createSocial = async (numero, socialData) => {
   return result.rows[0];
 };
 
+//-----------update social----------
 // Mettre à jour une fiche sociale
 export const updateSocial = async (numero, socialData) => {
   const existingQuery = `

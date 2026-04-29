@@ -1,16 +1,35 @@
 import { Alert } from "./alertService";
 
 export const confirmAction = async (
-  title = "Enregistrer les modifications ?",
+  titleOrOptions = "Enregistrer les modifications ?",
   message = "Les changements seront appliqués.",
 ) => {
+  const isOptionsObject =
+    titleOrOptions && typeof titleOrOptions === "object" && !Array.isArray(titleOrOptions);
+
+  const title = isOptionsObject
+    ? titleOrOptions.title || "Enregistrer les modifications ?"
+    : titleOrOptions;
+
+  const bodyMessage = isOptionsObject
+    ? titleOrOptions.message || "Les changements seront appliqués."
+    : message;
+
+  const confirmButtonText = isOptionsObject
+    ? titleOrOptions.confirmLabel || "Confirmer"
+    : "Confirmer";
+
+  const cancelButtonText = isOptionsObject
+    ? titleOrOptions.cancelLabel || "Annuler"
+    : "Annuler";
+
   const result = await Alert.fire({
     title,
-    html: `<p>${message}</p>`,
+    html: `<p>${bodyMessage}</p>`,
     icon: "question",
     showCancelButton: true,
-    confirmButtonText: "Confirmer",
-    cancelButtonText: "Annuler",
+    confirmButtonText,
+    cancelButtonText,
   });
 
   return result.isConfirmed;
