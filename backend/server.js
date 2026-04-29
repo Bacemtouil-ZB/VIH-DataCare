@@ -41,6 +41,8 @@ import { startScheduler } from './src/services/mobile/mobileScheduler.js';
 dotenv.config();
 
 const app = express();
+const DB_CONNECT_RETRIES = 12;
+const DB_RETRY_DELAY_MS = 5000;
 
 // Configuration des middlewares avec limites augmentées pour les fichiers
 app.use(express.json({ limit: '100mb' }));
@@ -105,17 +107,39 @@ app.use((err, req, res, next) => {
 });
 
 
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const waitForDatabase = async () => {
+  for (let attempt = 1; attempt <= DB_CONNECT_RETRIES; attempt += 1) {
+    try {
+      await db.query("SELECT 1");
+      console.log("PostgreSQL connected, server starting...");
+      return;
+    } catch (err) {
+      console.error(
+        `Database connection attempt ${attempt}/${DB_CONNECT_RETRIES} failed:`,
+        err.message,
+      );
+
+      if (attempt === DB_CONNECT_RETRIES) {
+        throw err;
+      }
+
+      await wait(DB_RETRY_DELAY_MS);
+    }
+  }
+};
+
 const startServer = async () => {
   try {
-    await db.connect();
-    console.log("PostgreSQL connected, server starting...");
+    await waitForDatabase();
 
     const PORT = process.env.PORT || 3000;
     app.listen(PORT,'0.0.0.0', () => {
       console.log(`Server running on http://localhost:${PORT}`);
     });
   } catch (err) {
-    console.error("Unable to connect to PostgreSQL:", err);
+    console.error("Unable to connect to PostgreSQL after retries:", err);
     process.exit(1);
   }
 };

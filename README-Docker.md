@@ -1,7 +1,7 @@
 # Docker - VIHDataCare
 
 Ce setup Docker est concu pour etre simple, suffisant et robuste:
-- `db`: PostgreSQL
+- `db`: PostgreSQL 17
 - `backend`: API Node.js/Express
 - `frontend`: build Vite puis service statique Nginx
 
@@ -21,7 +21,7 @@ Ce setup Docker est concu pour etre simple, suffisant et robuste:
 - `backend/.dockerignore`
   - evite d'envoyer fichiers inutiles au build (plus rapide, plus propre)
 - `docker-share/init.sql`
-  - cree le schema SQL complet
+  - cree le schema SQL complet base sur la sauvegarde PostgreSQL de reference
   - cree les comptes initiaux (admin/pharmacien/medecin)
   - injecte les donnees de base (ex: stock medicaments)
 - `frontend/Dockerfile`
