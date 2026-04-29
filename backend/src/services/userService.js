@@ -4,7 +4,7 @@ import {
   updateUserRole,
   getAllDoctors,
 } from "../models/userModel.js";
-import { sendActivationEmail } from "../utils/mailer.js";
+import { sendActivationEmail } from "../utils/Mailer.js";
 
 /**
  * Récupère la liste de tous les utilisateurs
@@ -83,7 +83,7 @@ import {
   updateUserInfo,
   updateUserPasswordById,
 } from "../models/userModel.js";
-import { sendPasswordConfirmationEmail } from "../utils/mailer.js";
+import { sendPasswordConfirmationEmail } from "../utils/Mailer.js";
 
 // ── Mettre à jour les infos personnelles ──────────────────────────────────────
 export const updateMyProfile = async (userId, { nom, prenom, email }) => {

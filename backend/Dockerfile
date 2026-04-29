@@ -2,6 +2,7 @@ FROM node:20-alpine
 
 WORKDIR /app
 
+# Installation de production avec retries pour limiter les echecs reseau Docker/CI.
 COPY package*.json ./
 RUN set -eux; \
     npm config set fetch-retries 5; \
@@ -22,4 +23,5 @@ COPY . .
 
 EXPOSE 3000
 
+# server.js ecoute deja sur 0.0.0.0, donc il reste accessible depuis le conteneur.
 CMD ["node", "server.js"]

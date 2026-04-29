@@ -1,3 +1,13 @@
+-- =========================================================
+-- INIT SQL DOCKER
+-- =========================================================
+-- Ce fichier est la source unique utilisee par les fichiers Docker
+-- Compose pour initialiser une base PostgreSQL vide.
+-- Il cree le schema complet, les donnees de reference et les comptes
+-- de demonstration necessaires au demarrage de l'application.
+-- Remarque: ce script est execute uniquement lors de la creation
+-- initiale du volume PostgreSQL.
+--
 -- ==========================================
 -- SUPPRESSION ET RECRÃƒÆ’Ã¢â‚¬Â°ATION COMPLÃƒÆ’Ã‹â€ TE
 -- ==========================================

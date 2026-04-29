@@ -1,7 +1,6 @@
 ﻿import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { getPatientByNumero } from "../../../services/patientService";
-//import { getThreeLastPrise } from "../../../services/prescriptionWorkflowService";
 import "./LeftPanel.css";
 
 export default function LeftPanel() {
@@ -72,13 +71,10 @@ export default function LeftPanel() {
         setLoading(true);
         setError(null);
 
-        const [patientResponse, prisesResponse] = await Promise.all([
-          getPatientByNumero(numero),
-          //getThreeLastPrise(numero),
-        ]);
+        const patientResponse = await getPatientByNumero(numero);
 
         setPatientData(patientResponse?.patient || null);
-        setDerniersPrises(Array.isArray(prisesResponse) ? prisesResponse : []);
+        setDerniersPrises([]);
       } catch (err) {
         console.error("Erreur chargement patient:", err);
         setError(err?.message || err?.error || "Erreur lors du chargement");

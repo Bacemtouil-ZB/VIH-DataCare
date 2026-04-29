@@ -11,7 +11,7 @@ Ce setup Docker est concu pour etre simple, suffisant et robuste:
   - orchestre les 3 conteneurs
   - definit les `healthcheck`
   - connecte les services sur le reseau compose
-  - monte `backend/backup/init.sql` au demarrage initial de Postgres
+  - monte `docker-share/init.sql` au demarrage initial de Postgres
 - `.env` (racine)
   - variables lues par `docker-compose.yml` (ports, DB, JWT, URL)
 - `backend/Dockerfile`
@@ -20,7 +20,7 @@ Ce setup Docker est concu pour etre simple, suffisant et robuste:
   - demarrage via `node server.js`
 - `backend/.dockerignore`
   - evite d'envoyer fichiers inutiles au build (plus rapide, plus propre)
-- `backend/backup/init.sql`
+- `docker-share/init.sql`
   - cree le schema SQL complet
   - cree les comptes initiaux (admin/pharmacien/medecin)
   - injecte les donnees de base (ex: stock medicaments)

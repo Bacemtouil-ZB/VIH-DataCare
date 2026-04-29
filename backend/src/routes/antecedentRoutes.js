@@ -6,7 +6,7 @@ import { getHabitudesVieController, createHabitudesVieController, updateHabitude
 import { getMedicalController, createMedicalController, updateMedicalController } from "../controllers/antecedents/medicalController.js";
 import { getSurgicalController, createSurgicalController, updateSurgicalController, deleteSurgicalController } from "../controllers/antecedents/surgicalController.js";
 import { getTherapeuticController, createTherapeuticController, updateTherapeuticController } from "../controllers/antecedents/therapeuticController.js";
-import { getTpePrepController, createTpePrepController, updateTpePrepController, deleteTpePrepController } from "../controllers/antecedents/tpePrepController.js";
+import { getTpePrepController, createTpePrepController, updateTpePrepController, deleteTpePrepController } from "../controllers/antecedents/tpeprepController.js";
 import { getTransfusionController, createTransfusionController, updateTransfusionController, deleteTransfusionController } from "../controllers/antecedents/transfusionController.js";
 import { protect , authorizeMedecin} from "../middlewares/authMiddleware.js";
 import {validateCreateTpePrep,validateCreateTransfusion,validateFamily,validateGyneco,validateHabitudesVie,validateMedical,validateTherapeutic,validateUpdateSurgical,

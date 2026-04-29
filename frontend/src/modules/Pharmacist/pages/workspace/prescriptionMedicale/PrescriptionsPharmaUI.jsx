@@ -17,7 +17,7 @@ import {
   isModifyDisabled,
 } from "./PrescriptionsPharmahelpers";
 import ModalDetailPrescription     from "../../../components/modal/Modaldetailprescription";
-import ModalValidationPrescription from "../../../components/modal/ModalValidationPrescription";
+import ModalValidationPrescription from "../../../components/modal/Modalvalidationprescription";
 import ModalModifierPeriode        from "../../../components/modal/ModalModifierPeriode";
 import { formatDateFr }            from "../../../../../shared/utils/logiqueTableHistory";
 

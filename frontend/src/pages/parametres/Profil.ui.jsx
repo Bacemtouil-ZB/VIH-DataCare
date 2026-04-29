@@ -3,7 +3,7 @@ import {
 } from "lucide-react";
 import { ROLE_LABELS } from "./Profil.constants.js";
 import { getInitials} from "./Profil.helpers.js";
-import "./profil.css";
+import "./Profil.css";
 
 
 export function ProfileHeader({ user }) {

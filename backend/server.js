@@ -48,6 +48,11 @@ app.use(express.urlencoded({ limit: '100mb', extended: true }));
 app.use(cookieParser());
 app.use(helmet());
 
+// Endpoint minimal pour les healthchecks Docker et la supervision.
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
 app.use(
   cors({
     origin: process.env.FRONTEND_URL,
