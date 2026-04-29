@@ -7,10 +7,20 @@ import { DIVERS_COLORS } from "../constants/chartColors";
 
 const MiniBar = ({ data, dataKey, color, label }) => (
   <ResponsiveContainer width="100%" height={200}>
-    <BarChart data={data} margin={{ top: 4, right: 8, bottom: 8, left: 0 }}>
+    <BarChart data={data} margin={{ top: 4, right: 8, bottom: 8, left: 16 }}>
       <CartesianGrid strokeDasharray="3 3" vertical={false} />
       <XAxis dataKey="tranche" tick={{ fontSize: 10 }} />
-      <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
+      <YAxis
+        allowDecimals={false}
+        tick={{ fontSize: 10 }}
+        label={{
+          value: "Nombre des patients",
+          angle: -90,
+          position: "insideLeft",
+          offset: 20,
+          fontSize: 10,
+        }}
+      />
       <Tooltip />
       <Bar dataKey={dataKey} name={label} fill={color} radius={[3,3,0,0]} />
     </BarChart>

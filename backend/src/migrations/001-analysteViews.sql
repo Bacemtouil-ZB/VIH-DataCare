@@ -32,7 +32,7 @@ FROM patients;
 -- V3 — v_dim_age
 -- ============================================================
 
-CREATE OR REPLACE VIEW v_dim_age AS
+CREATE OR REPLACE VIEW v_dim_age AS -- utiliser fi file active kahaw
 SELECT
   patient_id,
   CASE
@@ -51,7 +51,7 @@ SELECT
     ELSE '>15ans'
   END AS tranche_3,
   CASE
-    WHEN age_annees < 25 THEN '<25ans'
+    WHEN age_annees < 25 THEN '<25ans' --pas utiliser fi file active 
     ELSE '>=25ans'
   END AS tranche_2
 FROM (
@@ -118,7 +118,6 @@ CREATE UNIQUE INDEX idx_mv_dim_population_pid
 
 -- ============================================================
 -- V5 — mv_dim_statut_viral
--- Correction : aucune (vue correcte)
 -- ============================================================
 
 DROP MATERIALIZED VIEW IF EXISTS mv_dim_statut_viral; 
@@ -426,3 +425,209 @@ CREATE INDEX idx_mv_fait_nouveaux_trimestre
 -----------------28/04/2026 update -----------------
 
 MATERIALIZED VIEW mv_fait_file_active  : maj recréation pour corriger la logique de CV de contrôle (voir commentaires dans code)
+
+
+-------------------------------------
+-------------------------------------
+-------------------29/04/2026 update -----------------
+
+-- ============================================================
+-- CORRECTION — suppression mv_diagnostic_tardif
+-- absorption de seuil_cd4 dans mv_fait_nouveaux_malades
+-- ============================================================
+
+DROP MATERIALIZED VIEW IF EXISTS mv_diagnostic_tardif CASCADE;
+DROP MATERIALIZED VIEW IF EXISTS mv_fait_nouveaux_malades;
+
+
+CREATE MATERIALIZED VIEW mv_fait_nouveaux_malades AS
+
+WITH vih_unique AS (
+  SELECT DISTINCT ON (patient_id)
+    patient_id,
+    date_vih_positif
+  FROM vih
+  WHERE date_vih_positif IS NOT NULL
+  ORDER BY patient_id, date_vih_positif ASC
+),
+
+-- Calcul de l'âge à la date du diagnostic
+age_diag AS (
+  SELECT
+    p.patient_id,
+    p.gender,
+    vu.date_vih_positif,
+    EXTRACT(YEAR FROM AGE(vu.date_vih_positif, p.birthdate))::int AS age_annees
+  FROM v_dim_patient p
+  JOIN vih_unique vu ON vu.patient_id = p.patient_id
+),
+
+-- Premier CD4 après diagnostic (absorbé)
+premier_cd4 AS (
+  SELECT DISTINCT ON (rb.patient_id)
+    rb.patient_id,
+    rb.cd4_absolu
+  FROM resultats_biologiques rb
+  JOIN vih_unique v ON v.patient_id = rb.patient_id
+  WHERE rb.cd4_absolu IS NOT NULL
+    AND rb.date_resultat IS NOT NULL
+    AND rb.date_resultat >= v.date_vih_positif
+  ORDER BY rb.patient_id, rb.date_resultat ASC
+)
+
+SELECT
+  ad.patient_id,
+  ad.gender,
+
+  -- Temps
+  EXTRACT(YEAR    FROM ad.date_vih_positif)::int AS annee,
+  EXTRACT(QUARTER FROM ad.date_vih_positif)::int AS trimestre,
+
+  -- Tranche d’âge 8 classes (âge au diagnostic)
+  CASE
+    WHEN ad.age_annees < 1  THEN '<1an'
+    WHEN ad.age_annees < 5  THEN '1-4ans'
+    WHEN ad.age_annees < 10 THEN '5-9ans'
+    WHEN ad.age_annees < 15 THEN '10-14ans'
+    WHEN ad.age_annees < 20 THEN '15-19ans'
+    WHEN ad.age_annees < 25 THEN '20-24ans'
+    WHEN ad.age_annees < 50 THEN '25-49ans'
+    ELSE '>50ans'
+  END AS tranche_8,
+
+  -- Tranche d’âge 2 classes
+  CASE
+    WHEN ad.age_annees < 25 THEN '<25ans'
+    ELSE '>=25ans'
+  END AS tranche_2,
+
+  -- Tranche d’âge 3 classes (version large) -- ha4i tetna7a non utiliser 
+  -- CASE
+  --   WHEN ad.age_annees < 5  THEN '<5ans'
+  --   WHEN ad.age_annees < 15 THEN '5-14ans'
+  --   ELSE '>15ans'
+  -- END AS tranche_3,
+
+  -- Populations clés
+  pop.is_hsh,
+  pop.is_udi,
+  pop.is_ps,
+  pop.is_transgenre,
+
+  -- Seuil CD4 au diagnostic
+  CASE
+    WHEN pc.patient_id IS NULL THEN 'sans_mesure'
+    WHEN pc.cd4_absolu < 200   THEN 'lt200'
+    WHEN pc.cd4_absolu <= 350  THEN '200_350'
+    ELSE                            'gt350'
+  END AS seuil_cd4
+
+FROM age_diag ad
+LEFT JOIN mv_dim_population pop ON pop.patient_id = ad.patient_id
+LEFT JOIN premier_cd4 pc        ON pc.patient_id  = ad.patient_id;
+
+-- Index (inchangés)
+CREATE UNIQUE INDEX idx_mv_fait_nouveaux_pid
+  ON mv_fait_nouveaux_malades (patient_id);
+CREATE INDEX idx_mv_fait_nouveaux_annee
+  ON mv_fait_nouveaux_malades (annee);
+CREATE INDEX idx_mv_fait_nouveaux_trimestre
+  ON mv_fait_nouveaux_malades (annee, trimestre);
+CREATE INDEX idx_mv_fait_nouveaux_seuil
+  ON mv_fait_nouveaux_malades (seuil_cd4);
+
+----------------------------------------
+----------------------------------------
+CREATE OR REPLACE VIEW v_dim_age AS
+SELECT
+  patient_id,
+  CASE
+    WHEN age_annees < 1  THEN '<1an'
+    WHEN age_annees < 5  THEN '1-4ans'
+    WHEN age_annees < 10 THEN '5-9ans'
+    WHEN age_annees < 15 THEN '10-14ans'
+    WHEN age_annees < 20 THEN '15-19ans'
+    WHEN age_annees < 25 THEN '20-24ans'
+    WHEN age_annees < 50 THEN '25-49ans'
+    ELSE '>50ans'
+  END AS tranche_8,
+  CASE
+    WHEN age_annees < 5  THEN '<5ans'
+    WHEN age_annees < 15 THEN '5-14ans'
+    ELSE '>15ans'
+  END AS tranche_3
+FROM (
+  SELECT
+    patient_id,
+    EXTRACT(YEAR FROM AGE(NOW(), birthdate))::int AS age_annees
+  FROM v_dim_patient
+) sub;
+
+
+-------------------------------------
+----------------table de fait file active ----------------
+----------------------------------------
+DROP MATERIALIZED VIEW IF EXISTS mv_fait_file_active;
+
+CREATE MATERIALIZED VIEW mv_fait_file_active AS
+
+WITH
+premiere_prescription AS (
+  SELECT
+    patient_id,
+    MIN(date) AS date_debut_arv
+  FROM prescription_medicale
+  GROUP BY patient_id
+),
+
+cv_controle AS (
+  SELECT DISTINCT ON (rb.patient_id)
+    rb.patient_id,
+    rb.charge_virale_valeur AS cv_controle_valeur,
+    rb.date_charge_virale_vih
+  FROM resultats_biologiques rb
+  JOIN premiere_prescription pp ON pp.patient_id = rb.patient_id
+  WHERE rb.charge_virale_valeur IS NOT NULL
+    AND rb.date_charge_virale_vih IS NOT NULL
+    AND pp.date_debut_arv <= NOW() - INTERVAL '6 months'
+    AND rb.date_charge_virale_vih >= pp.date_debut_arv + INTERVAL '6 months'  -- ✅ CORRECTION
+  ORDER BY rb.patient_id, rb.date_charge_virale_vih DESC
+)
+
+SELECT
+  p.patient_id,
+  p.gender,
+  EXTRACT(YEAR FROM NOW())::int AS annee,
+  a.tranche_8,
+  a.tranche_3,
+  pop.is_hsh,
+  pop.is_udi,
+  pop.is_ps,
+  pop.is_transgenre,
+  COALESCE(sv.statut_viral, 'sans_mesure') AS statut_viral,
+  CASE WHEN cvc.patient_id IS NOT NULL THEN true ELSE false END AS a_cv_controle,
+  CASE WHEN sv.statut_viral IN ('lt50','lt1000') THEN true ELSE false END AS est_supprime_lt1000,
+  CASE WHEN sv.statut_viral = 'lt50' THEN true ELSE false END AS est_supprime_lt50,
+  sp.statut AS statut_patient
+FROM v_dim_patient p
+JOIN v_dim_age a                   ON a.patient_id  = p.patient_id
+LEFT JOIN mv_dim_population   pop  ON pop.patient_id = p.patient_id
+LEFT JOIN mv_dim_statut_viral sv   ON sv.patient_id  = p.patient_id
+LEFT JOIN mv_dim_statut_patient sp ON sp.patient_id  = p.patient_id
+LEFT JOIN cv_controle cvc          ON cvc.patient_id = p.patient_id;
+
+-- Index
+CREATE UNIQUE INDEX idx_mv_fait_file_active_pid
+  ON mv_fait_file_active (patient_id);
+CREATE INDEX idx_mv_fait_file_active_annee
+  ON mv_fait_file_active (annee);
+CREATE INDEX idx_mv_fait_file_active_statut
+  ON mv_fait_file_active (statut_patient);
+CREATE INDEX idx_mv_fait_file_active_viral
+  ON mv_fait_file_active (statut_viral);
+
+
+
+
+----------------
+

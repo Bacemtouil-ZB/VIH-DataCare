@@ -7,7 +7,7 @@ import { GENDER_COLORS } from "../constants/chartColors";
 
 const TotalFileActiveChart = ({ data, loading }) => (
   <Card
-    title="File active — répartition par genre et tranche d'âge"
+    title="répartition par genre et tranche d'âge"
     size="small"
     loading={loading}
   >

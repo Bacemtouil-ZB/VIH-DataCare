@@ -19,7 +19,7 @@ const CustomTooltip = ({ active, payload, label }) => {
       <p style={{ margin: "0 0 4px", fontWeight: 600 }}>{label}</p>
       {payload.map((p) => (
         <p key={p.dataKey} style={{ margin: "2px 0", color: p.fill }}>
-          {p.name} : {p.value} ({total ? ((p.value / total) * 100).toFixed(0) : 0}%)
+          {p.name} : {p.value}
         </p>
       ))}
       <p style={{ margin: "4px 0 0", fontWeight: 600 }}>Total : {total}</p>
@@ -29,7 +29,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 const CascadeViraleChart = ({ data, loading }) => (
   <Card
-    title="Cascade virologique ONUSIDA (CV)"
+    title="Charge virale "
     size="small"
     loading={loading}
   >
