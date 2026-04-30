@@ -1,59 +1,67 @@
-import React, { useState } from 'react';
-import Toast from 'react-native-toast-message';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import React, { useMemo, useState } from "react";
+import Toast from "react-native-toast-message";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import {
-  View,
+  Platform,
+  ScrollView,
+  Switch,
   Text,
   TextInput,
   TouchableOpacity,
-  ScrollView,
-  Switch,
-  Platform,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import useReminderStore from '../../../store/reminderStore';
-import styles from '../styles/reminders.styles';
-import colors from '../../../constants/colors';
-
-const TYPES = [
-  { key: 'medicament', label: 'Médicament', icon: 'pill' },
-  { key: 'rendezvous', label: 'Rendez-vous', icon: 'calendar-heart' },
-  { key: 'analyse', label: 'Analyse', icon: 'test-tube' },
-  { key: 'autre', label: 'Autre', icon: 'bell-outline' },
-];
-
-const REPEATS = [
-  { key: 'daily', label: 'Quotidien' },
-  { key: 'weekly', label: 'Hebdo' },
-  { key: 'once', label: 'Une fois' },
-];
+  View,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import useReminderStore from "../../../store/reminderStore";
+import styles from "../styles/reminders.styles";
+import colors from "../../../constants/colors";
+import useI18n from "../../../i18n/useI18n";
 
 const CreateReminderScreen = () => {
   const navigation = useNavigation();
   const { addReminder } = useReminderStore();
+  const { t, isRTL } = useI18n();
 
-  const [title, setTitle] = useState('');
-  const [type, setType] = useState('medicament');
-  const [repeat, setRepeat] = useState('daily');
+  const [title, setTitle] = useState("");
+  const [type, setType] = useState("medicament");
+  const [repeat, setRepeat] = useState("daily");
   const [discreteMode, setDiscreteMode] = useState(true);
   const [time, setTime] = useState(new Date());
   const [showTimePicker, setShowTimePicker] = useState(false);
 
+  const types = useMemo(
+    () => [
+      { key: "medicament", label: t("reminders.typeMedicament"), icon: "pill" },
+      { key: "rendezvous", label: t("reminders.typeRendezvous"), icon: "calendar-heart" },
+      { key: "analyse", label: t("reminders.typeAnalyse"), icon: "test-tube" },
+      { key: "autre", label: t("reminders.typeOther"), icon: "bell-outline" },
+    ],
+    [t]
+  );
+
+  const repeats = useMemo(
+    () => [
+      { key: "daily", label: t("reminders.repeatDaily") },
+      { key: "weekly", label: t("reminders.repeatWeekly") },
+      { key: "once", label: t("reminders.repeatOnce") },
+    ],
+    [t]
+  );
+
   const formatTime = (date) => {
-    const h = date.getHours().toString().padStart(2, '0');
-    const m = date.getMinutes().toString().padStart(2, '0');
+    const h = date.getHours().toString().padStart(2, "0");
+    const m = date.getMinutes().toString().padStart(2, "0");
     return `${h}:${m}`;
   };
 
   const handleSave = async () => {
     if (!title.trim()) {
       Toast.show({
-        type: 'error',
-        text1: 'Erreur',
-        text2: 'Veuillez entrer un titre pour le rappel',
+        type: "error",
+        text1: t("reminders.toastErrorTitle"),
+        text2: t("reminders.toastTitleRequired"),
       });
       return;
     }
@@ -67,9 +75,9 @@ const CreateReminderScreen = () => {
     });
 
     Toast.show({
-      type: 'success',
-      text1: 'Succès',
-      text2: 'Rappel enregistré',
+      type: "success",
+      text1: t("reminders.toastSuccessTitle"),
+      text2: t("reminders.toastSaved"),
     });
 
     navigation.goBack();
@@ -77,62 +85,57 @@ const CreateReminderScreen = () => {
 
   return (
     <SafeAreaView style={styles.createContainer}>
-      {/* Header */}
       <View style={styles.createHeader}>
-        <TouchableOpacity
-          style={styles.createBackButton}
-          onPress={() => navigation.goBack()}
-        >
+        <TouchableOpacity style={styles.createBackButton} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={20} color={colors.white} />
         </TouchableOpacity>
-        <Text style={styles.createHeaderTitle}>Nouveau rappel</Text>
+        <Text style={[styles.createHeaderTitle, isRTL && { textAlign: "right" }]}>
+          {t("reminders.createTitle")}
+        </Text>
       </View>
 
-          <ScrollView 
-            contentContainerStyle={[
-              styles.createContent,
-              { paddingBottom: 120 }  // this is used for button to go upper the tab bar
-            ]}
-          >
-        {/* Title */}
+      <ScrollView contentContainerStyle={[styles.createContent, { paddingBottom: 120 }]}>
         <View style={styles.formSection}>
-          <Text style={styles.formSectionTitle}>Informations</Text>
-          <Text style={styles.formLabel}>Titre du rappel</Text>
+          <Text style={[styles.formSectionTitle, isRTL && { textAlign: "right" }]}>
+            {t("reminders.sectionInfo")}
+          </Text>
+          <Text style={[styles.formLabel, isRTL && { textAlign: "right" }]}>
+            {t("reminders.reminderTitleLabel")}
+          </Text>
           <TextInput
-            style={styles.formInput}
-            placeholder="Ex: Prise du matin"
+            style={[styles.formInput, isRTL && { textAlign: "right" }]}
+            placeholder={t("reminders.reminderTitlePlaceholder")}
             placeholderTextColor={colors.textLight}
             value={title}
             onChangeText={setTitle}
           />
         </View>
 
-        {/* Type */}
         <View style={styles.formSection}>
-          <Text style={styles.formSectionTitle}>Type</Text>
+          <Text style={[styles.formSectionTitle, isRTL && { textAlign: "right" }]}>
+            {t("reminders.sectionType")}
+          </Text>
           <View style={styles.typeGrid}>
-            {TYPES.map((t) => (
+            {types.map((item) => (
               <TouchableOpacity
-                key={t.key}
-                style={[
-                  styles.typeOption,
-                  type === t.key && styles.typeOptionSelected,
-                ]}
-                onPress={() => setType(t.key)}
+                key={item.key}
+                style={[styles.typeOption, type === item.key && styles.typeOptionSelected]}
+                onPress={() => setType(item.key)}
               >
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
                   <MaterialCommunityIcons
-                    name={t.icon}
+                    name={item.icon}
                     size={18}
-                    color={type === t.key ? colors.primary : colors.textPrimary}
+                    color={type === item.key ? colors.primary : colors.textPrimary}
                   />
                   <Text
                     style={[
                       styles.typeOptionText,
-                      type === t.key && styles.typeOptionTextSelected,
+                      type === item.key && styles.typeOptionTextSelected,
+                      isRTL && { textAlign: "right" },
                     ]}
                   >
-                    {t.label}
+                    {item.label}
                   </Text>
                 </View>
               </TouchableOpacity>
@@ -140,68 +143,64 @@ const CreateReminderScreen = () => {
           </View>
         </View>
 
-        {/* Time */}
         <View style={styles.formSection}>
-          <Text style={styles.formSectionTitle}>Heure</Text>
-          <TouchableOpacity
-            style={styles.timePicker}
-            onPress={() => setShowTimePicker(true)}
-          >
+          <Text style={[styles.formSectionTitle, isRTL && { textAlign: "right" }]}>
+            {t("reminders.sectionTime")}
+          </Text>
+          <TouchableOpacity style={styles.timePicker} onPress={() => setShowTimePicker(true)}>
             <Text style={styles.timePickerText}>{formatTime(time)}</Text>
-            <MaterialCommunityIcons
-              name="clock-outline"
-              size={20}
-              color={colors.textSecondary}
-            />
+            <MaterialCommunityIcons name="clock-outline" size={20} color={colors.textSecondary} />
           </TouchableOpacity>
-          {showTimePicker && (
+          {showTimePicker ? (
             <DateTimePicker
               value={time}
               mode="time"
-              is24Hour={true}
-              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
-              onChange={(event, selectedTime) => {
-                setShowTimePicker(Platform.OS === 'ios');
+              is24Hour
+              display={Platform.OS === "ios" ? "spinner" : "default"}
+              onChange={(_, selectedTime) => {
+                setShowTimePicker(Platform.OS === "ios");
                 if (selectedTime) setTime(selectedTime);
               }}
             />
-          )}
+          ) : null}
         </View>
 
-        {/* Repeat */}
         <View style={styles.formSection}>
-          <Text style={styles.formSectionTitle}>Fréquence</Text>
+          <Text style={[styles.formSectionTitle, isRTL && { textAlign: "right" }]}>
+            {t("reminders.sectionFrequency")}
+          </Text>
           <View style={styles.repeatOptions}>
-            {REPEATS.map((r) => (
+            {repeats.map((item) => (
               <TouchableOpacity
-                key={r.key}
-                style={[
-                  styles.repeatOption,
-                  repeat === r.key && styles.repeatOptionSelected,
-                ]}
-                onPress={() => setRepeat(r.key)}
+                key={item.key}
+                style={[styles.repeatOption, repeat === item.key && styles.repeatOptionSelected]}
+                onPress={() => setRepeat(item.key)}
               >
                 <Text
                   style={[
                     styles.repeatOptionText,
-                    repeat === r.key && styles.repeatOptionTextSelected,
+                    repeat === item.key && styles.repeatOptionTextSelected,
+                    isRTL && { textAlign: "right" },
                   ]}
                 >
-                  {r.label}
+                  {item.label}
                 </Text>
               </TouchableOpacity>
             ))}
           </View>
         </View>
 
-        {/* Discrete Mode */}
         <View style={styles.formSection}>
-          <Text style={styles.formSectionTitle}>Confidentialité</Text>
+          <Text style={[styles.formSectionTitle, isRTL && { textAlign: "right" }]}>
+            {t("reminders.sectionPrivacy")}
+          </Text>
           <View style={styles.discreteRow}>
             <View style={styles.discreteInfo}>
-              <Text style={styles.discreteTitle}>Mode discret</Text>
-              <Text style={styles.discreteSubtitle}>
-                La notification affichera "Action requise" au lieu du titre exact
+              <Text style={[styles.discreteTitle, isRTL && { textAlign: "right" }]}>
+                {t("reminders.discreteModeTitle")}
+              </Text>
+              <Text style={[styles.discreteSubtitle, isRTL && { textAlign: "right" }]}>
+                {t("reminders.discreteModeSubtitle")}
               </Text>
             </View>
             <Switch
@@ -213,14 +212,12 @@ const CreateReminderScreen = () => {
           </View>
         </View>
 
-        {/* Save */}
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
             <MaterialCommunityIcons name="content-save" size={20} color="white" />
-            <Text style={styles.saveButtonText}>Enregistrer le rappel</Text>
+            <Text style={styles.saveButtonText}>{t("reminders.saveButton")}</Text>
           </View>
         </TouchableOpacity>
-
       </ScrollView>
     </SafeAreaView>
   );

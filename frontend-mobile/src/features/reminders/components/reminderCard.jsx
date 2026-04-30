@@ -1,40 +1,41 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, Switch } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import styles from '../styles/reminders.styles';
-import colors from '../../../constants/colors';
+import React from "react";
+import { Switch, Text, TouchableOpacity, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import styles from "../styles/reminders.styles";
+import colors from "../../../constants/colors";
+import useI18n from "../../../i18n/useI18n";
 
 const TYPE_ICONS = {
-  medicament: 'medkit',
-  rendezvous: 'calendar',
-  analyse: 'flask',
-  autre: 'notifications',
+  medicament: "medkit",
+  rendezvous: "calendar",
+  analyse: "flask",
+  autre: "notifications",
 };
 
-const REPEAT_LABELS = {
-  daily: 'Quotidien',
-  weekly: 'Hebdomadaire',
-  once: 'Une seule fois',
+const REPEAT_LABEL_KEYS = {
+  daily: "reminders.repeatDailyLong",
+  weekly: "reminders.repeatWeeklyLong",
+  once: "reminders.repeatOnceLong",
 };
 
 const ReminderCard = ({ reminder, onToggle, onDelete }) => {
-  const iconName = TYPE_ICONS[reminder.type] || 'notifications';
+  const { t, isRTL } = useI18n();
+  const iconName = TYPE_ICONS[reminder.type] || "notifications";
 
   return (
     <View style={[styles.card, !reminder.isActive && styles.cardInactive]}>
-      {/* Icon */}
       <View style={styles.cardIcon}>
         <Ionicons name={iconName} size={20} color={colors.primary} />
       </View>
 
-      {/* Content */}
       <View style={styles.cardContent}>
-        <Text style={styles.cardTitle}>{reminder.title}</Text>
-        <Text style={styles.cardTime}>{reminder.time}</Text>
-        <Text style={styles.cardRepeat}>{REPEAT_LABELS[reminder.repeat]}</Text>
+        <Text style={[styles.cardTitle, isRTL && { textAlign: "right" }]}>{reminder.title}</Text>
+        <Text style={[styles.cardTime, isRTL && { textAlign: "right" }]}>{reminder.time}</Text>
+        <Text style={[styles.cardRepeat, isRTL && { textAlign: "right" }]}>
+          {t(REPEAT_LABEL_KEYS[reminder.repeat] || "reminders.repeatOnceLong")}
+        </Text>
       </View>
 
-      {/* Actions */}
       <View style={styles.cardActions}>
         <Switch
           value={reminder.isActive}
@@ -42,10 +43,7 @@ const ReminderCard = ({ reminder, onToggle, onDelete }) => {
           trackColor={{ false: colors.border, true: colors.primaryLight }}
           thumbColor={reminder.isActive ? colors.primary : colors.textLight}
         />
-        <TouchableOpacity
-          style={styles.deleteButton}
-          onPress={() => onDelete(reminder.id)}
-        >
+        <TouchableOpacity style={styles.deleteButton} onPress={() => onDelete(reminder.id)}>
           <Ionicons name="trash-outline" size={16} color={colors.danger} />
         </TouchableOpacity>
       </View>

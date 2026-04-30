@@ -1,93 +1,84 @@
-
 import React from "react";
 import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
   ActivityIndicator,
-  TouchableOpacity,
+  ScrollView,
   StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
 import useSuivi from "../hooks/useSuivi";
 import CD4Chart from "../components/CD4Chart";
 import ChargeViraleChart from "../components/ChargeViraleChart";
+import useI18n from "../../../i18n/useI18n";
 
-// ── Icône retour simple (sans lib d'icônes) ───────────────────
 const IconRetour = () => (
   <Text style={{ fontSize: 22, color: "#1E293B", lineHeight: 24 }}>←</Text>
 );
 
-// ── Composant erreur ──────────────────────────────────────────
-const ErreurCard = ({ message, onRetry }) => (
-  <View style={styles.erreurCard}>
-    <Text style={styles.erreurIcone}>⚠️</Text>
-    <Text style={styles.erreurTexte}>{message}</Text>
-    {onRetry && (
-      <TouchableOpacity style={styles.retryBtn} onPress={onRetry}>
-        <Text style={styles.retryTexte}>Réessayer</Text>
-      </TouchableOpacity>
-    )}
-  </View>
-);
-
-// ── Composant loading ─────────────────────────────────────────
-const LoadingState = () => (
-  <View style={styles.loadingWrapper}>
-    <ActivityIndicator size="large" color="#6366F1" />
-    <Text style={styles.loadingTexte}>Chargement des données…</Text>
-  </View>
-);
-
-// ── Écran principal ───────────────────────────────────────────
 const SuiviScreen = () => {
   const navigation = useNavigation();
-  const { graphiques, loading, error } = useSuivi();
+  const { t, isRTL } = useI18n();
+  const { graphiques, permissions, loading, error } = useSuivi();
 
-  // ── Permissions par graphique ─────────────────────────────
-  // À brancher sur ton système de permissions réel.
-  // Exemple : const { autorisations } = useAuthStore()
-  // Pour l'instant : toujours autorisé (à adapter)
-  const autoriseCD4 = true;  // remplace par: autorisations?.cd4 ?? true
-  const autoriseCV  = true;  // remplace par: autorisations?.cv  ?? true
+  const canViewCD4 = permissions?.can_view_cd4 ?? true;
+  const canViewCV = permissions?.can_view_viral_load ?? true;
+  const noChartAccess = !canViewCD4 && !canViewCV;
 
-  const aucunGraphique = !autoriseCD4 && !autoriseCV;
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.loadingWrapper}>
+          <ActivityIndicator size="large" color="#6366F1" />
+          <Text style={[styles.loadingText, isRTL && styles.textAlignRight]}>
+            {t("common.loadingData")}
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="dark-content" backgroundColor="#F8FAFC" />
 
-      {/* ── Header ── */}
       <View style={styles.header}>
         <TouchableOpacity
-          style={styles.retourBtn}
+          style={styles.backButton}
           onPress={() => navigation.goBack()}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           <IconRetour />
         </TouchableOpacity>
 
-        <View style={styles.headerTextes}>
-          <Text style={styles.headerTitre}>Suivi biologique</Text>
-          <Text style={styles.headerSousTitre}>CD4 · Charge virale</Text>
+        <View style={styles.headerTexts}>
+          <Text style={[styles.headerTitle, isRTL && styles.textAlignRight]}>
+            {t("suivi.title")}
+          </Text>
+          <Text style={[styles.headerSubtitle, isRTL && styles.textAlignRight]}>
+            {t("suivi.subtitle")}
+          </Text>
         </View>
       </View>
 
-      {/* ── Contenu ── */}
-      {loading ? (
-        <LoadingState />
-      ) : error ? (
+      {error ? (
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          <ErreurCard message={error} />
+          <View style={styles.errorCard}>
+            <Text style={styles.errorIcon}>⚠️</Text>
+            <Text style={[styles.errorText, isRTL && styles.textAlignRight]}>{error}</Text>
+          </View>
         </ScrollView>
-      ) : aucunGraphique ? (
-        <View style={styles.accesRefuseWrapper}>
-          <Text style={styles.accesRefuseIcone}>🔒</Text>
-          <Text style={styles.accesRefuseTitre}>Accès restreint</Text>
-          <Text style={styles.accesRefuseTexte}>
-            Votre médecin n'a pas autorisé l'accès aux données biologiques.
+      ) : noChartAccess ? (
+        <View style={styles.accessDeniedWrapper}>
+          <Text style={styles.accessDeniedIcon}>🔒</Text>
+          <Text style={[styles.accessDeniedTitle, isRTL && styles.textAlignRight]}>
+            {t("suivi.accessRestrictedTitle")}
+          </Text>
+          <Text style={[styles.accessDeniedText, isRTL && styles.textAlignRight]}>
+            {t("suivi.accessRestrictedMessage")}
           </Text>
         </View>
       ) : (
@@ -97,18 +88,17 @@ const SuiviScreen = () => {
           showsVerticalScrollIndicator={false}
         >
           <CD4Chart
-              data={graphiques?.cd4 ?? []}
-              periodes={graphiques?.periodes ?? []}
-              autorisé={autoriseCD4}
-            />
+            data={graphiques?.cd4 ?? []}
+            periodes={graphiques?.periodes ?? []}
+            authorized={canViewCD4}
+          />
 
-            <ChargeViraleChart
-              data={graphiques?.cv ?? []}
-              periodes={graphiques?.periodes ?? []}
-              autorisé={autoriseCV}
-            />
+          <ChargeViraleChart
+            data={graphiques?.cv ?? []}
+            periodes={graphiques?.periodes ?? []}
+            authorized={canViewCV}
+          />
 
-          {/* Spacer bas de page */}
           <View style={{ height: 32 }} />
         </ScrollView>
       )}
@@ -116,14 +106,11 @@ const SuiviScreen = () => {
   );
 };
 
-// ── Styles ────────────────────────────────────────────────────
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: "#F8FAFC",
   },
-
-  // Header
   header: {
     flexDirection: "row",
     alignItems: "center",
@@ -134,45 +121,39 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     gap: 12,
   },
-  retourBtn: {
+  backButton: {
     padding: 4,
   },
-  headerTextes: {
+  headerTexts: {
     flex: 1,
   },
-  headerTitre: {
+  headerTitle: {
     fontSize: 17,
     fontWeight: "700",
     color: "#1E293B",
   },
-  headerSousTitre: {
+  headerSubtitle: {
     fontSize: 12,
     color: "#94A3B8",
     marginTop: 1,
   },
-
-  // Scroll
   scroll: {
     flex: 1,
   },
   scrollContent: {
     padding: 16,
   },
-
-  // Loading
   loadingWrapper: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     gap: 12,
   },
-  loadingTexte: {
+  loadingText: {
     fontSize: 14,
     color: "#64748B",
   },
-
-  // Erreur
-  erreurCard: {
+  errorCard: {
     backgroundColor: "#FFF5F5",
     borderRadius: 12,
     padding: 20,
@@ -182,50 +163,39 @@ const styles = StyleSheet.create({
     borderColor: "#FECACA",
     marginTop: 20,
   },
-  erreurIcone: {
+  errorIcon: {
     fontSize: 28,
   },
-  erreurTexte: {
+  errorText: {
     fontSize: 14,
     color: "#DC2626",
     textAlign: "center",
     lineHeight: 20,
   },
-  retryBtn: {
-    backgroundColor: "#DC2626",
-    borderRadius: 8,
-    paddingHorizontal: 20,
-    paddingVertical: 8,
-    marginTop: 4,
-  },
-  retryTexte: {
-    color: "#fff",
-    fontSize: 13,
-    fontWeight: "600",
-  },
-
-  // Accès refusé
-  accesRefuseWrapper: {
+  accessDeniedWrapper: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     padding: 32,
     gap: 10,
   },
-  accesRefuseIcone: {
+  accessDeniedIcon: {
     fontSize: 40,
     marginBottom: 4,
   },
-  accesRefuseTitre: {
+  accessDeniedTitle: {
     fontSize: 18,
     fontWeight: "700",
     color: "#1E293B",
   },
-  accesRefuseTexte: {
+  accessDeniedText: {
     fontSize: 14,
     color: "#64748B",
     textAlign: "center",
     lineHeight: 22,
+  },
+  textAlignRight: {
+    textAlign: "right",
   },
 });
 

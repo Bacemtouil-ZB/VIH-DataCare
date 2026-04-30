@@ -1,8 +1,6 @@
-import { StyleSheet, Dimensions } from 'react-native';
-import colors from '../../../constants/colors';
-import spacing from '../../../constants/spacing';
-
-const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+import { StyleSheet } from "react-native";
+import colors from "../../../constants/colors";
+import spacing from "../../../constants/spacing";
 
 const styles = StyleSheet.create({
   container: {
@@ -12,8 +10,8 @@ const styles = StyleSheet.create({
 
   topSection: {
     flex: 0.42,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     paddingTop: spacing.xl,
   },
 
@@ -27,28 +25,20 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.lg,
   },
 
-  // ── Logo ──────────────────────────────
   logoWrapper: {
-    alignItems: 'center',
+    alignItems: "center",
     gap: spacing.md,
-  },
-
-  logoIconsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: -8,
   },
 
   logoCircle: {
     width: 90,
     height: 90,
     borderRadius: spacing.borderRadius.full,
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(255,255,255,0.15)",
+    justifyContent: "center",
+    alignItems: "center",
     borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.3)',
+    borderColor: "rgba(255,255,255,0.3)",
   },
 
   logoInnerCircle: {
@@ -56,31 +46,72 @@ const styles = StyleSheet.create({
     height: 70,
     borderRadius: spacing.borderRadius.full,
     backgroundColor: colors.white,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   appName: {
     fontSize: spacing.fontSize.xl,
-    fontWeight: '800',
+    fontWeight: "800",
     color: colors.white,
     letterSpacing: 0.5,
   },
 
   appTagline: {
     fontSize: spacing.fontSize.sm,
-    color: 'rgba(255,255,255,0.75)',
+    color: "rgba(255,255,255,0.75)",
     letterSpacing: 0.3,
   },
 
-  // ── Form header ───────────────────────
+  languageSwitcher: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+  },
+
+  languageLabel: {
+    color: "rgba(255,255,255,0.9)",
+    fontSize: spacing.fontSize.sm,
+    fontWeight: "600",
+  },
+
+  languageOptions: {
+    flexDirection: "row",
+    gap: spacing.xs,
+  },
+
+  languageOption: {
+    paddingHorizontal: spacing.sm + 2,
+    paddingVertical: spacing.xs + 1,
+    borderRadius: spacing.borderRadius.full,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.6)",
+    backgroundColor: "rgba(255,255,255,0.1)",
+  },
+
+  languageOptionActive: {
+    backgroundColor: colors.white,
+    borderColor: colors.white,
+  },
+
+  languageOptionText: {
+    color: colors.white,
+    fontSize: spacing.fontSize.xs,
+    fontWeight: "700",
+    letterSpacing: 0.3,
+  },
+
+  languageOptionTextActive: {
+    color: colors.primary,
+  },
+
   formHeader: {
     marginBottom: spacing.lg,
   },
 
   formTitle: {
     fontSize: spacing.fontSize.xl,
-    fontWeight: '700',
+    fontWeight: "700",
     color: colors.textPrimary,
     marginBottom: spacing.xs,
   },
@@ -90,7 +121,6 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
 
-  // ── Form ─────────────────────────────
   form: {
     gap: spacing.md,
   },
@@ -101,13 +131,13 @@ const styles = StyleSheet.create({
 
   label: {
     fontSize: spacing.fontSize.sm,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.textPrimary,
   },
 
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: colors.surface,
     borderWidth: 1.5,
     borderColor: colors.border,
@@ -116,13 +146,13 @@ const styles = StyleSheet.create({
     height: 52,
   },
 
-  inputContainerFocused: {
-    borderColor: colors.primary,
-    backgroundColor: colors.primaryLight,
-  },
-
   inputIcon: {
     marginRight: spacing.sm,
+  },
+
+  inputIconRtl: {
+    marginRight: 0,
+    marginLeft: spacing.sm,
   },
 
   input: {
@@ -132,8 +162,8 @@ const styles = StyleSheet.create({
   },
 
   errorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: spacing.xs,
   },
 
@@ -146,8 +176,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     borderRadius: spacing.borderRadius.md,
     height: 52,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: spacing.sm,
     shadowColor: colors.primary,
     shadowOffset: { width: 0, height: 4 },
@@ -163,13 +193,12 @@ const styles = StyleSheet.create({
   buttonText: {
     color: colors.white,
     fontSize: spacing.fontSize.md,
-    fontWeight: '700',
+    fontWeight: "700",
     letterSpacing: 0.5,
   },
 
-  // ── Forgot password ───────────────────
   forgotContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: spacing.lg,
     paddingTop: spacing.md,
     borderTopWidth: 1,
@@ -179,13 +208,21 @@ const styles = StyleSheet.create({
   forgotText: {
     fontSize: spacing.fontSize.sm,
     color: colors.textSecondary,
-    textAlign: 'center',
+    textAlign: "center",
     lineHeight: 20,
   },
 
   forgotHighlight: {
     color: colors.primary,
-    fontWeight: '600',
+    fontWeight: "600",
+  },
+
+  rtlRow: {
+    flexDirection: "row-reverse",
+  },
+
+  textAlignRight: {
+    textAlign: "right",
   },
 });
 

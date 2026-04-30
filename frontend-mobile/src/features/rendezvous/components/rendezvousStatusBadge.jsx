@@ -1,44 +1,63 @@
-import React from 'react';
-import { View, Text } from 'react-native';
-import styles from '../styles/rendezvous.styles';
-import colors from '../../../constants/colors';
+import React from "react";
+import { Text, View } from "react-native";
+import styles from "../styles/rendezvous.styles";
+import colors from "../../../constants/colors";
+import useI18n from "../../../i18n/useI18n";
 
-const STATUS_CONFIG = {
+const normalizeStatus = (status) =>
+  status
+    ?.toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+
+const getStatusTranslationKey = (normalizedStatus) => {
+  switch (normalizedStatus) {
+    case "planifie":
+      return "rendezvous.statusPlanifie";
+    case "confirme":
+      return "rendezvous.statusConfirme";
+    case "annule":
+      return "rendezvous.statusAnnule";
+    case "termine":
+      return "rendezvous.statusTermine";
+    default:
+      return null;
+  }
+};
+
+const STATUS_STYLE = {
   planifie: {
-    label: 'Planifié',
-    backgroundColor: '#EFF6FF',
-    textColor: '#2563EB',
+    backgroundColor: "#EFF6FF",
+    textColor: "#2563EB",
   },
-  confirmé: {
-    label: 'Confirmé',
+  confirme: {
     backgroundColor: colors.primaryLight,
     textColor: colors.primary,
   },
-  annulé: {
-    label: 'Annulé',
-    backgroundColor: '#FEF2F2',
+  annule: {
+    backgroundColor: "#FEF2F2",
     textColor: colors.danger,
   },
-  terminé: {
-    label: 'Terminé',
-    backgroundColor: '#F0FDF4',
+  termine: {
+    backgroundColor: "#F0FDF4",
     textColor: colors.success,
   },
 };
 
 const RendezvousStatusBadge = ({ statut }) => {
-  const key = statut?.toLowerCase();
-  const config = STATUS_CONFIG[key] || {
-    label: statut,
+  const { t } = useI18n();
+
+  const key = normalizeStatus(statut);
+  const styleConfig = STATUS_STYLE[key] || {
     backgroundColor: colors.borderLight,
     textColor: colors.textSecondary,
   };
+  const translationKey = getStatusTranslationKey(key);
+  const label = translationKey ? t(translationKey) : statut;
 
   return (
-    <View style={[styles.badge, { backgroundColor: config.backgroundColor }]}>
-      <Text style={[styles.badgeText, { color: config.textColor }]}>
-        {config.label}
-      </Text>
+    <View style={[styles.badge, { backgroundColor: styleConfig.backgroundColor }]}>
+      <Text style={[styles.badgeText, { color: styleConfig.textColor }]}>{label}</Text>
     </View>
   );
 };

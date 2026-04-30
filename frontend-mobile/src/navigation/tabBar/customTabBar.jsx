@@ -1,11 +1,16 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import Svg, { Path } from 'react-native-svg';
 import { TAB_ROUTES, TAB_CONFIG } from './tabBar.constants';
 import styles, { BAR_WIDTH, HOLE_WIDTH, BAR_HEIGHT } from './tabBar.styles';
+import useI18n from '../../i18n/useI18n';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
+const TAB_LABEL_KEYS = {
+  Rendezvous: 'tabs.rendezvous',
+  Home: 'tabs.home',
+  Reminders: 'tabs.reminders',
+};
 
 const getSvgPath = () => {
   const w = BAR_WIDTH;
@@ -31,6 +36,8 @@ const getSvgPath = () => {
 };
 
 export default function CustomTabBar({ state, navigation }) {
+  const { t } = useI18n();
+
   return (
     <View style={styles.tabContainer}>
 
@@ -47,6 +54,7 @@ export default function CustomTabBar({ state, navigation }) {
           const isFocused = state.index === index;
           const tabConfig = TAB_ROUTES.find(t => t.name === route.name);
           if (!tabConfig) return null;
+          const tabLabel = t(TAB_LABEL_KEYS[route.name] || route.name);
 
           const onPress = () => {
             const event = navigation.emit({
@@ -78,7 +86,7 @@ export default function CustomTabBar({ state, navigation }) {
                   ? styles.centerLabel
                   : styles.centerLabelInactive
                 }>
-                  {tabConfig.label}
+                  {tabLabel}
                 </Text>
               </View>
             );
@@ -98,7 +106,7 @@ export default function CustomTabBar({ state, navigation }) {
                 color={isFocused ? TAB_CONFIG.ACTIVE_COLOR : TAB_CONFIG.INACTIVE_COLOR}
               />
               <Text style={isFocused ? styles.labelActive : styles.label}>
-                {tabConfig.label}
+                {tabLabel}
               </Text>
               <View style={isFocused ? styles.dot : styles.dotHidden} />
             </TouchableOpacity>

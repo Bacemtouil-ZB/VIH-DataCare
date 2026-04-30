@@ -1,53 +1,58 @@
-import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  ActivityIndicator,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import styles from '../styles/login.styles';
-import colors from '../../../constants/colors';
-import spacing from '../../../constants/spacing';
+import React, { useState } from "react";
+import { ActivityIndicator, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import styles from "../styles/login.styles";
+import colors from "../../../constants/colors";
+import useI18n from "../../../i18n/useI18n";
 
 const LoginForm = ({ onSubmit, isLoading }) => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const { t, isRTL } = useI18n();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   const handleSubmit = async () => {
-    setError('');
+    setError("");
 
     if (!username.trim() || !password.trim()) {
-      setError('Veuillez remplir tous les champs');
+      setError(t("auth.requiredFields"));
       return;
     }
 
     const result = await onSubmit(username.trim(), password);
 
     if (result && !result.success) {
-      setError(result.message);
+      if (result.message) {
+        setError(result.message);
+        return;
+      }
+
+      if (result.messageKey) {
+        setError(t(result.messageKey));
+        return;
+      }
+
+      setError(t("auth.loginFailed"));
     }
   };
 
   return (
     <View style={styles.form}>
-
-      {/* Username */}
       <View style={styles.inputWrapper}>
-        <Text style={styles.label}>Numéro patient</Text>
-        <View style={styles.inputContainer}>
+        <Text style={[styles.label, isRTL && styles.textAlignRight]}>
+          {t("login.patientNumberLabel")}
+        </Text>
+        <View style={[styles.inputContainer, isRTL && styles.rtlRow]}>
           <Ionicons
             name="person-outline"
             size={20}
             color={colors.textSecondary}
-            style={styles.inputIcon}
+            style={[styles.inputIcon, isRTL && styles.inputIconRtl]}
           />
           <TextInput
-            style={styles.input}
-            placeholder="Entrez votre numéro"
+            style={[styles.input, isRTL && styles.textAlignRight]}
+            placeholder={t("login.patientNumberPlaceholder")}
             placeholderTextColor={colors.textLight}
             value={username}
             onChangeText={setUsername}
@@ -57,19 +62,20 @@ const LoginForm = ({ onSubmit, isLoading }) => {
         </View>
       </View>
 
-      {/* Password */}
       <View style={styles.inputWrapper}>
-        <Text style={styles.label}>Mot de passe</Text>
-        <View style={styles.inputContainer}>
+        <Text style={[styles.label, isRTL && styles.textAlignRight]}>
+          {t("login.passwordLabel")}
+        </Text>
+        <View style={[styles.inputContainer, isRTL && styles.rtlRow]}>
           <Ionicons
             name="lock-closed-outline"
             size={20}
             color={colors.textSecondary}
-            style={styles.inputIcon}
+            style={[styles.inputIcon, isRTL && styles.inputIconRtl]}
           />
           <TextInput
-            style={styles.input}
-            placeholder="Entrez votre mot de passe"
+            style={[styles.input, isRTL && styles.textAlignRight]}
+            placeholder={t("login.passwordPlaceholder")}
             placeholderTextColor={colors.textLight}
             value={password}
             onChangeText={setPassword}
@@ -78,7 +84,7 @@ const LoginForm = ({ onSubmit, isLoading }) => {
           />
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
             <Ionicons
-              name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+              name={showPassword ? "eye-off-outline" : "eye-outline"}
               size={20}
               color={colors.textSecondary}
             />
@@ -86,15 +92,13 @@ const LoginForm = ({ onSubmit, isLoading }) => {
         </View>
       </View>
 
-      {/* Error */}
       {error ? (
-        <View style={styles.errorContainer}>
+        <View style={[styles.errorContainer, isRTL && styles.rtlRow]}>
           <Ionicons name="alert-circle-outline" size={16} color={colors.danger} />
-          <Text style={styles.errorText}>{error}</Text>
+          <Text style={[styles.errorText, isRTL && styles.textAlignRight]}>{error}</Text>
         </View>
       ) : null}
 
-      {/* Submit */}
       <TouchableOpacity
         style={[styles.button, isLoading && styles.buttonDisabled]}
         onPress={handleSubmit}
@@ -103,10 +107,9 @@ const LoginForm = ({ onSubmit, isLoading }) => {
         {isLoading ? (
           <ActivityIndicator color={colors.white} />
         ) : (
-          <Text style={styles.buttonText}>Se connecter</Text>
+          <Text style={styles.buttonText}>{t("login.submitButton")}</Text>
         )}
       </TouchableOpacity>
-
     </View>
   );
 };
