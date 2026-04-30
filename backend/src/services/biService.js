@@ -276,8 +276,10 @@ export const getFileActiveSummary = async ({ annee }) => {
     },
 
     // KPI 11 + 12 — Bar delta perdus de vue vs récupérés
-    retention: toDelta(rowsPerdus, rowsRecuperes, TRANCHES_3, 'tranche_3'),
-
+    retention: {
+      perdus:    toBarGroupe(rowsPerdus,    TRANCHES_3, 'tranche_3'),
+      recuperes: toBarGroupe(rowsRecuperes, TRANCHES_8, 'tranche_8'),
+    },
     // KPI 13 — Bar simple transferts par tranche_3
     transferts: toBarSimple(rowsTransferts, TRANCHES_3, 'tranche_3'),
 

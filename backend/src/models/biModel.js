@@ -318,7 +318,6 @@ export const refreshAllMVs = async () => {
     'mv_dim_population',
     'mv_dim_statut_viral',
     'mv_dim_statut_patient',
-    'mv_diagnostic_tardif',
     'mv_fait_nouveaux_malades',
     'mv_fait_file_active',
   ];

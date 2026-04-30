@@ -1,20 +1,26 @@
 import { Row, Col, Spin, Alert, Typography, Space } from "antd";
-import useFileActiveDashboard      from "./hooks/useFileActiveDashboard";
+import useFileActiveDashboard  from "./hooks/useFileActiveDashboard";
 
-import KpiFileActiveCards          from "./ui/KpiFileActiveCards";
-import TotalFileActiveChart        from "./ui/TotalFileActiveChart";
-import CvControleChart             from "./ui/CvControleChart";
-import CascadeViraleChart          from "./ui/CascadeViraleChart";
-import DecesChart                  from "./ui/DecesChart";
-import RetentionChart              from "./ui/RetentionChart";
-import TransfertsMigrantsChart     from "./ui/TransfertsMigrantsChart";
+import KpiFileActiveCards      from "./ui/KpiFileActiveCards";
+import TotalFileActiveChart    from "./ui/TotalFileActiveChart";
+import CvControleChart         from "./ui/CvControleChart";
+import CascadeViraleChart      from "./ui/CascadeViraleChart";
+import PassageStadesChart      from "./ui/PassageStadesChart";
+import RecuperationChart       from "./ui/RecuperationChart";
 
 import RefreshButton from "../../components/RefreshButton";
-
 import styles from "./css/fileActive.module.css";
 
 const FileActiveOrchestrer = () => {
-  const { annee, chartData, loading, error, refreshing, lastRefreshedAt, handleRefresh } = useFileActiveDashboard();
+  const {
+    annee,
+    chartData,
+    loading,
+    error,
+    refreshing,
+    lastRefreshedAt,
+    handleRefresh,
+  } = useFileActiveDashboard();
 
   if (loading && !chartData) {
     return (
@@ -27,12 +33,7 @@ const FileActiveOrchestrer = () => {
   if (error && !chartData) {
     return (
       <div className={styles.page}>
-        <Alert
-          type="error"
-          showIcon
-          title="Erreur chargement dashboard"
-          description={error}
-        />
+        <Alert type="error" showIcon description={error} />
       </div>
     );
   }
@@ -78,7 +79,7 @@ const FileActiveOrchestrer = () => {
         </Col>
       </Row>
 
-      {/* ── Ligne 2 : Cascade virologique (pleine largeur) ── */}
+      {/* ── Ligne 2 : Cascade virologique ── */}
       <div style={{ marginBottom: 16 }}>
         <CascadeViraleChart
           data={chartData?.cascadeVirale}
@@ -86,27 +87,21 @@ const FileActiveOrchestrer = () => {
         />
       </div>
 
-      {/* ── Ligne 3 : Décès + Rétention ── */}
-      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-        <Col xs={24} lg={12}>
-          <DecesChart
-            decesSida={chartData?.decesSida}
-            decesNormaux={chartData?.decesNormaux}
-            loading={loading}
-          />
-        </Col>
-        <Col xs={24} lg={12}>
-          <RetentionChart
-            data={chartData?.retention}
-            loading={loading}
-          />
-        </Col>
-      </Row>
+      {/* ── Ligne 3 : Passage des stades (tranche_3) ── */}
+      <div style={{ marginBottom: 16 }}>
+        <PassageStadesChart
+          decesSida={chartData?.decesSida}
+          decesNormaux={chartData?.decesNormaux}
+          perdusDeVue={chartData?.perdusDeVue}
+          transferts={chartData?.transferts}
+          migrants={chartData?.migrants}
+          loading={loading}
+        />
+      </div>
 
-      {/* ── Ligne 4 : Transferts + Migrants ── */}
-      <TransfertsMigrantsChart
-        transferts={chartData?.transferts}
-        migrants={chartData?.migrants}
+      {/* ── Ligne 4 : Récupération des perdus de vue (tranche_8) ── */}
+      <RecuperationChart
+        data={chartData?.recuperes}
         loading={loading}
       />
 
