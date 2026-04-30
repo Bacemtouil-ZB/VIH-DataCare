@@ -17,7 +17,7 @@ export const mobileLoginService = async (username, password) => {
   // Verify password
   const isValid = await bcrypt.compare(password, user.password);
   if (!isValid) {
-    throw new Error("Identifiants invalides");
+    throw new Error("mot de passe incorrect");
   }
 
   // Check account is activated

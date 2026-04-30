@@ -12,6 +12,7 @@ import { protect , authorizeMedecin} from "../middlewares/authMiddleware.js";
 import {validateCreateTpePrep,validateCreateTransfusion,validateFamily,validateGyneco,validateHabitudesVie,validateMedical,validateTherapeutic,validateUpdateSurgical,
     validateUpdateTpePrep,validateUpdateTransfusion,validateCreateSurgical,} from "../middlewares/validators/antecedentsvalidator.js";
 
+import { requireFemme } from "../middlewares/checkPatientGender.js";
 
    const router = express.Router();
     
@@ -25,9 +26,9 @@ router.put("/family/:patientId",    protect,authorizeMedecin, updateFamilyContro
 // ─────────────────────────────────────────────
 // Antécédent Gynécologique
 // ─────────────────────────────────────────────
-router.get("/gyneco/:patientId",    protect,authorizeMedecin, getGynecoController);
-router.post("/gyneco/:patientId",   protect,authorizeMedecin, validateGyneco, createGynecoController);
-router.put("/gyneco/:patientId",    protect,authorizeMedecin, updateGynecoController);
+router.get("/gyneco/:patientId",  protect, authorizeMedecin, requireFemme, getGynecoController);
+router.post("/gyneco/:patientId", protect, authorizeMedecin, requireFemme, validateGyneco, createGynecoController);
+router.put("/gyneco/:patientId",  protect, authorizeMedecin, requireFemme, updateGynecoController);
 
 // ─────────────────────────────────────────────
 // Habitudes de Vie

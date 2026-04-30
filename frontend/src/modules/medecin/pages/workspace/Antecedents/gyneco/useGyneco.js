@@ -138,6 +138,7 @@ export default function useGyneco(numero) {
     try {
       setSaving(true);
       const payload = formatGynecoForApi(form);
+      const isNewRecord = !isExisting;
       if (isExisting) {
         await updateGyneco(numero, payload);
       } else {
@@ -146,6 +147,7 @@ export default function useGyneco(numero) {
       }
       setSavedForm(form);
       setIsEditing(false);
+      toast.success(isNewRecord ? "Antécédent gynécologique créé." : "Antécédent gynécologique enregistré.");
     } catch (err) {
       // Erreurs de validation champ-par-champ → FieldError (pas de toast)
       // Les erreurs croisées gestite/parite/avortement remontent sur leur champ respectif

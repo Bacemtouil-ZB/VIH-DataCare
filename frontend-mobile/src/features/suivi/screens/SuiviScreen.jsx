@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import useSuivi from "../hooks/useSuivi";
 import CD4Chart from "../components/CD4Chart";
 import ChargeViraleChart from "../components/ChargeViraleChart";
@@ -67,13 +68,15 @@ const SuiviScreen = () => {
       {error ? (
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <View style={styles.errorCard}>
-            <Text style={styles.errorIcon}>⚠️</Text>
+            <MaterialCommunityIcons name="alert-circle-outline" size={36} color="#DC2626" />
             <Text style={[styles.errorText, isRTL && styles.textAlignRight]}>{error}</Text>
           </View>
         </ScrollView>
       ) : noChartAccess ? (
         <View style={styles.accessDeniedWrapper}>
-          <Text style={styles.accessDeniedIcon}>🔒</Text>
+          <View style={styles.accessDeniedIconWrapper}>
+            <MaterialCommunityIcons name="chart-timeline-variant" size={48} color="#6366F1" />
+          </View>
           <Text style={[styles.accessDeniedTitle, isRTL && styles.textAlignRight]}>
             {t("suivi.accessRestrictedTitle")}
           </Text>
@@ -92,13 +95,11 @@ const SuiviScreen = () => {
             periodes={graphiques?.periodes ?? []}
             authorized={canViewCD4}
           />
-
           <ChargeViraleChart
             data={graphiques?.cv ?? []}
             periodes={graphiques?.periodes ?? []}
             authorized={canViewCV}
           />
-
           <View style={{ height: 32 }} />
         </ScrollView>
       )}
@@ -163,9 +164,6 @@ const styles = StyleSheet.create({
     borderColor: "#FECACA",
     marginTop: 20,
   },
-  errorIcon: {
-    fontSize: 28,
-  },
   errorText: {
     fontSize: 14,
     color: "#DC2626",
@@ -177,16 +175,19 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 32,
-    gap: 10,
+    gap: 12,
   },
-  accessDeniedIcon: {
-    fontSize: 40,
-    marginBottom: 4,
+  accessDeniedIconWrapper: {
+    backgroundColor: "#EEF2FF",
+    borderRadius: 50,
+    padding: 20,
+    marginBottom: 8,
   },
   accessDeniedTitle: {
     fontSize: 18,
     fontWeight: "700",
     color: "#1E293B",
+    textAlign: "center",
   },
   accessDeniedText: {
     fontSize: 14,

@@ -127,9 +127,8 @@ const translations = {
     suivi: {
       title: "Suivi biologique",
       subtitle: "CD4 · Charge virale",
-      accessRestrictedTitle: "Acces restreint",
-      accessRestrictedMessage:
-        "Votre medecin n'a pas autorise l'acces aux donnees biologiques.",
+      accessRestrictedTitle: "Aucune donnée disponible",
+accessRestrictedMessage: "L'accès à vos données biologiques n'a pas encore été activé par votre équipe médicale.",
       chartCd4Title: "Evolution CD4",
       chartCd4Unit: "cell/mm3",
       chartViralTitle: "Evolution charge virale",
@@ -276,8 +275,8 @@ const translations = {
     suivi: {
       title: "المتابعة البيولوجية",
       subtitle: "CD4 · الحمل الفيروسي",
-      accessRestrictedTitle: "وصول مقيد",
-      accessRestrictedMessage: "لم يسمح طبيبك بالوصول الى البيانات البيولوجية.",
+      accessRestrictedTitle: "لا توجد بيانات متاحة",
+      accessRestrictedMessage: "لم يتم تفعيل عرض بياناتك البيولوجية من قبل الطاقم الطبي المختص.",
       chartCd4Title: "تطور CD4",
       chartCd4Unit: "خلية/مم3",
       chartViralTitle: "تطور الحمل الفيروسي",

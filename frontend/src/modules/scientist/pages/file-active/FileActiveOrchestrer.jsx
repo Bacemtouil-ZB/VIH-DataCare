@@ -87,23 +87,30 @@ const FileActiveOrchestrer = () => {
         />
       </div>
 
-      {/* ── Ligne 3 : Passage des stades (tranche_3) ── */}
-      <div style={{ marginBottom: 16 }}>
-        <PassageStadesChart
-          decesSida={chartData?.decesSida}
-          decesNormaux={chartData?.decesNormaux}
-          perdusDeVue={chartData?.perdusDeVue}
-          transferts={chartData?.transferts}
-          migrants={chartData?.migrants}
-          loading={loading}
-        />
-      </div>
+     {/* ── Ligne 3 : Passage des stades + Récupération ── */}
+      <Row gutter={[16, 16]} style={{ marginBottom: 16 }} align="stretch">
 
-      {/* ── Ligne 4 : Récupération des perdus de vue (tranche_8) ── */}
-      <RecuperationChart
-        data={chartData?.recuperes}
-        loading={loading}
-      />
+        {/* 45% — Passage des stades */}
+        <Col xs={24} lg={11}>
+          <PassageStadesChart
+            decesSida={chartData?.decesSida}
+            decesNormaux={chartData?.decesNormaux}
+            perdusDeVue={chartData?.perdusDeVue}
+            transferts={chartData?.transferts}
+            migrants={chartData?.migrants}
+            loading={loading}
+          />
+        </Col>
+
+        {/* 55% — Récupération des perdus de vue */}
+        <Col xs={24} lg={13}>
+          <RecuperationChart
+            data={chartData?.recuperes}
+            loading={loading}
+          />
+        </Col>
+
+      </Row>
 
     </div>
   );
