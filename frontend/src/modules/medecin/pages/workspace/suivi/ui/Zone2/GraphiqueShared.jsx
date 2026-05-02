@@ -3,6 +3,7 @@
 //  Utilisé par : GraphiqueCD4.jsx, GraphiqueCV.jsx
 // ============================================================
 
+/// Composants personnalisés pour les graphiques de la Zone2 est strict 
 // ── LigneMulticolore ─────────────────────────────────────────
 // Dessine les segments de la courbe en coloriant chaque segment
 // selon la couleur des deux points qu'il relie (logique : si l'un
@@ -13,6 +14,44 @@
 //   getCouleur  — (valeur) => couleur hex
 //   dataKey     — clé de la valeur dans data (ex: "cd4_absolu")
 
+// export const LigneMulticolore = ({ points, data, getCouleur, dataKey }) => {
+//   if (!points || points.length < 2) return null;
+
+//   return (
+//     <g>
+//       {points.slice(0, -1).map((p1, i) => {
+//         const p2 = points[i + 1];
+//         if (!p1 || !p2 || p1.x == null || p2.x == null) return null;
+
+//         const v1 = data[i]?.[dataKey];
+//         const v2 = data[i + 1]?.[dataKey];
+//         if (v1 == null || v2 == null) return null;
+
+//         // Le segment prend la couleur la plus "grave" des deux extrémités
+//         // On délègue entièrement à getCouleur — pas de logique seuil ici
+//         const c1 = getCouleur(v1);
+//         const c2 = getCouleur(v2);
+//         // Si les deux couleurs diffèrent, on prend celle du point le plus critique
+//         // Convention : getCouleur retourne une couleur, on prend c2 (point d'arrivée)
+//         // pour indiquer la tendance
+//         const couleur = c1 === c2 ? c1 : c2;
+
+//         return (
+//           <line
+//             key={`seg-${i}`}
+//             x1={p1.x} y1={p1.y}
+//             x2={p2.x} y2={p2.y}
+//             stroke={couleur}
+//             strokeWidth={2.5}
+//             strokeLinecap="round"
+//           />
+//         );
+//       })}
+//     </g>
+//   );
+// };
+
+/// style amélioré : courbe de Bézier cubique pour une transition plus fluide entre les segments, surtout visible sur les CV avec échelles log
 export const LigneMulticolore = ({ points, data, getCouleur, dataKey }) => {
   if (!points || points.length < 2) return null;
 
@@ -26,23 +65,22 @@ export const LigneMulticolore = ({ points, data, getCouleur, dataKey }) => {
         const v2 = data[i + 1]?.[dataKey];
         if (v1 == null || v2 == null) return null;
 
-        // Le segment prend la couleur la plus "grave" des deux extrémités
-        // On délègue entièrement à getCouleur — pas de logique seuil ici
         const c1 = getCouleur(v1);
         const c2 = getCouleur(v2);
-        // Si les deux couleurs diffèrent, on prend celle du point le plus critique
-        // Convention : getCouleur retourne une couleur, on prend c2 (point d'arrivée)
-        // pour indiquer la tendance
         const couleur = c1 === c2 ? c1 : c2;
 
+        // ✅ Courbe de Bézier cubique — points de contrôle au 1/3 et 2/3 horizontalement
+        const cx1 = p1.x + (p2.x - p1.x) / 3;
+        const cx2 = p1.x + (2 * (p2.x - p1.x)) / 3;
+
         return (
-          <line
+          <path
             key={`seg-${i}`}
-            x1={p1.x} y1={p1.y}
-            x2={p2.x} y2={p2.y}
+            d={`M ${p1.x} ${p1.y} C ${cx1} ${p1.y}, ${cx2} ${p2.y}, ${p2.x} ${p2.y}`}
             stroke={couleur}
             strokeWidth={2.5}
             strokeLinecap="round"
+            fill="none"
           />
         );
       })}
