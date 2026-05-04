@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 import useI18n from "../i18n/useI18n";
 
 const EmptyState = ({ message }) => {
-  const { isRTL } = useI18n();
+  const { isRTL } = useI18n(); // isrtl boolean to determine if the current language is right-to-left
 
   return (
     <View style={styles.container}>

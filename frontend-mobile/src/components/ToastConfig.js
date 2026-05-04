@@ -47,7 +47,7 @@ export const toastConfig = {
       style={{
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: colors.primary, // your theme color
+        backgroundColor: colors.primary, 
         padding: 14,
         borderRadius: 12,
         marginHorizontal: 10,
