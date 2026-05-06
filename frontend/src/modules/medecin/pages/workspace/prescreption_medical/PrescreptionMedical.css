@@ -16,14 +16,14 @@
 .pe-toolbar-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 2px;
   flex: 1;
 }
 
 
 .pe-search {
   margin-bottom: 0 !important;
-  flex: 1;
+  flex: O;
   max-width: 280px;
 }
 
