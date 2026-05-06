@@ -1,15 +1,34 @@
+// ══════════════════════════════════════════════════════════════
+// 🎨 Layer 3 — UI Composants (Pure - zéro logique, zéro état)
+// ══════════════════════════════════════════════════════════════
+
 import { useState, useRef, useEffect } from "react";
 import {
-  ActionButton, Badge, EmptyState, FieldLabel,
-  FormulaireWrapper, HistoriqueAccordeon, HistoriqueActions,
-  HistoriqueTable, Input, PageTitle, SearchBar, Spinner,
+  ActionButton,
+  Badge,
+  EmptyState,
+  FieldLabel,
+  FormulaireWrapper,
+  HistoriqueAccordeon,
+  HistoriqueActions,
+  HistoriqueTable,
+  Input,
+  PageTitle,
+  SearchBar,
+  Spinner,
 } from "../../../../../shared/components";
 import { toFrDate, toInputDate } from "../../../../../shared/utils/dateHelpers";
-import { getStatutStyle } from "./prescreptionMedicalHelpers";
-import { STATUT_LABELS } from "./prescreptionMedicalConstants";
+import { 
+  getStatutStyle,
+  filterStockItems,
+  isOutOfStock,
+  getSelectedMedicines,
+} from "./prescreptionMedicalHelpers";
+import { STATUT_LABELS, UI_TEXTS, FORM_FIELDS, TABLE_HEADERS } from "./prescreptionMedicalConstants";
 import ConfirmPrescriptionModal from "../../../components/UI/Confirmprescriptionmodal";
 
-// ── Helper : affiche une liste de traitements en pills ─────────────
+
+// Affiche une liste de médicaments sous forme de pills
 function TraitementPills({ medicaments }) {
   if (!medicaments || medicaments.length === 0)
     return <span className="text-muted">-</span>;
@@ -26,12 +45,13 @@ function TraitementPills({ medicaments }) {
 }
 
 
-// ── Dropdown multi-select avec checkboxes ──────────────────────────
+// Sélecteur multi-médicaments avec dropdown et checkboxes
 function MedMultiSelect({ stockItems, selectedIds, onChange }) {
-  const [open,   setOpen]   = useState(false);
+  const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const wrapperRef = useRef(null);
 
+  // Fermeture au clic externe
   useEffect(() => {
     const handler = (e) => {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target))
@@ -41,15 +61,8 @@ function MedMultiSelect({ stockItems, selectedIds, onChange }) {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const filtered = stockItems.filter((m) => {
-    const q = search.toLowerCase();
-    return (
-      !q ||
-      (m.composition || "").toLowerCase().includes(q) ||
-      (m.code        || "").toLowerCase().includes(q) ||
-      (m.nom         || "").toLowerCase().includes(q)
-    );
-  });
+  const filtered = filterStockItems(stockItems, search);
+  const selectedMeds = getSelectedMedicines(stockItems, selectedIds);
 
   const toggle = (id) => {
     const sid = String(id);
@@ -64,17 +77,12 @@ function MedMultiSelect({ stockItems, selectedIds, onChange }) {
     onChange(selectedIds.filter((x) => x !== String(id)));
   };
 
-  const selectedMeds = stockItems.filter((m) =>
-    selectedIds.includes(String(m.id))
-  );
-
-  
-
   return (
     <div className="pe-col-span-2">
-      <FieldLabel required>Médicaments</FieldLabel>
+      <FieldLabel required>{FORM_FIELDS.medicaments.label}</FieldLabel>
 
       <div ref={wrapperRef} className="pe-ms-wrapper">
+        {/* Trigger */}
         <div
           className={`pe-ms-trigger${open ? " open" : ""}`}
           onClick={() => setOpen((v) => !v)}
@@ -82,7 +90,7 @@ function MedMultiSelect({ stockItems, selectedIds, onChange }) {
           <div className="pe-ms-trigger-inner">
             {selectedMeds.length === 0 ? (
               <span className="pe-ms-placeholder">
-                Sélectionner des médicaments...
+                {UI_TEXTS.selectMedicines}
               </span>
             ) : (
               selectedMeds.map((m) => (
@@ -101,6 +109,7 @@ function MedMultiSelect({ stockItems, selectedIds, onChange }) {
           <span className={`pe-ms-chevron${open ? " open" : ""}`}>▼</span>
         </div>
 
+        {/* Dropdown */}
         {open && (
           <div className="pe-ms-dropdown">
             <input
@@ -111,14 +120,17 @@ function MedMultiSelect({ stockItems, selectedIds, onChange }) {
               onChange={(e) => setSearch(e.target.value)}
               onClick={(e) => e.stopPropagation()}
             />
+
             <div className="pe-ms-list">
               {filtered.length === 0 && (
-                <div className="pe-ms-empty">Aucun résultat</div>
+                <div className="pe-ms-empty">{UI_TEXTS.noResults}</div>
               )}
+
               {filtered.map((med) => {
-                const qty      = med.quantite ?? med.quantity ?? 0;
-                const disabled = qty === 0;
-                const checked  = selectedIds.includes(String(med.id));
+                const disabled = isOutOfStock(med);
+                const checked = selectedIds.includes(String(med.id));
+                const qty = med.quantite ?? med.quantity ?? 0;
+
                 return (
                   <label
                     key={med.id}
@@ -142,6 +154,8 @@ function MedMultiSelect({ stockItems, selectedIds, onChange }) {
                 );
               })}
             </div>
+
+            {/* Footer */}
             <div className="pe-ms-footer">
               <button
                 type="button"
@@ -149,7 +163,9 @@ function MedMultiSelect({ stockItems, selectedIds, onChange }) {
                 onClick={() => setOpen(false)}
               >
                 {selectedMeds.length > 0
-                  ? `Valider (${selectedMeds.length} sélectionné${selectedMeds.length > 1 ? "s" : ""})`
+                  ? `Valider (${selectedMeds.length} sélectionné${
+                      selectedMeds.length > 1 ? "s" : ""
+                    })`
                   : "Fermer"}
               </button>
             </div>
@@ -160,29 +176,56 @@ function MedMultiSelect({ stockItems, selectedIds, onChange }) {
   );
 }
 
-// ── Page principale ────────────────────────────────────────────────
+
 export default function PrescreptionMedicalUI({
-  filtered, loading, showHistory, setShowHistory,
-  handleShowDetails, detailItem, setDetailItem,
-  showForm, formData, field,
-  stockItems, setMedicamentIds,
-  isModifying, saving, closeForm, handleSubmit,
-  searchTerm, setSearchTerm, searchDate, setSearchDate,
-  openCreate, confirmationModal, closeConfirmationModal,
-  confirmPrescription, medecinDisplayName,
+  // Données
+  filtered,
+  loading,
+  stockItems,
+  formData,
+  detailItem,
+  confirmationModal,
+  medecinDisplayName,
+
+  // État d'affichage
+  showHistory,
+  showForm,
+  saving,
+  isModifying,
+
+  // Handlers
+  setShowHistory,
+  handleShowDetails,
+  setDetailItem,
+  openCreate,
+  closeForm,
+  handleSubmit,
+  confirmPrescription,
+  closeConfirmationModal,
+
+  // Champs de formulaire
+  field,
+  setMedicamentIds,
+  setSearchTerm,
+  setSearchDate,
+
+  // Props dynamiques
+  searchTerm,
+  searchDate,
 }) {
   const today = toInputDate(new Date());
 
   return (
     <div className="ec-page-bg pe-page">
-      <PageTitle title="Prescription medicale" />
+      <PageTitle title={UI_TEXTS.pageTitle} />
 
+      {/* ── Toolbar ── */}
       <div className="pe-toolbar">
         <div className="pe-toolbar-left">
           <SearchBar
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Rechercher un medicament, .."
+            placeholder={UI_TEXTS.searchPlaceholder}
             wrapperClassName="pe-search"
           />
           <SearchBar
@@ -193,17 +236,29 @@ export default function PrescreptionMedicalUI({
             max={today}
           />
         </div>
-        {!showForm
-          ? <ActionButton action="add"     label="Ajouter"  size="sm" onClick={openCreate} />
-          : <ActionButton action="annuler" label="Annuler"  size="sm" onClick={closeForm}  />
-        }
+        {!showForm ? (
+          <ActionButton
+            action="add"
+            label={UI_TEXTS.addButton}
+            size="sm"
+            onClick={openCreate}
+          />
+        ) : (
+          <ActionButton
+            action="annuler"
+            label={UI_TEXTS.cancelButton}
+            size="sm"
+            onClick={closeForm}
+          />
+        )}
       </div>
 
+      {/* ── Formulaire ── */}
       {showForm && (
         <FormulaireWrapper
           isModifying={isModifying}
-          labelCreate="Nouvelle prescription medicale"
-          labelModify="Modifier la prescription"
+          labelCreate={UI_TEXTS.createLabel}
+          labelModify={UI_TEXTS.modifyLabel}
         >
           <form onSubmit={handleSubmit}>
             <div className="pe-form-grid">
@@ -212,38 +267,42 @@ export default function PrescreptionMedicalUI({
                 selectedIds={formData.medicament_ids}
                 onChange={setMedicamentIds}
               />
+
               <div>
-                <FieldLabel>Posologie</FieldLabel>
+                <FieldLabel>{FORM_FIELDS.posologie.label}</FieldLabel>
                 <Input
                   value={formData.posologie}
                   onChange={field("posologie")}
-                  placeholder="Ex : 500 mg"
+                  placeholder={FORM_FIELDS.posologie.placeholder}
                 />
               </div>
+
               <div>
-                <FieldLabel required>Durée (jours)</FieldLabel>
+                <FieldLabel required>{FORM_FIELDS.periode.label}</FieldLabel>
                 <Input
                   type="number"
-                  min="1"
+                  min={FORM_FIELDS.periode.min}
                   value={formData.periode}
                   onChange={field("periode")}
                 />
               </div>
+
               <div className="pe-col-span-2">
-                <FieldLabel>Remarque</FieldLabel>
+                <FieldLabel>{FORM_FIELDS.remarque.label}</FieldLabel>
                 <textarea
                   className="pe-textarea form-control"
                   rows={3}
                   value={formData.remarque}
                   onChange={field("remarque")}
-                  placeholder="Observations ou instructions complementaires (optionnel)"
+                  placeholder={FORM_FIELDS.remarque.placeholder}
                 />
               </div>
             </div>
+
             <div className="pe-form-actions">
               <ActionButton
                 action="save"
-                label={isModifying ? "Mettre a jour" : "Confirmer"}
+                label={isModifying ? UI_TEXTS.submitModify : UI_TEXTS.submitCreate}
                 loading={saving}
                 size="sm"
                 showIcon={false}
@@ -257,56 +316,55 @@ export default function PrescreptionMedicalUI({
 
       {/* ── Historique ── */}
       <HistoriqueAccordeon
-        title="Historique des prescriptions medicales"
+        title={UI_TEXTS.historyTitle}
         count={filtered.length}
         open={showHistory}
         onToggle={() => setShowHistory((v) => !v)}
       >
-        {loading ? <Spinner />
-          : filtered.length === 0
-            ? <EmptyState message="Aucune prescription enregistree." />
-            : <HistoriqueTable
-                headers={["Date", "Médicaments", "Posologie", "Durée (j)", "Statut", "Action"]}
-                items={filtered}
-                emptyMessage="Aucune prescription enregistree."
-                renderRow={(p) => (
-                  <tr key={p.id}>
-                    <td style={{ whiteSpace: "nowrap" }}>
-                      {toFrDate(p.date)}
-                    </td>
-                    <td>
-                      <TraitementPills medicaments={p.medicaments} />
-                    </td>
-                    <td>{p.posologie || "-"}</td>
-                    <td>{p.periode || "-"}</td>
-                    <td>
-                      <Badge
-                        bg={getStatutStyle(p.statut).bg}
-                        color={getStatutStyle(p.statut).color}
-                      >
-                        {STATUT_LABELS[p.statut] || p.statut || "-"}
-                      </Badge>
-                    </td>
-                    <td>
-                      <HistoriqueActions onDetails={() => handleShowDetails(p)} />
-                    </td>
-                  </tr>
-                )}
-              />
-        }
+        {loading ? (
+          <Spinner />
+        ) : filtered.length === 0 ? (
+          <EmptyState message={UI_TEXTS.emptyHistory} />
+        ) : (
+          <HistoriqueTable
+            headers={TABLE_HEADERS}
+            items={filtered}
+            emptyMessage={UI_TEXTS.emptyHistory}
+            renderRow={(p) => (
+              <tr key={p.id}>
+                <td style={{ whiteSpace: "nowrap" }}>{toFrDate(p.date)}</td>
+                <td>
+                  <TraitementPills medicaments={p.medicaments} />
+                </td>
+                <td>{p.posologie || "-"}</td>
+                <td>{p.periode || "-"}</td>
+                <td>
+                  <Badge
+                    bg={getStatutStyle(p.statut).bg}
+                    color={getStatutStyle(p.statut).color}
+                  >
+                    {STATUT_LABELS[p.statut] || p.statut || "-"}
+                  </Badge>
+                </td>
+                <td>
+                  <HistoriqueActions onDetails={() => handleShowDetails(p)} />
+                </td>
+              </tr>
+            )}
+          />
+        )}
       </HistoriqueAccordeon>
 
       {/* ── Détail ── */}
       {detailItem && (
         <FormulaireWrapper
           isModifying={false}
-          labelCreate="Details de la prescription"
-          labelModify="Details de la prescription"
+          labelCreate={UI_TEXTS.detailsLabel}
+          labelModify={UI_TEXTS.detailsLabel}
         >
           <div className="pe-detail-grid">
-
             <div className="pe-col-span-2">
-              <FieldLabel>Médicaments</FieldLabel>
+              <FieldLabel>{FORM_FIELDS.medicaments.label}</FieldLabel>
               <div className="pe-detail-pills-box">
                 <TraitementPills medicaments={detailItem.medicaments} />
               </div>
@@ -317,22 +375,26 @@ export default function PrescreptionMedicalUI({
               <Input value={toFrDate(detailItem.date)} disabled />
             </div>
             <div>
-              <FieldLabel>Posologie</FieldLabel>
+              <FieldLabel>{FORM_FIELDS.posologie.label}</FieldLabel>
               <Input value={detailItem.posologie || "-"} disabled />
             </div>
             <div>
-              <FieldLabel>Durée (jours)</FieldLabel>
+              <FieldLabel>{FORM_FIELDS.periode.label}</FieldLabel>
               <Input value={detailItem.periode || "-"} disabled />
             </div>
             <div>
               <FieldLabel>Statut</FieldLabel>
               <Input
-                value={STATUT_LABELS[detailItem.statut] || detailItem.statut || "-"}
+                value={
+                  STATUT_LABELS[detailItem.statut] ||
+                  detailItem.statut ||
+                  "-"
+                }
                 disabled
               />
             </div>
             <div style={{ gridColumn: "span 2" }}>
-              <FieldLabel>Remarque</FieldLabel>
+              <FieldLabel>{FORM_FIELDS.remarque.label}</FieldLabel>
               <textarea
                 className="pe-textarea form-control"
                 rows={3}
@@ -341,10 +403,11 @@ export default function PrescreptionMedicalUI({
               />
             </div>
           </div>
+
           <div className="pe-form-actions">
             <ActionButton
               action="annuler"
-              label="Fermer"
+              label={UI_TEXTS.closeButton}
               size="sm"
               onClick={() => setDetailItem(null)}
             />
@@ -352,6 +415,7 @@ export default function PrescreptionMedicalUI({
         </FormulaireWrapper>
       )}
 
+      {/* ── Modal de Confirmation ── */}
       <ConfirmPrescriptionModal
         show={!!confirmationModal}
         data={confirmationModal?.data}
