@@ -9,7 +9,7 @@ import {
   validatePrescription,
 } from "../../../../../shared/services/prescriptionWorkflowService.jsx";
 import { INITIAL_FORM } from "./prescreptionMedicalConstants";
-import { clearFieldError } from "../../../../../shared/components/Forms/FieldLabel/clearFieldError";
+// import { clearFieldError } from "../../../../../shared/components/Forms/FieldLabel/clearFieldError";
 
 export function usePrescreptionMedicalLogic(numero, currentUser) {
   const [prescriptions,     setPrescriptions]    = useState([]);
@@ -53,10 +53,13 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
     return fullName || "Medecin";
   }, [currentUser]);
 
+
+  
   // ── Filtered — plus de groupement, backend renvoie 1 ligne par ordonnance ──
   const filtered = useMemo(() => {
     const q     = searchTerm.trim().toLowerCase();
     const dateQ = searchDate.trim();
+    
 
     return prescriptions.filter((p) => {
       // les noms viennent depuis medicaments[]
@@ -77,6 +80,8 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
       if (!raw) return false;
       return toInputDate(raw) === dateQ;
     });
+
+    
   }, [prescriptions, searchTerm, searchDate]);
 
   // ── Helpers formulaire ────────────────────────────────────────
@@ -102,6 +107,8 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
   };
 
   const closeConfirmationModal = () => setConfirmationModal(null);
+
+  
 
   // ── Détail ────────────────────────────────────────────────────
   const handleShowDetails = (item) => {

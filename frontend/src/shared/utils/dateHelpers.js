@@ -28,6 +28,11 @@ export const parseDateValue = (date) => {
  */
 export const toInputDate = (date) => {
   if (!date) return "";
+  if (typeof date === "string") {
+    const trimmed = date.trim();
+    const datePrefix = trimmed.match(/^(\d{4}-\d{2}-\d{2})/);
+    if (datePrefix) return datePrefix[1];
+  }
   const d = parseDateValue(date);
   if (!d) return "";
   return `${d.getFullYear()}-${padDatePart(d.getMonth() + 1)}-${padDatePart(d.getDate())}`;

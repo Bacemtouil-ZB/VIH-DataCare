@@ -14,6 +14,7 @@ import {
 } from "./vihHelpers";
 import { FORM_INIT, REQUIRED_FIELDS } from "./vihConstants";
 import { clearFieldError } from "../../../../../shared/components/Forms/FieldLabel/clearFieldError";
+import { toInputDate } from "../../../../../shared/utils/dateHelpers";
 
 export function useVihLogic(numero) {
   const [patientId, setPatientId] = useState(null);
@@ -89,7 +90,7 @@ export function useVihLogic(numero) {
 
       const vihRes = await getVihByNumero(numero);
       setVihData(vihRes?.vih || null);
-      setFormData(vihRes?.vih || {});
+      setFormData(buildFormFromVihData(vihRes?.vih));
       setIsEditMode(false);
       window.scrollTo({ top: 0, behavior: "smooth" });
 
@@ -166,6 +167,8 @@ export function useVihLogic(numero) {
     e.preventDefault();
     submitVihData({
       ...formData,
+      date_derniere_negative: toInputDate(formData.date_derniere_negative),
+      date_vih_positif: toInputDate(formData.date_vih_positif),
       mode_contamination: serializeModesContamination(
         formData.mode_contamination,
       ),

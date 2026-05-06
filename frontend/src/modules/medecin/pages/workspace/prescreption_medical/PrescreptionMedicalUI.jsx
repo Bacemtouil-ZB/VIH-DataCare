@@ -25,6 +25,7 @@ function TraitementPills({ medicaments }) {
   );
 }
 
+
 // ── Dropdown multi-select avec checkboxes ──────────────────────────
 function MedMultiSelect({ stockItems, selectedIds, onChange }) {
   const [open,   setOpen]   = useState(false);
@@ -66,6 +67,8 @@ function MedMultiSelect({ stockItems, selectedIds, onChange }) {
   const selectedMeds = stockItems.filter((m) =>
     selectedIds.includes(String(m.id))
   );
+
+  
 
   return (
     <div className="pe-col-span-2">
