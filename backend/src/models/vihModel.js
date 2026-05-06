@@ -21,7 +21,19 @@ export const createVih = async (vihData, createdBy) => {
         created_by
     )
     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-    RETURNING *;
+    RETURNING
+      id,
+      patient_id,
+      mode_contamination,
+      type_depistage,
+      circonstance_decouverte,
+      date_derniere_negative::text AS date_derniere_negative,
+      date_vih_positif::text AS date_vih_positif,
+      stade_cdc,
+      created_by,
+      updated_by,
+      created_at,
+      updated_at;
   `;
 
   const values = [
@@ -42,7 +54,18 @@ export const createVih = async (vihData, createdBy) => {
 export const getVihById = async (id) => {
   const query = `
     SELECT 
-      v.*,
+      v.id,
+      v.patient_id,
+      v.mode_contamination,
+      v.type_depistage,
+      v.circonstance_decouverte,
+      v.date_derniere_negative::text AS date_derniere_negative,
+      v.date_vih_positif::text AS date_vih_positif,
+      v.stade_cdc,
+      v.created_by,
+      v.updated_by,
+      v.created_at,
+      v.updated_at,
       p.name as patient_name,
       p.surname as patient_surname,
       u1.nom as created_by_nom,
@@ -63,7 +86,18 @@ export const getVihById = async (id) => {
 export const getVihByNumeroDossier = async (numero) => {
   const query = `
     SELECT 
-      v.*,
+      v.id,
+      v.patient_id,
+      v.mode_contamination,
+      v.type_depistage,
+      v.circonstance_decouverte,
+      v.date_derniere_negative::text AS date_derniere_negative,
+      v.date_vih_positif::text AS date_vih_positif,
+      v.stade_cdc,
+      v.created_by,
+      v.updated_by,
+      v.created_at,
+      v.updated_at,
       p.name as patient_name,
       p.surname as patient_surname,
       u1.nom as created_by_nom,
@@ -106,7 +140,19 @@ export const updateVih = async (id, vihData, updatedBy) => {
       updated_by = $7,
       updated_at = NOW()
     WHERE id = $8
-    RETURNING *;
+    RETURNING
+      id,
+      patient_id,
+      mode_contamination,
+      type_depistage,
+      circonstance_decouverte,
+      date_derniere_negative::text AS date_derniere_negative,
+      date_vih_positif::text AS date_vih_positif,
+      stade_cdc,
+      created_by,
+      updated_by,
+      created_at,
+      updated_at;
   `;
 
   const values = [

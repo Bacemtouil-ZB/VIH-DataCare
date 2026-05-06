@@ -29,7 +29,7 @@ const CvControleChart = ({ data, cible95, loading }) => (
                 fontSize: 11,
               }}
             />
-            <Tooltip />
+            <Tooltip  />
             <Legend />
             {cible95 && (
               <ReferenceLine

@@ -57,7 +57,7 @@ const FileActiveOrchestrer = () => {
       <div style={{ marginBottom: 20 }}>
         <KpiFileActiveCards
           data={chartData?.kpis}
-          loading={loading}
+          loading={refreshing}
           error={error}
         />
       </div>
@@ -67,14 +67,14 @@ const FileActiveOrchestrer = () => {
         <Col xs={24} lg={12}>
           <TotalFileActiveChart
             data={chartData?.totalFileActive}
-            loading={loading}
+            loading={refreshing}
           />
         </Col>
         <Col xs={24} lg={12}>
           <CvControleChart
             data={chartData?.cvControle}
             cible95={chartData?.cvCible95}
-            loading={loading}
+            loading={refreshing}
           />
         </Col>
       </Row>
@@ -83,7 +83,7 @@ const FileActiveOrchestrer = () => {
       <div style={{ marginBottom: 16 }}>
         <CascadeViraleChart
           data={chartData?.cascadeVirale}
-          loading={loading}
+          loading={refreshing}
         />
       </div>
 
@@ -98,7 +98,7 @@ const FileActiveOrchestrer = () => {
             perdusDeVue={chartData?.perdusDeVue}
             transferts={chartData?.transferts}
             migrants={chartData?.migrants}
-            loading={loading}
+            loading={refreshing}
           />
         </Col>
 
@@ -106,7 +106,7 @@ const FileActiveOrchestrer = () => {
         <Col xs={24} lg={13}>
           <RecuperationChart
             data={chartData?.recuperes}
-            loading={loading}
+            loading={refreshing}
           />
         </Col>
 

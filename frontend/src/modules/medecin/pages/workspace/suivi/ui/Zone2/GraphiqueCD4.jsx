@@ -171,40 +171,44 @@ const GraphiqueCD4 = ({ data = [], periodes = [], loading }) => {
         </div>
       }
     >
-      <div style={{
-        background: "#0F172A", borderRadius: 10,
-        padding: "16px 12px 12px 4px", overflow: "hidden",
-      }}>
-        <ResponsiveContainer width="100%" height={CONFIG_GRAPHIQUE.hauteur ?? 300}>
-          <LineChart
-            data={dataAvecTraitement}
-            margin={{ top: 22, right: 28, left: 0, bottom: 4 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" stroke="#1E293B" vertical={false} />
+     
+    
+<div style={{
+  background: "transparent",  // ← plus de fond noir
+  borderRadius: 10,
+  padding: "16px 12px 12px 4px",
+  overflow: "hidden",
+}}>
+  <ResponsiveContainer width="100%" height={CONFIG_GRAPHIQUE.hauteur ?? 300}>
+    <LineChart
+      data={dataAvecTraitement}
+      margin={{ top: 22, right: 28, left: 0, bottom: 4 }}
+    >
+      <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" vertical={false} />
 
-            <XAxis
-              dataKey="dateAffichee"
-              stroke="#475569"
-              tick={{ fontSize: 11, fill: "#94A3B8" }}
-              tickLine={{ stroke: "#334155" }}
-              axisLine={{ stroke: "#334155" }}
-              height={32}
-            />
+      <XAxis
+        dataKey="dateAffichee"
+        stroke="#D1D5DB"
+        tick={{ fontSize: 11, fill: "#6B7280" }}  
+        tickLine={{ stroke: "#E5E7EB" }}
+        axisLine={{ stroke: "#E5E7EB" }}
+        height={32}
+      />
 
-            <YAxis
-              width={52}
-              stroke="#475569"
-              tick={{ fontSize: 11, fill: "#94A3B8" }}
-              tickLine={false}
-              axisLine={{ stroke: "#334155" }}
-              domain={[0, "auto"]}
-              tickFormatter={(v) => v.toLocaleString("fr-FR")}
-            />
+      <YAxis
+        width={52}
+        stroke="#D1D5DB"
+        tick={{ fontSize: 11, fill: "#6B7280" }}   
+        tickLine={false}
+        axisLine={{ stroke: "#E5E7EB" }}
+        domain={[0, "auto"]}
+        tickFormatter={(v) => v.toLocaleString("fr-FR")}
+      />
 
-            <Tooltip
-              cursor={{ stroke: "#475569", strokeWidth: 1, strokeDasharray: "4 2" }}
-              content={<TooltipCD4 />}
-            />
+      <Tooltip
+        cursor={{ stroke: "#9CA3AF", strokeWidth: 1, strokeDasharray: "4 2" }}
+        content={<TooltipCD4 />}
+      />
 
             {LIGNES_REF_CD4.map((ligne) => (
               <ReferenceLine

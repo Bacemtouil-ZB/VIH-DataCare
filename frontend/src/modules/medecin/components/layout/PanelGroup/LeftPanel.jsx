@@ -148,31 +148,25 @@ export default function LeftPanel() {
           <span>{data.dernier_traitement ?? "—"}</span>
         </div>
 
-        {/* ── Charge virale ────────────────────────────── */}
-        <div className="info-row">
-          <span>Charge virale</span>
-          <span>
-            {data.charge_virale?.valeur != null
-              ? `${data.charge_virale.valeur} cp/mL`
-              : "—"}
-            {data.charge_virale?.date && (
-              <span className="info-date"> · {formatDate(data.charge_virale.date)}</span>
-            )}
-          </span>
-        </div>
+       {/* ── Charge virale ────────────────────────────── */}
+<div className="info-row">
+  <span>Charge virale</span>
+  <span>
+    {data.charge_virale?.valeur != null
+      ? `${data.charge_virale.valeur} cp/mL`
+      : "—"}
+  </span>
+</div>
 
-        {/* ── CD4 ──────────────────────────────────────── */}
-        <div className="info-row">
-          <span>CD4</span>
-          <span>
-            {data.cd4?.absolu != null
-              ? `${data.cd4.absolu} cell/mm³${data.cd4.pourcent != null ? ` (${data.cd4.pourcent}%)` : ""}`
-              : "—"}
-            {data.cd4?.date && (
-              <span className="info-date"> · {formatDate(data.cd4.date)}</span>
-            )}
-          </span>
-        </div>
+{/* ── CD4 ──────────────────────────────────────── */}
+<div className="info-row">
+  <span>CD4</span>
+  <span>
+    {data.cd4?.absolu != null
+      ? `${data.cd4.absolu} cell/mm³${data.cd4.pourcent != null ? ` (${data.cd4.pourcent}%)` : ""}`
+      : "—"}
+  </span>
+</div>
 
       </div>
     </div>

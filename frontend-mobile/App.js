@@ -1,4 +1,4 @@
-import 'react-native-reanimated';
+import 'react-native-reanimated'; 
 
 import React, { useEffect } from "react";
 import AppNavigator from "./src/navigation/appNavigator";

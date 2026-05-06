@@ -10,7 +10,7 @@ export default function (api) {
       ],
     ],
     plugins: [
-      "react-native-reanimated/plugin", // 👈 DOIT ÊTRE LE DERNIER
+      "react-native-reanimated/plugin", //  DOIT ÊTRE LE DERNIER
     ],
   };
 };

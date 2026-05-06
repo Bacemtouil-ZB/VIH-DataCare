@@ -24,7 +24,6 @@ const useSuiviTableau = (patientId) => {
         if (res.success) {
           setTableau(res.data);
         }
-        console.log("Tableau suivi chargé :", res.data);
       } catch (err) {
         setError(err.message || "Erreur lors du chargement du tableau");
       } finally {

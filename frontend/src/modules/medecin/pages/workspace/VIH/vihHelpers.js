@@ -1,4 +1,5 @@
 import { FORM_INIT } from "./vihConstants";
+import { toInputDate } from "../../../../../shared/utils/dateHelpers";
 
 export const getVihValidationError = (formData, requiredFields) => {
   for (const field of requiredFields) {
@@ -11,9 +12,7 @@ export const getVihValidationError = (formData, requiredFields) => {
 };
 
 export const formatDate = (d) => {
-  if (!d) return "";
-  const date = new Date(d);
-  return Number.isNaN(date.getTime()) ? "" : date.toISOString().split("T")[0];
+  return toInputDate(d);
 };
 
 export const normalizeModesContamination = (mc) => {

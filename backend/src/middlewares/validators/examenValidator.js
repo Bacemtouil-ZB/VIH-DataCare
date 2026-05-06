@@ -69,12 +69,12 @@ const validateTaille = body("taille")
 
     const num = Number(value);
     if (isNaN(num)) throw new Error("La taille doit être un nombre");
-    if (num < 1 || num > 250) throw new Error("Taille invalide (1-250 cm)");
+    if (num < 10 || num > 250) throw new Error("Taille invalide (10-250 cm)");
     return true;
   });
 
 const validatePoids = body("poids")
-  .optional({ nullable: true })          // ← null ET undefined sautent le validator
+  .optional({ nullable: true })         
   .custom((value) => {
     if (value === "" || value === undefined) return true;
 

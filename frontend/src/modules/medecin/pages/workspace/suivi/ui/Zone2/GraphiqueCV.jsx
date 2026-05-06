@@ -123,11 +123,10 @@ const TooltipCV = ({ active, payload }) => {
   );
 };
 
-// ── Ticks axes ────────────────────────────────────────────────
 const TickX = ({ x, y, payload }) => {
   if (!payload?.value) return null;
   return (
-    <text x={x} y={y + 14} textAnchor="middle" fontSize={11} fill="#94A3B8">
+    <text x={x} y={y + 14} textAnchor="middle" fontSize={11} fill="#6B7280"> {/* ✅ */}
       {payload.value}
     </text>
   );
@@ -141,7 +140,7 @@ const TickY = ({ x, y, payload }) => {
     : v >= 1_000   ? `${v / 1_000}k`
     : `${v}`;
   return (
-    <text x={x - 4} y={y + 4} textAnchor="end" fontSize={11} fill="#94A3B8">
+    <text x={x - 4} y={y + 4} textAnchor="end" fontSize={11} fill="#6B7280"> {/* ✅ */}
       {label}
     </text>
   );
@@ -215,40 +214,44 @@ const GraphiqueCV = ({ data = [], periodes = [], loading }) => {
         </div>
       }
     >
+      
       <div style={{
-        background: "#0F172A", borderRadius: 10,
-        padding: "16px 12px 12px 4px", overflow: "hidden",
-      }}>
+  background: "transparent",
+  borderRadius: 10,
+  padding: "16px 12px 12px 4px",
+  overflow: "hidden",
+}}>
         <ResponsiveContainer width="100%" height={CONFIG_GRAPHIQUE.hauteur ?? 300}>
           <ComposedChart
             data={dataAvecTraitement}
             margin={{ top: 22, right: 28, left: 0, bottom: 4 }}
           >
-            <CartesianGrid strokeDasharray="3 3" stroke="#1E293B" vertical={false} />
+          
+            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" vertical={false} />
 
-            <XAxis
-              dataKey="dateAffichee"
-              tick={<TickX />}
-              tickLine={{ stroke: "#334155" }}
-              axisLine={{ stroke: "#334155" }}
-              height={32}
-            />
+<XAxis
+  dataKey="dateAffichee"
+  tick={<TickX />}
+  tickLine={{ stroke: "#E5E7EB" }}
+  axisLine={{ stroke: "#E5E7EB" }}
+  height={32}
+/>
 
-            <YAxis
-              scale="log"
-              domain={[1, "auto"]}
-              ticks={ticksLog}
-              tick={<TickY />}
-              tickLine={false}
-              axisLine={{ stroke: "#334155" }}
-              width={52}
-              allowDataOverflow
-            />
+<YAxis
+  scale="log"
+  domain={[1, "auto"]}
+  ticks={ticksLog}
+  tick={<TickY />}
+  tickLine={false}
+  axisLine={{ stroke: "#E5E7EB" }}
+  width={52}
+  allowDataOverflow
+/>
 
-            <Tooltip
-              cursor={{ stroke: "#475569", strokeWidth: 1, strokeDasharray: "4 2" }}
-              content={<TooltipCV />}
-            />
+<Tooltip
+  cursor={{ stroke: "#9CA3AF", strokeWidth: 1, strokeDasharray: "4 2" }}
+  content={<TooltipCV />}
+/>
 
             {LIGNES_REF_CV.map((ligne) => (
               <ReferenceLine
