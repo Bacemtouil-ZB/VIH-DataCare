@@ -1,9 +1,3 @@
-// ══════════════════════════════════════════════════════════════
-// 🏗️ Layer 4 — Orchestration (Assemblage des layers)
-// ══════════════════════════════════════════════════════════════
-// Rôle  : Assembler les composants UI et connecter la logique métier
-// Contient : usePrescreptionMedicalLogic + PrescreptionMedicalUI
-// Règle    : Zéro useState direct, zéro appel API
 
 import { useParams } from "react-router-dom";
 import { usePrescreptionMedicalLogic } from "./usePrescreptionMedicalLogic";

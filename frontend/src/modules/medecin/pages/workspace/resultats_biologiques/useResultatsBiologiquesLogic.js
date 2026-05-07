@@ -17,6 +17,7 @@ import {
   deduplicateGenotypageUrls,
   normalizeGenotypageUrls,
   formatGenotypageValue,
+  isValidGenotypageFile,
 } from "./resultatsBiologiquesHelpers";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -338,9 +339,23 @@ const handleSubmit = async (e) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
 
+    const invalidFiles = files.filter((file) => !isValidGenotypageFile(file));
+    const validFiles = files.filter((file) => isValidGenotypageFile(file));
+
+    if (invalidFiles.length > 0) {
+      toast.error(
+        `Format invalide pour le génotypage , Formats autorisés : images et PDF.`
+      );
+    }
+
+    if (validFiles.length === 0) {
+      e.target.value = "";
+      return;
+    }
+
     const MAX_TOTAL  = 40 * 1024 * 1024;
     const MAX_SINGLE = 15 * 1024 * 1024;
-    const totalSize  = files.reduce((sum, f) => sum + f.size, 0);
+    const totalSize  = validFiles.reduce((sum, f) => sum + f.size, 0);
 
     if (totalSize > MAX_TOTAL) {
       toast.error(
@@ -349,7 +364,7 @@ const handleSubmit = async (e) => {
       e.target.value = "";
       return;
     }
-    const oversized = files.filter((f) => f.size > MAX_SINGLE);
+    const oversized = validFiles.filter((f) => f.size > MAX_SINGLE);
     if (oversized.length > 0) {
       toast.error(
         `Certains fichiers dépassent 15MB : ${oversized.map((f) => f.name).join(", ")}`
@@ -359,7 +374,7 @@ const handleSubmit = async (e) => {
     }
 
     try {
-      const base64s  = await Promise.all(files.map(fileToBase64));
+      const base64s  = await Promise.all(validFiles.map(fileToBase64));
       const existing = normalizeGenotypageUrls(formData.genotypage_file_url);
       const allUrls  = deduplicateGenotypageUrls([...existing, ...base64s]);
       setGenotypageLocalUrls(allUrls);
@@ -367,7 +382,7 @@ const handleSubmit = async (e) => {
         ...prev,
         genotypage_file_url: formatGenotypageValue(allUrls),
       }));
-      toast.success(`${files.length} fichier(s) génotypage ajouté(s).`);
+      toast.success(`${validFiles.length} fichier(s) génotypage ajouté(s).`);
     } catch (err) {
       toast.error(err?.message || "Erreur lors de la lecture des fichiers.");
     } finally {

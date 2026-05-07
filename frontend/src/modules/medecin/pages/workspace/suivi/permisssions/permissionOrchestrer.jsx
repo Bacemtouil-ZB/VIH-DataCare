@@ -1,22 +1,25 @@
-import { useParams }       from "react-router-dom";
-import { usePermission }   from "./usePermission";
+import { useParams } from "react-router-dom";
+import { usePermission } from "./usePermission";
 import {
   PermissionToggle,
   DureeSelect,
   PermissionStatus,
-}                          from "./permissionUI";
+} from "./permissionUI";
 import {
   PERMISSION_LABELS,
   MESSAGES,
-}                          from "./permissionConstants";
+} from "./permissionConstants";
 
 const PermissionOrchestrer = () => {
   const { numero } = useParams();
 
   const {
-    canViewViralLoad, setCanViewViralLoad,
-    canViewCd4,       setCanViewCd4,
-    dureeMonths,      setDureeMonths,
+    canViewViralLoad,
+    setCanViewViralLoad,
+    canViewCd4,
+    setCanViewCd4,
+    dureeMonths,
+    setDureeMonths,
     loading,
     saving,
     error,
@@ -25,18 +28,17 @@ const PermissionOrchestrer = () => {
     handleSave,
   } = usePermission(numero);
 
-  if (loading) return <div>{MESSAGES.loading}</div>;
+  if (loading) {
+    return <div className="permission-page">{MESSAGES.loading}</div>;
+  }
 
   return (
-    <div style={{ maxWidth: 480, padding: 24 }}>
-
-      <h3 style={{ marginBottom: 8, fontSize: 16, fontWeight: 500 }}>
-        Autorisations patient
-      </h3>
+    <div className="permission-page">
+      <h3 className="permission-title">{MESSAGES.title}</h3>
 
       <PermissionStatus permission={currentPermission} />
 
-      <div style={{ marginTop: 20 }}>
+      <div className="permission-toggle-list">
         <PermissionToggle
           label={PERMISSION_LABELS.canViewViralLoad}
           checked={canViewViralLoad}
@@ -54,27 +56,21 @@ const PermissionOrchestrer = () => {
         onChange={setDureeMonths}
       />
 
-      {error      && <p style={{ color: "#e53e3e", marginTop: 12, fontSize: 13 }}>{error}</p>}
-      {successMsg && <p style={{ color: "#38a169", marginTop: 12, fontSize: 13 }}>{successMsg}</p>}
+      {error && (
+        <p className="permission-feedback permission-feedback-error">{error}</p>
+      )}
+      {successMsg && (
+        <p className="permission-feedback permission-feedback-success">{successMsg}</p>
+      )}
 
       <button
+        type="button"
         onClick={handleSave}
         disabled={saving}
-        style={{
-          marginTop:    24,
-          padding:      "10px 28px",
-          background:   "#1D9E75",
-          color:        "white",
-          border:       "none",
-          borderRadius: 8,
-          fontSize:     14,
-          cursor:       saving ? "not-allowed" : "pointer",
-          opacity:      saving ? 0.7 : 1,
-        }}
+        className="permission-save-button"
       >
-        {saving ? "Enregistrement..." : "Enregistrer"}
+        {saving ? MESSAGES.saving : MESSAGES.save}
       </button>
-
     </div>
   );
 };

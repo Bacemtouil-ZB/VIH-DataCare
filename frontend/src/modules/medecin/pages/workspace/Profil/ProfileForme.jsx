@@ -1,8 +1,13 @@
 // cheked 15/04/2026
 import "./ProfilForme.css";
-import { ActionButton, FieldLabel,FieldError, Input, RadioGroup, Spinner } from "../../../../../shared/components";
-import { confirmAction } from "../../../../../shared/utils/uiAlerts.js";
-import { STATUTS_ADMINISTRATIFS, STATUTS_LABELS, STATUTS_COLORS , STATUTS_CREATION } from './profileConstants.js';
+import {
+  ActionButton,
+  FieldLabel,
+  FieldError,
+  Input,
+  RadioGroup,
+  Spinner,
+} from "../../../../../shared/components";
 
 export default function ProfileForme({
   loading,
@@ -10,108 +15,92 @@ export default function ProfileForme({
   errors,
   isNew,
   isEditing,
-  setIsEditing,
   doctors,
-  governorates,
-  filteredBirthPostalCodes,
-  filteredResidencePostalCodes,
+  governorateOptions,
+  birthPostalOptions,
+  residencePostalOptions,
   canEditNumero,
   numeroHasError,
+  statusOptions,
+  statusDisplayLabel,
+  birthdateMax,
   handleChange,
   handleNumeroChange,
   handleHospitalisationChange,
+  handleEnableEdit,
   handleSubmit,
   handleCancel,
 }) {
   if (loading) return <Spinner />;
 
-  /* -- Select renderers -- */
-  const renderGovernorateOptions = () =>
-    (governorates || []).map((g) => (
-      <option key={g.id} value={g.name}>{g.name}</option>
-    ));
-
-  const renderPostalOptions = (items) =>
-    (items || []).map((pc) => (
-      <option key={pc.id} value={pc.id}>{pc.place_name}</option>
-    ));
-
   return (
     <div className="form-card">
       <form onSubmit={handleSubmit} className="form-grid">
         <div className="form-row">
-            <div className="form-group">
-              <FieldLabel required>Numéro dossier</FieldLabel>
-              <Input
-                name="numero"
-                value={formData.numero || ""}
-                onChange={handleNumeroChange}
-                disabled={!canEditNumero}
-                required
-                placeholder="Ex: 0001-2026"
-              />
-              {numeroHasError && (
-                <span className="error-text">Format invalide : ex. 0001-2026</span>
-              )}
-              {errors.numero && <FieldError error={errors.numero} />}
-            </div>
+          <div className="form-group">
+            <FieldLabel required>Numéro dossier</FieldLabel>
+            <Input
+              name="numero"
+              value={formData.numero || ""}
+              onChange={handleNumeroChange}
+              disabled={!canEditNumero}
+              required
+              placeholder="Ex: 0001-2026"
+            />
+            {numeroHasError && (
+              <span className="error-text">Format invalide : ex. 0001-2026</span>
+            )}
+            {errors.numero && <FieldError error={errors.numero} />}
+          </div>
 
-            <div className="form-group">
-              <FieldLabel required>Hospitalisation</FieldLabel>
-              <select
-                name="hospitalisation"
-                value={formData.hospitalisation || "interne"}
-                onChange={handleHospitalisationChange}
-                disabled={!isEditing}
-                required
-              >
-                <option value="interne">Interne</option>
-                <option value="externe">Externe</option>
-              </select>
-              {errors.hospitalisation && <FieldError error={errors.hospitalisation} />}
-            </div>
+          <div className="form-group">
+            <FieldLabel required>Hospitalisation</FieldLabel>
+            <select
+              name="hospitalisation"
+              value={formData.hospitalisation || "interne"}
+              onChange={handleHospitalisationChange}
+              disabled={!isEditing}
+              required
+            >
+              <option value="interne">Interne</option>
+              <option value="externe">Externe</option>
+            </select>
+            {errors.hospitalisation && <FieldError error={errors.hospitalisation} />}
+          </div>
 
-           <div className="form-group">
+          <div className="form-group">
             <FieldLabel>Statut</FieldLabel>
-            {isNew ? (
+            {isNew || isEditing ? (
               <select
                 name="status"
                 value={formData.status || ""}
                 onChange={handleChange}
               >
                 <option value="">Sélectionner</option>
-                {STATUTS_CREATION.map((s) => (
-                  <option key={s.value} value={s.value}>{s.label}</option>
-                ))}
-              </select>
-            ) : isEditing ? (
-              <select
-                name="status"
-                value={formData.status || ""}
-                onChange={handleChange}
-              >
-                <option value="">Sélectionner</option> //dans bd c'est en attente stade par defaut.
-                {STATUTS_ADMINISTRATIFS.map((s) => (
-                  <option key={s.value} value={s.value}>{s.label}</option>
+                {statusOptions.map((status) => (
+                  <option key={status.value} value={status.value}>
+                    {status.label}
+                  </option>
                 ))}
               </select>
             ) : (
               <input
                 type="text"
-                value={STATUTS_LABELS[formData.status] || 'Normal'}
+                value={statusDisplayLabel}
                 disabled
                 readOnly
               />
             )}
           </div>
         </div>
+
         <div className="form-group">
           <FieldLabel required>Nom</FieldLabel>
           <Input
             name="name"
             value={formData.name || ""}
             onChange={handleChange}
-            pattern="[A-Za-zé-é\s]+"
+            pattern="[A-Za-zé-É\\s]+"
             disabled={!isEditing}
             required
           />
@@ -124,7 +113,7 @@ export default function ProfileForme({
             name="surname"
             value={formData.surname || ""}
             onChange={handleChange}
-            pattern="[A-Za-zé-é\s]+"
+            pattern="[A-Za-zé-É\\s]+"
             disabled={!isEditing}
             required
           />
@@ -138,7 +127,7 @@ export default function ProfileForme({
             name="birthdate"
             value={formData.birthdate || ""}
             onChange={handleChange}
-            max={new Date().toISOString().split("T")[0]}
+            max={birthdateMax}
             disabled={!isEditing}
             required
           />
@@ -158,7 +147,6 @@ export default function ProfileForme({
               { label: "Homme", value: "homme" },
               { label: "Femme", value: "femme" },
               { label: "Transgenre", value: "transgenre" },
-
             ]}
           />
         </div>
@@ -175,7 +163,7 @@ export default function ProfileForme({
           />
           {errors.phone && <FieldError error={errors.phone} />}
         </div>
-        
+
         <div className="form-group">
           <FieldLabel>whatsapp </FieldLabel>
           <Input
@@ -198,7 +186,11 @@ export default function ProfileForme({
             disabled={!isEditing}
           >
             <option value="">Sélectionner</option>
-            {renderGovernorateOptions()}
+            {governorateOptions.map((option) => (
+              <option key={option.key} value={option.value}>
+                {option.label}
+              </option>
+            ))}
           </select>
         </div>
 
@@ -213,13 +205,17 @@ export default function ProfileForme({
             <option value="">
               {formData.birth_governorate ? "Sélectionner" : "Choisir d'abord un gouvernorat"}
             </option>
-            {renderPostalOptions(filteredBirthPostalCodes)}
+            {birthPostalOptions.map((option) => (
+              <option key={option.key} value={option.value}>
+                {option.label}
+              </option>
+            ))}
           </select>
           {errors.birth_postal_code_id && <FieldError error={errors.birth_postal_code_id} />}
         </div>
 
         <div className="form-group">
-          <FieldLabel >Gouvernorat résidence</FieldLabel>
+          <FieldLabel>Gouvernorat résidence</FieldLabel>
           <select
             name="residence_governorate"
             value={formData.residence_governorate || ""}
@@ -227,31 +223,40 @@ export default function ProfileForme({
             disabled={!isEditing}
           >
             <option value="">Sélectionner</option>
-            {renderGovernorateOptions()}
+            {governorateOptions.map((option) => (
+              <option key={option.key} value={option.value}>
+                {option.label}
+              </option>
+            ))}
           </select>
         </div>
 
         <div className="form-group">
-          <FieldLabel >Délégation de résidence</FieldLabel>
+          <FieldLabel>Délégation de résidence</FieldLabel>
           <select
             name="residence_postal_code_id"
             value={formData.residence_postal_code_id || ""}
             onChange={handleChange}
             disabled={!isEditing || !formData.residence_governorate}
-            
           >
             <option value="">
               {formData.residence_governorate ? "Sélectionner" : "Choisir d'abord un gouvernorat"}
             </option>
-            {renderPostalOptions(filteredResidencePostalCodes)}
+            {residencePostalOptions.map((option) => (
+              <option key={option.key} value={option.value}>
+                {option.label}
+              </option>
+            ))}
           </select>
-          {errors.residence_postal_code_id && <FieldError error={errors.residence_postal_code_id} />}
+          {errors.residence_postal_code_id && (
+            <FieldError error={errors.residence_postal_code_id} />
+          )}
         </div>
 
         <div className="form-group ">
           <FieldLabel>Email</FieldLabel>
           <Input
-            type="email"          
+            type="email"
             name="email"
             value={formData.email || ""}
             onChange={handleChange}
@@ -261,13 +266,12 @@ export default function ProfileForme({
         </div>
 
         <div className="form-group">
-          <FieldLabel >Médecin traitant</FieldLabel>
+          <FieldLabel>Médecin traitant</FieldLabel>
           <select
             name="doctor_id"
             value={formData.doctor_id || ""}
             onChange={handleChange}
             disabled={!isEditing}
-            
           >
             <option value="">Sélectionner</option>
             {doctors.map((doc) => (
@@ -290,7 +294,6 @@ export default function ProfileForme({
             disabled={!isEditing}
           />
           {errors.remarks && <FieldError error={errors.remarks} />}
-
         </div>
 
         <div className="form-group full-width">
@@ -299,14 +302,7 @@ export default function ProfileForme({
               type="button"
               action="edit"
               label="Modifier"
-              onClick={async () => {
-                const confirmed = await confirmAction(
-                  "Activer le mode modification ?",
-                  "Vous allez pouvoir modifier les informations du patient."
-                );
-                if (!confirmed) return;
-                setIsEditing(true);
-              }}
+              onClick={handleEnableEdit}
             />
           ) : (
             <div className="edit-actions">
@@ -328,9 +324,7 @@ export default function ProfileForme({
             </div>
           )}
         </div>
-
       </form>
     </div>
   );
 }
-

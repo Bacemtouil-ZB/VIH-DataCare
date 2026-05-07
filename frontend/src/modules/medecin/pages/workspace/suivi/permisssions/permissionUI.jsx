@@ -1,60 +1,45 @@
-import { DUREE_OPTIONS } from "./permissionConstants";
-import { formatExpiration, isExpired } from "./permissionHelpers";
+import { DUREE_OPTIONS, MESSAGES } from "./permissionConstants";
+import { getPermissionStatusMeta } from "./permissionHelpers";
 
-export const PermissionToggle = ({ label, checked, onChange }) => (
-  <div style={{
-    display:        "flex",
-    justifyContent: "space-between",
-    alignItems:     "center",
-    padding:        "14px 0",
-    borderBottom:   "1px solid #f0f0f0",
-  }}>
-    <span style={{ fontSize: 14 }}>{label}</span>
-    <input
-      type="checkbox"
-      checked={checked}
-      onChange={(e) => onChange(e.target.checked)}
-      style={{ width: 18, height: 18, cursor: "pointer" }}
-    />
-  </div>
-);
-
-export const DureeSelect = ({ value, onChange }) => (
-  <div style={{ marginTop: 20, display: "flex", alignItems: "center", gap: 12 }}>
-    <label style={{ fontSize: 13, color: "#666" }}>Durée de validité</label>
-    <select
-      value={value}
-      onChange={(e) => onChange(Number(e.target.value))}
-      style={{ padding: "6px 10px", borderRadius: 6, border: "1px solid #ddd" }}
-    >
-      {DUREE_OPTIONS.map((opt) => (
-        <option key={opt.value} value={opt.value}>{opt.label}</option>
-      ))}
-    </select>
-  </div>
-);
-
-export const PermissionStatus = ({ permission }) => {
-  if (!permission) {
-    return (
-      <div style={{ fontSize: 13, color: "#999", marginTop: 8 }}>
-        Aucune autorisation enregistrée
-      </div>
-    );
-  }
-
-  const expired = isExpired(permission.expires_at);
-
+export function PermissionToggle({ label, checked, onChange }) {
   return (
-    <div style={{
-      fontSize:     13,
-      color:        expired ? "#e53e3e" : "#38a169",
-      marginTop:    8,
-      padding:      "8px 12px",
-      borderRadius: 6,
-      background:   expired ? "#fff5f5" : "#f0fff4",
-    }}>
-      {expired ? "Expirée" : "Active"} — expire le {formatExpiration(permission.expires_at)}
+    <div className="permission-toggle">
+      <span className="permission-toggle-label">{label}</span>
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(event) => onChange(event.target.checked)}
+        className="permission-toggle-input"
+      />
     </div>
   );
-};
+}
+
+export function DureeSelect({ value, onChange }) {
+  return (
+    <div className="permission-duration">
+      <label className="permission-duration-label">{MESSAGES.durationLabel}</label>
+      <select
+        value={value}
+        onChange={(event) => onChange(Number(event.target.value))}
+        className="permission-duration-select"
+      >
+        {DUREE_OPTIONS.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+export function PermissionStatus({ permission }) {
+  const status = getPermissionStatusMeta(permission);
+
+  return (
+    <div className={`permission-status permission-status-${status.tone}`}>
+      {status.label}
+    </div>
+  );
+}

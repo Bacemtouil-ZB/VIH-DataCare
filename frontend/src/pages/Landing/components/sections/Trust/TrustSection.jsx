@@ -8,23 +8,20 @@ const TRUST_ITEMS = [
   {
     icon: "bi bi-shield-lock-fill",
     eyebrow: "Protection",
-    title: "Protection des donnees de sante",
-    description:
-      "Confidentialite medicale, maitrise des acces et protection des informations patient a chaque etape du parcours.",
+    title: "Protection des donnees",
+    description: "Confidentialite et maitrise des acces.",
   },
   {
     icon: "bi bi-ui-checks-grid",
     eyebrow: "Simplicite",
-    title: "Interface simple et conviviale",
-    description:
-      "Des parcours clairs, des ecrans lisibles et une navigation rassurante pour une adoption rapide par les utilisateurs.",
+    title: "Interface conviviale",
+    description: "Parcours clairs et navigation simple.",
   },
   {
     icon: "bi bi-graph-up-arrow",
     eyebrow: "Fiabilite",
-    title: "Suivi fiable et vision durable",
-    description:
-      "Le logiciel soutient un usage quotidien stable et une vision de suivi utile aux equipes comme aux responsables.",
+    title: "Suivi fiable",
+    description: "Usage stable et durable.",
   },
 ];
 
@@ -33,8 +30,8 @@ function TrustSection() {
     <SectionShell id="fiabilite" className="bg-white py-7 md:py-9">
       <SectionHeading
         badge="Fiabilite"
-        title="Une solution qui inspire confiance par sa clarte, sa protection et sa fiabilite"
-        description="La plateforme valorise la securite, la simplicite et la continuite du suivi pour offrir une experience serieuse, humaine et durable."
+        title="Confiance et fiabilite"
+        description="Securite, simplicite et continuite."
       />
 
       <div className="mt-5">

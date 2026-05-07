@@ -1,5 +1,5 @@
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-toastify";
 import { alertError } from "../../../../../shared/utils/uiAlerts";
 import {
@@ -13,7 +13,59 @@ import {
   filterPrescriptions,
   validatePrescriptionForm,
   buildConfirmationData,
+  filterStockItems,
+  getSelectedMedicines,
+  removeSelectedMedicineId,
+  toggleSelectedMedicineId,
 } from "./prescreptionMedicalHelpers";
+
+export function useMedicationMultiSelect(stockItems, selectedIds, onChange) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const wrapperRef = useRef(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(event.target)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
+
+  const filtered = useMemo(
+    () => filterStockItems(stockItems, search),
+    [stockItems, search]
+  );
+
+  const selectedMeds = useMemo(
+    () => getSelectedMedicines(stockItems, selectedIds),
+    [stockItems, selectedIds]
+  );
+
+  const toggleMedicine = (id) => onChange(toggleSelectedMedicineId(selectedIds, id));
+
+  const removeMedicine = (id) => onChange(removeSelectedMedicineId(selectedIds, id));
+
+  const closeDropdown = () => setOpen(false);
+
+  const toggleDropdown = () => setOpen((prev) => !prev);
+
+  return {
+    open,
+    search,
+    filtered,
+    selectedMeds,
+    wrapperRef,
+    setSearch,
+    closeDropdown,
+    toggleDropdown,
+    toggleMedicine,
+    removeMedicine,
+  };
+}
 
 export function usePrescreptionMedicalLogic(numero, currentUser) {
   const [prescriptions, setPrescriptions] = useState([]);

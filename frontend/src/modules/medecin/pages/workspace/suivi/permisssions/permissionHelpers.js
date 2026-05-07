@@ -1,3 +1,5 @@
+import { MESSAGES } from "./permissionConstants";
+
 export const computeExpiresAt = (months) => {
   const date = new Date();
   date.setMonth(date.getMonth() + months);
@@ -5,15 +7,31 @@ export const computeExpiresAt = (months) => {
 };
 
 export const formatExpiration = (dateStr) => {
-  if (!dateStr) return "—";
+  if (!dateStr) return "-";
   return new Date(dateStr).toLocaleDateString("fr-FR", {
-    day:   "2-digit",
+    day: "2-digit",
     month: "long",
-    year:  "numeric",
+    year: "numeric",
   });
 };
 
 export const isExpired = (dateStr) => {
   if (!dateStr) return true;
   return new Date(dateStr) < new Date();
+};
+
+export const getPermissionStatusMeta = (permission) => {
+  if (!permission) {
+    return {
+      label: MESSAGES.noPermission,
+      tone: "muted",
+    };
+  }
+
+  const expired = isExpired(permission.expires_at);
+
+  return {
+    label: `${expired ? "Expirée" : "Active"} - expire le ${formatExpiration(permission.expires_at)}`,
+    tone: expired ? "expired" : "active",
+  };
 };

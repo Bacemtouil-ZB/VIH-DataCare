@@ -23,7 +23,7 @@ function LandingNavbar() {
               VIH DataCare
             </span>
             <span className="mt-1 text-xs text-slate-500">
-              Hopital Farhat Hached - Sousse
+              Sousse
             </span>
           </div>
           <div className="ml-2 flex items-center gap-0">
@@ -64,7 +64,7 @@ function LandingNavbar() {
             to="/signup"
             className="inline-flex items-center justify-center rounded-xl bg-[#1B5E20] px-4 py-2 text-sm font-semibold text-white !no-underline shadow-sm transition-all hover:-translate-y-0.5 hover:bg-[#2E7D32] hover:shadow-md hover:!no-underline md:px-5"
           >
-            S'inscrire
+            Inscrirption 
           </Link>
         </div>
       </div>

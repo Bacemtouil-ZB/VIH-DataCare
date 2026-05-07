@@ -1,4 +1,10 @@
 // cheked 15/04/2026
+import {
+  STATUTS_ADMINISTRATIFS,
+  STATUTS_CREATION,
+  STATUTS_LABELS,
+} from "./profileConstants.js";
+
 export const sanitizeText = (value) =>
   typeof value === "string" ? value.replace(/[<>]/g, "") : value;
 
@@ -71,3 +77,29 @@ export const filterPostalCodesByGovernorate = (postalCodes, governorate) => {
     (pc) => normalizeGov(pc.governorate) === wanted,
   );
 };
+
+export const mapGovernorateOptions = (governorates) =>
+  (governorates || []).map((g) => ({
+    key: g.id,
+    value: g.name,
+    label: g.name,
+  }));
+
+export const mapPostalCodeOptions = (postalCodes) =>
+  (postalCodes || []).map((pc) => ({
+    key: pc.id,
+    value: pc.id,
+    label: pc.place_name,
+  }));
+
+export const getStatusOptions = (isNew, isEditing) => {
+  if (isNew) return STATUTS_CREATION;
+  if (isEditing) return STATUTS_ADMINISTRATIFS;
+  return [];
+};
+
+export const getStatusDisplayLabel = (status) =>
+  STATUTS_LABELS[status] || "Normal";
+
+export const getTodayInputDate = () =>
+  new Date().toISOString().split("T")[0];

@@ -1,15 +1,16 @@
 import { useState, useEffect } from "react";
 import { getPermission, setPermission } from "../../../../services/permissionService";
 import { computeExpiresAt } from "./permissionHelpers";
+import { MESSAGES } from "./permissionConstants";
 
 export const usePermission = (numero) => {
-  const [canViewViralLoad,  setCanViewViralLoad]  = useState(false);
-  const [canViewCd4,        setCanViewCd4]        = useState(false);
-  const [dureeMonths,       setDureeMonths]       = useState(3);
-  const [loading,           setLoading]           = useState(true);
-  const [saving,            setSaving]            = useState(false);
-  const [error,             setError]             = useState(null);
-  const [successMsg,        setSuccessMsg]        = useState(null);
+  const [canViewViralLoad, setCanViewViralLoad] = useState(false);
+  const [canViewCd4, setCanViewCd4] = useState(false);
+  const [dureeMonths, setDureeMonths] = useState(3);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
+  const [successMsg, setSuccessMsg] = useState(null);
   const [currentPermission, setCurrentPermission] = useState(null);
 
   useEffect(() => {
@@ -18,14 +19,16 @@ export const usePermission = (numero) => {
     const load = async () => {
       try {
         setLoading(true);
-        const res = await getPermission(numero);
-        if (res.data) {
-          setCanViewViralLoad(res.data.can_view_viral_load);
-          setCanViewCd4(res.data.can_view_cd4);
-          setCurrentPermission(res.data);
+        setError(null);
+        const response = await getPermission(numero);
+
+        if (response.data) {
+          setCanViewViralLoad(response.data.can_view_viral_load);
+          setCanViewCd4(response.data.can_view_cd4);
+          setCurrentPermission(response.data);
         }
       } catch {
-        setError("Erreur chargement des autorisations");
+        setError(MESSAGES.loadError);
       } finally {
         setLoading(false);
       }
@@ -41,27 +44,29 @@ export const usePermission = (numero) => {
       setSuccessMsg(null);
 
       const expiresAt = computeExpiresAt(dureeMonths);
-
-      const res = await setPermission({
+      const response = await setPermission({
         numero,
         canViewViralLoad,
         canViewCd4,
         expiresAt,
       });
 
-      setCurrentPermission(res.data);
-      setSuccessMsg("Autorisations enregistrées avec succès");
+      setCurrentPermission(response.data);
+      setSuccessMsg(MESSAGES.success);
     } catch {
-      setError("Erreur lors de l'enregistrement");
+      setError(MESSAGES.error);
     } finally {
       setSaving(false);
     }
   };
 
   return {
-    canViewViralLoad, setCanViewViralLoad,
-    canViewCd4,       setCanViewCd4,
-    dureeMonths,      setDureeMonths,
+    canViewViralLoad,
+    setCanViewViralLoad,
+    canViewCd4,
+    setCanViewCd4,
+    dureeMonths,
+    setDureeMonths,
     loading,
     saving,
     error,
