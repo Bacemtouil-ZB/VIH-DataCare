@@ -67,6 +67,7 @@ export default function useFamily(numero) {
   const blocker = useBlocker(isDirty);
 
   useEffect(() => {
+    //on ignore l’effet tant que la navigation n’est pas bloquée.
     if (blocker.state !== "blocked") return;
     if (isHandlingBlock.current) return;
     isHandlingBlock.current = true;

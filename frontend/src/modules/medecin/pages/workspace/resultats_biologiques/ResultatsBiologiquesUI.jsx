@@ -220,6 +220,7 @@ const SectionBilan = forwardRef((
           if (champ.type === "file") {
             const currentUrls = normalizeGenotypageUrls(formData[champ.key]);
             const hasFile = currentUrls.length > 0;
+            const error = errors[champ.key];
             return (
               <div key={champ.key} className="rb-champ rb-champ-wide">
                 <label>{champ.label}</label>
@@ -231,15 +232,23 @@ const SectionBilan = forwardRef((
                       className="btn btn-sm btn-outline-secondary"
                       onClick={onChooseGenotypageFile}
                     >
+                      <i className="bi bi-cloud-upload me-1"></i>
                       Choisir fichier(s)
                     </button>
                   )}
                   {hasFile && (
                     <span className="text-muted" style={{ fontSize: 12 }}>
-                      {currentUrls.length} fichier(s)
+                      ✓ {currentUrls.length} fichier(s)
                     </span>
                   )}
                 </div>
+                {error && <FieldError error={error} />}
+                {!error && (
+                  <div style={{ fontSize: 11, color: "#6b7280", marginTop: 6 }}>
+                    <i className="bi bi-info-circle me-1"></i>
+                    Max: 35MB total | Format: Images (JPG, PNG) ou PDF
+                  </div>
+                )}
               </div>
             );
           }
