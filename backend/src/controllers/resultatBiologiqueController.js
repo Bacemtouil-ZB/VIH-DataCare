@@ -39,7 +39,7 @@ export const getResultatsByNumeroDossierController = async (req, res) => {
     await logAction(req, {
       module: "RESULTAT_BIOLOGIQUE",
       action: "RESULTAT_BIOLOGIQUE_VIEW",
-      patient_id: null,
+      patient_id: resultats[0]?.patient_id || null,
       entity_id: null,
       old_data: null,
       new_data: null,

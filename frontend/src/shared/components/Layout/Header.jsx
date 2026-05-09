@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import './Header.css';
-import tnFlag from '../../../assets/images/tn.png';
+import tn from '../../../assets/images/tn.png';
 
 const Header = () => {
   const { user } = useAuth(); 
@@ -39,7 +39,7 @@ const Header = () => {
             {/* Greeting gauche */}
             <div className="user-greeting">
               <img
-                src={tnFlag}
+                src={tn}
                 alt="Drapeau Tunisie"
                 className="flag-img"
               />

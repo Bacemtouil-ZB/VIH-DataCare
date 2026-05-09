@@ -54,8 +54,33 @@ export const isPdf = (url) =>
   typeof url === "string" &&
   (url.startsWith("data:application/pdf") || url.toLowerCase().endsWith(".pdf"));
 
-// ── Formattage lisible d'une date ISO → fr-FR ────────────────────────────────
-// Déplacé depuis ResultatsBiologiquesUI : c'est une fonction pure, pas du rendu.
+const GENOTYPAGE_ALLOWED_MIME_TYPES = new Set(["application/pdf"]);
+const GENOTYPAGE_ALLOWED_EXTENSIONS = [
+  ".pdf",
+  ".png",
+  ".jpg",
+  ".jpeg",
+  ".gif",
+  ".bmp",
+  ".webp",
+  ".svg",
+  ".tif",
+  ".tiff",
+];
+
+export const isValidGenotypageFile = (file) => {
+  if (!file) return false;
+
+  const mimeType = typeof file.type === "string" ? file.type.toLowerCase() : "";
+  if (mimeType.startsWith("image/") || GENOTYPAGE_ALLOWED_MIME_TYPES.has(mimeType)) {
+    return true;
+  }
+
+  const fileName = typeof file.name === "string" ? file.name.toLowerCase() : "";
+  return GENOTYPAGE_ALLOWED_EXTENSIONS.some((extension) => fileName.endsWith(extension));
+};
+
+// Formattage lisible d'une date ISO -> fr-FR
 export const formatDate = (value) => {
   if (!value) return "—";
   const d = new Date(value);

@@ -3,15 +3,15 @@ import SectionShell from "../../ui/SectionShell.jsx";
 import vihLogo from "../../../../../assets/images/vih_logo.png";
 
 const HERO_HIGHLIGHTS = [
-  "Centraliser les donnees cliniques, biologiques et therapeutiques dans un dossier unique.",
-  "Offrir un suivi complet du patient avec une lecture simple, rapide et intuitive.",
-  "Aider les equipes a agir plus vite grace aux alertes, tableaux de bord et priorites visibles.",
+  "Dossier patient centralise",
+  "Suivi complet et simple",
+  "Alertes et tableaux de bord",
 ];
 
 const HERO_METRICS = [
-  { value: "01", label: "Dossier patient clair, structure et toujours accessible" },
-  { value: "02", label: "Suivi therapeutique, biologique et clinique dans une meme interface" },
-  { value: "03", label: "Coordination continue entre les acteurs de la prise en charge" },
+  { value: "01", label: "Dossier patient accessible" },
+  { value: "02", label: "Suivi therapeutique et biologique" },
+  { value: "03", label: "Coordination entre acteurs" },
 ];
 
 function Hero() {
@@ -41,15 +41,13 @@ function Hero() {
 
           <div className="relative mt-4">
             <h1 className="max-w-[18ch] text-4xl font-semibold leading-tight text-slate-900 md:text-[3.2rem] md:leading-[1.08]">
-              Une plateforme de suivi VIH qui met en relief la simplicite, la protection et la qualite de prise en charge
+              Suivi VIH simple et securise
             </h1>
             <div className="mt-5 h-1.5 w-24 rounded-full bg-gradient-to-r from-[#2E7D32] via-[#66BB6A] to-[#C8E6C9]" />
           </div>
 
           <p className="mt-5 max-w-2xl text-base leading-8 text-slate-600 md:text-lg">
-            VIH DataCare valorise le travail des equipes medicales avec une interface conviviale, un suivi complet
-            des patients, des alertes utiles, des tableaux de bord lisibles et une organisation adaptee aux
-            besoins hospitaliers et institutionnels.
+            Une plateforme pour les equipes medicales.
           </p>
 
           <div className="mt-8 grid gap-3 text-sm text-slate-600">
@@ -72,10 +70,10 @@ function Hero() {
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#1B5E20]">
-                  Parcours de suivi
+                  Suivi
                 </p>
                 <h2 className="mt-2 text-2xl font-semibold text-slate-900">
-                  Une experience plus conviviale pour les equipes
+                  Interface intuitive
                 </h2>
               </div>
               <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-[#F1F8E9] text-[#1B5E20] shadow-sm">
@@ -97,7 +95,7 @@ function Hero() {
                       {metric.label}
                     </p>
                     <p className="mt-1 text-sm leading-6 text-slate-500">
-                      Une experience plus simple qui reduit la charge mentale et met les bonnes decisions au bon moment.
+                      Experience simple et efficace.
                     </p>
                   </div>
                 </div>
@@ -107,15 +105,15 @@ function Hero() {
             <div className="mt-6 grid gap-4 sm:grid-cols-3">
               <div className="rounded-2xl bg-[#F6FFF7] px-4 py-4 ring-1 ring-[#C8E6C9]/60">
                 <p className="text-2xl font-semibold text-slate-900">Alertes</p>
-                <p className="mt-1 text-sm text-slate-600">Notifications utiles pour les retards, rendez-vous et suivis sensibles.</p>
+                <p className="mt-1 text-sm text-slate-600">Notifications intelligentes.</p>
               </div>
               <div className="rounded-2xl bg-slate-50 px-4 py-4 ring-1 ring-slate-100">
                 <p className="text-2xl font-semibold text-slate-900">Dashboard</p>
-                <p className="mt-1 text-sm text-slate-600">Vision synthese des indicateurs utiles pour piloter la prise en charge.</p>
+                <p className="mt-1 text-sm text-slate-600">Vision des indicateurs.</p>
               </div>
               <div className="rounded-2xl bg-slate-50 px-4 py-4 ring-1 ring-slate-100">
                 <p className="text-2xl font-semibold text-slate-900">Protection</p>
-                <p className="mt-1 text-sm text-slate-600">Confidentialite et securisation des donnees de sante au coeur du systeme.</p>
+                <p className="mt-1 text-sm text-slate-600">Securite des donnees.</p>
               </div>
             </div>
           </div>

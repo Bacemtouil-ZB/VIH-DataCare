@@ -163,10 +163,13 @@ export const BILAN_RESULTATS_MAP = {
 };
 
 export const getChampActifs = (bilanPrescrit) => {
+
   if (!bilanPrescrit) return [];
   return Object.entries(BILAN_RESULTATS_MAP)
     .filter(([key]) => !!bilanPrescrit[key])
     .map(([key, section]) => ({ ...section, _key: key }));
+    //{ label: "NFS complète", champs: [...], _key: "nfs_complete" }
+
 };
 
 const normalize = (value) =>
@@ -190,8 +193,7 @@ const getDefaultToggleValue = (champ) => {
   return champ.options.find((option) => normalize(option) === "negatif") || champ.options[0];
 };
 
-// Helper : construire INITIAL_FORM dynamiquement
-// Inclut les champs de date par section
+// Helper : construire INITIAL_FORM dynamiquement , vide
 export const buildInitialForm = (bilanPrescrit) => {
   const form = {};
   const sections = getChampActifs(bilanPrescrit);

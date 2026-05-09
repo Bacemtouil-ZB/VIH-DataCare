@@ -9,7 +9,7 @@ function LandingFooter() {
           <div className="max-w-xl">
             <p className="text-lg font-semibold text-[#1B5E20]">VIH DataCare</p>
             <p className="mt-2 text-sm leading-7 text-slate-600">
-              Logiciel hospitalier de suivi VIH concu pour faciliter la prise en charge, proteger les donnees et soutenir le pilotage des activites.
+              Suivi VIH simple et securise.
             </p>
           </div>
 

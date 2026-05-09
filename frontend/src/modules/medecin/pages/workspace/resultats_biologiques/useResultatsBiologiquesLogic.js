@@ -17,14 +17,10 @@ import {
   deduplicateGenotypageUrls,
   normalizeGenotypageUrls,
   formatGenotypageValue,
+  isValidGenotypageFile,
 } from "./resultatsBiologiquesHelpers";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// VALIDATION FRONTEND
-// - Ignore entièrement les sections marquées NF (Non Fait)
-// - Vérifie les champs numériques obligatoires et négatifs
-// - Vérifie la date de chaque section active (non NF)
-// ─────────────────────────────────────────────────────────────────────────────
+
 const validateNumericFields = (formData, champsActifs, nfSections) => {
   const errors = {};
 
@@ -154,7 +150,7 @@ export function useResultatsBiologiquesLogic() {
     });
   };
 
-  // ── Ouvrir le formulaire en mode CRÉATION ─────────────────────────────────
+  // ── Ouvrir le formulaire en mode CRÉATION, "Saisir résultat", ─────────────────────────────────
   const openCreateForBilan = (bilan) => {
     const actifs = getChampActifs(bilan);
     setBilanActif(bilan);
@@ -338,28 +334,48 @@ const handleSubmit = async (e) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
 
-    const MAX_TOTAL  = 40 * 1024 * 1024;
-    const MAX_SINGLE = 15 * 1024 * 1024;
-    const totalSize  = files.reduce((sum, f) => sum + f.size, 0);
+    const invalidFiles = files.filter((file) => !isValidGenotypageFile(file));
+    const validFiles = files.filter((file) => isValidGenotypageFile(file));
+
+    if (invalidFiles.length > 0) {
+      toast.error(
+        `Génotypage : Format invalide. Formats acceptés : images (JPG, PNG) et PDF.`
+      );
+    }
+
+    if (validFiles.length === 0) {
+      e.target.value = "";
+      return;
+    }
+
+    const MAX_TOTAL  = 35 * 1024 * 1024;   // 35MB total
+    const MAX_SINGLE = 12 * 1024 * 1024;   // 12MB par fichier
+    const totalSize  = validFiles.reduce((sum, f) => sum + f.size, 0);
 
     if (totalSize > MAX_TOTAL) {
+      const totalMB = (totalSize / (1024 * 1024)).toFixed(1);
       toast.error(
-        `Taille totale dépasse 40MB (${(totalSize / (1024 * 1024)).toFixed(1)}MB).`
+        `Génotpage : Taille totale dépasse 35MB . Veuillez sélectionner moins de fichiers ou des fichiers plus petits.`
       );
       e.target.value = "";
       return;
     }
-    const oversized = files.filter((f) => f.size > MAX_SINGLE);
+    
+    const oversized = validFiles.filter((f) => f.size > MAX_SINGLE);
     if (oversized.length > 0) {
+      const fileList = oversized.map((f) => {
+        const sizeMB = (f.size / (1024 * 1024)).toFixed(1);
+        return `${f.name} (${sizeMB}MB)`;
+      }).join(", ");
       toast.error(
-        `Certains fichiers dépassent 15MB : ${oversized.map((f) => f.name).join(", ")}`
+        `Génotypage : Certains fichiers dépassent 12MB `
       );
       e.target.value = "";
       return;
     }
 
     try {
-      const base64s  = await Promise.all(files.map(fileToBase64));
+      const base64s  = await Promise.all(validFiles.map(fileToBase64));
       const existing = normalizeGenotypageUrls(formData.genotypage_file_url);
       const allUrls  = deduplicateGenotypageUrls([...existing, ...base64s]);
       setGenotypageLocalUrls(allUrls);
@@ -367,7 +383,7 @@ const handleSubmit = async (e) => {
         ...prev,
         genotypage_file_url: formatGenotypageValue(allUrls),
       }));
-      toast.success(`${files.length} fichier(s) génotypage ajouté(s).`);
+      toast.success(`✅ ${validFiles.length} fichier(s) génotypage ajouté(s) avec succès.`);
     } catch (err) {
       toast.error(err?.message || "Erreur lors de la lecture des fichiers.");
     } finally {

@@ -15,7 +15,6 @@ export const ACTIONS = [
   "VIH_UPDATE",
   "VIH_VIEW",
 
-
   "OBSERVATION_CREATE",
   "OBSERVATION_UPDATE",
   "OBSERVATION_VIEW",
@@ -50,9 +49,143 @@ export const ACTIONS = [
   "PRESCRIPTION_VALIDER_MODIFIEE",
 
   "PERMISSION_SET",
+
+  "PATIENT_PRESCRIPTION_LIST_VIEW",
+
+  "EXAMEN_CLINIQUE_CREATE",
+  "EXAMEN_CLINIQUE_UPDATE",
+  "EXAMEN_CLINIQUE_VIEW",
+
+  "SUIVI_BIOLOGIQUE_KPIS_VIEW",
+  "SUIVI_BIOLOGIQUE_CD4_VIEW",
+  "SUIVI_BIOLOGIQUE_CV_VIEW",
+  "SUIVI_BIOLOGIQUE_PERIODES_ARV_VIEW",
+  "SUIVI_BIOLOGIQUE_TABLEAU_VIEW",
+
+  "DOCTOR_CONCLUSION_CREATE",
+  "DOCTOR_CONCLUSION_UPDATE",
+  "DOCTOR_CONCLUSION_VIEW",
+  "DOCTOR_CONCLUSION_LIST_VIEW",
 ];
 
 export const DEFAULT_LIMIT = 50;
+export const MAX_LIMIT = 200;
+export const MIN_LIMIT = 1;
+
+// ─── Groupement des actions par module ────────────────────────
+
+export const ACTIONS_BY_MODULE = {
+  AUTH: ["LOGIN_SUCCESS", "LOGIN_FAILED"],
+  PATIENT: ["PATIENT_CREATE", "PATIENT_UPDATE", "PATIENT_VIEW"],
+  SOCIAL: ["SOCIAL_CREATE", "SOCIAL_UPDATE", "SOCIAL_VIEW"],
+  VIH: ["VIH_CREATE", "VIH_UPDATE", "VIH_VIEW"],
+  OBSERVATION: ["OBSERVATION_CREATE", "OBSERVATION_UPDATE", "OBSERVATION_VIEW"],
+  SIGNE_CLINIQUE: [
+    "SIGNE_CLINIQUE_CREATE",
+    "SIGNE_CLINIQUE_UPDATE",
+    "SIGNE_CLINIQUE_VIEW",
+  ],
+  SIGNE_FONCTIONNEL: [
+    "SIGNE_FONCTIONNEL_CREATE",
+    "SIGNE_FONCTIONNEL_UPDATE",
+    "SIGNE_FONCTIONNEL_VIEW",
+  ],
+  STOCK: ["STOCK_CREATE", "STOCK_UPDATE", "STOCK_VIEW", "STOCK_DELETE"],
+  RENDEZ_VOUS: [
+    "RENDEZ_VOUS_CREATE",
+    "RENDEZ_VOUS_UPDATE",
+    "RENDEZ_VOUS_VIEW",
+  ],
+  BILAN_EXAMEN: [
+    "BILAN_EXAMEN_CREATE",
+    "BILAN_EXAMEN_UPDATE",
+    "BILAN_EXAMEN_VIEW",
+  ],
+  RESULTAT_BIOLOGIQUE: [
+    "RESULTAT_BIOLOGIQUE_CREATE",
+    "RESULTAT_BIOLOGIQUE_UPDATE",
+    "RESULTAT_BIOLOGIQUE_VIEW",
+  ],
+  PRESCRIPTION: [
+    "PRESCRIPTION_CREATE",
+    "PRESCRIPTION_VALIDER",
+    "PRESCRIPTION_VALIDER_MODIFIEE",
+  ],
+  PERMISSION: ["PERMISSION_SET"],
+  PATIENT_PRESCRIPTION: ["PATIENT_PRESCRIPTION_LIST_VIEW"],
+  EXAMEN_CLINIQUE: [
+    "EXAMEN_CLINIQUE_CREATE",
+    "EXAMEN_CLINIQUE_UPDATE",
+    "EXAMEN_CLINIQUE_VIEW",
+  ],
+  SUIVI_BIOLOGIQUE: [
+    "SUIVI_BIOLOGIQUE_KPIS_VIEW",
+    "SUIVI_BIOLOGIQUE_CD4_VIEW",
+    "SUIVI_BIOLOGIQUE_CV_VIEW",
+    "SUIVI_BIOLOGIQUE_PERIODES_ARV_VIEW",
+    "SUIVI_BIOLOGIQUE_TABLEAU_VIEW",
+  ],
+  DOCTOR_CONCLUSION: [
+    "DOCTOR_CONCLUSION_CREATE",
+    "DOCTOR_CONCLUSION_UPDATE",
+    "DOCTOR_CONCLUSION_VIEW",
+    "DOCTOR_CONCLUSION_LIST_VIEW",
+  ],
+};
+
+// ─── Types d'actions ──────────────────────────────────────────
+
+export const ACTION_TYPES = {
+  CREATE: "CREATE",
+  READ: "VIEW",
+  UPDATE: "UPDATE",
+  DELETE: "DELETE",
+  VALIDATE: "VALIDER",
+};
+
+// ─── Statuts et couleurs des modules ──────────────────────────
+
+export const MODULE_COLORS = {
+  AUTH: "#8B0000",
+  PATIENT: "#1B5E20",
+  SOCIAL: "#004D7A",
+  VIH: "#F57C00",
+  OBSERVATION: "#512DA8",
+  SIGNE_CLINIQUE: "#C2185B",
+  SIGNE_FONCTIONNEL: "#0097A7",
+  STOCK: "#558B2F",
+  RENDEZ_VOUS: "#E65100",
+  BILAN_EXAMEN: "#4527A0",
+  RESULTAT_BIOLOGIQUE: "#00695C",
+  PRESCRIPTION: "#D32F2F",
+  PERMISSION: "#1976D2",
+  PATIENT_PRESCRIPTION: "#FF6F00",
+  EXAMEN_CLINIQUE: "#5E35B1",
+  SUIVI_BIOLOGIQUE: "#00897B",
+  DOCTOR_CONCLUSION: "#1565C0",
+};
+
+// ─── Icônes par module ────────────────────────────────────────
+
+export const MODULE_ICONS = {
+  AUTH: "bi-lock",
+  PATIENT: "bi-person-fill",
+  SOCIAL: "bi-people-fill",
+  VIH: "bi-shield-check",
+  OBSERVATION: "bi-eye",
+  SIGNE_CLINIQUE: "bi-heart-pulse-fill",
+  SIGNE_FONCTIONNEL: "bi-activity",
+  STOCK: "bi-box",
+  RENDEZ_VOUS: "bi-calendar-event",
+  BILAN_EXAMEN: "bi-file-earmark-medical",
+  RESULTAT_BIOLOGIQUE: "bi-flask",
+  PRESCRIPTION: "bi-prescription",
+  PERMISSION: "bi-key",
+  PATIENT_PRESCRIPTION: "bi-receipt",
+  EXAMEN_CLINIQUE: "bi-stethoscope",
+  SUIVI_BIOLOGIQUE: "bi-graph-up",
+  DOCTOR_CONCLUSION: "bi-file-text",
+};
 
 // ─── Labels français ───────────────────────────────────────────
 
@@ -70,6 +203,10 @@ export const MODULE_LABELS = {
   RESULTAT_BIOLOGIQUE: "Résultat Biologique",
   PRESCRIPTION: "Prescription",
   PERMISSION: "Permission",
+  PATIENT_PRESCRIPTION: "Prescription Patient",
+  EXAMEN_CLINIQUE: "Examen Clinique",
+  SUIVI_BIOLOGIQUE: "Suivi Biologique",
+  DOCTOR_CONCLUSION: "Conclusion Médicale",
 };
 
 export const ACTION_LABELS = {
@@ -88,11 +225,9 @@ export const ACTION_LABELS = {
   VIH_UPDATE: "Modification dossier VIH",
   VIH_VIEW: "Consultation dossier VIH",
 
-
   OBSERVATION_CREATE: "Création observation",
   OBSERVATION_UPDATE: "Modification observation",
   OBSERVATION_VIEW: "Consultation observation",
-
 
   SIGNE_CLINIQUE_CREATE: "Création signe clinique",
   SIGNE_CLINIQUE_UPDATE: "Modification signe clinique",
@@ -124,7 +259,98 @@ export const ACTION_LABELS = {
   PRESCRIPTION_VALIDER_MODIFIEE: "Validation prescription modifiée",
 
   PERMISSION_SET: "Définition permission",
+
+  PATIENT_PRESCRIPTION_LIST_VIEW: "Consultation prescriptions patient",
+
+  EXAMEN_CLINIQUE_CREATE: "Création examen clinique",
+  EXAMEN_CLINIQUE_UPDATE: "Modification examen clinique",
+  EXAMEN_CLINIQUE_VIEW: "Consultation examen clinique",
+
+  SUIVI_BIOLOGIQUE_KPIS_VIEW: "Consultation KPIs biologiques",
+  SUIVI_BIOLOGIQUE_CD4_VIEW: "Consultation graphique CD4",
+  SUIVI_BIOLOGIQUE_CV_VIEW: "Consultation graphique charge virale",
+  SUIVI_BIOLOGIQUE_PERIODES_ARV_VIEW: "Consultation périodes ARV",
+  SUIVI_BIOLOGIQUE_TABLEAU_VIEW: "Consultation tableau biologique",
+
+  DOCTOR_CONCLUSION_CREATE: "Création conclusion médicale",
+  DOCTOR_CONCLUSION_UPDATE: "Modification conclusion médicale",
+  DOCTOR_CONCLUSION_VIEW: "Consultation conclusion médicale",
+  DOCTOR_CONCLUSION_LIST_VIEW: "Consultation liste conclusions",
 };
+
+// ─── Messages et textes génériques ────────────────────────────
+
+export const MESSAGES = {
+  // Titres et en-têtes
+  pageTitle: "Audit patient",
+  loading: "Chargement...",
+  noData: "Aucune donnée disponible",
+  noChanges: "Aucune modification enregistrée",
+  
+  // Actions
+  search: "Rechercher",
+  reset: "Réinitialiser",
+  details: "Détails",
+  close: "Fermer",
+  
+  // Filtres
+  filterAll: "Tous",
+  filterByModule: "Filtrer par module",
+  filterByAction: "Filtrer par action",
+  filterByDate: "Filtrer par date",
+  from: "Du",
+  to: "Au",
+  
+  // Validations
+  formatError: "Format invalide (ex: 0001-2025)",
+  requiredField: "Champ obligatoire",
+  
+  // Feedback utilisateur
+  successSearch: "Recherche effectuée avec succès",
+  errorSearch: "Erreur lors de la recherche",
+  errorLoadDetails: "Erreur lors du chargement des détails",
+  
+  // Colonnes du tableau
+  date: "Date",
+  doctor: "Médecin",
+  module: "Module",
+  action: "Action",
+  
+  // Détails du log
+  diffTitle: "Modifications",
+  diffField: "Champ",
+  diffOldValue: "Ancien",
+  diffNewValue: "Nouveau",
+  
+  // Pagination
+  page: "Page",
+  of: "sur",
+  recordsPerPage: "Enregistrements par page",
+};
+
+// ─── Configurations de pagination ──────────────────────────────
+
+export const PAGINATION_OPTIONS = [
+  { value: 10, label: "10 par page" },
+  { value: 25, label: "25 par page" },
+  { value: 50, label: "50 par page" },
+  { value: 100, label: "100 par page" },
+  { value: 200, label: "200 par page" },
+];
+
+// ─── Patterns et expressions régulières ───────────────────────
+
+export const PATTERNS = {
+  // Format numéro patient: AAAA-YYYY (4 chiffres - 4 chiffres)
+  patientNumero: /^\d{4}-\d{4}$/,
+  // Format date ISO
+  isoDate: /\d{4}-\d{2}-\d{2}/,
+};
+
+// ─── Fonctions utilitaires ────────────────────────────────────
 
 export const getModuleLabel = (module) => MODULE_LABELS[module] ?? module;
 export const getActionLabel = (action) => ACTION_LABELS[action] ?? action;
+export const getModuleColor = (module) => MODULE_COLORS[module] ?? "#666";
+export const getModuleIcon = (module) => MODULE_ICONS[module] ?? "bi-question-circle";
+export const getActionsByModule = (module) => ACTIONS_BY_MODULE[module] ?? [];

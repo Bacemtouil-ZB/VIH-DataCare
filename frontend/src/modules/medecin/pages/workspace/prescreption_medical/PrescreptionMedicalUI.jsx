@@ -1,8 +1,4 @@
-// ══════════════════════════════════════════════════════════════
-// 🎨 Layer 3 — UI Composants (Pure - zéro logique, zéro état)
-// ══════════════════════════════════════════════════════════════
 
-import { useState, useRef, useEffect } from "react";
 import {
   ActionButton,
   Badge,
@@ -20,12 +16,14 @@ import {
 import { toFrDate, toInputDate } from "../../../../../shared/utils/dateHelpers";
 import { 
   getStatutStyle,
-  filterStockItems,
+  getMedicineDisplayName,
+  getMedicineStockQuantity,
+  getMultiSelectFooterLabel,
   isOutOfStock,
-  getSelectedMedicines,
 } from "./prescreptionMedicalHelpers";
 import { STATUT_LABELS, UI_TEXTS, FORM_FIELDS, TABLE_HEADERS } from "./prescreptionMedicalConstants";
 import ConfirmPrescriptionModal from "../../../components/UI/Confirmprescriptionmodal";
+import { useMedicationMultiSelect } from "./usePrescreptionMedicalLogic";
 
 
 // Affiche une liste de médicaments sous forme de pills
@@ -47,35 +45,18 @@ function TraitementPills({ medicaments }) {
 
 // Sélecteur multi-médicaments avec dropdown et checkboxes
 function MedMultiSelect({ stockItems, selectedIds, onChange }) {
-  const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState("");
-  const wrapperRef = useRef(null);
-
-  // Fermeture au clic externe
-  useEffect(() => {
-    const handler = (e) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(e.target))
-        setOpen(false);
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
-
-  const filtered = filterStockItems(stockItems, search);
-  const selectedMeds = getSelectedMedicines(stockItems, selectedIds);
-
-  const toggle = (id) => {
-    const sid = String(id);
-    const next = selectedIds.includes(sid)
-      ? selectedIds.filter((x) => x !== sid)
-      : [...selectedIds, sid];
-    onChange(next);
-  };
-
-  const removePill = (e, id) => {
-    e.stopPropagation();
-    onChange(selectedIds.filter((x) => x !== String(id)));
-  };
+  const {
+    open,
+    search,
+    filtered,
+    selectedMeds,
+    wrapperRef,
+    setSearch,
+    closeDropdown,
+    toggleDropdown,
+    toggleMedicine,
+    removeMedicine,
+  } = useMedicationMultiSelect(stockItems, selectedIds, onChange);
 
   return (
     <div className="pe-col-span-2">
@@ -85,7 +66,7 @@ function MedMultiSelect({ stockItems, selectedIds, onChange }) {
         {/* Trigger */}
         <div
           className={`pe-ms-trigger${open ? " open" : ""}`}
-          onClick={() => setOpen((v) => !v)}
+          onClick={toggleDropdown}
         >
           <div className="pe-ms-trigger-inner">
             {selectedMeds.length === 0 ? (
@@ -98,7 +79,10 @@ function MedMultiSelect({ stockItems, selectedIds, onChange }) {
                   [{m.code || m.composition}]
                   <span
                     className="pe-ms-tag-remove"
-                    onClick={(e) => removePill(e, m.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeMedicine(m.id);
+                    }}
                   >
                     ×
                   </span>
@@ -129,7 +113,7 @@ function MedMultiSelect({ stockItems, selectedIds, onChange }) {
               {filtered.map((med) => {
                 const disabled = isOutOfStock(med);
                 const checked = selectedIds.includes(String(med.id));
-                const qty = med.quantite ?? med.quantity ?? 0;
+                const qty = getMedicineStockQuantity(med);
 
                 return (
                   <label
@@ -141,11 +125,11 @@ function MedMultiSelect({ stockItems, selectedIds, onChange }) {
                       type="checkbox"
                       checked={checked}
                       disabled={disabled}
-                      onChange={() => !disabled && toggle(med.id)}
+                      onChange={() => !disabled && toggleMedicine(med.id)}
                     />
                     <span className="pe-ms-option-label">
                       {med.code && <strong>[{med.code}]</strong>}{" "}
-                      {med.composition || med.nom || "Médicament"}
+                      {getMedicineDisplayName(med)}
                     </span>
                     <span className={`pe-ms-stock${disabled ? " out" : ""}`}>
                       Stock : {qty}
@@ -160,13 +144,9 @@ function MedMultiSelect({ stockItems, selectedIds, onChange }) {
               <button
                 type="button"
                 className="pe-ms-close-btn"
-                onClick={() => setOpen(false)}
+                onClick={closeDropdown}
               >
-                {selectedMeds.length > 0
-                  ? `Valider (${selectedMeds.length} sélectionné${
-                      selectedMeds.length > 1 ? "s" : ""
-                    })`
-                  : "Fermer"}
+                {getMultiSelectFooterLabel(selectedMeds.length)}
               </button>
             </div>
           </div>

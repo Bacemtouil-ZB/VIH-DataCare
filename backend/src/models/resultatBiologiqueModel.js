@@ -76,7 +76,7 @@ export const updateResultat = async (id, data) => {
 
   const fieldKeys = Object.keys(resultFields);
   const fieldValues = Object.values(resultFields);
-
+  //pour indexation dynamique des champs
   const setParts = fieldKeys.map((field, index) => `"${field}" = $${index + 1}`);
   const observationsIndex = fieldValues.length + 1;
   const dateResultatIndex = fieldValues.length + 2;

@@ -66,6 +66,30 @@ export function getSelectedMedicines(stockItems, selectedIds) {
   return stockItems.filter((m) => selectedIds.includes(String(m.id)));
 }
 
+export function toggleSelectedMedicineId(selectedIds, id) {
+  const sid = String(id);
+  return selectedIds.includes(sid)
+    ? selectedIds.filter((item) => item !== sid)
+    : [...selectedIds, sid];
+}
+
+export function removeSelectedMedicineId(selectedIds, id) {
+  return selectedIds.filter((item) => item !== String(id));
+}
+
+export function getMedicineStockQuantity(medicament) {
+  return medicament?.quantite ?? medicament?.quantity ?? 0;
+}
+
+export function getMedicineDisplayName(medicament) {
+  return medicament?.composition || medicament?.nom || "Médicament";
+}
+
+export function getMultiSelectFooterLabel(selectedCount) {
+  if (selectedCount <= 0) return "Fermer";
+  return `Valider (${selectedCount} sélectionné${selectedCount > 1 ? "s" : ""})`;
+}
+
 /**
  * Formate la liste des médicaments en label lisible
  */
@@ -134,8 +158,7 @@ export function validatePrescriptionForm(formData) {
  * Vérifie si un médicament est en rupture de stock
  */
 export function isOutOfStock(medicament) {
-  const qty = medicament.quantite ?? medicament.quantity ?? 0;
-  return qty === 0;
+  return getMedicineStockQuantity(medicament) === 0;
 }
 
 /**

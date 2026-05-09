@@ -16,6 +16,11 @@ import {
   normalizeNumero,
   isNumeroValid,
   filterPostalCodesByGovernorate,
+  mapGovernorateOptions,
+  mapPostalCodeOptions,
+  getStatusOptions,
+  getStatusDisplayLabel,
+  getTodayInputDate,
 } from "./profileHelpers.js";
 
 // Utilitaire pour effacer l'erreur d'un champ spécifique
@@ -69,6 +74,12 @@ export function useProfileLogic() {
     postalCodes,
     formData.residence_governorate,
   );
+  const governorateOptions = mapGovernorateOptions(governorates);
+  const birthPostalOptions = mapPostalCodeOptions(filteredBirthPostalCodes);
+  const residencePostalOptions = mapPostalCodeOptions(filteredResidencePostalCodes);
+  const statusOptions = getStatusOptions(isNew, isEditing);
+  const statusDisplayLabel = getStatusDisplayLabel(formData.status);
+  const birthdateMax = getTodayInputDate();
   const canEditNumero = isNew;
   const numeroHasError = formData.numero && !isNumeroValid(formData.numero);
 
@@ -205,6 +216,15 @@ export function useProfileLogic() {
     });
   };
 
+  const handleEnableEdit = async () => {
+    const confirmed = await confirmAction(
+      "Activer le mode modification ?",
+      "Vous allez pouvoir modifier les informations du patient."
+    );
+    if (!confirmed) return;
+    setIsEditing(true);
+  };
+
   // ====== Soumission formulaire ======
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -298,12 +318,19 @@ export function useProfileLogic() {
     // derived
     filteredBirthPostalCodes,
     filteredResidencePostalCodes,
+    governorateOptions,
+    birthPostalOptions,
+    residencePostalOptions,
+    statusOptions,
+    statusDisplayLabel,
+    birthdateMax,
     canEditNumero,
     numeroHasError,
     // handlers
     handleChange,
     handleNumeroChange,
     handleHospitalisationChange,
+    handleEnableEdit,
     handleSubmit,
     handleCancel,
   };
