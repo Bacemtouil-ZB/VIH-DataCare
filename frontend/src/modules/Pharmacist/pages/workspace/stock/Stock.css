@@ -1,6 +1,4 @@
-/* ==========================================
-   Stock.css - Avec formulaire collapsible
-   ========================================== */
+
 
 .ph-stock-page {
   min-height: 100%;
@@ -9,7 +7,7 @@
   color: #0f172a;
 }
 
-/* Header */
+/* ── Header ──────────────────────────────── */
 .ph-stock-header {
   background: transparent;
   border: 0;
@@ -30,14 +28,14 @@
   font-size: 0.875rem;
 }
 
-/* ✅ Bouton Ajouter au stock */
+/* ── Bouton Ajouter au stock ─────────────── */
 .ph-stock-add-button-wrapper {
   margin-bottom: 1rem;
   display: flex;
   justify-content: flex-end;
 }
 
-/* ✅ Formulaire collapsible */
+/* ── Formulaire collapsible ──────────────── */
 .ph-stock-add-card {
   background: #ffffff;
   border: 1px solid #e2e8f0;
@@ -58,25 +56,26 @@
   }
 }
 
+/* Grille du formulaire : flex wrap (remplace le grid inline) */
 .ph-stock-add-grid {
-  display: grid;
-  grid-template-columns: minmax(150px, 200px) minmax(200px, 1fr) minmax(130px, 160px) auto;
-  column-gap: 0.75rem;
-  row-gap: 0.75rem;
-  align-items: end;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 1rem;
   width: 100%;
 }
 
 .ph-med-field {
-  max-width: 200px;
+  flex: 0 0 160px;
 }
 
 .ph-comp-field {
-  max-width: none;
+  flex: 0 0 260px;
+  min-width: 0;
 }
 
 .ph-qty-field {
-  max-width: 160px;
+  flex: 0 0 180px;
 }
 
 .ph-add-qty-input {
@@ -87,12 +86,13 @@
   display: flex;
   align-items: flex-end;
   gap: 0.5rem;
-  padding-bottom: 0;
-  grid-column: 4;
-  justify-self: end;
+  flex: 0 0 auto;
+  margin-left: auto;
+  align-self: flex-end;
+  padding-bottom: 2px;
 }
 
-/* ✅ SearchBar wrapper */
+/* ── SearchBar wrapper ───────────────────── */
 .ph-stock-search-wrapper {
   margin-bottom: 1rem;
 }
@@ -101,7 +101,7 @@
   max-width: 400px;
 }
 
-/* Erreur */
+/* ── Erreur ──────────────────────────────── */
 .ph-stock-error {
   margin: 0 0 1rem;
   color: #b91c1c;
@@ -112,13 +112,13 @@
   font-size: 0.875rem;
 }
 
-/* Accordéon */
+/* ── Accordéon ───────────────────────────── */
 .stock-acc-body {
   padding: 0 !important;
   background: #ffffff !important;
 }
 
-/* Table */
+/* ── Table ───────────────────────────────── */
 .ph-stock-page .table {
   width: 100%;
   margin-bottom: 0;
@@ -158,14 +158,22 @@
   color: #475569;
 }
 
-/* Actions */
-.ph-actions {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
+/* ── Affichage quantité (cellule table) ──── */
+.ph-qty-display {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #0f172a;
 }
 
-/* Boutons */
+/* ── Actions ─────────────────────────────── */
+.ph-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: nowrap;
+}
+
+/* ── Boutons génériques ──────────────────── */
 .ph-btn {
   border: 1px solid transparent;
   border-radius: 0.5rem;
@@ -220,26 +228,127 @@
   background: #e2e8f0;
 }
 
-.ph-qty-input {
-  width: 110px;
+/* ── Boutons +/- inline (table) ──────────── */
+.ph-btn-increment,
+.ph-btn-decrement {
+  border-radius: 6px;
+  font-weight: 800;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 0.3rem 0.65rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
 }
 
-/* Responsive */
+.ph-btn-increment {
+  background: #dcfce7;
+  color: #166534;
+  border: 1px solid #86efac;
+}
+
+.ph-btn-increment:hover:not(:disabled) {
+  background: #bbf7d0;
+}
+
+.ph-btn-decrement {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+.ph-btn-decrement:hover:not(:disabled) {
+  background: #fecaca;
+}
+
+.ph-btn-increment:disabled,
+.ph-btn-decrement:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── Panneau d'édition de quantité ───────── */
+.ph-qty-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  min-width: 180px;
+}
+
+/* Label "+ Ajouter" / "- Retirer" */
+.ph-qty-panel__label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.ph-qty-panel__label--increment {
+  color: #166534;
+}
+
+.ph-qty-panel__label--decrement {
+  color: #991b1b;
+}
+
+/* Ligne "Stock actuel" */
+.ph-qty-panel__current {
+  font-size: 0.78rem;
+  color: #64748b;
+}
+
+.ph-qty-panel__current strong {
+  color: #0f172a;
+}
+
+/* Prévisualisation de la nouvelle valeur */
+.ph-qty-panel__preview {
+  font-weight: 700;
+}
+
+.ph-qty-panel__preview--increment {
+  color: #166534;
+}
+
+.ph-qty-panel__preview--decrement {
+  color: #991b1b;
+}
+
+/* Ligne input + boutons OK/X */
+.ph-qty-panel__row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+/* Input dans le panneau d'édition */
+.ph-qty-input {
+  width: 80px;
+}
+
+.ph-qty-input--increment {
+  border-color: #166534 !important;
+}
+
+.ph-qty-input--decrement {
+  border-color: #991b1b !important;
+}
+
+/* ── Responsive ──────────────────────────── */
 @media (max-width: 1100px) {
   .ph-stock-add-grid {
-    grid-template-columns: 1fr;
+    flex-direction: column;
   }
 
   .ph-med-field,
   .ph-comp-field,
   .ph-qty-field,
   .ph-add-qty-input {
-    max-width: none;
+    flex: 1 1 100%;
     width: 100%;
+    max-width: none;
   }
 
   .ph-stock-add-actions {
-    grid-column: auto;
+    margin-left: 0;
     justify-content: flex-start;
   }
 

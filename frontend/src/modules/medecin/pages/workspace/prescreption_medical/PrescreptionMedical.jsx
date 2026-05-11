@@ -13,7 +13,6 @@ export default function PrescriptionMedical() {
   // ── Logique métier ────────────────────────────────────────
   const logic = usePrescreptionMedicalLogic(numero, user);
 
-  // ── Rendu ─────────────────────────────────────────────────
   // Tous les props viennent de `logic` (hook)
   return (
     <PrescreptionMedicalUI

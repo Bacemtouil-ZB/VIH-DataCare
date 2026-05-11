@@ -1,8 +1,4 @@
 
--- 
--- ══════════════════════════════════════════════════════════════════════════════
--- VUE 1 : vue_periodes_arv (inchangée ✅)
--- ══════════════════════════════════════════════════════════════════════════════
 CREATE OR REPLACE VIEW vue_periodes_arv AS
 WITH prescriptions_ordonnees AS (
   SELECT
@@ -53,9 +49,7 @@ SELECT
   ) - INTERVAL '1 day'              AS date_fin
 FROM changements_reels;
 
--- ══════════════════════════════════════════════════════════════════════════════
--- VUE 2 : vue_points_cd4 (améliorée ✅)
--- ══════════════════════════════════════════════════════════════════════════════
+
 CREATE OR REPLACE VIEW vue_points_cd4 AS
 SELECT
   rb.id                              AS resultat_id,
@@ -98,9 +92,6 @@ WHERE rb.date_cd4_cd8 IS NOT NULL
 ORDER BY rb.patient_id, rb.date_cd4_cd8 ASC;
 
 
--- ══════════════════════════════════════════════════════════════════════════════
--- VUE 3 : vue_points_cv (améliorée ✅)
--- ══════════════════════════════════════════════════════════════════════════════
 CREATE OR REPLACE VIEW vue_points_cv AS
 SELECT
   rb.id                              AS resultat_id,
@@ -142,9 +133,6 @@ WHERE rb.date_charge_virale_vih   IS NOT NULL
 ORDER BY rb.patient_id, rb.date_charge_virale_vih ASC;
 
 
--- ══════════════════════════════════════════════════════════════════════════════
--- VUE 4 : vue_suivi_patient (améliorée ✅ statut retiré)
--- ══════════════════════════════════════════════════════════════════════════════
 CREATE OR REPLACE VIEW vue_suivi_patient AS
 SELECT
   rb.id,
@@ -235,7 +223,6 @@ SELECT
   arv.date_debut                     AS traitement_date_debut,
   arv.date_fin                       AS traitement_date_fin,
 
-  -- ── statut retiré ✅ → calculé dans le backend ────────────────────────
 
   rb.observations
 

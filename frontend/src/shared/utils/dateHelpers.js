@@ -1,6 +1,6 @@
 ﻿
 const padDatePart = (value) => String(value).padStart(2, "0");
-
+// 
 export const parseDateValue = (date) => {
   if (!date) return null;
 
@@ -24,7 +24,7 @@ export const parseDateValue = (date) => {
 };
 
 /**
- * Convertit n'importe quel format de date en "YYYY-MM-DD" (attendu par <input type="date">)
+ * Convertit n'importe quel format de date en "YYYY-MM-DD" 
  */
 export const toInputDate = (date) => {
   if (!date) return "";
@@ -61,7 +61,6 @@ export const toFrDateTime = (date, fallback = "-") => {
 
 /**
  * Convertit une heure "HH:MM:SS" (PostgreSQL time) en "HH:MM" (attendu par <input type="time">)
-
  */
 export const toInputTime = (heure) => {
   if (!heure) return "";

@@ -26,7 +26,7 @@ import ConfirmPrescriptionModal from "../../../components/UI/Confirmprescription
 import { useMedicationMultiSelect } from "./usePrescreptionMedicalLogic";
 
 
-// Affiche une liste de médicaments sous forme de pills
+// Affiche une liste de médicaments sous forme de badge
 function TraitementPills({ medicaments }) {
   if (!medicaments || medicaments.length === 0)
     return <span className="text-muted">-</span>;
@@ -80,6 +80,7 @@ function MedMultiSelect({ stockItems, selectedIds, onChange }) {
                   <span
                     className="pe-ms-tag-remove"
                     onClick={(e) => {
+                      //pour éviter que les clics internes ferment le dropdown.
                       e.stopPropagation();
                       removeMedicine(m.id);
                     }}

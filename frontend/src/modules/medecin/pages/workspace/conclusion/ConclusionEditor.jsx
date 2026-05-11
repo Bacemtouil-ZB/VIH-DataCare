@@ -23,7 +23,7 @@ export default function ConclusionEditor({ editorRef, editorValue, onChange, isE
         placeholder="Rédigez la conclusion médicale ici..."
         className="pcQuillLarge"
       />
-      <FieldError error={error} />   {/* ← affichage de l'erreur */}
+      <FieldError error={error} />   
 
       <div className="pcActions">
         <ActionButton

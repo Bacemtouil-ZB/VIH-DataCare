@@ -18,7 +18,6 @@ export const logAction = async (req, data) => {
   });
 };
 
-// start from this function are for admin dashboard to view audit logs
 import {
   findPatientByNumero,
   getAuditLogsGlobal,

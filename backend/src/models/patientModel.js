@@ -313,7 +313,7 @@ export const recalculerTousLesStatuts = async () => {
        SELECT 1 FROM prescription_medicale pm
        WHERE pm.patient_id = p.id
        AND pm.statut = 'envoyee'
-       AND pm.created_at >= NOW() - INTERVAL '48 hours'  -- ✅ exclure seulement récentes
+       AND pm.created_at >= NOW() - INTERVAL '48 hours'  --  exclure seulement récentes
      );`
   );
 

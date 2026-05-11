@@ -39,9 +39,6 @@ export const createAuditLog = async (logData) => {
   await pool.query(query, values);
 };
 
-// start from this function are for admin dashboard to view audit logs
-
-// Resolve patient by exact numero
 export const findPatientByNumero = async (numero) => {
   const query = `
     SELECT id, numero, name, surname

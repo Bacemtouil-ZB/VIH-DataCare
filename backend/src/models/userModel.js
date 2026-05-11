@@ -1,8 +1,6 @@
 import pool from "../config/db.js";
 
-// find user by email
 export const findUserByEmail = async (email) => {
-  // il y'a un probleme si gmail avec des points : ex: "user.name@gmail.com"
   const query = "SELECT * FROM users WHERE email = $1";
   const values = [email];
 
@@ -10,7 +8,6 @@ export const findUserByEmail = async (email) => {
   return result.rows[0] || null;
 };
 
-// create user
 export const createUser = async (
   nom,
   prenom,
@@ -30,9 +27,6 @@ export const createUser = async (
   return result.rows[0];
 };
 
-/**
- * Met à jour le statut d'activation d'un utilisateur
- */
 export const updateUserActivationStatus = async (userId, isactivated) => {
   const query = `
     UPDATE users 
@@ -67,7 +61,6 @@ export const getAllUsers = async () => {
   const result = await pool.query(query);
   return result.rows;
 };
-// Changer rôle
 export const updateUserRole = async (userId, role) => {
   const result = await pool.query(
     "UPDATE users SET role = $1, updated_at = NOW() WHERE id = $2 RETURNING id, nom, prenom, email, role, isactivated",
@@ -76,7 +69,6 @@ export const updateUserRole = async (userId, role) => {
   return result.rows[0];
 };
 
-// Mettre a jour le mot de passe d'un utilisateur par ID
 export const updateUserPasswordById = async (userId, hashedPassword) => {
   const query = `
     UPDATE users
@@ -89,7 +81,6 @@ export const updateUserPasswordById = async (userId, hashedPassword) => {
   return result.rows[0] || null;
 };
 
-// Récupérer tous les médecins (pour les formulaires de sélection)
 export const getAllDoctors = async () => {
   try {
     const query = `
@@ -107,15 +98,13 @@ export const getAllDoctors = async () => {
     throw error;
   }
 };
-//gestion du profil : update user info (nom, prenom, email, password)
-// Récupérer un utilisateur par ID
+
 export const findUserById = async (userId) => {
   const query = "SELECT * FROM users WHERE id = $1";
   const result = await pool.query(query, [userId]);
   return result.rows[0] || null;
 };
 
-// Mettre à jour les infos personnelles (nom, prenom, email)
 export const updateUserInfo = async (userId, { nom, prenom, email }) => {
   const normalizedEmail = email.trim().toLowerCase();
   const query = `

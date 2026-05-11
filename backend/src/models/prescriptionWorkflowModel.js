@@ -29,7 +29,7 @@ const PRESCRIPTION_SELECT = `
       json_agg(
         json_build_object(
           'medicament_id',            pl.medicament_id,
-          'medicament_nom_snapshot',  pl.medicament_nom_snapshot --- danger de doublon avec stock_medicaments.code, mais c'est voulu pour garder un historique même si le stock change
+          'medicament_nom_snapshot',  pl.medicament_nom_snapshot
         )
       ) FILTER (WHERE pl.id IS NOT NULL),
       '[]'
@@ -69,7 +69,7 @@ const traiterApresDelivrance = async (client, patientId, prescriptionId) => {
     return { alerte: false };
   }
 
-  // ✅ Vérifier perdu_de_vue depuis suivi_therapeutique (dernière ligne du patient)
+  //  Vérifier perdu_de_vue depuis suivi_therapeutique (dernière ligne du patient)
   const { rows: suiviRows } = await client.query(
     `SELECT statut_patient FROM suivi_therapeutique
      WHERE patient_id = $1
@@ -308,7 +308,7 @@ export const validerAvecModification = async (id, periodeModifiee) => {
           'actif',
           0
         FROM updated u
-        ON CONFLICT (prescription_id)
+        ON CONFLICT (prescription_id) --  si déjà existant → mise a jour
         DO UPDATE SET
           patient_id           = EXCLUDED.patient_id,
           date_prochaine_prise = EXCLUDED.date_prochaine_prise,
@@ -389,6 +389,7 @@ export const findLastPrescriptionPerPatient = async () => {
   `;
   const result = await pool.query(query);
   return result.rows.reduce((acc, row) => {
+    //transformer en objet avec patient_id comme clé
     acc[row.patient_id] = {
       traitement: row.traitement,
       derniere_consultation: row.derniere_consultation,
@@ -396,8 +397,6 @@ export const findLastPrescriptionPerPatient = async () => {
     return acc;
   }, {});
 };
-
-
 
 // ── CRON — Recalculer écart et statuts patients avec suivi ───
 export const recalculerEcartEtStatuts = async () => {
@@ -437,7 +436,7 @@ export const recalculerEcartEtStatuts = async () => {
 
       // 3. Déterminer statut
       let nouveauStatut;
-      if (2 <= ecart && ecart <= 179) nouveauStatut = 'en_retard'; // error [Statuts Job] Erreur : la nouvelle ligne de la relation « suivi_therapeutique » viole la contrainte de vérification « suivi_therapeutique_date_ecart_check »
+      if (1 <= ecart && ecart <= 179) nouveauStatut = 'en_retard'; 
       else   nouveauStatut = 'perdu_de_vue';
 
       // 4. Mettre à jour suivi_therapeutique

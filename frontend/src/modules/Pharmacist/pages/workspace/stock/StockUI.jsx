@@ -12,6 +12,7 @@ import {
   StockAlert,
 } from "../../../../../shared/components";
 import { formatDateTimeFr } from "../../../../../shared/utils/logiqueTableHistory";
+import PageHeader from "../../../components/UI/StockTitle";
 
 function QuantityEditPanel({
   item,
@@ -24,21 +25,21 @@ function QuantityEditPanel({
   cancelEditQuantity,
 }) {
   const isDecrement = editingMode === "decrement";
-  const accentColor = isDecrement ? "#991b1b" : "#166534";
+  const modifier = isDecrement ? "decrement" : "increment";
   const label = isDecrement ? "Retirer du stock" : "Ajouter au stock";
   const verb = isDecrement ? "-" : "+";
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", minWidth: "180px" }}>
-      <span style={{ fontSize: "0.72rem", fontWeight: 700, color: accentColor, letterSpacing: "0.04em" }}>
+    <div className="ph-qty-panel">
+      <span className={`ph-qty-panel__label ph-qty-panel__label--${modifier}`}>
         {verb} {label}
       </span>
 
-      <span style={{ fontSize: "0.78rem", color: "#64748b" }}>
+      <span className="ph-qty-panel__current">
         Stock actuel :&nbsp;
-        <strong style={{ color: "#0f172a" }}>{item.quantity}</strong>
+        <strong>{item.quantity}</strong>
         {editingQuantity !== "" && Number(editingQuantity) > 0 && (
-          <span style={{ color: accentColor, fontWeight: 700 }}>
+          <span className={`ph-qty-panel__preview ph-qty-panel__preview--${modifier}`}>
             &nbsp;-&gt;&nbsp;
             {isDecrement
               ? Math.max(0, item.quantity - Number(editingQuantity))
@@ -47,12 +48,11 @@ function QuantityEditPanel({
         )}
       </span>
 
-      <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+      <div className="ph-qty-panel__row">
         <Input
           type="number"
           min="1"
-          className={`form-control form-control-sm ph-qty-input ${quantityErrors.quantite ? "is-invalid" : ""}`}
-          style={{ width: "80px", borderColor: accentColor }}
+          className={`form-control form-control-sm ph-qty-input ph-qty-input--${modifier} ${quantityErrors.quantite ? "is-invalid" : ""}`}
           value={editingQuantity}
           onChange={handleEditingQuantityChange}
           placeholder="Qte"
@@ -114,9 +114,7 @@ export default function StockUI({
     <>
       <div className="ph-stock-header">
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <div className="ph-stock-title">
-            <h2>Gestion du stock de medicaments</h2>
-          </div>
+            <PageHeader title="Gestion du stock de medicaments" noBorder />
           <ActionButton
             action="add"
             label="Ajouter au stock"
@@ -132,8 +130,8 @@ export default function StockUI({
 
       {showAddForm && (
         <div className="ph-stock-add-card">
-          <div className="ph-stock-add-grid" style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-start", gap: "1rem" }}>
-            <div className="ph-med-field" style={{ flex: "0 0 160px" }}>
+          <div className="ph-stock-add-grid">
+            <div className="ph-med-field">
               <FieldLabel required>Code medicament</FieldLabel>
               <Input
                 type="text"
@@ -146,7 +144,7 @@ export default function StockUI({
               <FieldError error={addErrors.medicamentCode} />
             </div>
 
-            <div className="ph-comp-field" style={{ flex: "0 0 260px", minWidth: 0 }}>
+            <div className="ph-comp-field">
               <FieldLabel required>Medicament</FieldLabel>
               <Input
                 type="text"
@@ -159,7 +157,7 @@ export default function StockUI({
               <FieldError error={addErrors.medicamentComposition} />
             </div>
 
-            <div className="ph-qty-field" style={{ flex: "0 0 180px" }}>
+            <div className="ph-qty-field">
               <FieldLabel required>Quantite initiale</FieldLabel>
               <Input
                 type="number"
@@ -173,7 +171,7 @@ export default function StockUI({
               <FieldError error={addErrors.quantityToAdd} />
             </div>
 
-            <div className="ph-stock-add-actions" style={{ flex: "0 0 auto", marginLeft: "auto", alignSelf: "flex-end", paddingBottom: "2px" }}>
+            <div className="ph-stock-add-actions">
               <ActionButton
                 action="save"
                 label={saving ? "Enregistrement..." : "Enregistrer"}
@@ -245,9 +243,7 @@ export default function StockUI({
                         cancelEditQuantity={cancelEditQuantity}
                       />
                     ) : (
-                      <span style={{ fontWeight: 700, fontSize: "1rem", color: "#0f172a" }}>
-                        {item.quantity}
-                      </span>
+                      <span className="ph-qty-display">{item.quantity}</span>
                     )}
                   </td>
 
@@ -259,43 +255,23 @@ export default function StockUI({
 
                   <td>
                     {isEditing ? null : (
-                      <div className="ph-actions" style={{ display: "flex", alignItems: "center", gap: "0.4rem", flexWrap: "nowrap" }}>
+                      <div className="ph-actions">
                         <button
                           type="button"
-                          className="btn btn-sm"
+                          className="ph-btn-increment"
                           title="Augmenter le stock"
                           disabled={saving}
                           onClick={() => beginIncrement(item)}
-                          style={{
-                            background: "#dcfce7",
-                            color: "#166534",
-                            border: "1px solid #86efac",
-                            borderRadius: "6px",
-                            fontWeight: 800,
-                            fontSize: "1rem",
-                            lineHeight: 1,
-                            padding: "0.3rem 0.65rem",
-                          }}
                         >
                           +
                         </button>
 
                         <button
                           type="button"
-                          className="btn btn-sm"
+                          className="ph-btn-decrement"
                           title="Diminuer le stock"
                           disabled={saving || Number(item.quantity) <= 0}
                           onClick={() => beginDecrement(item)}
-                          style={{
-                            background: "#fee2e2",
-                            color: "#991b1b",
-                            border: "1px solid #fca5a5",
-                            borderRadius: "6px",
-                            fontWeight: 800,
-                            fontSize: "1rem",
-                            lineHeight: 1,
-                            padding: "0.3rem 0.65rem",
-                          }}
                         >
                           -
                         </button>

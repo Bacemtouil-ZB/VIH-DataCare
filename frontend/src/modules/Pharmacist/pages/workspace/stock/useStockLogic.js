@@ -50,7 +50,7 @@ export function useStockLogic(numero) {
   };
 
   useEffect(() => {
-    let alive = true;
+    let alive = true; //le composant existe encore
 
     const loadData = async () => {
       try {

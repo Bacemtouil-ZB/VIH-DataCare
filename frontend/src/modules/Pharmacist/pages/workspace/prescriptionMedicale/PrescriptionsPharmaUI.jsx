@@ -20,12 +20,13 @@ import ModalDetailPrescription     from "../../../components/modal/Modaldetailpr
 import ModalValidationPrescription from "../../../components/modal/ModalValidationPrescription";
 import ModalModifierPeriode        from "../../../components/modal/ModalModifierPeriode";
 import { formatDateFr }            from "../../../../../shared/utils/logiqueTableHistory";
+import PageHeader from "../../../components/UI/StockTitle";
 
 const resolvePalette = (key) => BADGE_COLORS[key] ?? BADGE_COLORS.en_attente;
 
 // ── Statut patient badge ──────────────────────────────────────
 function StatutPatientBadge({ suiviStatutPatient, dateEcart }) {
-  const statut = suiviStatutPatient || "en_attente"; // ✅ fallback en_attente
+  const statut = suiviStatutPatient || "en_attente"; 
   const { badgeText, showEcart } = resolveSuiviBadge(statut, dateEcart);
   const palette = resolvePalette(statut);
   return (
@@ -60,7 +61,7 @@ function StatutCell({ statutPrescription, suiviStatutPatient, dateEcart }) {
 // ── Colonne fusionnée : Date prochaine prise + écart ──────────
 function PriseDateCell({ dateProchainePrise, dateEcart }) {
   if (!dateProchainePrise) return <span className="td-empty">—</span>;
-  const enRetard = dateEcart > 2;
+  const enRetard = dateEcart > 1;
   return (
     <div className="prise-cell">
       <span className={enRetard ? "date-retard" : "date-future"}>
@@ -133,9 +134,7 @@ export default function PrescriptionsUI({
 
       {/* ── Header ─────────────────────────────────────────── */}
       <div className="prescriptions-header">
-        <h2 className="page-title">
-          {MESSAGES.titrePage} ({filtered.length})
-        </h2>
+        <PageHeader title="Gestion des prescriptions médicales" noBorder />
         <SearchBar
           value={search}
           onChange={(e) => setSearch(e.target.value)}
@@ -147,12 +146,12 @@ export default function PrescriptionsUI({
 
       {/* ── Tableau ─────────────────────────────────────────── */}
       <HistoriqueAccordeon
-        title=""
+        title="Liste des prescriptions médicales"
         count={filtered.length}
-        showCount={false}
+        showCount={true}
         open={showHistory}
         onToggle={() => setShowHistory((v) => !v)}
-        hideTitle
+        //hideTitle
         contentClassName="prescription-acc-body"
       >
         <HistoriqueTable

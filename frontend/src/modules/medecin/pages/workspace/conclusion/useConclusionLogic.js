@@ -38,8 +38,6 @@ export function useConclusionLogic(numero) {
     [total, limit],
   );
 
-  // ====== Chargement historique ======
-  // Erreur réseau / serveur → alertError (pas une erreur de champ)
   const loadHistory = async () => {
     setHistLoading(true);
     try {
@@ -55,10 +53,8 @@ export function useConclusionLogic(numero) {
 
   useEffect(() => {
     if (numero) loadHistory();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [numero, offset]);
 
-  // ====== handleEditorChange ======
   // Efface l'erreur du champ "content" dès que l'utilisateur tape
   const handleEditorChange = (value) => {
     setEditorValue(value);
@@ -70,7 +66,7 @@ export function useConclusionLogic(numero) {
     setEditorValue("");
     setEditingId(null);
     setShowEditor(false);
-    setErrors({});                    // ← efface les erreurs à la fermeture
+    setErrors({});                
   };
 
   const cancelEditor = () => {
@@ -81,8 +77,6 @@ export function useConclusionLogic(numero) {
   // ====== Soumission ======
   const onSave = async () => {
 
-    // ── Validation frontend ─────────────────────────────────────────────────
-    // → FieldError sous l'éditeur, jamais de toast pour les erreurs de champ
     const text = editorValue.replace(/<[^>]*>/g, "").trim();
 
     if (!text) {
@@ -120,9 +114,6 @@ export function useConclusionLogic(numero) {
 
     } catch (e) {
 
-      // Cas 1 — errors[] avec field (express-validator via handleValidation)
-      // → FieldError affiché sous l'éditeur pour chaque champ concerné
-      // CORRECTION : err.message (pas e.message) pour récupérer le message du champ
       if (e?.errors && Array.isArray(e.errors)) {
         const errorObj = {};
         e.errors.forEach((err) => {
@@ -131,15 +122,10 @@ export function useConclusionLogic(numero) {
         setErrors(errorObj);
         return;
       }
-
-      // Cas 2 — message simple sans tableau de champs (ex: erreur métier serveur)
-      // → FieldError sous "content" (seul champ du formulaire)
       if (e?.message) {
         setErrors({ content: e.message });
         return;
       }
-
-      // Cas 3 — fallback inattendu (erreur réseau, serveur indisponible…)
       alertError("Une erreur s'est produite lors de l'enregistrement");
 
     } finally {
@@ -152,7 +138,7 @@ export function useConclusionLogic(numero) {
     setEditorValue(c.content || "");
     setEditingId(c.id);
     setShowEditor(true);
-    setErrors({});                    // ← reset erreurs à chaque ouverture
+    setErrors({});                    
     setTimeout(() => {
       editorRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 100);
@@ -163,7 +149,7 @@ export function useConclusionLogic(numero) {
     setEditingId(null);
     setEditorValue("");
     setShowEditor(true);
-    setErrors({});                    // ← reset erreurs à chaque ouverture
+    setErrors({});                    
     setTimeout(() => {
       editorRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }, 100);
@@ -174,8 +160,8 @@ export function useConclusionLogic(numero) {
     editorRef,
     editorValue,
     setEditorValue,
-    handleEditorChange,               // ← à brancher dans ConclusionEditor onChange
-    errors,                           // ← exposé pour <FieldError error={errors.content} />
+    handleEditorChange,               
+    errors,                           
     editingId,
     saving,
     showEditor,
