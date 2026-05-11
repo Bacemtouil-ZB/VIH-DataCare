@@ -27,8 +27,8 @@ const ABOUT_CARDS = [
 
 function AboutSection() {
   return (
-    <SectionShell id="about" className="bg-white py-7 md:py-9">
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(240px,0.65fr)] lg:items-start">
+    <SectionShell id="about" className="bg-white py-5 md:py-7">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,0.95fr)_minmax(240px,0.65fr)] lg:items-start">
         <SectionHeading
           badge="A propos"
           title="Suivi, protection, qualite"
@@ -47,7 +47,7 @@ function AboutSection() {
         </div>
       </div>
 
-      <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {ABOUT_CARDS.map((card) => (
           <InfoCard
             key={card.title}

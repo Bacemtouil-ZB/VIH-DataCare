@@ -70,7 +70,7 @@ function Signup() {
       setFormData({ nom: "", prenom: "", email: "", password: "", confirmPassword: "" });
 
 
-      setTimeout(() => navigate('/login'), 3000);
+      setTimeout(() => navigate('/login'), 3000); // 3000ms = 3s
 
     } catch (err) {
       if (err.response?.data?.errors) {

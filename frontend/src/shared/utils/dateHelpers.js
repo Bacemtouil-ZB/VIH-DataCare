@@ -26,6 +26,7 @@ export const parseDateValue = (date) => {
 /**
  * Convertit n'importe quel format de date en "YYYY-MM-DD" 
  */
+
 export const toInputDate = (date) => {
   if (!date) return "";
   const d = parseDateValue(date);

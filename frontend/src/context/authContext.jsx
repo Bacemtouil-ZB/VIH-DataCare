@@ -13,7 +13,7 @@ export const AuthProvider = ({ children }) => {
   //ça dans ProtectedRoute.jsx pour éviter de faire un appel au backend à chaque 
   //chargement de l'app)");
 
-  useEffect(() => {                               
+  useEffect(() => {                                
   const verifyUser = async () => {
     try {
       const data = await checkSession();
@@ -51,11 +51,11 @@ export const AuthProvider = ({ children }) => {
 };
 
   // ── INSCRIPTION ──
-  const handleRegister = async (nom, prenom, email, password, role = 'medecin') => {
+  const handleRegister = async (nom, prenom, email, password) => { // no role send from frontend
     setLoading(true);
     setError(null);
     try {
-      const data = await register(nom, prenom, email, password, role);
+      const data = await register(nom, prenom, email, password);
       return data;
     } catch (err) {
       const msg = err.response?.data?.message || "Erreur d'inscription";

@@ -23,7 +23,7 @@ function LandingNavbar() {
               VIH DataCare
             </span>
             <span className="mt-1 text-xs text-slate-500">
-              Sousse
+              hôpital farhat hached sousse
             </span>
           </div>
           <div className="ml-2 flex items-center gap-0">

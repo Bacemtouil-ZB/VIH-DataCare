@@ -1,4 +1,3 @@
-//cheked 15/04/2026
 import pool from "../config/db.js";
 import { createAddress, updateAddress } from "./addresseModel.js";
 import { stripNumeroPrefix } from "../utils/numero.js"; 
@@ -36,10 +35,6 @@ export const getPatientByNumero = async (numero) => {
   const query = `
     SELECT
       p.*,
-
-      p.birth_address_id,
-      p.residence_address_id,
-
       -- Gouvernorat et code postal naissance
       bg.name AS birth_governorate,
       bp.id AS birth_postal_code_id,    
@@ -107,7 +102,8 @@ export const getAllPatients = async (options = {}) => {
     LEFT JOIN addresses r ON p.residence_address_id = r.id
     LEFT JOIN postal_codes rp ON r.postal_code_id = rp.id
     LEFT JOIN governorates rg ON rp.governorate_id = rg.id
-    ORDER BY p.created_at ${options.sortOrder || "DESC"};
+     ORDER BY p.created_at ${options.sortOrder || "DESC"};
+
   `;
 
   const result = await pool.query(query);
@@ -353,10 +349,11 @@ export const recalculerTousLesStatuts = async () => {
 
 
 // --------------------- GET LEFT PANEL DATA ---------------------
+
 export const getLeftPanelData = async (numero) => {
   const raw = stripNumeroPrefix(numero);
   const withPrefix = `F-${raw}`;
- 
+
   const { rows } = await pool.query(`
     SELECT
       -- Info patient
@@ -366,7 +363,7 @@ export const getLeftPanelData = async (numero) => {
       p.surname,
       p.birthdate,
       p.hospitalisation,
- 
+
       -- Statut suivi_therapeutique dernière ligne
       (
         SELECT st.statut_patient
@@ -375,8 +372,8 @@ export const getLeftPanelData = async (numero) => {
         ORDER BY st.created_at DESC
         LIMIT 1
       ) AS statut_suivi,
- 
-      -- Dernier traitement (prescription la plus récente uniquement)
+
+      -- Dernier traitement
       (
         SELECT STRING_AGG(pl.medicament_nom_snapshot, ', ' ORDER BY pl.id)
         FROM prescription_lignes pl
@@ -389,57 +386,36 @@ export const getLeftPanelData = async (numero) => {
           LIMIT 1
         )
       ) AS dernier_traitement,
- 
-      -- Dernière charge virale
-      (
-        SELECT rb.charge_virale_valeur
-        FROM resultats_biologiques rb
-        WHERE rb.patient_id = p.id
-          AND rb.charge_virale_valeur IS NOT NULL
-        ORDER BY rb.date_charge_virale_vih DESC NULLS LAST, rb.created_at DESC
-        LIMIT 1
-      ) AS derniere_charge_virale,
- 
-      (
-        SELECT rb.date_charge_virale_vih
-        FROM resultats_biologiques rb
-        WHERE rb.patient_id = p.id
-          AND rb.charge_virale_valeur IS NOT NULL
-        ORDER BY rb.date_charge_virale_vih DESC NULLS LAST, rb.created_at DESC
-        LIMIT 1
-      ) AS date_charge_virale,
- 
-      -- Dernier CD4
-      (
-        SELECT rb.cd4_absolu
-        FROM resultats_biologiques rb
-        WHERE rb.patient_id = p.id
-          AND rb.cd4_absolu IS NOT NULL
-        ORDER BY rb.date_cd4_cd8 DESC NULLS LAST, rb.created_at DESC
-        LIMIT 1
-      ) AS dernier_cd4_absolu,
- 
-      (
-        SELECT rb.cd4_pourcent
-        FROM resultats_biologiques rb
-        WHERE rb.patient_id = p.id
-          AND rb.cd4_absolu IS NOT NULL
-        ORDER BY rb.date_cd4_cd8 DESC NULLS LAST, rb.created_at DESC
-        LIMIT 1
-      ) AS dernier_cd4_pourcent,
- 
-      (
-        SELECT rb.date_cd4_cd8
-        FROM resultats_biologiques rb
-        WHERE rb.patient_id = p.id
-          AND rb.cd4_absolu IS NOT NULL
-        ORDER BY rb.date_cd4_cd8 DESC NULLS LAST, rb.created_at DESC
-        LIMIT 1
-      ) AS date_cd4
- 
+
+      cv.charge_virale_valeur   AS derniere_charge_virale,
+      cv.date_charge_virale_vih AS date_charge_virale,
+
+      cd.cd4_absolu    AS dernier_cd4_absolu,
+      cd.cd4_pourcent  AS dernier_cd4_pourcent,
+      cd.date_cd4_cd8  AS date_cd4
+
     FROM patients p
+
+    LEFT JOIN LATERAL (
+      SELECT charge_virale_valeur, date_charge_virale_vih
+      FROM resultats_biologiques
+      WHERE patient_id = p.id
+        AND charge_virale_valeur IS NOT NULL
+      ORDER BY date_charge_virale_vih DESC NULLS LAST, created_at DESC
+      LIMIT 1
+    ) cv ON true
+
+    LEFT JOIN LATERAL (
+      SELECT cd4_absolu, cd4_pourcent, date_cd4_cd8
+      FROM resultats_biologiques
+      WHERE patient_id = p.id
+        AND cd4_absolu IS NOT NULL
+      ORDER BY date_cd4_cd8 DESC NULLS LAST, created_at DESC
+      LIMIT 1
+    ) cd ON true
+
     WHERE p.numero = $1 OR p.numero = $2;
   `, [withPrefix, raw]);
- 
+
   return rows[0] ?? null;
 };

@@ -44,14 +44,14 @@ const FEATURES = [
 
 function FeaturesSection() {
   return (
-    <SectionShell id="features" className="border-y border-slate-200 bg-slate-50/80 py-7 md:py-9">
+    <SectionShell id="features" className="border-y border-slate-200 bg-slate-50/80 py-5 md:py-7">
       <SectionHeading
         badge="Fonctionnalites"
         title="Fonctionnalites essentielles"
         description="Modules simples et efficaces."
       />
 
-      <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {FEATURES.map((feature, index) => (
           <InfoCard
             key={feature.title}

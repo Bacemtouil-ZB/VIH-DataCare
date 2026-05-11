@@ -1,21 +1,71 @@
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
+import { generateToken } from "../utils/jwt.js";
+
 import {
   findUserByEmail,
   createUser,
   updateUserPasswordById,
 } from "../models/userModel.js";
+
 import {
   createPasswordReset,
   findValidPasswordResetByToken,
   deletePasswordResetsByUserId,
 } from "../models/passwordResetModel.js";
-import { generateToken } from "../utils/jwt.js";
+
 import {
   sendUserCredentialsEmail,
   sendPasswordResetEmail,
 } from "../utils/mailer.js";
 
+
+//-----------------------------register d'un utilisateur-----------------------------
+export const registerUser = async (
+  nom,
+  prenom,
+  email,
+  password,
+) => {
+  const existingUser = await findUserByEmail(email);
+  if (existingUser) {
+    throw new Error("Un utilisateur avec cet email existe déjà");
+  }
+
+  if (!nom || !prenom || !email || !password) { //checks as a backup.
+    throw new Error(
+      "Tous les champs sont requis (nom, prenom, email, password)",
+    );
+  }
+
+  const role = "medecin"; // forced in hard — never from the outside
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const user = await createUser(
+    nom,
+    prenom,
+    email,
+    hashedPassword,
+    role,
+    false, // set isactivated to false by default
+  );
+
+  // mail is sent asynchronously after response is sent to avoid blocking the registration flow
+ setImmediate(() => {
+    sendUserCredentialsEmail({ to: email, nom, prenom, role })
+      .catch((error) =>
+        console.error("Erreur envoi email identifiants:", error.message),
+      );
+  });
+   // password is stocked in "_" and not returned to the caller
+   // "_" best practice  we can not use it and steel have the user object without password, but it makes it more explicit that password is intentionally excluded
+  const { password: _, ...userWithoutPassword } = user;  // Exclude password from returned user object
+  return userWithoutPassword;
+};
+
+//----------------------------------------------------------------------------
+
+//-----------------------------login d'un utilisateur-----------------------------
 export const loginUser = async (email, password) => {
   // Vérifier si l'utilisateur existe
   const user = await findUserByEmail(email);
@@ -58,48 +108,9 @@ export const loginUser = async (email, password) => {
     token,
   };
 };
+//----------------------------------------------------------------------------
 
-// register 
-export const registerUser = async (
-  nom,
-  prenom,
-  email,
-  password,
-  role = "medecin",
-) => {
-  const existingUser = await findUserByEmail(email);
-  if (existingUser) {
-    throw new Error("Un utilisateur avec cet email existe déjà");
-  }
-
-  if (!nom || !prenom || !email || !password) {
-    throw new Error(
-      "Tous les champs sont requis (nom, prenom, email, password)",
-    );
-  }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const user = await createUser(
-    nom,
-    prenom,
-    email,
-    hashedPassword,
-    role,
-    false,
-  );
-
-  // Email en arrière-plan — ne bloque pas l'inscription
-  setImmediate(() => {
-    sendUserCredentialsEmail({ to: email, nom, prenom, password, role })
-      .catch((error) =>
-        console.error("Erreur envoi email identifiants:", error.message),
-      );
-  });
-
-  const { password: _, ...userWithoutPassword } = user;
-  return userWithoutPassword;
-};
-
+//-----------------------------reset password-----------------------------
 export const requestPasswordReset = async (email) => {
   if (!email) {
     throw new Error("Email requis");
@@ -107,7 +118,6 @@ export const requestPasswordReset = async (email) => {
 
   const user = await findUserByEmail(email);
 
-  // Ne pas reveler si l'email existe ou non
   if (!user) {
     return {
       success: true,
@@ -117,7 +127,7 @@ export const requestPasswordReset = async (email) => {
 
   const rawToken = crypto.randomBytes(32).toString("hex");
   const tokenHash = crypto.createHash("sha256").update(rawToken).digest("hex");
-  const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 60 min
+  const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
 
   await deletePasswordResetsByUserId(user.id);
   await createPasswordReset(user.id, tokenHash, expiresAt);
@@ -127,23 +137,28 @@ export const requestPasswordReset = async (email) => {
   ).replace(/\/$/, "");
   const resetUrl = `${frontendBase}/reset-password?token=${encodeURIComponent(rawToken)}`;
 
-  try {
-    await sendPasswordResetEmail({
-      to: user.email,
-      nom: user.nom,
-      prenom: user.prenom,
-      resetUrl,
-    });
-  } catch (error) {
-    console.error("Erreur envoi email reset password:", error.message);
-  }
-
-  return {
+  // Return immediately, token is already saved in DB
+  const result = {
     success: true,
     message: "Lien de reinitialisation envoye si cet email existe.",
   };
-};
 
+  // Send email non-blocking, after return value is ready
+  sendPasswordResetEmail({
+    to: user.email,
+    nom: user.nom,
+    prenom: user.prenom,
+    resetUrl,
+  }).catch((error) => {
+    console.error("Erreur envoi email reset password:", error.message);
+  });
+
+  return result;
+};
+//----------------------------------------------------------------------------
+
+//-----------------------------reset password with token-----------------------------
+// this use after user get token from mail and submit new password with token, then we verify token and update password if valid
 export const resetPasswordWithToken = async (token, password) => {
   if (!token || !password) {
     throw new Error("Token et mot de passe requis");
@@ -177,3 +192,4 @@ export const resetPasswordWithToken = async (token, password) => {
     message: "Mot de passe mis a jour avec succes",
   };
 };
+//-----------------------------------------------------------

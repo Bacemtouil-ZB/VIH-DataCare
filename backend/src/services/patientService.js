@@ -12,6 +12,20 @@ import {
 
 import { stripNumeroPrefix, canonicalNumero } from "../utils/numero.js"; // évites les doublons (F-123 vs 123)
 
+//------------getAllPatients------------  
+export const getAllPatients = async (options = {}) => {
+  const patients = await getAllPatientsModel(options);
+  const total = await countPatients();
+
+  return {
+    patients,
+    total,
+    count: patients.length,
+  };
+};
+//------------------------------------------------
+
+
 //------------createPatient------------
 export const createPatient = async (patientData, userId) => {
   const client = await pool.connect();
@@ -85,17 +99,7 @@ export const checkPatientNumeroExists = async (numero) => {
   return { exists: false, patient: null };
 };
   
-//------------getAllPatients------------  
-export const getAllPatients = async (options = {}) => {
-  const patients = await getAllPatientsModel(options);
-  const total = await countPatients();
 
-  return {
-    patients,
-    total,
-    count: patients.length,
-  };
-};
 
 //------------updatePatient------------
 export const updatePatient = async (id, patientData, userId) => {

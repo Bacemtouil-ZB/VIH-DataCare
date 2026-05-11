@@ -27,14 +27,14 @@ const TRUST_ITEMS = [
 
 function TrustSection() {
   return (
-    <SectionShell id="fiabilite" className="bg-white py-7 md:py-9">
+    <SectionShell id="fiabilite" className="bg-white py-5 md:py-7">
       <SectionHeading
         badge="Fiabilite"
         title="Confiance et fiabilite"
         description="Securite, simplicite et continuite."
       />
 
-      <div className="mt-5">
+      <div className="mt-3">
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
           {TRUST_ITEMS.map((item) => (
             <InfoCard
