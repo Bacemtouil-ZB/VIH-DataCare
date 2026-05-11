@@ -1,16 +1,6 @@
 import pool from "../config/db.js";
 
-// find user by email
-export const findUserByEmail = async (email) => {
-  // il y'a un probleme si gmail avec des points : ex: "user.name@gmail.com"
-  const query = "SELECT * FROM users WHERE email = $1";
-  const values = [email];
-
-  const result = await pool.query(query, values);
-  return result.rows[0] || null;
-};
-
-// create user
+//-------------------------registrer un utilisateur-------------------------
 export const createUser = async (
   nom,
   prenom,
@@ -22,17 +12,26 @@ export const createUser = async (
   const query = `
     INSERT INTO users (nom, prenom, email, password, role, isactivated)
     VALUES ($1, $2, $3, $4, $5, $6)
-    RETURNING id, nom, prenom, email, role, isactivated, created_at;
+    RETURNING id, nom, prenom, email, role, isactivated, created_at; -- On retourne les infos de l'utilisateur créé
   `;
   const values = [nom, prenom, email, hashedPassword, role, isactivated];
 
   const result = await pool.query(query, values);
   return result.rows[0];
 };
+//----------------------------------------------------------------------------------
+//-----------------------login de l'utilisateur-------------------------
+// find user by email
+export const findUserByEmail = async (email) => {
+  const query = "SELECT * FROM users WHERE email = $1";
+  const values = [email];
+  const result = await pool.query(query, values);
+  return result.rows[0] || null;
+};
 
-/**
- * Met à jour le statut d'activation d'un utilisateur
- */
+//----------------------------------------------------------------------------------
+
+//-----------------------activation et désactivation de l'utilisateur-------------------------
 export const updateUserActivationStatus = async (userId, isactivated) => {
   const query = `
     UPDATE users 
@@ -45,6 +44,34 @@ export const updateUserActivationStatus = async (userId, isactivated) => {
   return result.rows[0];
 };
 
+//---------------------------------------------------------------------------------------------------
+//---------------- upadate user role --------------------------
+// Changer rôle
+export const updateUserRole = async (userId, role) => {
+  const result = await pool.query(
+    "UPDATE users SET role = $1, updated_at = NOW() WHERE id = $2 RETURNING id, nom, prenom, email, role, isactivated",
+    [role, userId],
+  );
+  return result.rows[0];
+};
+//---------------------------------------------
+
+//----------------------change user password-------------------------
+// Mettre a jour le mot de passe d'un utilisateur par ID
+export const updateUserPasswordById = async (userId, hashedPassword) => {
+  const query = `
+    UPDATE users
+    SET password = $1, updated_at = NOW()
+    WHERE id = $2
+    RETURNING id, nom, prenom, email, role, isactivated, updated_at;
+  `;
+  const values = [hashedPassword, userId];
+  const result = await pool.query(query, values);
+  return result.rows[0] || null;
+};
+//------------------------------------------------------------
+
+//----------------------get all users used for admin panel ! -------------------------
 export const getAllUsers = async () => {
   const query = `
     SELECT 
@@ -67,28 +94,10 @@ export const getAllUsers = async () => {
   const result = await pool.query(query);
   return result.rows;
 };
-// Changer rôle
-export const updateUserRole = async (userId, role) => {
-  const result = await pool.query(
-    "UPDATE users SET role = $1, updated_at = NOW() WHERE id = $2 RETURNING id, nom, prenom, email, role, isactivated",
-    [role, userId],
-  );
-  return result.rows[0];
-};
+//----------------------------------------------------------------------------------
 
-// Mettre a jour le mot de passe d'un utilisateur par ID
-export const updateUserPasswordById = async (userId, hashedPassword) => {
-  const query = `
-    UPDATE users
-    SET password = $1, updated_at = NOW()
-    WHERE id = $2
-    RETURNING id, nom, prenom, email, role, isactivated, updated_at;
-  `;
-  const values = [hashedPassword, userId];
-  const result = await pool.query(query, values);
-  return result.rows[0] || null;
-};
 
+//----------------------get all doctors used for profil patient -------------------------
 // Récupérer tous les médecins (pour les formulaires de sélection)
 export const getAllDoctors = async () => {
   try {
@@ -107,6 +116,9 @@ export const getAllDoctors = async () => {
     throw error;
   }
 };
+//----------------------------------------------------------------------------------
+
+
 //gestion du profil : update user info (nom, prenom, email, password)
 // Récupérer un utilisateur par ID
 export const findUserById = async (userId) => {

@@ -7,13 +7,16 @@ import {
   forgotPasswordController,
   resetPasswordController,
 } from "../controllers/authController.js";
+
 import { protect } from "../middlewares/authMiddleware.js";
+
 import {
   validateLogin,
   validateRegister,
   validateForgotPassword,
   validateResetPassword,
 } from "../middlewares/validators/authValidator.js";
+
 import {
   loginLimiter,
   registerLimiter,

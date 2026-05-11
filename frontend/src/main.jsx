@@ -8,9 +8,9 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css'; 
 
-
+//strict mode  used only in development to help identify potential problems
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
+  <React.StrictMode> 
     <AuthProvider>
       <AppRoutes />
     </AuthProvider>

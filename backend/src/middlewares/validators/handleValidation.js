@@ -13,8 +13,7 @@ export const handleValidation = (req, res, next) => {
   const formattedErrors = errors.array().map((err) => ({
     field: err.path,
     message: err.msg,
-    location: err.location,
-    value: err.value ?? null,
+    location: err.location
   }));
 
   // log pour debug (optionnel en production)

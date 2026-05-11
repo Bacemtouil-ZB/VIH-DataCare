@@ -16,7 +16,7 @@ const PASSWORD_BLACKLIST = [
 // ── Register ─────────────────────────────────────────────
 export const validateRegister = [
   body("nom")
-    .trim()
+    .trim() // remove space at start and end of string
     .notEmpty()
     .withMessage("Nom est requis")
     .isLength({ min: 2, max: 50 })
@@ -41,7 +41,7 @@ export const validateRegister = [
     .withMessage("Format email invalide")
     .isLength({ max: 255 })
     .withMessage("Email trop long")
-    .normalizeEmail(),
+    .normalizeEmail(), // convertit à lowercase et supprime les points pour Gmail
 
   body("password")
     .notEmpty()
@@ -50,9 +50,9 @@ export const validateRegister = [
     .withMessage("Minimum 8 caractères")
     .isLength({ max: 72 })
     .withMessage("Maximum 72 caractères")
-    .matches(/[A-Z]/)
+    .matches(/[A-Z]/) // au moins une majuscule
     .withMessage("Au moins une majuscule")
-    .matches(/[0-9]/)
+    .matches(/[0-9]/)// au moins un chiffre
     .withMessage("Au moins un chiffre")
     .custom((value) => {
       if (PASSWORD_BLACKLIST.includes(value.toLowerCase())) {
@@ -77,14 +77,8 @@ export const validateLogin = [
   body("password")
     .notEmpty()
     .withMessage("Mot de passe est requis")
-    .isLength({ max: 72 })
+    .isLength({ max: 72 }) //bcrypt only uses the first 72 bytes effectively
     .withMessage("Mot de passe invalide"),
-
-  body("rememberMe")
-    .optional()
-    .isBoolean()
-    .withMessage("Valeur booléenne requise")
-    .toBoolean(),
 
   handleValidation,
 ];

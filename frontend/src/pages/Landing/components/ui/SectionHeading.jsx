@@ -8,11 +8,11 @@ function SectionHeading({ badge, title, description }) {
           {badge}
         </p>
       )}
-      <h2 className="mt-3 text-3xl font-semibold leading-tight text-slate-900 md:text-[2.15rem] md:leading-[1.2]">
+      <h2 className="mt-2 text-3xl font-semibold leading-tight text-slate-900 md:text-[2.15rem] md:leading-[1.2]">
         {title}
       </h2>
       {description && (
-        <p className="mt-3 text-base leading-7 text-slate-600">
+        <p className="mt-2 text-base leading-7 text-slate-600">
           {description}
         </p>
       )}

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import  { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../shared/hooks/useAuth.js';
@@ -17,24 +18,19 @@ const Login = () => {
     if (!user) return;
     const routes = { admin: '/admin', medecin: '/medecin', pharmacien: '/pharmacien', analyste: '/analyste' };
     navigate(routes[user.role] || '/');
-  }, [user, navigate]);
+  }, [user, navigate]); // when user get from context, it will trigger this effect and navigate to the appropriate route based on the user's role
 
   // Toast erreur backend
+  //show backend errors
   useEffect(() => {
     if (!error) return;
     toast.error(error);
     setError(null);
   }, [error, setError]);
 
-  useEffect(() => {
-    const stateMessage = location.state?.message;
-    if (!stateMessage) return;
-    toast.success(stateMessage);
-    navigate(location.pathname, { replace: true, state: {} });
-  }, [location.pathname, location.state, navigate]);
 
   const handleChange = ({ target: { name, value } }) =>
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => ({ ...prev, [name]: value })); // spread operator . copy the previous state and update only the changed field
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -46,7 +42,7 @@ const Login = () => {
       await handleLogin(formData.email.trim(), formData.password.trim());
       toast.success('Connexion réussie !');
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Identifiants incorrects.');
+      //toast.error(err.response?.data?.message || 'Identifiants incorrects.');//authcontexte handle login error already
     } finally {
       setIsSubmitting(false);
     }

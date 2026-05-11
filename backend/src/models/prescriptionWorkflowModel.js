@@ -379,7 +379,7 @@ export const findLastPrescriptionPerPatient = async () => {
       pm.patient_id,
       pm.date_delivrance AS derniere_consultation,
       COALESCE(
-        string_agg(pl.medicament_nom_snapshot, ', '),
+        string_agg(pl.medicament_nom_snapshot, ', '), 
         'Aucun'
       ) AS traitement
     FROM prescription_medicale pm

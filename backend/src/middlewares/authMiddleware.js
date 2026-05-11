@@ -1,7 +1,7 @@
 import { verifyToken } from "../utils/jwt.js";
 import { findUserById } from "../models/userModel.js";
 
-export const protect = async (req, res, next) => {
+export const protect = async (req, res, next) => { // we use it for user are already have token and want to access protected routes, we verify the token and attach user info to req.user
   try {
     if (!req.cookies || typeof req.cookies.token !== "string") {
       return res.status(401).json({

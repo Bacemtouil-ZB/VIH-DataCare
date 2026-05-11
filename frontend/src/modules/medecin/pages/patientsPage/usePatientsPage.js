@@ -29,12 +29,12 @@ const usePatientsPage = () => {
       try {
         const [response, prescData, rdvData] = await Promise.all([
           getAllPatients(),
-          getLastPrescriptionPerPatient(),   // { [patient_id]: { traitement, derniere_consultation } }
-          getNextRendezVousPerPatient(),     // { [patient_id]: { date, heure, type, statut } }
+          getLastPrescriptionPerPatient(),  
+          getNextRendezVousPerPatient(),  
         ]);
 
-        setPatients(response.patients || response || []);
-        setPrescMap(prescData);
+        setPatients(response.patients); // service return object with { patients, total, count }
+        setPrescMap(prescData); // return tableau
         setRdvMap(rdvData);
       } catch (error) {
         console.error("Erreur chargement patients:", error);

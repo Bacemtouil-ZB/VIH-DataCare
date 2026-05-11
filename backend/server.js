@@ -35,6 +35,8 @@ import emergencyContactRoutes from "./src/routes/emergencyContactRoutes.js";
 import biRoutes from "./src/routes/biRoutes.js";
 // mobile Scheduler
 import { startScheduler } from './src/services/mobile/mobileScheduler.js';
+import { startBiRefreshJob , startStatutsJob , startNotificationsJob ,startCleanupNotificationsJob} from "./src/utils/scheduler.js";
+
 
 
 dotenv.config();
@@ -42,15 +44,15 @@ dotenv.config();
 const app = express();
 
 // Configuration des middlewares avec limites augmentées pour les fichiers
-app.use(express.json({ limit: '100mb' }));
-app.use(express.urlencoded({ limit: '100mb', extended: true }));
+app.use(express.json({ limit: '100mb' })); // This is Express’s built‑in JSON body parser middleware. pyleoad like images
+app.use(express.urlencoded({ limit: '100mb', extended: true })); // translate form data into json 
 app.use(cookieParser());
 app.use(helmet());
 
 app.use(
   cors({
     origin: process.env.FRONTEND_URL,
-    credentials: true,
+    credentials: true, //Allows the browser to include cookies in cross-origin requests.
   }),
 );
 
@@ -84,7 +86,6 @@ app.use("/api/suivi-notifications", suiviNotificationRoute);
 app.use("/api/permissions", permissionRoutes);
 app.use("/api/emergency-contacts", emergencyContactRoutes);
 app.use("/api/bi", biRoutes);
-import { startBiRefreshJob , startStatutsJob , startNotificationsJob ,startCleanupNotificationsJob} from "./src/utils/scheduler.js";
 
 // 404 handler
 app.use((req, res) => {
@@ -103,7 +104,7 @@ const startServer = async () => {
     await db.connect();
     console.log("PostgreSQL connected, server starting...");
 
-    const PORT = process.env.PORT || 3000;
+    const PORT = process.env.PORT;
     app.listen(PORT,'0.0.0.0', () => {
       console.log(`Server running on http://localhost:${PORT}`);
     });
@@ -113,7 +114,7 @@ const startServer = async () => {
   }
 };
 
-// wweb Scheduler
+// web Scheduler
 startBiRefreshJob(); // utilisé pour faire refresh les MVs de la BI chaque nuit à 02h00
 startStatutsJob();// utilisé pour faire refresh les statuts des patients chaque nuit à 03h00
 startNotificationsJob();          // 03h30 — Création notifications nuit
