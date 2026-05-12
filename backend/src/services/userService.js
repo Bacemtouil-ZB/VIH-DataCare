@@ -6,10 +6,7 @@ import {
 } from "../models/userModel.js";
 import { sendActivationEmail } from "../utils/mailer.js";
 
-/**
- * Récupère la liste de tous les utilisateurs
- * Réservé aux admins uniquement
- */
+
 export const listAllUsers = async () => {
   const users = await getAllUsers();
 
@@ -19,9 +16,7 @@ export const listAllUsers = async () => {
     return userWithoutPassword;
   });
 };
-/*
- * Réservé aux admins uniquement
- */
+
 export const toggleUserActivation = async (userId, isactivated) => {
   const updatedUser = await updateUserActivationStatus(userId, isactivated);
   if (!updatedUser) {
@@ -44,7 +39,6 @@ export const toggleUserActivation = async (userId, isactivated) => {
   const { password: _, ...userWithoutPassword } = updatedUser;
   return userWithoutPassword;
 };
-// ── Service pour changer le rôle d'un utilisateur
 export const changeUserRole = async (userId, role) => {
   if (!["patient", "medecin", "pharmacien", "analyste"].includes(role)) {
     throw new Error("Rôle invalide");
@@ -58,7 +52,6 @@ export const changeUserRole = async (userId, role) => {
   return updatedUser;
 };
 
-// Service pour récupérer tous les médecins (pour les formulaires de sélection)
 export const listAllDoctors = async () => {
   const doctors = await getAllDoctors();
   return doctors; // renvoie tableau [{id, nom, prenom, email}, ...]
@@ -102,14 +95,11 @@ export const requestPasswordChange = async (
   const user = await findUserById(userId);
   if (!user) throw new Error("Utilisateur non trouvé");
 
-  // Vérifier le mot de passe actuel
   const isMatch = await bcrypt.compare(currentPassword, user.password);
   if (!isMatch) throw new Error("Mot de passe actuel incorrect");
 
-  // Hacher le nouveau mot de passe
   const hashedNew = await bcrypt.hash(newPassword, 10);
 
-  // Créer un token JWT signé (15 min) contenant le hash
   const token = jwt.sign(
     { userId, newHashedPassword: hashedNew, purpose: "pwd-change" },
     process.env.JWT_SECRET,

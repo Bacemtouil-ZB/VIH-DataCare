@@ -1,5 +1,5 @@
 export const HOSPITALISATION_OPTIONS = [
-  { value: "",        label: "Tous"    },
+  { value: "",        label: "Hospitalisation"    },
   { value: "interne", label: "Interne" },
   { value: "externe", label: "Externe" },
 ];

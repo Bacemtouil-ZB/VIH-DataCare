@@ -12,10 +12,6 @@ const transporter = nodemailer.createTransport({
 });
 
 
-// ─────────────────────────────────────────────────────────────────────────────
-// SHARED LAYOUT HELPERS
-// ─────────────────────────────────────────────────────────────────────────────
-
 const COLORS = {
   primary:     "#1a5c38",
   primaryDark: "#134529",

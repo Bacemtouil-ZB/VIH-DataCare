@@ -66,6 +66,41 @@ export const ACTIONS = [
   "DOCTOR_CONCLUSION_UPDATE",
   "DOCTOR_CONCLUSION_VIEW",
   "DOCTOR_CONCLUSION_LIST_VIEW",
+
+  "FAMILY_ANTECEDENT_VIEW",
+  "FAMILY_ANTECEDENT_CREATE",
+  "FAMILY_ANTECEDENT_UPDATE",
+
+  "GYNECO_ANTECEDENT_VIEW",
+  "GYNECO_ANTECEDENT_CREATE",
+  "GYNECO_ANTECEDENT_UPDATE",
+
+  "HABITUDES_VIE_ANTECEDENT_VIEW",
+  "HABITUDES_VIE_ANTECEDENT_CREATE",
+  "HABITUDES_VIE_ANTECEDENT_UPDATE",
+
+  "MEDICAL_ANTECEDENT_VIEW",
+  "MEDICAL_ANTECEDENT_CREATE",
+  "MEDICAL_ANTECEDENT_UPDATE",
+
+  "SURGICAL_ANTECEDENT_VIEW",
+  "SURGICAL_ANTECEDENT_CREATE",
+  "SURGICAL_ANTECEDENT_UPDATE",
+  "SURGICAL_ANTECEDENT_DELETE",
+
+  "THERAPEUTIC_ANTECEDENT_VIEW",
+  "THERAPEUTIC_ANTECEDENT_CREATE",
+  "THERAPEUTIC_ANTECEDENT_UPDATE",
+
+  "TPE_PREP_ANTECEDENT_VIEW",
+  "TPE_PREP_ANTECEDENT_CREATE",
+  "TPE_PREP_ANTECEDENT_UPDATE",
+  "TPE_PREP_ANTECEDENT_DELETE",
+
+  "TRANSFUSION_ANTECEDENT_VIEW",
+  "TRANSFUSION_ANTECEDENT_CREATE",
+  "TRANSFUSION_ANTECEDENT_UPDATE",
+  "TRANSFUSION_ANTECEDENT_DELETE",
 ];
 
 export const DEFAULT_LIMIT = 50;
@@ -131,6 +166,49 @@ export const ACTIONS_BY_MODULE = {
     "DOCTOR_CONCLUSION_VIEW",
     "DOCTOR_CONCLUSION_LIST_VIEW",
   ],
+  FAMILY_ANTECEDENT: [
+    "FAMILY_ANTECEDENT_VIEW",
+    "FAMILY_ANTECEDENT_CREATE",
+    "FAMILY_ANTECEDENT_UPDATE",
+  ],
+  GYNECO_ANTECEDENT: [
+    "GYNECO_ANTECEDENT_VIEW",
+    "GYNECO_ANTECEDENT_CREATE",
+    "GYNECO_ANTECEDENT_UPDATE",
+  ],
+  HABITUDES_VIE_ANTECEDENT: [
+    "HABITUDES_VIE_ANTECEDENT_VIEW",
+    "HABITUDES_VIE_ANTECEDENT_CREATE",
+    "HABITUDES_VIE_ANTECEDENT_UPDATE",
+  ],
+  MEDICAL_ANTECEDENT: [
+    "MEDICAL_ANTECEDENT_VIEW",
+    "MEDICAL_ANTECEDENT_CREATE",
+    "MEDICAL_ANTECEDENT_UPDATE",
+  ],
+  SURGICAL_ANTECEDENT: [
+    "SURGICAL_ANTECEDENT_VIEW",
+    "SURGICAL_ANTECEDENT_CREATE",
+    "SURGICAL_ANTECEDENT_UPDATE",
+    "SURGICAL_ANTECEDENT_DELETE",
+  ],
+  THERAPEUTIC_ANTECEDENT: [
+    "THERAPEUTIC_ANTECEDENT_VIEW",
+    "THERAPEUTIC_ANTECEDENT_CREATE",
+    "THERAPEUTIC_ANTECEDENT_UPDATE",
+  ],
+  TPE_PREP_ANTECEDENT: [
+    "TPE_PREP_ANTECEDENT_VIEW",
+    "TPE_PREP_ANTECEDENT_CREATE",
+    "TPE_PREP_ANTECEDENT_UPDATE",
+    "TPE_PREP_ANTECEDENT_DELETE",
+  ],
+  TRANSFUSION_ANTECEDENT: [
+    "TRANSFUSION_ANTECEDENT_VIEW",
+    "TRANSFUSION_ANTECEDENT_CREATE",
+    "TRANSFUSION_ANTECEDENT_UPDATE",
+    "TRANSFUSION_ANTECEDENT_DELETE",
+  ],
 };
 
 // ─── Types d'actions ──────────────────────────────────────────
@@ -163,6 +241,14 @@ export const MODULE_COLORS = {
   EXAMEN_CLINIQUE: "#5E35B1",
   SUIVI_BIOLOGIQUE: "#00897B",
   DOCTOR_CONCLUSION: "#1565C0",
+  FAMILY_ANTECEDENT: "#6A1B9A",
+  GYNECO_ANTECEDENT: "#D81B60",
+  HABITUDES_VIE_ANTECEDENT: "#00897B",
+  MEDICAL_ANTECEDENT: "#0277BD",
+  SURGICAL_ANTECEDENT: "#C62828",
+  THERAPEUTIC_ANTECEDENT: "#E65100",
+  TPE_PREP_ANTECEDENT: "#7B1FA2",
+  TRANSFUSION_ANTECEDENT: "#E91E63",
 };
 
 // ─── Icônes par module ────────────────────────────────────────
@@ -185,6 +271,14 @@ export const MODULE_ICONS = {
   EXAMEN_CLINIQUE: "bi-stethoscope",
   SUIVI_BIOLOGIQUE: "bi-graph-up",
   DOCTOR_CONCLUSION: "bi-file-text",
+  FAMILY_ANTECEDENT: "bi-diagram-3",
+  GYNECO_ANTECEDENT: "bi-heart-fill",
+  HABITUDES_VIE_ANTECEDENT: "bi-person-heart",
+  MEDICAL_ANTECEDENT: "bi-capsule",
+  SURGICAL_ANTECEDENT: "bi-bandaid",
+  THERAPEUTIC_ANTECEDENT: "bi-prescription2",
+  TPE_PREP_ANTECEDENT: "bi-shield-plus",
+  TRANSFUSION_ANTECEDENT: "bi-droplet-half",
 };
 
 // ─── Labels français ───────────────────────────────────────────
@@ -207,6 +301,14 @@ export const MODULE_LABELS = {
   EXAMEN_CLINIQUE: "Examen Clinique",
   SUIVI_BIOLOGIQUE: "Suivi Biologique",
   DOCTOR_CONCLUSION: "Conclusion Médicale",
+  FAMILY_ANTECEDENT: "Antécédent Familial",
+  GYNECO_ANTECEDENT: "Antécédent Gynécologique",
+  HABITUDES_VIE_ANTECEDENT: "Habitudes de Vie",
+  MEDICAL_ANTECEDENT: "Antécédent Médical",
+  SURGICAL_ANTECEDENT: "Antécédent Chirurgical",
+  THERAPEUTIC_ANTECEDENT: "Antécédent Thérapeutique",
+  TPE_PREP_ANTECEDENT: "Antécédent TPE/PrEP",
+  TRANSFUSION_ANTECEDENT: "Antécédent Transfusion",
 };
 
 export const ACTION_LABELS = {
@@ -276,6 +378,41 @@ export const ACTION_LABELS = {
   DOCTOR_CONCLUSION_UPDATE: "Modification conclusion médicale",
   DOCTOR_CONCLUSION_VIEW: "Consultation conclusion médicale",
   DOCTOR_CONCLUSION_LIST_VIEW: "Consultation liste conclusions",
+
+  FAMILY_ANTECEDENT_VIEW: "Consultation antécédent familial",
+  FAMILY_ANTECEDENT_CREATE: "Création antécédent familial",
+  FAMILY_ANTECEDENT_UPDATE: "Modification antécédent familial",
+
+  GYNECO_ANTECEDENT_VIEW: "Consultation antécédent gynécologique",
+  GYNECO_ANTECEDENT_CREATE: "Création antécédent gynécologique",
+  GYNECO_ANTECEDENT_UPDATE: "Modification antécédent gynécologique",
+
+  HABITUDES_VIE_ANTECEDENT_VIEW: "Consultation habitudes de vie",
+  HABITUDES_VIE_ANTECEDENT_CREATE: "Création habitudes de vie",
+  HABITUDES_VIE_ANTECEDENT_UPDATE: "Modification habitudes de vie",
+
+  MEDICAL_ANTECEDENT_VIEW: "Consultation antécédent médical",
+  MEDICAL_ANTECEDENT_CREATE: "Création antécédent médical",
+  MEDICAL_ANTECEDENT_UPDATE: "Modification antécédent médical",
+
+  SURGICAL_ANTECEDENT_VIEW: "Consultation antécédent chirurgical",
+  SURGICAL_ANTECEDENT_CREATE: "Création antécédent chirurgical",
+  SURGICAL_ANTECEDENT_UPDATE: "Modification antécédent chirurgical",
+  SURGICAL_ANTECEDENT_DELETE: "Suppression antécédent chirurgical",
+
+  THERAPEUTIC_ANTECEDENT_VIEW: "Consultation antécédent thérapeutique",
+  THERAPEUTIC_ANTECEDENT_CREATE: "Création antécédent thérapeutique",
+  THERAPEUTIC_ANTECEDENT_UPDATE: "Modification antécédent thérapeutique",
+
+  TPE_PREP_ANTECEDENT_VIEW: "Consultation antécédent TPE/PrEP",
+  TPE_PREP_ANTECEDENT_CREATE: "Création antécédent TPE/PrEP",
+  TPE_PREP_ANTECEDENT_UPDATE: "Modification antécédent TPE/PrEP",
+  TPE_PREP_ANTECEDENT_DELETE: "Suppression antécédent TPE/PrEP",
+
+  TRANSFUSION_ANTECEDENT_VIEW: "Consultation antécédent transfusion",
+  TRANSFUSION_ANTECEDENT_CREATE: "Création antécédent transfusion",
+  TRANSFUSION_ANTECEDENT_UPDATE: "Modification antécédent transfusion",
+  TRANSFUSION_ANTECEDENT_DELETE: "Suppression antécédent transfusion",
 };
 
 // ─── Messages et textes génériques ────────────────────────────

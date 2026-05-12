@@ -7,7 +7,6 @@ import {
 import { logAction } from "../services/auditService.js";
 
 
-//--------------------------registrer un utilisateur-------------------------
 // Register controller
 export const registerController = async (req, res) => {
   const { nom, prenom, email, password } = req.body;
@@ -36,9 +35,7 @@ export const registerController = async (req, res) => {
     });
   }
 };
-//----------------------------------------------------------------------------------
 
-//-----------------------valide login de l'utilisateur-------------------------
 // Login controller
 export const loginController = async (req, res) => {
   const { email, password } = req.body;
@@ -95,8 +92,6 @@ export const loginController = async (req, res) => {
     res.status(401).json({ message: error.message });
   }
 };
-//-----------------------------------------------------------------------------
-
 
 // Forgot password controller
 export const forgotPasswordController = async (req, res) => {
