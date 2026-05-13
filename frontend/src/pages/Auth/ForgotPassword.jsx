@@ -107,7 +107,7 @@ function ForgotPassword() {
                 <div className="text-center pt-2">
                   <NavLink
                     to="/login"
-                    className="text-sm text-green-600 hover:text-green-700 font-medium"
+                    className="text-sm text-green-600 hover:text-green-700 font-medium no-underline"
                   >
                     Retour a la connexion
                   </NavLink>
@@ -127,7 +127,7 @@ function ForgotPassword() {
               <div className="space-y-3">
                 <NavLink
                   to="/login"
-                  className="block w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
+                  className="block w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg no-underline"
                 >
                   RETOUR A LA CONNEXION
                 </NavLink>

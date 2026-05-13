@@ -40,7 +40,7 @@ const AuditLogsPageUI = ({
   setOffset,
 }) => {
 
-  const tableHeaders = ["Date", "Médecin", "Module", "Action", ""];
+  const tableHeaders = ["Date", "utilisateur", "Module", "Action", ""];
 
   const numeroError =
     patientNumeroInput &&
@@ -279,7 +279,7 @@ const AuditLogsPageUI = ({
                     {/* ── Header informatif ── */}
                     <div className="auditDetail__meta">
                       <div className="auditDetail__meta-row">
-                        <span className="auditDetail__meta-label">Médecin</span>
+                        <span className="auditDetail__meta-label">utilisateur</span>
                         <span className="auditDetail__meta-value">
                           {txt(details.user_nom)} {txt(details.user_prenom)}
                           <span className="auditDetail__meta-muted">

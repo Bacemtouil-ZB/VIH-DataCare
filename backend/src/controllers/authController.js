@@ -89,7 +89,7 @@ export const loginController = async (req, res) => {
     });
 
     console.error("Login error:", error.message);
-    res.status(401).json({ message: error.message });
+    res.status(401).json({ message: "Email ou mot de passe incorrect" });
   }
 };
 

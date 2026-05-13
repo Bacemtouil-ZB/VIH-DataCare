@@ -11,7 +11,7 @@ export const createUser = async (
   const query = `
     INSERT INTO users (nom, prenom, email, password, role, isactivated)
     VALUES ($1, $2, $3, $4, $5, $6)
-    RETURNING id, nom, prenom, email, role, isactivated, created_at; -- On retourne les infos de l'utilisateur créé
+    RETURNING id, nom, prenom, email, role, isactivated, created_at; 
   `;
   const values = [nom, prenom, email, hashedPassword, role, isactivated];
 

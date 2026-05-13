@@ -25,7 +25,6 @@ export function useUsersLogic() {
     try {
       setLoading(true);
       const res = await getUsers();
-      console.log("USERS BACKEND:", res?.users);
       setUsers(res?.users || []);
     } catch (err) {
       console.error("Erreur récupération utilisateurs :", err);

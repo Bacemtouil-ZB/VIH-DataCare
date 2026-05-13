@@ -21,8 +21,8 @@ export const startBiRefreshJob = () => {
 
 // ── 03h00 — Recalcul statuts patients ────────────────────────
 export const startStatutsJob = () => {
-  // cron.schedule("0 3 * * *", async () => {
-  cron.schedule("*/2 * * * *", async () => {
+  cron.schedule("0 3 * * *", async () => {
+  // cron.schedule("*/2 * * * *", async () => {
     console.log("[Statuts Job] Recalcul démarré —", new Date().toISOString());
     try {
       const sansSuivi = await recalculerTousLesStatuts();

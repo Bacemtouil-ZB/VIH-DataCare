@@ -20,6 +20,8 @@ import {
 } from "../utils/mailer.js";
 
 
+
+
 export const registerUser = async (
   nom,
   prenom,
@@ -61,6 +63,8 @@ export const registerUser = async (
 };
 
 
+
+
 export const loginUser = async (email, password) => {
   // Vérifier si l'utilisateur existe
   const user = await findUserByEmail(email);
@@ -99,6 +103,10 @@ export const loginUser = async (email, password) => {
     token,
   };
 };
+
+
+
+
 
 export const requestPasswordReset = async (email) => {
   if (!email) {
@@ -145,6 +153,9 @@ export const requestPasswordReset = async (email) => {
   return result;
 };
 
+
+
+
 // this use after user get token from mail and submit new password with token, then we verify token and update password if valid
 export const resetPasswordWithToken = async (token, password) => {
   if (!token || !password) {
@@ -179,4 +190,3 @@ export const resetPasswordWithToken = async (token, password) => {
     message: "Mot de passe mis a jour avec succes",
   };
 };
-//-----------------------------------------------------------
