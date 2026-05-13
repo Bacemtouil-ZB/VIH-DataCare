@@ -1,6 +1,5 @@
 import pool from "../config/db.js";
 
-//-------------------------registrer un utilisateur-------------------------
 export const createUser = async (
   nom,
   prenom,
@@ -19,9 +18,8 @@ export const createUser = async (
   const result = await pool.query(query, values);
   return result.rows[0];
 };
-//----------------------------------------------------------------------------------
-//-----------------------login de l'utilisateur-------------------------
-// find user by email
+
+
 export const findUserByEmail = async (email) => {
   const query = "SELECT * FROM users WHERE email = $1";
   const values = [email];
@@ -29,9 +27,7 @@ export const findUserByEmail = async (email) => {
   return result.rows[0] || null;
 };
 
-//----------------------------------------------------------------------------------
 
-//-----------------------activation et désactivation de l'utilisateur-------------------------
 export const updateUserActivationStatus = async (userId, isactivated) => {
   const query = `
     UPDATE users 
@@ -44,9 +40,7 @@ export const updateUserActivationStatus = async (userId, isactivated) => {
   return result.rows[0];
 };
 
-//---------------------------------------------------------------------------------------------------
-//---------------- upadate user role --------------------------
-// Changer rôle
+
 export const updateUserRole = async (userId, role) => {
   const result = await pool.query(
     "UPDATE users SET role = $1, updated_at = NOW() WHERE id = $2 RETURNING id, nom, prenom, email, role, isactivated",
@@ -54,10 +48,7 @@ export const updateUserRole = async (userId, role) => {
   );
   return result.rows[0];
 };
-//---------------------------------------------
 
-//----------------------change user password-------------------------
-// Mettre a jour le mot de passe d'un utilisateur par ID
 export const updateUserPasswordById = async (userId, hashedPassword) => {
   const query = `
     UPDATE users
@@ -69,9 +60,7 @@ export const updateUserPasswordById = async (userId, hashedPassword) => {
   const result = await pool.query(query, values);
   return result.rows[0] || null;
 };
-//------------------------------------------------------------
 
-//----------------------get all users used for admin panel ! -------------------------
 export const getAllUsers = async () => {
   const query = `
     SELECT 
@@ -94,11 +83,7 @@ export const getAllUsers = async () => {
   const result = await pool.query(query);
   return result.rows;
 };
-//----------------------------------------------------------------------------------
 
-
-//----------------------get all doctors used for profil patient -------------------------
-// Récupérer tous les médecins (pour les formulaires de sélection)
 export const getAllDoctors = async () => {
   try {
     const query = `
@@ -116,18 +101,13 @@ export const getAllDoctors = async () => {
     throw error;
   }
 };
-//----------------------------------------------------------------------------------
 
-
-//gestion du profil : update user info (nom, prenom, email, password)
-// Récupérer un utilisateur par ID
 export const findUserById = async (userId) => {
   const query = "SELECT * FROM users WHERE id = $1";
   const result = await pool.query(query, [userId]);
   return result.rows[0] || null;
 };
 
-// Mettre à jour les infos personnelles (nom, prenom, email)
 export const updateUserInfo = async (userId, { nom, prenom, email }) => {
   const normalizedEmail = email.trim().toLowerCase();
   const query = `

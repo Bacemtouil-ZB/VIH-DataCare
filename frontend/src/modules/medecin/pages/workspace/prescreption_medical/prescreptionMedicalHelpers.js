@@ -1,12 +1,9 @@
 ﻿import { STATUT_STYLE } from "./prescreptionMedicalConstants";
 import { toInputDate } from "../../../../../shared/utils/dateHelpers";
 
-// ── Styles ────────────────────────────────────────────────────
 export function getStatutStyle(statut) {
   return STATUT_STYLE[statut] || { bg: "#f1f5f9", color: "#475569" };
 }
-
-
 
 export function filterStockItems(items, searchTerm) {
   const q = searchTerm.toLowerCase();
@@ -52,7 +49,6 @@ export function filterPrescriptions(
   });
 }
 
-// ── Formatage & Extraction ────────────────────────────────────
 /**
  * Obtient les médicaments sélectionnés à partir de leurs IDs
  */
@@ -125,7 +121,6 @@ export function buildConfirmationData(
   };
 }
 
-// ── Validation ────────────────────────────────────────────────
 /**
  * Valide les données du formulaire
  */
@@ -147,7 +142,6 @@ export function validatePrescriptionForm(formData) {
   return { valid: true };
 }
 
-// ── État du Stock ─────────────────────────────────────────────
 /**
  * Vérifie si un médicament est en rupture de stock
  */

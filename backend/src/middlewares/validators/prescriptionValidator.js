@@ -135,7 +135,6 @@ export const validateCreatePrescription = [
   validateMedicamentId,
   validateTraitement,
   validatePosologie,
-  validatePosologie,
   validateDate,
   validatePeriode,
   validateRemarque,
@@ -145,7 +144,6 @@ export const validateCreatePrescription = [
 export const validateUpdatePrescription = [
   validateMedicamentId,
   validateTraitement,
-  validatePosologie,
   validatePosologie,
   validateDate,
   validatePeriode,

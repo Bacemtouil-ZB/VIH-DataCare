@@ -77,7 +77,6 @@ export function useResultatsBiologiquesLogic() {
   const [formData,     setFormData]     = useState({});
   const [errors,       setErrors]       = useState({});
 
-  // ── Sections marquées "Non Fait" (NF) ────────────────────────────────────
   // Contient les _key des sections dont le bilan n'a pas été effectué.
   // Une section NF est ignorée à la validation et grisée dans l'UI.
   const [nfSections, setNfSections] = useState(new Set());
@@ -327,7 +326,7 @@ const handleSubmit = async (e) => {
       },
     });
   };
-
+  //explorateur de fichiers
   const openGenotypagePicker = () => fileInputRef.current?.click();
 
   const handleGenotypageFileChange = async (e) => {
@@ -383,7 +382,7 @@ const handleSubmit = async (e) => {
         ...prev,
         genotypage_file_url: formatGenotypageValue(allUrls),
       }));
-      toast.success(`✅ ${validFiles.length} fichier(s) génotypage ajouté(s) avec succès.`);
+      toast.success(` ${validFiles.length} fichier(s) génotypage ajouté(s) avec succès.`);
     } catch (err) {
       toast.error(err?.message || "Erreur lors de la lecture des fichiers.");
     } finally {

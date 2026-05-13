@@ -4,7 +4,7 @@ const isIsoDateString = (v) =>
   typeof v === "string" &&
   /\d{4}-\d{2}-\d{2}T/.test(v) &&
   !isNaN(new Date(v).getTime());
-
+  
 export const fmt = (v) => {
   try {
     return toFrDateTime(v, "—");
@@ -31,7 +31,7 @@ export const prettyValue = (v) => {
   }
 };
 
-// Override pour les actions dont le module ne peut pas être déduit automatiquement
+// Override pour les actions dont le module ne peut pas être déduit automatiquement ( not obvious)
 const ACTION_MODULE_OVERRIDE = {
   LOGIN_SUCCESS: "AUTH",
   LOGIN_FAILED: "AUTH",
@@ -50,12 +50,14 @@ const ACTION_MODULE_OVERRIDE = {
 
 export const getActionModule = (action) => {
   if (ACTION_MODULE_OVERRIDE[action]) return ACTION_MODULE_OVERRIDE[action];
+  // Par défaut, on considère que le module est la partie de l'action avant le dernier "_"
   const parts = String(action).split("_");
   if (parts.length >= 2) parts.pop();
   return parts.join("_");
 };
 
 export const buildDiffRows = (oldData, newData) => {
+  //vérifier si une valeur est un objet simple
   const oldObj = isPlainObject(oldData) ? oldData : {};
   const newObj = isPlainObject(newData) ? newData : {};
 
@@ -100,9 +102,7 @@ export const buildDiffRows = (oldData, newData) => {
     .filter((k) => !excludedKeys.has(k))
     // Exclure automatiquement tous les champs qui finissent par _id
     .filter((k) => !k.endsWith("_id"))
-    // Exclure automatiquement tous les champs qui finissent par _at
     .filter((k) => !k.endsWith("_at"))
-    // Exclure automatiquement tous les champs qui finissent par _by
     .filter((k) => !k.endsWith("_by"))
     .sort();
 

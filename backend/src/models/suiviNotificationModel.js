@@ -94,14 +94,14 @@ export const cleanupNotifications = async () => {
   return rows;
 };
 
-// ── GET patients en_retard (date_ecart = 2) ───────────────────
+// ── GET patients en_retard (date_ecart = 1) ───────────────────
 export const getPatientsEnRetard = async () => {
   const { rows } = await pool.query(`
     SELECT st.id AS suivi_id, st.patient_id
     FROM suivi_therapeutique st
     INNER JOIN patients p ON p.id = st.patient_id
     WHERE st.statut_patient = 'en_retard'
-      AND st.date_ecart = 2
+      AND st.date_ecart = 1
       AND p.status NOT IN ('decede','decede_sida','transfere','standard_inactif','migrant_inactif')
   `);
   return rows;

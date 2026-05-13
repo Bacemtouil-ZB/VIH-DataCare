@@ -4,9 +4,7 @@ import {
   changeUserRole,
   listAllDoctors,
 } from "../services/userService.js";
-/**
- * Contrôleur pour activer/désactiver un utilisateur (admin uniquement)
- */
+
 export const toggleActivationController = async (req, res) => {
   const { userId, isactivated } = req.body;
 
@@ -38,9 +36,7 @@ export const toggleActivationController = async (req, res) => {
     });
   }
 };
-/**
- * Contrôleur pour lister tous les utilisateurs (admin uniquement)
- */
+
 export const listUsersController = async (req, res) => {
   try {
     const users = await listAllUsers();
@@ -57,7 +53,6 @@ export const listUsersController = async (req, res) => {
     });
   }
 };
-// ── Changer rôle utilisateur
 export const changeRoleController = async (req, res) => {
   const { userId, role } = req.body;
   try {
@@ -74,9 +69,6 @@ export const changeRoleController = async (req, res) => {
   }
 };
 
-//
-
-// Service pour récupérer tous les médecins (pour les formulaires de sélection)
 export const getAllDoctorsController = async (req, res) => {
   try {
     const doctors = await listAllDoctors();

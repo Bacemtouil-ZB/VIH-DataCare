@@ -1,4 +1,5 @@
 //cheked 15/04/2026
+
 import { FormulaireWrapper, FieldLabel, FieldError, ActionButton } from "../../../../../../shared/components/index.js";
 import Toggle from "../../../../components/UI/Toggle.jsx";
 import { BASE_HABITS, COMPLEMENTS, DROGUES } from "./habitudesVieConstants";

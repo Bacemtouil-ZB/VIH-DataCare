@@ -68,24 +68,17 @@ export function usePrescriptionsLogic() {
     [patients, search]
   );
 
-  // ── Détail ───────────────────────────────────────────────────
   const openDetail  = (item) => setDetailItem(item);
   const closeDetail = ()     => setDetailItem(null);
 
-  // ── Validation ───────────────────────────────────────────────
   const openValidation  = (item) => setValidationItem(item);
   const closeValidation = ()     => { if (!savingValidation) setValidationItem(null); };
 
-  // ── Modification ─────────────────────────────────────────────
   const openModification  = (item) => setModificationItem(item);
   const closeModification = ()     => { if (!savingValidation) setModificationItem(null); };
 
-  // ── Validation SANS modification (Scénario 1) ─────────────────
   const handleValidate = async () => {
     if (!validationItem?.prescriptionId) return;
-
-    // TODO: Implement a toast-based confirmation dialog if needed
-    // For now, just proceed without confirmation
 
     setSavingValidation(true);
     try {
@@ -107,13 +100,8 @@ export function usePrescriptionsLogic() {
     }
   };
 
-  // ── Validation AVEC modification (Scénario 2) ─────────────────
   const handleValidateAvecModification = async (periodeModifiee) => {
     if (!modificationItem?.prescriptionId) return;
-
-    // TODO: Implement a toast-based confirmation dialog if needed
-    // For now, just proceed without confirmation
-
     setSavingValidation(true);
     try {
       const result = await validatePrescriptionAvecModification(

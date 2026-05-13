@@ -13,7 +13,7 @@ export const toUiPrescriptionItem = (row) => ({
   periodeModifiee:      row?.periode_modifiee      ?? null,
   posologie:            row?.posologie             ?? "-",
   statutPrescription:   row?.statut_prescription   ?? "envoyee",
-  statutPatient:        row?.statut_patient        ?? "standard", // ✅ standard
+  statutPatient:        row?.statut_patient        ?? "standard", 
   suiviStatutPatient:   row?.suivi_statut_patient  ?? null,
   dateEcart:            Number(row?.date_ecart     ?? 0),
   alerteContradiction:  row?.alerte_contradiction  ?? false,
@@ -32,14 +32,14 @@ export const PRESCRIPTION_BADGE_MAP = {
 };
 
 export const STATUT_PATIENT_BADGE_MAP = {
-  // ✅ fallback affichage
+  //  fallback affichage
   en_attente:       { badgeClass: "statut-attente",   badgeText: "En attente"   },
-  // ✅ statuts suivi_therapeutique
+  //  statuts suivi_therapeutique
   actif:            { badgeClass: "statut-actif",     badgeText: "Actif"        },
   en_retard:        { badgeClass: "statut-retard",    badgeText: "En retard"    },
   perdu_de_vue:     { badgeClass: "statut-perdu",     badgeText: "Perdu de vue" },
   recupere:         { badgeClass: "statut-recupere",  badgeText: "Récupéré"     },
-  // ✅ statuts patients.status
+  //  statuts patients.status
   standard:         { badgeClass: "statut-standard",  badgeText: "Standard"     },
   standard_inactif: { badgeClass: "statut-inactif",   badgeText: "Inactif"      },
   migrant:          { badgeClass: "statut-migrant",   badgeText: "Migrant"      },
@@ -50,14 +50,14 @@ export const STATUT_PATIENT_BADGE_MAP = {
 };
 
 export const BADGE_COLORS = {
-  // ✅ fallback affichage
+  //  fallback affichage
   en_attente:       { bg: "#f1f5f9", color: "#475569" },
-  // ✅ statuts suivi_therapeutique
+  //  statuts suivi_therapeutique
   actif:            { bg: "#dbeafe", color: "#1e40af" },
   en_retard:        { bg: "#fff7ed", color: "#c2410c" },
   perdu_de_vue:     { bg: "#fee2e2", color: "#991b1b" },
   recupere:         { bg: "#f0fdf4", color: "#15803d" },
-  // ✅ statuts patients.status
+  //  statuts patients.status
   standard:         { bg: "#f1f5f9", color: "#475569" },
   standard_inactif: { bg: "#e2e8f0", color: "#64748b" },
   migrant:          { bg: "#f5f3ff", color: "#6d28d9" },
@@ -65,7 +65,7 @@ export const BADGE_COLORS = {
   decede:           { bg: "#1f2937", color: "#f9fafb" },
   decede_sida:      { bg: "#1f2937", color: "#f9fafb" },
   transfere:        { bg: "#eff6ff", color: "#1d4ed8" },
-  // ✅ statuts prescription
+  //  statuts prescription
   delivree:         { bg: "#dcfce7", color: "#166534" },
   modifie:          { bg: "#ffedd5", color: "#9a3412" },
   envoyee:          { bg: "#fef9c3", color: "#854d0e" },

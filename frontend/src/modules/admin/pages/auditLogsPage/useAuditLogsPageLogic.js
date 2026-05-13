@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import {
   getAuditLogDetails,
   getPatientAuditLogs,
-  getGlobalAuditLogs,        // nouveau service
+  getGlobalAuditLogs,       
 } from "../../services/auditService";
 import { ACTIONS, DEFAULT_LIMIT } from "./constante";
 import { buildDiffRows, getActionModule } from "./helpers";
@@ -71,7 +71,7 @@ export const useAuditLogsPageLogic = () => {
         limit,
         offset,
       });
-      setSelectedPatient(null);        // important : plus de patient sélectionné
+      setSelectedPatient(null);        
       setLogs(data.logs || []);
       setTotal(data.total ?? 0);
     } catch (err) {
@@ -111,8 +111,7 @@ export const useAuditLogsPageLogic = () => {
   // Effet de montage : charger tous les logs au démarrage
   useEffect(() => {
     fetchGlobalLogs();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // ne dépend de rien, exécuté une fois
+  }, []); //  exécuté une fois
 
   // Effet pour recharger les logs quand les filtres (module, action, dates, pagination) changent
   // Mais seulement si aucun patient n'est sélectionné
@@ -190,7 +189,7 @@ export const useAuditLogsPageLogic = () => {
     if (page > 1) setOffset((v) => Math.max(0, v - limit));
   }, [limit, page]);
 
-  // Gestion de la touche Escape pour fermer les détails
+  // Gestion de la touche Escape (echapp) pour fermer les détails
   useEffect(() => {
     if (!detailsOpen) return;
     const onKeyDown = (e) => {

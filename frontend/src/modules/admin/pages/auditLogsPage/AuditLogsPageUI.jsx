@@ -156,7 +156,7 @@ const AuditLogsPageUI = ({
                 value: module,
                 onChange: (e) => {
                   setOffset(0);
-                  const nextModule = e.target.value;
+                  const nextModule = e.target.value; //saisie du module
                   setModule(nextModule);
                   if (nextModule && action) {
                     const actionModule = action.split("_").slice(0, -1).join("_");

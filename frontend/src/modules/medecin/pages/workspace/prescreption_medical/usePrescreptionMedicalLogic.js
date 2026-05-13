@@ -71,6 +71,7 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
   const [prescriptions, setPrescriptions] = useState([]);
   const [stockItems, setStockItems] = useState([]);
   const [loading, setLoading] = useState(true);
+  //lopération de sauvegarde est en cours
   const [saving, setSaving] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [showHistory, setShowHistory] = useState(true);
@@ -81,9 +82,7 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
   const [confirmationModal, setConfirmationModal] = useState(null);
   const [patient, setPatient] = useState(null);
 
-  // ──────────────────────────────────────────────────────────────
-  // Chargement initial — récupère les prescriptions et le stock
-  // ──────────────────────────────────────────────────────────────
+
   useEffect(() => {
     if (!numero) return;
     const fetchAll = async () => {
@@ -105,9 +104,7 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
     fetchAll();
   }, [numero]);
 
-  // ──────────────────────────────────────────────────────────────
-  // Dérivés — données calculées
-  // ──────────────────────────────────────────────────────────────
+
   const medecinDisplayName = useMemo(() => {
     const fullName = `${currentUser?.prenom || ""} ${currentUser?.nom || ""}`.trim();
     return fullName || "Medecin";
@@ -118,9 +115,7 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
     [prescriptions, searchTerm, searchDate]
   );
 
-  // ──────────────────────────────────────────────────────────────
-  // Helpers formulaire — gestion du formulaire
-  // ──────────────────────────────────────────────────────────────
+//maj un champ précis
   const field = (key) => (e) =>
     setFormData((prev) => ({ ...prev, [key]: e.target.value }));
 
@@ -144,9 +139,6 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
 
   const closeConfirmationModal = () => setConfirmationModal(null);
 
-  // ──────────────────────────────────────────────────────────────
-  // Affichage des détails
-  // ──────────────────────────────────────────────────────────────
   const handleShowDetails = (item) => {
     setShowForm(false);
     resetForm();
@@ -154,9 +146,6 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
     setConfirmationModal(null);
   };
 
-  // ──────────────────────────────────────────────────────────────
-  // Validation et confirmation
-  // ──────────────────────────────────────────────────────────────
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -178,9 +167,6 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
     setConfirmationModal({ data: confirmData });
   };
 
-  // ──────────────────────────────────────────────────────────────
-  // Envoi de la prescription
-  // ──────────────────────────────────────────────────────────────
   const confirmPrescription = async () => {
     if (!confirmationModal) return;
     const { _medicament_ids, _posologie, _periode, _remarque } =
@@ -197,7 +183,7 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
         remarque: _remarque,
       });
 
-      // Mise à jour de la liste
+      // maj de la liste
       const newPrescription = result.prescription;
       if (newPrescription) {
         setPrescriptions((prev) => [newPrescription, ...prev]);

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ActionButton, PageTitle, Spinner } from "../../../../../shared/components";
 import InfoBanner from "../../../components/UI/InfoBanner.jsx";
-import { getResultatsByNumeroDossier } from "../../../services/resultatBiologiqueService";
 import { collectGenotypageUrls, isPdf } from "./resultatsBiologiquesHelpers";
 
 export default function GenotypagePage() {
@@ -10,40 +9,16 @@ export default function GenotypagePage() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // ── État chargement initial ────────────────────────────────────────────────
   const [loading, setLoading] = useState(true);
-  const [error,   setError]   = useState("");
+  const [existingFiles, setExistingFiles] = useState([]);
 
-  // ── Fichiers existants (data-URL ou http) chargés depuis la DB ───────────
-  const [existingFiles, setExistingFiles] = useState([]); // string[]
-
-  // ── Chargement initial ────────────────────────────────────────────────────
   useEffect(() => {
+    //nettoie et déduplique la liste et retourne un tableau propre.
     const scanFromState = collectGenotypageUrls([], location.state?.scanUrl || []);
-    if (scanFromState.length > 0) {
-      setExistingFiles(scanFromState);
-      setLoading(false);
-      return;
-    }
-
-    const load = async () => {
-      try {
-        setLoading(true);
-        setError("");
-        const response = await getResultatsByNumeroDossier(numero);
-        const items = response?.resultats || [];
-        setExistingFiles(collectGenotypageUrls(items));
-      } catch (err) {
-        setError(err?.message || "Erreur lors du chargement du génotypage");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    load();
+    setExistingFiles(scanFromState);
+    setLoading(false);
   }, [numero, location.state?.scanUrl]);
 
-  // ── Render ────────────────────────────────────────────────────────────────
   if (loading) {
     return (
       <div className="ec-page-bg rb-page">
@@ -57,20 +32,13 @@ export default function GenotypagePage() {
     <div className="ec-page-bg rb-page">
       <PageTitle title="Test de génotypage" />
 
-      {error && (
-        <div className="rb-alert-no-bilan">
-          <i className="bi bi-exclamation-circle me-2" />
-          {error}
-        </div>
-      )}
-      {!error && existingFiles.length === 0 && (
+      {existingFiles.length === 0 && (
         <InfoBanner variant="success">
           <span className="alert-warning">Information :</span>
           <span>Aucun fichier de génotypage importé.</span>
         </InfoBanner>
       )}
 
-      {/* ── Aperçu des fichiers enregistrés ──────────────────────────────── */}
       {existingFiles.length > 0 && (
         <div className="rb-section">
           <div className="rb-section-header">
@@ -82,6 +50,7 @@ export default function GenotypagePage() {
           <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 16 }}>
             {existingFiles.map((url, idx) =>
               isPdf(url) ? (
+                //pdf
                 <iframe
                   key={idx}
                   title={`Génotypage PDF ${idx + 1}`}
@@ -101,7 +70,6 @@ export default function GenotypagePage() {
         </div>
       )}
 
-      {/* ── Actions ───────────────────────────────────────────────────────── */}
       <div className="rb-form-actions" style={{ marginTop: 16, gap: 8, display: "flex", justifyContent: "flex-end" }}>
         <ActionButton
           action="annuler"

@@ -1,9 +1,6 @@
 import API from "../../../shared/utils/api";
 
-/**
- * Patient audit logs by exact numero (table view)
- * GET /audit/admin/patient/:numero
- */
+
 export const getPatientAuditLogs = async (
   numero,
   { module, action, user_id, anomaly, from, to, limit = 50, offset = 0 } = {},
@@ -32,10 +29,7 @@ export const getPatientAuditLogs = async (
   }
 };
 
-/**
- * Audit log details (for modal)
- * GET /audit/admin/logs/:id
- */
+
 export const getAuditLogDetails = async (id) => {
   try {
     if (!id) throw new Error("id requis");
@@ -47,12 +41,6 @@ export const getAuditLogDetails = async (id) => {
 };
 
 
-// auditService.js (à compléter avec ce qui existe déjà)
-
-/**
- * Global audit logs (admin)
- * GET /audit/admin/logs
- */
 export const getGlobalAuditLogs = async ({
   module, action, user_id, anomaly, from, to, limit = 50, offset = 0
 } = {}) => {

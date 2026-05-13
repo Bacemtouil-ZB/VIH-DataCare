@@ -20,7 +20,6 @@ import {
 } from "../utils/mailer.js";
 
 
-//-----------------------------register d'un utilisateur-----------------------------
 export const registerUser = async (
   nom,
   prenom,
@@ -32,13 +31,13 @@ export const registerUser = async (
     throw new Error("Un utilisateur avec cet email existe déjà");
   }
 
-  if (!nom || !prenom || !email || !password) { //checks as a backup.
+  if (!nom || !prenom || !email || !password) { 
     throw new Error(
       "Tous les champs sont requis (nom, prenom, email, password)",
     );
   }
 
-  const role = "medecin"; // forced in hard — never from the outside
+  const role = "medecin"; 
 
   const hashedPassword = await bcrypt.hash(password, 10);
   const user = await createUser(
@@ -47,7 +46,7 @@ export const registerUser = async (
     email,
     hashedPassword,
     role,
-    false, // set isactivated to false by default
+    false, 
   );
 
   // mail is sent asynchronously after response is sent to avoid blocking the registration flow
@@ -57,15 +56,11 @@ export const registerUser = async (
         console.error("Erreur envoi email identifiants:", error.message),
       );
   });
-   // password is stocked in "_" and not returned to the caller
-   // "_" best practice  we can not use it and steel have the user object without password, but it makes it more explicit that password is intentionally excluded
   const { password: _, ...userWithoutPassword } = user;  // Exclude password from returned user object
   return userWithoutPassword;
 };
 
-//----------------------------------------------------------------------------
 
-//-----------------------------login d'un utilisateur-----------------------------
 export const loginUser = async (email, password) => {
   // Vérifier si l'utilisateur existe
   const user = await findUserByEmail(email);
@@ -73,13 +68,11 @@ export const loginUser = async (email, password) => {
     throw new Error("Identifiants invalides");
   }
 
-  // Vérifier le mot de passe
   const isValid = await bcrypt.compare(password, user.password);
   if (!isValid) {
     throw new Error("mot de passe incorrect");
   }
 
-  // Vérifier si le compte est activé
   const isActivated = Boolean(
     user.isactivated === true || user.isactivated === "t",
   );
@@ -98,8 +91,6 @@ export const loginUser = async (email, password) => {
     },
     "8h",
   );
-
-  //  Supprimer le mot de passe avant retour
   const { password: _, ...userWithoutPassword } = user;
 
   //  Retourner user et token
@@ -108,9 +99,7 @@ export const loginUser = async (email, password) => {
     token,
   };
 };
-//----------------------------------------------------------------------------
 
-//-----------------------------reset password-----------------------------
 export const requestPasswordReset = async (email) => {
   if (!email) {
     throw new Error("Email requis");
@@ -127,10 +116,10 @@ export const requestPasswordReset = async (email) => {
 
   const rawToken = crypto.randomBytes(32).toString("hex");
   const tokenHash = crypto.createHash("sha256").update(rawToken).digest("hex");
-  const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+  const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1h
 
-  await deletePasswordResetsByUserId(user.id);
-  await createPasswordReset(user.id, tokenHash, expiresAt);
+  await deletePasswordResetsByUserId(user.id); // Supprimer les anciens
+  await createPasswordReset(user.id, tokenHash, expiresAt);  
 
   const frontendBase = (
     process.env.FRONTEND_URL || "http://localhost:5173"
@@ -155,9 +144,7 @@ export const requestPasswordReset = async (email) => {
 
   return result;
 };
-//----------------------------------------------------------------------------
 
-//-----------------------------reset password with token-----------------------------
 // this use after user get token from mail and submit new password with token, then we verify token and update password if valid
 export const resetPasswordWithToken = async (token, password) => {
   if (!token || !password) {

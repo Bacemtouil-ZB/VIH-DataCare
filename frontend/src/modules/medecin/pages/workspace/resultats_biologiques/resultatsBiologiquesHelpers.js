@@ -1,5 +1,4 @@
-// Helpers pour resultats biologiques / genotypage
-
+// Convertit un fichier en base64 pour le stockage en base 
 export const fileToBase64 = (file) =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -7,7 +6,7 @@ export const fileToBase64 = (file) =>
     reader.onerror = () => reject(new Error("Lecture fichier échouée"));
     reader.readAsDataURL(file);
   });
-
+// Normalise les URLs de genotypage en un tableau d'URLs
 export const normalizeGenotypageUrls = (value) => {
   if (!value) return [];
   if (Array.isArray(value)) return value;
@@ -21,7 +20,7 @@ export const normalizeGenotypageUrls = (value) => {
   }
   return [];
 };
-
+// Supprime les doublons
 export const deduplicateGenotypageUrls = (urls = []) => {
   const seen = new Set();
 
@@ -36,15 +35,15 @@ export const deduplicateGenotypageUrls = (urls = []) => {
     return true;
   });
 };
-
+// Collecte et normalise les URLs & supprime les doublons
 export const collectGenotypageUrls = (resultats = [], extraUrls = []) => {
   const resultatsUrls = Array.isArray(resultats)
     ? resultats.flatMap((item) => normalizeGenotypageUrls(item?.genotypage_file_url))
     : [];
-
   return deduplicateGenotypageUrls([...resultatsUrls, ...normalizeGenotypageUrls(extraUrls)]);
 };
 
+// Formatte une valeur de genotypage (string ou tableau) pour affichage : string si 1 URL, JSON si plusieurs
 export const formatGenotypageValue = (files) => {
   if (!Array.isArray(files) || files.length === 0) return "";
   return files.length === 1 ? files[0] : JSON.stringify(files);

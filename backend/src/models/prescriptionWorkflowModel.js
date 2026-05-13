@@ -29,7 +29,7 @@ const PRESCRIPTION_SELECT = `
       json_agg(
         json_build_object(
           'medicament_id',            pl.medicament_id,
-          'medicament_nom_snapshot',  pl.medicament_nom_snapshot --- danger de doublon avec stock_medicaments.code, mais c'est voulu pour garder un historique même si le stock change
+          'medicament_nom_snapshot',  pl.medicament_nom_snapshot
         )
       ) FILTER (WHERE pl.id IS NOT NULL),
       '[]'
@@ -308,7 +308,7 @@ export const validerAvecModification = async (id, periodeModifiee) => {
           'actif',
           0
         FROM updated u
-        ON CONFLICT (prescription_id)
+        ON CONFLICT (prescription_id) --  si déjà existant → mise a jour
         DO UPDATE SET
           patient_id           = EXCLUDED.patient_id,
           date_prochaine_prise = EXCLUDED.date_prochaine_prise,
@@ -389,6 +389,7 @@ export const findLastPrescriptionPerPatient = async () => {
   `;
   const result = await pool.query(query);
   return result.rows.reduce((acc, row) => {
+    //transformer en objet avec patient_id comme clé
     acc[row.patient_id] = {
       traitement: row.traitement,
       derniere_consultation: row.derniere_consultation,
@@ -396,8 +397,6 @@ export const findLastPrescriptionPerPatient = async () => {
     return acc;
   }, {});
 };
-
-
 
 // ── CRON — Recalculer écart et statuts patients avec suivi ───
 export const recalculerEcartEtStatuts = async () => {
