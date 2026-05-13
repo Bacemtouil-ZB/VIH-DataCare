@@ -115,7 +115,7 @@ export default function StockUI({
       <div className="ph-stock-header">
         <div className="d-flex justify-content-between align-items-center mb-3">
           <div className="ph-stock-title">
-            <h2>Gestion du stock de medicaments</h2>
+            <h4>Gestion du stock de medicaments</h4>
           </div>
           <ActionButton
             action="add"

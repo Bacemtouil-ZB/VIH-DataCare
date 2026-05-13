@@ -49,12 +49,12 @@ export const normalizeNumero = (raw) => {
 export const isNumeroValid = (numero) => {
   if (!numero) return true;
   const cleaned = String(numero).replace(/^F-/, "");
-  return /^\d{4}-\d{4}$/.test(cleaned); // ← exactement 4 chiffres
+  return /^\d{4}-\d{4}$/.test(cleaned); 
 };
 
 export const validateNumeroYear = (numero) => {
   const cleaned = String(numero || "").replace(/^F-/, "");
-  const match = cleaned.match(/^(\d{4})-(\d{4})$/); // ← exactement 4 chiffres
+  const match = cleaned.match(/^(\d{4})-(\d{4})$/); 
   if (!match) return null;
 
   const year = parseInt(match[2], 10);

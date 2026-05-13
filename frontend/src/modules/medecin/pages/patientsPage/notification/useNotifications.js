@@ -45,7 +45,7 @@ export default function useNotifications() {
         console.error("Erreur fetch notifications:", err);
       }
     };
-
+    //nettoie les IDs expirés
     fetchNotifs();
     const interval = setInterval(fetchNotifs, NOTIF_REFRESH_MS);
     return () => clearInterval(interval);

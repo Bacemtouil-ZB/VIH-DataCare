@@ -19,9 +19,9 @@ const usePatientsPage = () => {
   const [loading,   setLoading]   = useState(true);
 
   // ── Filter state ───────────────────────────────────────────────────────────
-  const [search,    setSearch]    = useState("");
-  const [filter,    setFilter]    = useState("");   // hospitalisation
-  const [rdvFilter, setRdvFilter] = useState("");   // rdv timing
+  const [search,    setSearch]    = useState(""); 
+  const [filter,    setFilter]    = useState("");
+  const [rdvFilter, setRdvFilter] = useState("");   
 
   // ── Fetch all data on mount ────────────────────────────────────────────────
   useEffect(() => {

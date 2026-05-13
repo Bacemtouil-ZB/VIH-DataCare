@@ -1,8 +1,4 @@
-﻿// ══════════════════════════════════════════════════════════════
-// 🔧 Layer 2 — Utilitaires & Helpers (Fonctions Pures)
-// ══════════════════════════════════════════════════════════════
-
-import { STATUT_STYLE } from "./prescreptionMedicalConstants";
+﻿import { STATUT_STYLE } from "./prescreptionMedicalConstants";
 import { toInputDate } from "../../../../../shared/utils/dateHelpers";
 
 // ── Styles ────────────────────────────────────────────────────
@@ -10,10 +6,8 @@ export function getStatutStyle(statut) {
   return STATUT_STYLE[statut] || { bg: "#f1f5f9", color: "#475569" };
 }
 
-// ── Filtrage & Recherche ──────────────────────────────────────
-/**
- * Filtre les médicaments en stock selon un terme de recherche
- */
+
+
 export function filterStockItems(items, searchTerm) {
   const q = searchTerm.toLowerCase();
   if (!q) return items;
@@ -167,3 +161,4 @@ export function isOutOfStock(medicament) {
 export function getAvailableMedicines(stockItems) {
   return stockItems.filter((m) => !isOutOfStock(m));
 }
+

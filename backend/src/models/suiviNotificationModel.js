@@ -4,7 +4,7 @@ import pool from "../config/db.js";
 export const getNotifications = async () => {
   const { rows } = await pool.query(`
     SELECT
-      n.id              AS notif_id,
+      n.id   AS notif_id,
       n.type,
       n.created_at,
       n.patient_id,

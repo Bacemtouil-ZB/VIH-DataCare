@@ -19,7 +19,7 @@ export const getSocialByNumero = async (numero) => {
 
   if (!row) return null;
 
-  // CONVERSION PROPRE ENUM[] → JS ARRAY
+  // CONVERSION PROPRE ENUM[] 
   if (typeof row.probleme === "string") {
     row.probleme = row.probleme
       .replace(/^{|}$/g, "") // enlève { }

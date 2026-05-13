@@ -1,0 +1,73 @@
+teste pour patient qui n'est prendre pas traitement
+// 1
+UPDATE patients
+SET created_at = CURRENT_DATE - INTERVAL '200 days'
+WHERE id = 158;
+
+//2 
+DELETE FROM suivi_therapeutique
+WHERE patient_id = 158;
+
+//3 
+DELETE FROM prescription_medicale
+WHERE patient_id = 158;
+
+//4
+pour teste statut standard = normal
+UPDATE patients
+SET status = 'standard',
+    created_at = CURRENT_DATE - INTERVAL '200 days'
+WHERE id = 158;
+
+
+teste pour patient prendre au moin une seul fois traitement 
+
+//1
+INSERT INTO prescription_medicale (
+    patient_id,
+    medecin_id,
+    posologie,
+    date,
+    periode,
+    statut,
+    date_delivrance,
+    remarque
+)
+VALUES (
+    159,
+    101,
+    '1 comprimé par jour',
+    CURRENT_DATE - INTERVAL '1 day',
+    30,
+    'delivree',
+    CURRENT_DATE - INTERVAL '1 day',
+    'test patient 159'
+);
+
+//2 
+
+INSERT INTO suivi_therapeutique (
+    patient_id,
+    prescription_id,
+    date_prochaine_prise,
+    statut_patient,
+    date_ecart
+)
+VALUES (
+    159,
+    (SELECT id FROM prescription_medicale WHERE patient_id = 159 ORDER BY id DESC LIMIT 1),
+    CURRENT_DATE + INTERVAL '29 days',
+    'actif',
+    0
+);
+
+
+//3 TEST "EN RETARD"
+UPDATE suivi_therapeutique
+SET date_prochaine_prise = CURRENT_DATE - INTERVAL '5 days'
+WHERE patient_id = 159;
+
+//4 TEST "PERDU DE VUE"
+UPDATE suivi_therapeutique
+SET date_prochaine_prise = CURRENT_DATE - INTERVAL '200 days'
+WHERE patient_id = 159;

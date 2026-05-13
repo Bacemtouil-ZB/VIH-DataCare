@@ -6,10 +6,7 @@ import {
 } from "../models/userModel.js";
 import { sendActivationEmail } from "../utils/mailer.js";
 
-/**
- * Récupère la liste de tous les utilisateurs
- * Réservé aux admins uniquement
- */
+
 export const listAllUsers = async () => {
   const users = await getAllUsers();
 
@@ -19,9 +16,8 @@ export const listAllUsers = async () => {
     return userWithoutPassword;
   });
 };
-/*
- * Réservé aux admins uniquement
- */
+
+
 export const toggleUserActivation = async (userId, isactivated) => {
   const updatedUser = await updateUserActivationStatus(userId, isactivated);
   if (!updatedUser) {

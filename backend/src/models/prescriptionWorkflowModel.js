@@ -69,7 +69,7 @@ const traiterApresDelivrance = async (client, patientId, prescriptionId) => {
     return { alerte: false };
   }
 
-  // ✅ Vérifier perdu_de_vue depuis suivi_therapeutique (dernière ligne du patient)
+  // Vérifier perdu_de_vue depuis suivi_therapeutique (dernière ligne du patient)
   const { rows: suiviRows } = await client.query(
     `SELECT statut_patient FROM suivi_therapeutique
      WHERE patient_id = $1
@@ -436,9 +436,15 @@ export const recalculerEcartEtStatuts = async () => {
 
 
       // 3. Déterminer statut
-      let nouveauStatut;
-      if (2 <= ecart && ecart <= 179) nouveauStatut = 'en_retard'; // error [Statuts Job] Erreur : la nouvelle ligne de la relation « suivi_therapeutique » viole la contrainte de vérification « suivi_therapeutique_date_ecart_check »
-      else   nouveauStatut = 'perdu_de_vue';
+    let nouveauStatut;
+
+      if (ecart < 2) {
+          nouveauStatut = 'actif';
+      } else if (ecart >= 2 && ecart <= 179) {
+          nouveauStatut = 'en_retard';
+      } else {
+          nouveauStatut = 'perdu_de_vue';
+      }
 
       // 4. Mettre à jour suivi_therapeutique
       await client.query(

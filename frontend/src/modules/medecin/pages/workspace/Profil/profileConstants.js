@@ -16,6 +16,10 @@ export const STATUTS_LABELS = {
   decede_sida:  'Décédé (SIDA)',
   transfere:    'Transféré',
   migrant:      'Migrant',
+  migrant_inactif: 'Migrant (Inactif)', 
+  standard:         'normal',
+  standard_inactif: 'normal (Inactif)',  
+
 };
 
 export const STATUTS_COLORS = {
