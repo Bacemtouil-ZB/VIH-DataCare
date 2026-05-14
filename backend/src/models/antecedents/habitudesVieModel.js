@@ -1,9 +1,44 @@
 //cheked 15/04/2026
 import pool from "../../config/db.js";
 
+// export const getHabitudesVie = async (numero) => {
+//   const result = await pool.query(
+//     `SELECT hv.*
+//      FROM habitudes_vie hv
+//      JOIN patients p ON p.id = hv.patient_id
+//      WHERE p.numero = $1;`,
+//     [numero]
+//   );
+//   return result.rows[0] || null;
+// };
+
 export const getHabitudesVie = async (numero) => {
   const result = await pool.query(
-    `SELECT hv.*
+    `SELECT
+      hv.id, hv.patient_id,
+      hv.tabagisme, hv.alcoolemie, hv.activite_physique,
+      hv.proteines,        TO_CHAR(hv.proteines_date,                   'YYYY-MM-DD') AS proteines_date,
+      hv.creatine,         TO_CHAR(hv.creatine_date,                    'YYYY-MM-DD') AS creatine_date,
+      hv.complements_vitaminiques, hv.complements_vitaminiques_type,
+                           TO_CHAR(hv.complements_vitaminiques_date,    'YYYY-MM-DD') AS complements_vitaminiques_date,
+      hv.multivitamines,   hv.multivitamines_type,
+                           TO_CHAR(hv.multivitamines_date,              'YYYY-MM-DD') AS multivitamines_date,
+      hv.plantes_medicinales, hv.plantes_medicinales_type,
+                           TO_CHAR(hv.plantes_medicinales_date,         'YYYY-MM-DD') AS plantes_medicinales_date,
+      hv.autres_complements, hv.autres_complements_type,
+                           TO_CHAR(hv.autres_complements_date,          'YYYY-MM-DD') AS autres_complements_date,
+      hv.drogues_injectables,
+                           TO_CHAR(hv.drogues_injectables_date,         'YYYY-MM-DD') AS drogues_injectables_date,
+      hv.cannabis,         TO_CHAR(hv.cannabis_date,                    'YYYY-MM-DD') AS cannabis_date,
+      hv.cocaine,          TO_CHAR(hv.cocaine_date,                     'YYYY-MM-DD') AS cocaine_date,
+      hv.crack,            TO_CHAR(hv.crack_date,                       'YYYY-MM-DD') AS crack_date,
+      hv.heroine,          TO_CHAR(hv.heroine_date,                     'YYYY-MM-DD') AS heroine_date,
+      hv.ecstasy,          TO_CHAR(hv.ecstasy_date,                     'YYYY-MM-DD') AS ecstasy_date,
+      hv.pregabaline,      TO_CHAR(hv.pregabaline_date,                 'YYYY-MM-DD') AS pregabaline_date,
+      hv.tramadol,         TO_CHAR(hv.tramadol_date,                    'YYYY-MM-DD') AS tramadol_date,
+      hv.codeine,          TO_CHAR(hv.codeine_date,                     'YYYY-MM-DD') AS codeine_date,
+      hv.chicha, hv.cafeine_excessive,
+      hv.created_by, hv.updated_by, hv.created_at, hv.updated_at
      FROM habitudes_vie hv
      JOIN patients p ON p.id = hv.patient_id
      WHERE p.numero = $1;`,

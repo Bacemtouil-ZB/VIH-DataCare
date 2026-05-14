@@ -53,6 +53,24 @@ export const isPdf = (url) =>
   typeof url === "string" &&
   (url.startsWith("data:application/pdf") || url.toLowerCase().endsWith(".pdf"));
 
+const DATE_ONLY_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+
+export const getTodayLocalISO = () => {
+  const now = new Date();
+  const tzOffsetMs = now.getTimezoneOffset() * 60000;
+  return new Date(now.getTime() - tzOffsetMs).toISOString().slice(0, 10);
+};
+
+export const toDateInputValue = (value) => {
+  if (!value) return "";
+  if (typeof value === "string" && DATE_ONLY_REGEX.test(value)) return value;
+
+  const d = new Date(value);
+  if (isNaN(d.getTime())) return "";
+  const tzOffsetMs = d.getTimezoneOffset() * 60000;
+  return new Date(d.getTime() - tzOffsetMs).toISOString().slice(0, 10);
+};
+
 const GENOTYPAGE_ALLOWED_MIME_TYPES = new Set(["application/pdf"]);
 const GENOTYPAGE_ALLOWED_EXTENSIONS = [
   ".pdf",
@@ -82,6 +100,14 @@ export const isValidGenotypageFile = (file) => {
 // Formattage lisible d'une date ISO -> fr-FR
 export const formatDate = (value) => {
   if (!value) return "—";
+
+  if (typeof value === "string" && DATE_ONLY_REGEX.test(value)) {
+    const [year, month, day] = value.split("-").map(Number);
+    const d = new Date(year, month - 1, day);
+    if (isNaN(d.getTime())) return "—";
+    return d.toLocaleDateString("fr-FR");
+  }
+
   const d = new Date(value);
   if (isNaN(d.getTime())) return "—";
   return d.toLocaleDateString("fr-FR");

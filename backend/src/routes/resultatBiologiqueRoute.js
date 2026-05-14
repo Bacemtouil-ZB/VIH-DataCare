@@ -3,7 +3,7 @@ import { protect, authorizeMedecin } from "../middlewares/authMiddleware.js";
 import {
   createResultatController,
   getResultatsByNumeroDossierController,
-  getDernierBilanPrescritController,
+  // getDernierBilanPrescritController,
   updateResultatController,
 } from "../controllers/resultatBiologiqueController.js";
 import {
@@ -28,12 +28,12 @@ router.get(
   getResultatsByNumeroDossierController,
 );
 
-router.get(
-  "/dernier-bilan/:numeroDossier",
-  protect,
-  authorizeMedecin,
-  getDernierBilanPrescritController,
-);
+// router.get(
+//   "/dernier-bilan/:numeroDossier",
+//   protect,
+//   authorizeMedecin,
+//   getDernierBilanPrescritController,
+// );
 
 router.put(
   "/update/:id",

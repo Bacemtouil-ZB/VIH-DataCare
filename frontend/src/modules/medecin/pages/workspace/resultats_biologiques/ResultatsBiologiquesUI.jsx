@@ -22,6 +22,8 @@ import { formatBilanSummary } from "../prescreption_dexamens/Bilanexamenhelpers"
 import {
   normalizeGenotypageUrls,
   formatDate,
+  getTodayLocalISO,
+  toDateInputValue,
 } from "./resultatsBiologiquesHelpers";
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -190,9 +192,9 @@ const SectionBilan = forwardRef((
                   id={`date-${sectionKey}`}
                   type="date"
                   // La valeur est forcée à vide quand la section est NF
-                  value={isNF ? "" : (formData[dateKey] || "")}
+                  value={isNF ? "" : toDateInputValue(formData[dateKey])}
                   onChange={field(dateKey)}
-                  max={new Date().toISOString().slice(0, 10)}
+                  max={getTodayLocalISO()}
                   required={!isNF}           // non obligatoire si NF
                   disabled={sectionDisabled} // désactivé si NF ou saving
                   className={errors[dateKey] ? "is-invalid" : ""}
@@ -463,7 +465,7 @@ export default function ResultatsBiologiquesUI({
               return (
                 <tr key={bilan.id}>
                   <td>
-                    {new Date(bilan.created_at).toLocaleDateString("fr-FR")}
+                    {formatDate(bilan.created_at)}
                   </td>
                   <td>
                     <span className="bilan-summary">

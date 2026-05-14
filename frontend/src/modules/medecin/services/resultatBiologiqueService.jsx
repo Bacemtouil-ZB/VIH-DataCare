@@ -9,14 +9,14 @@ export const getResultatsByNumeroDossier = async (numeroDossier) => {
   }
 };
 
-export const getDernierBilanPrescrit = async (numeroDossier) => {
-  try {
-    const res = await API.get(`resultats-biologiques/dernier-bilan/${numeroDossier}`);
-    return res.data; // { success, bilan }
-  } catch (error) {
-    throw error.response?.data || error.message;
-  }
-};
+// export const getDernierBilanPrescrit = async (numeroDossier) => {
+//   try {
+//     const res = await API.get(`resultats-biologiques/dernier-bilan/${numeroDossier}`);
+//     return res.data; // { success, bilan }
+//   } catch (error) {
+//     throw error.response?.data || error.message;
+//   }
+// };
 
 export const createResultat = async (data) => {
   try {
