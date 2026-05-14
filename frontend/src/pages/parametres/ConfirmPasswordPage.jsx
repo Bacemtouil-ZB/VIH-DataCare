@@ -32,7 +32,7 @@ export default function ConfirmPasswordPage() {
         setStatus(STATUS.ERROR);
         setMessage(err.message || "Lien invalide ou expiré.");
       });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    
   }, []);
 
   return (

@@ -15,7 +15,7 @@ function ResetPassword() {
   const [isLoading, setIsLoading] = useState(false);
   const [isReset, setIsReset] = useState(false);
 
-  const [searchParams] = useSearchParams();
+  const [searchParams] = useSearchParams(); //lire  les paramètres de l’URL
   const navigate = useNavigate();
   const token = useMemo(() => searchParams.get("token") || "", [searchParams]);
 

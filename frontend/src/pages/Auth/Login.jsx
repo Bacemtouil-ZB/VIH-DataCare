@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import  { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../shared/hooks/useAuth.js';
@@ -6,7 +5,7 @@ import { toast } from "react-toastify";
 
 const Login = () => {
   const navigate = useNavigate();
-  const location = useLocation();
+  //const location = useLocation();
   const { handleLogin, user, error, setError, loading } = useAuth();
 
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -20,7 +19,6 @@ const Login = () => {
     navigate(routes[user.role] || '/');
   }, [user, navigate]); // when user get from context, it will trigger this effect and navigate to the appropriate route based on the user's role
 
-  // Toast erreur backend
   //show backend errors
   useEffect(() => {
     if (!error) return;

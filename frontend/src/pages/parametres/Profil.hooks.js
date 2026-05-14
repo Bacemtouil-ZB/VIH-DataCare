@@ -30,7 +30,6 @@ export const useInfoForm = (user) => {
       setForm(values);
       setSavedForm(values);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.nom, user?.prenom, user?.email]);
 
   const isDirty = useMemo(

@@ -57,14 +57,6 @@ export const BADGE_COLORS = {
   en_retard:        { bg: "#fff7ed", color: "#c2410c" },
   perdu_de_vue:     { bg: "#fee2e2", color: "#991b1b" },
   recupere:         { bg: "#f0fdf4", color: "#15803d" },
-  //  statuts patients.status
-  standard:         { bg: "#f1f5f9", color: "#475569" },
-  standard_inactif: { bg: "#e2e8f0", color: "#64748b" },
-  migrant:          { bg: "#f5f3ff", color: "#6d28d9" },
-  migrant_inactif:  { bg: "#e2e8f0", color: "#64748b" },
-  decede:           { bg: "#1f2937", color: "#f9fafb" },
-  decede_sida:      { bg: "#1f2937", color: "#f9fafb" },
-  transfere:        { bg: "#eff6ff", color: "#1d4ed8" },
   //  statuts prescription
   delivree:         { bg: "#dcfce7", color: "#166534" },
   modifie:          { bg: "#ffedd5", color: "#9a3412" },

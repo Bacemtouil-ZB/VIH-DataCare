@@ -91,7 +91,7 @@ function ForgotPassword() {
                         ? "border-red-500 focus:ring-red-400"
                         : "border-gray-200 focus:ring-green-400"
                     }`}
-                    placeholder="exemple@email.com"
+                    placeholder="exemple@gmail.com"
                     required
                   />
                 </div>
