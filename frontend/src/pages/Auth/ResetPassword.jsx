@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { NavLink, useNavigate, useSearchParams } from "react-router-dom";
+import { NavLink, useSearchParams } from "react-router-dom";
 import { resetPassword as resetPasswordRequest } from "../../shared/services/authService.jsx";
 
 function ResetPassword() {
@@ -16,7 +16,7 @@ function ResetPassword() {
   const [isReset, setIsReset] = useState(false);
 
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const token = useMemo(() => searchParams.get("token") || "", [searchParams]);
 
   const validatePassword = (password) => {
@@ -75,11 +75,7 @@ function ResetPassword() {
     try {
       await resetPasswordRequest(token, formData.password, formData.confirmPassword);
       setIsReset(true);
-      setTimeout(() => {
-        navigate("/login", {
-          state: { message: "Mot de passe modifie avec succes. Connectez-vous." },
-        });
-      }, 2000);
+    
     } catch (err) {
       setErrors((prev) => ({
         ...prev,
