@@ -51,11 +51,8 @@ const KpiCard = ({ card }) => {
   return (
     <div className="kpi-card">
       <div className="kpi-card-header">
-        <div
-          className="kpi-card-icon-box"
-          style={{ background: card.iconBg }}
-        >
-          {Icon ? <Icon style={{ color: card.iconColor }} /> : null}
+        <div className="kpi-card-icon-box">
+          {Icon ? <Icon className="kpi-card-icon" /> : null}
         </div>
         <span className="kpi-card-label">{card.label}</span>
       </div>

@@ -46,7 +46,7 @@ Notifications.setNotificationHandler({
     shouldSetBadge: false,
   }),
 });
-
+// 
 export const requestNotificationPermission = async () => {
   if (!Device.isDevice) return false;
 

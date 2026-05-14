@@ -4,7 +4,7 @@ import LoginScreen from '../features/auth/screens/loginScreen';
 import ChangePasswordScreen from '../features/auth/screens/changePasswordScreen';
 
 const Stack = createStackNavigator();
-
+//2 ecrans empilés : login et change password
 const AuthStack = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>

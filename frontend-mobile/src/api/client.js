@@ -7,7 +7,7 @@ const apiClient = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
-  timeout: 10000,
+  timeout: 10000,  // la requête est annulée si le backend ne répond pas en 10 secondes 
 });
 
 apiClient.interceptors.request.use(

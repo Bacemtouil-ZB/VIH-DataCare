@@ -22,6 +22,8 @@ import {
   toDateInputValue,
 } from "./resultatsBiologiquesHelpers";
 
+const GENOTYPAGE_DRAFT_STORAGE_KEY = "resultatsBiologiquesGenotypage";
+
 
 const validateNumericFields = (formData, champsActifs, nfSections) => {
   const errors = {};
@@ -56,9 +58,6 @@ const validateNumericFields = (formData, champsActifs, nfSections) => {
   return errors;
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// HOOK PRINCIPAL
-// ─────────────────────────────────────────────────────────────────────────────
 export function useResultatsBiologiquesLogic() {
   const { numero } = useParams();
 
@@ -82,6 +81,7 @@ export function useResultatsBiologiquesLogic() {
   // Contient les _key des sections dont le bilan n'a pas été effectué.
   // Une section NF est ignorée à la validation et grisée dans l'UI.
   const [nfSections, setNfSections] = useState(new Set());
+
 
   // ── Chargement initial des bilans et résultats ────────────────────────────
   useEffect(() => {
@@ -119,6 +119,11 @@ export function useResultatsBiologiquesLogic() {
   // ── Fermer le formulaire ──────────────────────────────────────────────────
   const closeForm = () => {
     resetForm();
+    setGenotypageLocalUrls([]);
+    sessionStorage.removeItem(GENOTYPAGE_DRAFT_STORAGE_KEY);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
     setShowForm(false);
     setBilanActif(null);
     setChampsActifs([]);
@@ -144,7 +149,7 @@ const toggleSectionNF = (sectionKey) => {
       const dateKey = SECTION_DATE_KEY[sectionKey];
       if (dateKey) clearFieldError(dateKey, setErrors);
 
-      // ✅ NOUVEAU : reset visuel des champs de la section cochée NF
+      //  reset visuel des champs de la section cochée NF
       const section = champsActifs.find((s) => s._key === sectionKey);
       if (section) {
         setFormData((prev) => {
@@ -170,6 +175,8 @@ const toggleSectionNF = (sectionKey) => {
     setDetailItem(null);
     setIsModifying(false);
     setEditingId(null);
+    setGenotypageLocalUrls([]);
+    sessionStorage.removeItem(GENOTYPAGE_DRAFT_STORAGE_KEY);
     setFormData(buildInitialForm(bilan));
     setNfSections(new Set()); // ← reset NF pour une nouvelle saisie
     setShowForm(true);
@@ -196,6 +203,8 @@ const toggleSectionNF = (sectionKey) => {
       ? toDateInputValue(resultat.date_resultat)
       : getTodayLocalISO();
 
+    setGenotypageLocalUrls([]);
+    sessionStorage.removeItem(GENOTYPAGE_DRAFT_STORAGE_KEY);
     setFormData(prefilled);
     setNfSections(new Set()); // ← reset NF (pas de persistance NF en DB pour l'instant)
     setShowForm(true);
@@ -251,7 +260,7 @@ const handleSubmit = async (e) => {
 
     setErrors({});
 
-       // ✅ NOUVEAU : vider les champs des sections NF avant envoi
+       //  vider les champs des sections NF avant envoi
     let cleanedData = { ...formData };
     champsActifs.forEach((section) => {
       if (nfSections.has(section._key)) {
@@ -315,7 +324,7 @@ const handleSubmit = async (e) => {
   // Restaurer le draft génotypage au retour de la page génotypage
   useEffect(() => {
     const restoredUrls = location.state?.restoredGenotypage;
-    const draftedValue = sessionStorage.getItem("resultatsBiologiquesGenotypage");
+    const draftedValue = sessionStorage.getItem(GENOTYPAGE_DRAFT_STORAGE_KEY);
 
     if (restoredUrls && restoredUrls.length > 0) {
       const rawValue = Array.isArray(restoredUrls)
@@ -333,19 +342,22 @@ const handleSubmit = async (e) => {
 
   // Naviguer vers la page génotypage (lecture seule depuis ResultatsBiologiques)
   const openGenotypagePage = () => {
-    const currentUrls =
-      normalizeGenotypageUrls(formData.genotypage_file_url).length > 0
-        ? normalizeGenotypageUrls(formData.genotypage_file_url)
-        : genotypageLocalUrls;
+    const currentUrls = showForm
+      ? (
+          normalizeGenotypageUrls(formData.genotypage_file_url).length > 0
+            ? normalizeGenotypageUrls(formData.genotypage_file_url)
+            : genotypageLocalUrls
+        )
+      : [];
     const urls = collectGenotypageUrls(resultats, currentUrls);
 
     if (currentUrls.length > 0) {
       sessionStorage.setItem(
-        "resultatsBiologiquesGenotypage",
+        GENOTYPAGE_DRAFT_STORAGE_KEY,
         formatGenotypageValue(currentUrls)
       );
     } else {
-      sessionStorage.removeItem("resultatsBiologiquesGenotypage");
+      sessionStorage.removeItem(GENOTYPAGE_DRAFT_STORAGE_KEY);
     }
 
     navigate(`${basePath}/genotypage`, {

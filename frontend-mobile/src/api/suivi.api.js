@@ -10,7 +10,7 @@ const safeFetch = async (url) => {
     if (error?.response?.status === 403) {
       return { success: false, forbidden: true, data: [] };
     }
-    throw error; // autres erreurs (500, réseau) → propagées normalement
+    throw error; 
   }
 };
 

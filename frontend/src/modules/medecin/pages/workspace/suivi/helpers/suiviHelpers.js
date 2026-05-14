@@ -122,12 +122,21 @@ export const getDureeTraitement = (dateDebut, dateFin) => {
 };
 
 // cards de serologie VHB
-import { COULEURS_HBV, COULEUR_HBV_INCONNU } from "../constants/suiviConstants";
+import { COULEUR_HBV_INCONNU } from "../constants/suiviConstants";
 
 
 export const getHBVHexColor = (marqueur, valeur) => {
+  void marqueur;
   if (!valeur) return COULEUR_HBV_INCONNU;
-  return COULEURS_HBV[marqueur]?.[valeur] ?? COULEUR_HBV_INCONNU;
+
+  const normalizedValue = String(valeur).trim().toLowerCase();
+
+  if (normalizedValue === "positif") return "#DC2626";
+  if (normalizedValue === "négatif" || normalizedValue === "negatif") {
+    return "#16A34A";
+  }
+
+  return COULEUR_HBV_INCONNU;
 };
 
 
