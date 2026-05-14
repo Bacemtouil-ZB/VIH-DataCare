@@ -18,6 +18,8 @@ import {
   normalizeGenotypageUrls,
   formatGenotypageValue,
   isValidGenotypageFile,
+  getTodayLocalISO,
+  toDateInputValue,
 } from "./resultatsBiologiquesHelpers";
 
 
@@ -132,22 +134,33 @@ export function useResultatsBiologiquesLogic() {
   // ── Toggle NF d'une section ───────────────────────────────────────────────
   // Ajoute ou retire la section du Set nfSections.
   // Efface également l'erreur de date de la section concernée.
-  const toggleSectionNF = (sectionKey) => {
-    setNfSections((prev) => {
-      const next = new Set(prev);
-      if (next.has(sectionKey)) {
-        next.delete(sectionKey);
-      } else {
-        next.add(sectionKey);
-        // Effacer l'erreur de date si elle existait pour cette section
-        const dateKey = SECTION_DATE_KEY[sectionKey];
-        if (dateKey) {
-          clearFieldError(dateKey, setErrors);
-        }
+const toggleSectionNF = (sectionKey) => {
+  setNfSections((prev) => {
+    const next = new Set(prev);
+    if (next.has(sectionKey)) {
+      next.delete(sectionKey);
+    } else {
+      next.add(sectionKey);
+      const dateKey = SECTION_DATE_KEY[sectionKey];
+      if (dateKey) clearFieldError(dateKey, setErrors);
+
+      // ✅ NOUVEAU : reset visuel des champs de la section cochée NF
+      const section = champsActifs.find((s) => s._key === sectionKey);
+      if (section) {
+        setFormData((prev) => {
+          const updated = { ...prev };
+          section.champs.forEach(({ key }) => { updated[key] = ""; });
+          if (dateKey) updated[dateKey] = "";
+          // Si la section NF est génotypage, vider aussi l'URL
+          updated.genotypage_file_url = "";
+          setGenotypageLocalUrls([]);
+          return updated;
+        });
       }
-      return next;
-    });
-  };
+    }
+    return next;
+  });
+};
 
   // ── Ouvrir le formulaire en mode CRÉATION, "Saisir résultat", ─────────────────────────────────
   const openCreateForBilan = (bilan) => {
@@ -176,17 +189,16 @@ export function useResultatsBiologiquesLogic() {
     actifs.forEach(({ _key, champs }) => {
       champs.forEach(({ key }) => { prefilled[key] = resultat[key] ?? ""; });
       const dateKey = `date_${_key}`;
-      prefilled[dateKey] = resultat[dateKey] ? resultat[dateKey].slice(0, 10) : "";
+      prefilled[dateKey] = resultat[dateKey] ? toDateInputValue(resultat[dateKey]) : "";
     });
     prefilled.observations  = resultat.observations ?? "";
     prefilled.date_resultat = resultat.date_resultat
-      ? resultat.date_resultat.slice(0, 10)
-      : new Date().toISOString().slice(0, 10);
+      ? toDateInputValue(resultat.date_resultat)
+      : getTodayLocalISO();
 
     setFormData(prefilled);
     setNfSections(new Set()); // ← reset NF (pas de persistance NF en DB pour l'instant)
     setShowForm(true);
-    toast.info(MESSAGES.modeModif);
   };
 
   // ── Afficher la vue détail (lecture seule) ────────────────────────────────
@@ -238,6 +250,24 @@ const handleSubmit = async (e) => {
     }
 
     setErrors({});
+
+       // ✅ NOUVEAU : vider les champs des sections NF avant envoi
+    let cleanedData = { ...formData };
+    champsActifs.forEach((section) => {
+      if (nfSections.has(section._key)) {
+        // Vider tous les champs de la section
+        section.champs.forEach(({ key }) => {
+          cleanedData[key] = null;
+        });
+        // Vider la date de la section
+        const dateKey = SECTION_DATE_KEY[section._key];
+        if (dateKey) cleanedData[dateKey] = null;
+        // Vider le génotypage si la section NF contient genotypage_file_url
+        if (Object.keys(cleanedData).includes("genotypage_file_url")) {
+          cleanedData.genotypage_file_url = null;
+        }
+      }
+    });
 
     const normalizedData = normalizeDates(formData); // ← normalisation ici
 
@@ -352,7 +382,6 @@ const handleSubmit = async (e) => {
     const totalSize  = validFiles.reduce((sum, f) => sum + f.size, 0);
 
     if (totalSize > MAX_TOTAL) {
-      const totalMB = (totalSize / (1024 * 1024)).toFixed(1);
       toast.error(
         `Génotpage : Taille totale dépasse 35MB . Veuillez sélectionner moins de fichiers ou des fichiers plus petits.`
       );
@@ -362,10 +391,6 @@ const handleSubmit = async (e) => {
     
     const oversized = validFiles.filter((f) => f.size > MAX_SINGLE);
     if (oversized.length > 0) {
-      const fileList = oversized.map((f) => {
-        const sizeMB = (f.size / (1024 * 1024)).toFixed(1);
-        return `${f.name} (${sizeMB}MB)`;
-      }).join(", ");
       toast.error(
         `Génotypage : Certains fichiers dépassent 12MB `
       );

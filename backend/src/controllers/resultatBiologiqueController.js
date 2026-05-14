@@ -1,7 +1,7 @@
 import {
   createResultat,
   getResultatsByNumeroDossier,
-  getDernierBilanPrescrit,
+  // getDernierBilanPrescrit,
   getResultatById,
   updateResultat,
 } from "../services/resultatBiologiqueService.js";
@@ -52,17 +52,17 @@ export const getResultatsByNumeroDossierController = async (req, res) => {
   }
 };
 
-export const getDernierBilanPrescritController = async (req, res) => {
-  try {
-    const { numeroDossier } = req.params;
-    const bilan = await getDernierBilanPrescrit(numeroDossier);
+// export const getDernierBilanPrescritController = async (req, res) => {
+//   try {
+//     const { numeroDossier } = req.params;
+//     const bilan = await getDernierBilanPrescrit(numeroDossier);
 
-    return res.status(200).json({ success: true, bilan });
-  } catch (error) {
-    console.error("Erreur getDernierBilanPrescrit:", error.message);
-    return res.status(400).json({ success: false, message: error.message });
-  }
-};
+//     return res.status(200).json({ success: true, bilan });
+//   } catch (error) {
+//     console.error("Erreur getDernierBilanPrescrit:", error.message);
+//     return res.status(400).json({ success: false, message: error.message });
+//   }
+// };
 
 export const updateResultatController = async (req, res) => {
   try {

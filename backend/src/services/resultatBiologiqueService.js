@@ -1,7 +1,7 @@
 import {
   createResultat as createResultatModel,
   getResultatsByNumeroDossier as getResultatsByNumeroDossierModel,
-  getDernierBilanPrescrit as getDernierBilanPrescritModel,
+  // getDernierBilanPrescrit as getDernierBilanPrescritModel,
   getResultatById as getResultatByIdModel,
   updateResultat as updateResultatModel,
 } from "../models/resultatBiologiqueModel.js";
@@ -22,13 +22,13 @@ export const getResultatsByNumeroDossier = async (numeroDossier) => {
   return getResultatsByNumeroDossierModel(numeroDossier);
 };
 
-export const getDernierBilanPrescrit = async (numeroDossier) => {
-  if (!numeroDossier) {
-    throw new Error("Numero de dossier obligatoire");
-  }
+// export const getDernierBilanPrescrit = async (numeroDossier) => {
+//   if (!numeroDossier) {
+//     throw new Error("Numero de dossier obligatoire");
+//   }
 
-  return getDernierBilanPrescritModel(numeroDossier);
-};
+//   return getDernierBilanPrescritModel(numeroDossier);
+// };
 
 export const getResultatById = async (id) => {
   const resultat = await getResultatByIdModel(id);

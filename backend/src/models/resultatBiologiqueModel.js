@@ -52,19 +52,19 @@ export const getResultatsByNumeroDossier = async (numeroDossier) => {
   return result.rows;
 };
 
-export const getDernierBilanPrescrit = async (numeroDossier) => {
-  const query = `
-    SELECT be.*
-    FROM bilan_examens be
-    JOIN patients p ON be.patient_id = p.id
-    WHERE p.numero = $1
-    ORDER BY be.created_at DESC
-    LIMIT 1;
-  `;
+// export const getDernierBilanPrescrit = async (numeroDossier) => {
+//   const query = `
+//     SELECT be.*
+//     FROM bilan_examens be
+//     JOIN patients p ON be.patient_id = p.id
+//     WHERE p.numero = $1
+//     ORDER BY be.created_at DESC
+//     LIMIT 1;
+//   `;
 
-  const result = await pool.query(query, [numeroDossier]);
-  return result.rows[0] || null;
-};
+//   const result = await pool.query(query, [numeroDossier]);
+//   return result.rows[0] || null;
+// };
 
 export const getResultatById = async (id) => {
   const result = await pool.query("SELECT * FROM resultats_biologiques WHERE id = $1", [id]);

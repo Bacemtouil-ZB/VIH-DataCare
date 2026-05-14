@@ -63,16 +63,16 @@ const toBarGroupe = (rows, tranches, trancheCol) => {
 
 
 
-// ✅ CORRIGÉ — pivot direct depuis SQL, plus de calcul par soustraction
+// CORRIGÉ — pivot direct depuis SQL, plus de calcul par soustraction
 const toDiagnosticTardif = (rowsClassification) => {
   const map = {};
   for (const t of TRANCHES_8) {
     map[t] = {
       tranche:     t,
       lt200:       0,
-      "200_350":   0,   // ← était "entre_200_350"
+      "200_350":   0,   
       gt350:       0,
-      sans_mesure: 0,   // ← ajouté
+      sans_mesure: 0,   
     };
   }
   for (const row of rowsClassification) {
@@ -115,7 +115,7 @@ const toCascadeVirale = (rowsLt50, rowsLt1000, rowsGt1000) => {
     map[t].gt1000 += parseInt(row.total, 10);
   }
 
-  // ✅ lt1000_only = lt1000 - lt50 (lt1000 inclut lt50)
+  // lt1000_only = lt1000 - lt50 (lt1000 inclut lt50)
   for (const t of TRANCHES_8) {
     map[t].lt1000_only = Math.max(0, map[t].lt1000_only - map[t].lt50);
   }
@@ -203,7 +203,7 @@ export const getNouveauxMaladesSummary = async ({ annee, trimestre }) => {
     nouveaux_depistes: toBarGroupe(rowsNouveaux, TRANCHES_8, 'tranche_8'),
 
     // KPI 2 + 3 — Bar empilé diagnostic tardif CD4
-    diagnostic_tardif: toDiagnosticTardif(rowsClassificationCD4), // ✅ corrigé
+    diagnostic_tardif: toDiagnosticTardif(rowsClassificationCD4), 
 
     // KPI 4 — Donut total + détail tranche_2 pour drill-down
     populations_cles: {
