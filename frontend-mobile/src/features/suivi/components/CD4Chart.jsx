@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Dimensions, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Dimensions, ScrollView, Text, View } from "react-native";
 import Svg, {
   Circle,
   Defs,
@@ -11,6 +11,7 @@ import Svg, {
   Text as SvgText,
 } from "react-native-svg";
 import useI18n from "../../../i18n/useI18n";
+import styles from "../styles/cd4Chart.styles";
 
 const SEUIL_CRITIQUE = 200;
 const COULEUR_OK = "#22C55E";
@@ -171,11 +172,15 @@ const CD4Chart = ({ data = [], periodes = [], authorized = true }) => {
       <View style={styles.legendGroup}>
         <View style={styles.legendItem}>
           <View style={[styles.legendLine, { backgroundColor: COULEUR_OK }]} />
-          <Text style={styles.legendText}>{t("suivi.cd4Normal", { threshold: SEUIL_CRITIQUE })}</Text>
+          <Text style={styles.legendText}>
+            {t("suivi.cd4Normal", { threshold: SEUIL_CRITIQUE })}
+          </Text>
         </View>
         <View style={styles.legendItem}>
           <View style={[styles.legendLine, { backgroundColor: COULEUR_CRIT }]} />
-          <Text style={styles.legendText}>{t("suivi.cd4Critical", { threshold: SEUIL_CRITIQUE })}</Text>
+          <Text style={styles.legendText}>
+            {t("suivi.cd4Critical", { threshold: SEUIL_CRITIQUE })}
+          </Text>
         </View>
       </View>
 
@@ -183,7 +188,7 @@ const CD4Chart = ({ data = [], periodes = [], authorized = true }) => {
         horizontal
         showsHorizontalScrollIndicator={false}
         style={styles.scrollWrapper}
-        contentContainerStyle={{ paddingRight: 8 }}
+        contentContainerStyle={styles.scrollContent}
       >
         <View style={styles.graphWrapper}>
           <Svg width={SVG_W} height={SVG_H}>
@@ -313,94 +318,5 @@ const CD4Chart = ({ data = [], periodes = [], authorized = true }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 14,
-    marginBottom: 16,
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    marginBottom: 8,
-    flexWrap: "wrap",
-  },
-  dot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
-  },
-  title: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#1E293B",
-  },
-  unit: {
-    fontSize: 11,
-    color: "#94A3B8",
-  },
-  legendGroup: {
-    flexDirection: "row",
-    gap: 14,
-    marginBottom: 10,
-    flexWrap: "wrap",
-  },
-  legendItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 5,
-  },
-  legendLine: {
-    width: 18,
-    height: 3,
-    borderRadius: 2,
-  },
-  legendText: {
-    fontSize: 11,
-    color: "#555",
-    fontWeight: "500",
-  },
-  graphWrapper: {
-    borderRadius: 10,
-    overflow: "hidden",
-  },
-  scrollWrapper: {
-    borderRadius: 10,
-    overflow: "hidden",
-  },
-  empty: {
-    padding: 40,
-    alignItems: "center",
-  },
-  emptyText: {
-    color: "#94A3B8",
-    fontSize: 13,
-  },
-  refLegend: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    marginTop: 10,
-  },
-  refDash: {
-    width: 22,
-    height: 2,
-    borderRadius: 1,
-    backgroundColor: COULEUR_REF,
-  },
-  refText: {
-    fontSize: 11,
-    color: "#94A3B8",
-  },
-});
 
 export default CD4Chart;

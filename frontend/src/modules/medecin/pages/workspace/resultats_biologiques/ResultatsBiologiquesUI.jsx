@@ -78,6 +78,7 @@ function ChampResultat({ champ, value, onChange, disabled, error }) {
           onChange={onChange}
           placeholder="—"
           disabled={disabled}
+          min={type === "number" ? "0" : undefined}
         />
         {unite && <span className="rb-unite">{unite}</span>}
       </div>
@@ -136,7 +137,6 @@ const SectionBilan = forwardRef((
         transition: "opacity 0.2s ease",
       }}
     >
-      {/* ── En-tête : titre + toggle NF + date ───────────────────────────── */}
       <div className="rb-section-header">
 
         {/* Titre de la section */}
