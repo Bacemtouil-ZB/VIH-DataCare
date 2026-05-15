@@ -2,7 +2,7 @@ import { Row, Col, Spin, Alert, Typography, Space } from "antd";
 import useFileActiveDashboard  from "./hooks/useFileActiveDashboard";
 
 import KpiFileActiveCards      from "./ui/KpiFileActiveCards";
-import TotalFileActiveChart    from "./ui/TotalFileActiveChart";
+// import TotalFileActiveChart    from "./ui/TotalFileActiveChart";
 import CvControleChart         from "./ui/CvControleChart";
 import CascadeViraleChart      from "./ui/CascadeViraleChart";
 import PassageStadesChart      from "./ui/PassageStadesChart";
@@ -63,21 +63,16 @@ const FileActiveOrchestrer = () => {
       </div>
 
       {/* ── Ligne 1 : Total file active + CV contrôle ── */}
-      <Row gutter={[16, 16]} style={{ marginBottom: 16 }}>
-        <Col xs={24} lg={12}>
-          <TotalFileActiveChart
-            data={chartData?.totalFileActive}
-            loading={refreshing}
-          />
-        </Col>
-        <Col xs={24} lg={12}>
+     
+       
+        <Col xs={24} lg={24}>
           <CvControleChart
             data={chartData?.cvControle}
             cible95={chartData?.cvCible95}
             loading={refreshing}
           />
         </Col>
-      </Row>
+      
 
       {/* ── Ligne 2 : Cascade virologique ── */}
       <div style={{ marginBottom: 16 }}>
