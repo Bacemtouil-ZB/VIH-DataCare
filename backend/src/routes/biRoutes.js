@@ -11,12 +11,10 @@ const router = express.Router();
 
 ;
 
-// GET /api/bi/annees
-// Années disponibles depuis v_dim_temps
+
 router.get('/annees', getAnnees);
 
-// GET /api/bi/nouveaux-malades?annee=2025
-// GET /api/bi/nouveaux-malades?annee=2025&trimestre=1
+
 router.get('/nouveaux-malades', getNouveauxMalades);
 
 // GET /api/bi/file-active?annee=2025
