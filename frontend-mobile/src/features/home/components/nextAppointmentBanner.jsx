@@ -6,6 +6,8 @@ import styles from "../styles/home.styles";
 import colors from "../../../constants/colors";
 import useI18n from "../../../i18n/useI18n";
 
+
+// displays the next upcoming appointment (rendezvous) for the user. 
 const getCountdownText = (dateStr, t) => {
   if (!dateStr) return "";
 
