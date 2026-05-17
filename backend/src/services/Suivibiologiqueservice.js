@@ -149,7 +149,7 @@ export const getKpis = async (numero) => {
       cvPrecedent,
       creatValeur
     ),
-    serologie_hbv: hbv,   // ✅ { ag_hbs, anti_hbs, anti_hbc, date } | null
+    serologie_hbv: hbv,   // { ag_hbs, anti_hbs, anti_hbc, date } | null
   };
 };
 
@@ -216,7 +216,7 @@ export const getTableau = async (numero) => {
     traitement_date_debut: r.traitement_date_debut ?? null,
     traitement_date_fin:   r.traitement_date_fin   ?? null,
     type_bilan:            r.type_bilan,
-    statut:                computeStatut(          // ✅ calculé backend
+    statut:                computeStatut(          //  calculé backend
       r.cd4_absolu ?? null,
       r.charge_virale_valeur ?? null
     ),

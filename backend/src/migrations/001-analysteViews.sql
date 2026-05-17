@@ -1,7 +1,3 @@
--- ============================================================
--- MODÈLE CONSTELLATION BI — PVVIH TUNISIE
--- ============================================================
-
 
 -- ============================================================
 -- V1 — v_dim_temps
@@ -15,7 +11,6 @@ SELECT DISTINCT
 FROM vih
 WHERE date_vih_positif IS NOT NULL;
 
-
 -- ============================================================
 -- V2 — v_dim_patient
 -- ============================================================
@@ -26,10 +21,6 @@ SELECT
   gender,
   birthdate
 FROM patients;
-
-
-
-
 
 -- ============================================================
 -- V4 — mv_dim_population
@@ -559,7 +550,7 @@ cv_controle AS (
   WHERE rb.charge_virale_valeur IS NOT NULL
     AND rb.date_charge_virale_vih IS NOT NULL
     AND pp.date_debut_arv <= NOW() - INTERVAL '6 months'
-    AND rb.date_charge_virale_vih >= pp.date_debut_arv + INTERVAL '6 months'  -- ✅ CORRECTION
+    AND rb.date_charge_virale_vih >= pp.date_debut_arv + INTERVAL '6 months'  --  CORRECTION
   ORDER BY rb.patient_id, rb.date_charge_virale_vih DESC
 )
 
