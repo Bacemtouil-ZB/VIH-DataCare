@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useBlocker } from "react-router-dom";
 import { toast } from "react-toastify";
+import { confirmAction } from "../../../../../../shared/utils/uiAlerts";
 import { getMedical, createMedical, updateMedical } from "../../../../services/antecedentsService.jsx";
 import { formatMedicalFromApi, formatMedicalForApi } from "./medicalHelpers";
 import { MEDICAL_INITIAL_STATE } from "./medicalConstants";
@@ -86,11 +87,11 @@ export default function useMedical(numero) {
         }
       })();
     } else {
-      const confirmed = window.confirm(
-        "Vous avez des modifications non sauvegardées. Voulez-vous enregistrer avant de partir ?"
-      );
-      if (confirmed) {
-        (async () => {
+      (async () => {
+        const confirmed = await confirmAction(
+          "Vous avez des modifications non sauvegardées. Voulez-vous enregistrer avant de partir ?"
+        );
+        if (confirmed) {
           try {
             await saveQuiet();
             toast.success("Données sauvegardées.");
@@ -100,11 +101,11 @@ export default function useMedical(numero) {
             blocker.proceed();
             isHandlingBlock.current = false;
           }
-        })();
-      } else {
-        blocker.reset();
-        isHandlingBlock.current = false;
-      }
+        } else {
+          blocker.reset();
+          isHandlingBlock.current = false;
+        }
+      })();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [blocker.state]);

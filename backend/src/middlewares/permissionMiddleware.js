@@ -1,6 +1,6 @@
 import { fetchActivePermission } from "../services/permissionService.js";
 
-const BYPASS_ROLES = ["medecin", "admin", "pharmacien"];
+const BYPASS_ROLES = ["medecin"];
 
 const PERMISSION_COLUMNS = {
   cv: "can_view_viral_load",
@@ -9,7 +9,7 @@ const PERMISSION_COLUMNS = {
 
 export const checkPermission = (type) => async (req, res, next) => {
   try {
-    // ✅ 1. Vérifier user
+    //  1. Vérifier user
     if (!req.user) {
       return res.status(401).json({
         success: false,
@@ -17,12 +17,11 @@ export const checkPermission = (type) => async (req, res, next) => {
       });
     }
 
-    // ✅ 2. Bypass pour rôles autorisés
     if (BYPASS_ROLES.includes(req.user.role)) {
       return next();
     }
 
-    // ✅ 3. Vérifier type demandé
+    //  3. Vérifier type demandé
     if (!PERMISSION_COLUMNS[type]) {
       return res.status(400).json({
         success: false,
@@ -30,7 +29,6 @@ export const checkPermission = (type) => async (req, res, next) => {
       });
     }
 
-    // ✅ 4. IMPORTANT : récupérer le bon patient_id
     const patientId = req.user.patient_id;
 
     if (!patientId) {
@@ -40,7 +38,7 @@ export const checkPermission = (type) => async (req, res, next) => {
       });
     }
 
-    // ✅ 5. Récupérer permission active
+    //  Récupérer permission active
     const permission = await fetchActivePermission(patientId);
 
     if (!permission) {
@@ -51,7 +49,6 @@ export const checkPermission = (type) => async (req, res, next) => {
       });
     }
 
-    // ✅ 6. Vérifier expiration (sécurité supplémentaire)
     if (new Date(permission.expires_at) <= new Date()) {
       return res.status(403).json({
         success: false,
@@ -60,7 +57,6 @@ export const checkPermission = (type) => async (req, res, next) => {
       });
     }
 
-    // ✅ 7. Vérifier droit spécifique (CV ou CD4)
     if (!permission[PERMISSION_COLUMNS[type]]) {
       return res.status(403).json({
         success: false,
@@ -69,7 +65,6 @@ export const checkPermission = (type) => async (req, res, next) => {
       });
     }
 
-    // ✅ OK
     next();
 
   } catch (error) {

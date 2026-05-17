@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useBlocker } from "react-router-dom";
 import { toast } from "react-toastify";
+import { confirmAction } from "../../../../../../shared/utils/uiAlerts";
 import { getHabitudesVie, createHabitudesVie, updateHabitudesVie } from "../../../../services/antecedentsService.jsx";
 import { formatHabitudesVieFromApi, formatHabitudesVieForApi } from "./habitudesVieHelpers";
 import { HABITUDES_VIE_INITIAL_STATE } from "./habitudesVieConstants";
@@ -86,11 +87,11 @@ export default function useHabitudesVie(numero) {
         }
       })();
     } else {
-      const confirmed = window.confirm(
-        "Vous avez des modifications non sauvegardées. Voulez-vous enregistrer avant de partir ?"
-      );
-      if (confirmed) {
-        (async () => {
+      (async () => {
+        const confirmed = await confirmAction(
+          "Vous avez des modifications non sauvegardées. Voulez-vous enregistrer avant de partir ?"
+        );
+        if (confirmed) {
           try {
             await saveQuiet();
             toast.success("Données sauvegardées.");
@@ -100,11 +101,11 @@ export default function useHabitudesVie(numero) {
             blocker.proceed();
             isHandlingBlock.current = false;
           }
-        })();
-      } else {
-        blocker.reset();
-        isHandlingBlock.current = false;
-      }
+        } else {
+          blocker.reset();
+          isHandlingBlock.current = false;
+        }
+      })();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [blocker.state]);

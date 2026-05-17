@@ -23,7 +23,7 @@ export const smartProtect = async (req, res, next) => {
         return res.status(403).json({ message: "Compte non activé." });
       }
 
-      // ✅ 🔥 récupérer patient_id
+      // récupérer patient_id
       const result = await pool.query(
         "SELECT id FROM patients WHERE user_id = $1",
         [user.id]
@@ -55,7 +55,7 @@ export const smartProtect = async (req, res, next) => {
       return res.status(401).json({ message: "Utilisateur web non trouvé." });
     }
 
-    // ✅ 🔥 récupérer patient_id
+    // récupérer patient_id
     const result = await pool.query(
       "SELECT id FROM patients WHERE user_id = $1",
       [user.id]
