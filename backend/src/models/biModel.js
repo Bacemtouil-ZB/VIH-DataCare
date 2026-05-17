@@ -147,21 +147,7 @@ export const findFileActiveTotal = async ({ annee }) => {
   );
   return rows;
 };
-// export const findFileActiveTotal = async () => {
-//   const { rows } = await pool.query(
-//     `SELECT gender, tranche_8, COUNT(*) AS total
-//  FROM mv_fait_file_active
-//    AND statut_patient NOT IN (
-//      'perdu_de_vue',
-//      'decede_normale',
-//      'decede_sida',
-//      'migrant',
-//      'transfere'
-//    )
-//    GROUP BY gender, tranche_8`
-//   );
-//   return rows;
-// };
+
 
 // KPI 6 — Charge virale de contrôle (CV > 6 mois après ARV)
 // Grille : gender × tranche_8
