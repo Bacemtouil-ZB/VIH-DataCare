@@ -1,7 +1,3 @@
-// ============================================================
-// biController.js
-// ============================================================
-
 import {
   getNouveauxMaladesSummary,
   getFileActiveSummary,
@@ -9,9 +5,6 @@ import {
   refreshAllMaterializedViews,
 } from '../services/biService.js';
 
-// ============================================================
-// HELPERS INTERNES
-// ============================================================
 
 // Wrapper uniforme pour tous les controllers
 const handle = (fn) => async (req, res) => {
@@ -27,9 +20,6 @@ const handle = (fn) => async (req, res) => {
 // Parse et valide annee + trimestre depuis req.query
 const parsePeriode = (query) => {
   const annee = parseInt(query.annee, 10);
-  if (!annee || isNaN(annee) || annee < 2000 || annee > 2100) {
-    throw new Error('Paramètre annee invalide ou manquant (ex: ?annee=2025)');
-  }
 
   const trimestre = query.trimestre ? parseInt(query.trimestre, 10) : null;
   if (trimestre !== null && ![1, 2, 3, 4].includes(trimestre)) {
@@ -42,9 +32,6 @@ const parsePeriode = (query) => {
 // Parse et valide annee uniquement
 const parseAnnee = (query) => {
   const annee = parseInt(query.annee, 10);
-  if (!annee || isNaN(annee) || annee < 2000 || annee > 2100) {
-    throw new Error('Paramètre annee invalide ou manquant (ex: ?annee=2025)');
-  }
   return { annee };
 };
 
