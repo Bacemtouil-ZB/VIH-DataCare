@@ -48,7 +48,6 @@ const TRANCHES_3 = ["<5ans", "5-14ans", ">15ans"];
 const usePassageStades = ({ decesSida, decesNormaux, perdusDeVue, transferts, migrants }) => {
 
   const [activeSegment, setActiveSegment] = useState("tous");
-  const [drawer, setDrawer] = useState({ open: false, tranche: null, row: null });
 
   const dataMap = useMemo(() => ({
     decesSida:    decesSida    ?? [],
@@ -75,25 +74,11 @@ const usePassageStades = ({ decesSida, decesNormaux, perdusDeVue, transferts, mi
   // Données actives selon le mode
   const activeData = isRollup ? rollupData : drilldownData;
 
-  // Clic sur un point → Drawer
-  const handlePointClick = (chartPayload) => {
-    if (!chartPayload?.activePayload?.length) return;
-    const tranche = chartPayload.activeLabel;
-    const row     = (isRollup ? rollupData : drilldownData).find((r) => r.tranche === tranche);
-    if (!row) return;
-    setDrawer({ open: true, tranche, row });
-  };
-
-  const closeDrawer = () => setDrawer({ open: false, tranche: null, row: null });
-
   return {
     activeSegment,
     setActiveSegment,
     activeData,
     isRollup,
-    drawer,
-    handlePointClick,
-    closeDrawer,
   };
 };
 
