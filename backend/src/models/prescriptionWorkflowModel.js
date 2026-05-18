@@ -417,6 +417,7 @@ export const recalculerEcartEtStatuts = async () => {
       WHERE p.status NOT IN ('decede', 'decede_sida', 'transfere')
       ORDER BY st.patient_id, st.created_at DESC;
     `);
+    console.log("date prochaine prise du suivi : ", suivis.map(s => s.date_prochaine_prise));
 
     if (suivis.length === 0) {
       await client.query("COMMIT");

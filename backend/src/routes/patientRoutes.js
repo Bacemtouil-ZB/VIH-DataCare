@@ -25,6 +25,7 @@ import {
   checkNumerolimiter,
   getPatientsLimiter,
 } from "../middlewares/rateLimiters/patientRateLimiter.js";
+
 const router = express.Router();
 
 router.get(

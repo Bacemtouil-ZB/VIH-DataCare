@@ -9,7 +9,7 @@ import { protect, authorizeAnalyste } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-;
+
 
 
 router.get('/annees', getAnnees);

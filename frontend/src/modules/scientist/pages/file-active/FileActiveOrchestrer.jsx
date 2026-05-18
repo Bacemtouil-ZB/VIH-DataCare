@@ -5,8 +5,8 @@ import KpiFileActiveCards      from "./ui/KpiFileActiveCards";
 // import TotalFileActiveChart    from "./ui/TotalFileActiveChart";
 import CvControleChart         from "./ui/CvControleChart";
 import CascadeViraleChart      from "./ui/CascadeViraleChart";
-import PassageStadesChart      from "./ui/PassageStadesChart";
-import RecuperationChart       from "./ui/RecuperationChart";
+import PassageStadesChart      from "./ui/Passagestadeschart";
+import RecuperationChart       from "./ui/Recuperationchart";
 
 import RefreshButton from "../../components/RefreshButton";
 import styles from "./css/fileActive.module.css";
