@@ -1,11 +1,8 @@
-// ============================================================
-//  suiviHelpers.js
-// ============================================================
 
 import {
   SEUILS_CD4,
   SEUILS_CV,
-  SEUILS_CREATININE,   // ✅ remplace SEUILS_HGB
+  SEUILS_CREATININE,   
   STATUTS,
   COULEURS_STATUT,
   COULEURS_STATUT_HEX,
@@ -126,7 +123,6 @@ import { COULEUR_HBV_INCONNU } from "../constants/suiviConstants";
 
 
 export const getHBVHexColor = (marqueur, valeur) => {
-  void marqueur;
   if (!valeur) return COULEUR_HBV_INCONNU;
 
   const normalizedValue = String(valeur).trim().toLowerCase();
@@ -159,4 +155,3 @@ export const getHBVSignification = (marqueur, valeur) => {
   return map[marqueur]?.[valeur] ?? "Non déterminé";
 
 };
-

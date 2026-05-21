@@ -1,6 +1,3 @@
-// ============================================================
-//  suiviConstants.js
-// ============================================================
 
 // ── Seuils médicaux ──────────────────────────────────────────
 export const SEUILS_CD4 = {
@@ -14,7 +11,7 @@ export const SEUILS_CV = {
   INDETECTABLE:  200,
 };
 
-export const SEUILS_CREATININE = {  // ✅ remplace SEUILS_HGB
+export const SEUILS_CREATININE = {  // 
   CRITIQUE: 120,   // > 120 mmol/L → élevée
   NORMAL:    90,   // < 90  mmol/L → normal
 };
@@ -47,7 +44,7 @@ export const COULEURS_ARV = [
   { fill: "#9FE1CB", stroke: "#1D9E75" },
   { fill: "#FAC775", stroke: "#BA7517" },
   { fill: "#F4C0D1", stroke: "#D4537E" },
-  { fill: "#CECBF6", stroke: "#7F77DD" }, // ✅ espace supprimé
+  { fill: "#CECBF6", stroke: "#7F77DD" }, // 
 ];
 
 // ── Lignes de référence graphiques ───────────────────────────
@@ -89,19 +86,19 @@ export const CONFIG_GRAPHIQUE = {
 // ── Types de bilan ────────────────────────────────────────────
 export const TYPES_BILAN = {
   INITIAL:  "Initial",
-  CONTROLE: "Contrôle",   // ✅ remplace SUIVI
+  CONTROLE: "Contrôle",   
 };
 
 export const COULEURS_TYPE_BILAN = {
   [TYPES_BILAN.INITIAL]:  "blue",
-  [TYPES_BILAN.CONTROLE]: "green", // ✅ remplace SUIVI
+  [TYPES_BILAN.CONTROLE]: "green", // 
 };
 
 // ── Unités médicales ─────────────────────────────────────────
 export const UNITES = {
   CD4:         "cell/mm³",
   CV:          "copies/mL",
-  CREATININE:  "mmol/L",    // ✅ remplace HGB
+  CREATININE:  "mmol/L",    
   PLAQUETTES:  "10³/mm³",
   LYMPHOCYTES: "10³/mm³",
 };
@@ -144,5 +141,3 @@ export const COULEURS_GRAPHIQUE = {
   CRIT: "#EF4444", // rouge — critique
   OBJ: "#F59E0B", // ambre — ligne objectif CD4
 };
-
-

@@ -53,10 +53,23 @@ const RendezvousDetailScreen = () => {
     fetchDetail();
   }, [id, t]);
 
+  const handleGoBack = () => {
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+    } else {
+      navigation.navigate("Rendezvous"); // écran de repli
+    }
+  };
+
   return (
-    <SafeAreaView style={styles.detailContainer}>
+    <SafeAreaView style={styles.detailContainer} edges={["top", "bottom"]}>
       <View style={styles.detailHeader}>
-        <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+        <TouchableOpacity
+          style={styles.backButton}
+          onPress={handleGoBack}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          activeOpacity={0.7}
+        >
           <Ionicons name="arrow-back" size={20} color={colors.white} />
         </TouchableOpacity>
         <Text style={[styles.detailHeaderTitle, isRTL && { textAlign: "right" }]}>

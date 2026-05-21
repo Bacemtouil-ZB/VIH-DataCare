@@ -1,8 +1,3 @@
-// ============================================================
-//  useSuiviTableau.js
-//  Hook Zone 3 — Tableau chronologique
-//  Fetch : toutes les entrées biologiques du patient
-// ============================================================
 
 import { useState, useEffect } from "react";
 import { getTableauSuivi } from "../../../../services/suiviBiologiqueService";

@@ -5,6 +5,7 @@ import Svg, { Path } from 'react-native-svg';
 import { TAB_ROUTES, TAB_CONFIG } from './tabBar.constants';
 import styles, { BAR_WIDTH, HOLE_WIDTH, BAR_HEIGHT } from './tabBar.styles';
 import useI18n from '../../i18n/useI18n';
+import { useNavigationState } from '@react-navigation/native';
 
 const TAB_LABEL_KEYS = {
   Rendezvous: 'tabs.rendezvous',
@@ -37,7 +38,8 @@ const getSvgPath = () => {
 
 export default function CustomTabBar({ state, navigation }) {
   const { t } = useI18n();
-
+ const activeRouteName = useNavigationState(s => s.routes[s.index]?.state?.routes?.at(-1)?.name);
+if (['RendezvousDetail', 'CreateReminder'].includes(activeRouteName)) return null;
   return (
     <View style={styles.tabContainer}>
 
