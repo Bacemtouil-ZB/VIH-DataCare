@@ -87,6 +87,7 @@ const useNouveauxMaladesDashboard = () => {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+  console.log("Données brutes du backend :", rawData);  // Debug : vérifier le format des données reçues
 
   // ── Refresh manuel ───────────────────────────────────────
   // refreshBiMVs() → { success, data: { refreshed, timestamp } }

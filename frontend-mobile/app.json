@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "MonSuivi",
+    "name": "Zaytouna",
     "slug": "frontend-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -41,7 +41,8 @@
           "icon": "./assets/icon.png",
           "color": "#1a6b4a"
         }
-      ]
+      ],
+      "expo-font"
     ],
     "extra": {
       "eas": {

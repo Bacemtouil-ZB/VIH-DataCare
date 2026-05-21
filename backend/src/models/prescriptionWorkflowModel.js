@@ -1,10 +1,10 @@
 ﻿import pool from "../config/db.js";
 import { createNotificationDelivrance } from "../services/suiviNotificationService.js";
-const STATUTS_PROTEGES = ['decede', 'decede_sida', 'transfere', 'standard_inactif', 'migrant_inactif'];
+const STATUTS_PROTEGES = ['standard_inactif', 'migrant_inactif'];
 const STATUTS_ALERTE   = ['decede', 'decede_sida', 'transfere'];
 
 
-const normalizeNumero = (n) => { // check util 
+const normalizeNumero = (n) => { 
   if (!n) return { withPrefix: null, raw: null };
   const raw = String(n).replace(/^F-/i, "").trim(); 
   return { withPrefix: `F-${raw}`, raw };
@@ -358,9 +358,7 @@ export const validerAvecModification = async (id, periodeModifiee) => {
   }
 };
 
-// ── SUPPRIMER PRESCRIPTIONS EXPIRÉES > 48H ───────────────────
 export const supprimerPrescriptionsExpirees = async () => {
-  // Met à jour statut envoyee → non_validee après 48h (pas de suppression)
   const { rows: mises_a_jour } = await pool.query(`
     UPDATE prescription_medicale
     SET statut = 'non_validee', updated_at = NOW()

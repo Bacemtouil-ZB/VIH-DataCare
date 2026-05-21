@@ -35,13 +35,12 @@ export const DureeSelect = ({ value, onChange }) => (
 );
 
 export const PermissionStatus = ({ permission }) => {
-  if (!permission) {
-    return (
-      <div style={{ fontSize: 13, color: "#999", marginTop: 8 }}>
-        Aucune autorisation enregistrée
-      </div>
-    );
-  }
+  
+if (!permission || (!permission.can_view_viral_load && !permission.can_view_cd4)) {
+  return <div style={{ fontSize: 13, color: "#999", marginTop: 8 }}>
+    Aucune autorisation enregistrée
+  </div>;
+}
 
   const expired = isExpired(permission.expires_at);
 

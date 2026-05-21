@@ -2,7 +2,7 @@ import { Row, Col, Card, Statistic, Alert } from "antd";
 import { UserOutlined, ManOutlined, WomanOutlined } from "@ant-design/icons";
 
 
-// ✅ Icône transgenre Unicode ⚧ — pas de dépendance externe
+
 const TransgenreIcon = () => (
   <span
     style={{
@@ -28,7 +28,7 @@ const KpiSummaryCards = ({ data, loading, error }) => {
             title="Total des PVVIH"
             value={data?.total ?? 0}
             prefix={<UserOutlined />}
-            styles={{ content: { color: "#1890ff" } }}   // ✅ valueStyle → styles.content
+            styles={{ content: { color: "#1890ff" } }}  
           />
         </Card>
       </Col>
@@ -39,7 +39,7 @@ const KpiSummaryCards = ({ data, loading, error }) => {
             title="Hommes"
             value={data?.homme ?? 0}
             prefix={<ManOutlined />}
-            styles={{ content: { color: "#1890ff" } }}   // ✅
+            styles={{ content: { color: "#1890ff" } }}   
           />
         </Card>
       </Col>
@@ -50,7 +50,7 @@ const KpiSummaryCards = ({ data, loading, error }) => {
             title="Femmes"
             value={data?.femme ?? 0}
             prefix={<WomanOutlined />}
-            styles={{ content: { color: "#eb2f96" } }}   // ✅
+            styles={{ content: { color: "#eb2f96" } }}   
           />
         </Card>
       </Col>

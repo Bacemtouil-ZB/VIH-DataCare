@@ -1,21 +1,6 @@
 import { body } from "express-validator";
 import { handleValidation } from "./handleValidation.js";
 
-// ─── Médicament ID (requis) ───────────────────────────────────────────────────
-
-const validateMedicamentId = body("medicament_id")
-  .notEmpty()
-  .withMessage("Le médicament est requis")
-  .custom((value) => {
-    if (isNaN(value) || !Number.isInteger(Number(value))) {
-      throw new Error("Identifiant médicament invalide");
-    }
-    if (Number(value) <= 0) {
-      throw new Error("Identifiant médicament invalide");
-    }
-    return true;
-  });
-
 // ─── Traitement (requis) ──────────────────────────────────────────────────────
 
 const validateTraitement = body("traitement")
