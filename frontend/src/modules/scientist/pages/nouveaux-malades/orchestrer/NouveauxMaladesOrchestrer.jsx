@@ -23,6 +23,7 @@ const NouveauxMaladesOrchestrer = () => {
     lastRefreshedAt,
     handleRefresh,
   } = useNouveauxMaladesDashboard();
+  console.log("Données formatées pour les charts :", chartData);  // Debug : vérifier le format des données utilisées par les charts
 
   if (loading && !chartData) {
     return (

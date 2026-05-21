@@ -150,9 +150,6 @@ const CustomTooltip = ({ active, payload, label }) => {
           {p.name} : <strong>{p.value}</strong>
         </p>
       ))}
-      <p style={{ margin: "6px 0 0", borderTop: "1px solid #f5f5f5", paddingTop: 4, color: "#8c8c8c", fontSize: 11 }}>
-        Cliquer pour voir le détail
-      </p>
     </div>
   );
 };

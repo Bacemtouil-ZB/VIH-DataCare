@@ -103,6 +103,7 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
     };
     fetchAll();
   }, [numero]);
+  console.log("Prescriptions chargées:", patient);
 
 
   const medecinDisplayName = useMemo(() => {
@@ -231,9 +232,7 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
     saving,
     showForm,
     showHistory,
-    isModifying: false, // À implémenter si nécessaire (edit mode)
-
-    // Données dérivées
+    isModifying: false, 
     medecinDisplayName,
 
     // Handlers d'affichage

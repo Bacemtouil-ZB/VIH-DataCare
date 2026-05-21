@@ -37,28 +37,69 @@ export const usePermission = (numero) => {
     load();
   }, [numero]);
 
-  const handleSave = async () => {
-    try {
-      setSaving(true);
-      setError(null);
-      setSuccessMsg(null);
+  // Remplace ton useEffect par celui-ci
+useEffect(() => {
+  if (!canViewViralLoad && !canViewCd4) {
+    setCurrentPermission(null);
+  }
+}, [canViewViralLoad, canViewCd4]);
 
-      const expiresAt = computeExpiresAt(dureeMonths);
-      const response = await setPermission({
-        numero,
-        canViewViralLoad,
-        canViewCd4,
-        expiresAt,
-      });
 
-      setCurrentPermission(response.data);
-      setSuccessMsg(MESSAGES.success);
-    } catch {
-      setError(MESSAGES.error);
-    } finally {
-      setSaving(false);
-    }
-  };
+  // const handleSave = async () => {
+  //   try {
+  //     setSaving(true);
+  //     setError(null);
+  //     setSuccessMsg(null);
+
+  //     const expiresAt = computeExpiresAt(dureeMonths);
+  //     const response = await setPermission({
+  //       numero,
+  //       canViewViralLoad,
+  //       canViewCd4,
+  //       expiresAt,
+  //     });
+
+  //     setCurrentPermission(response.data);
+  //     setSuccessMsg(MESSAGES.success);
+  //   } catch {
+  //     setError(MESSAGES.error);
+  //   } finally {
+  //     setSaving(false);
+  //   }
+  // };
+const handleSave = async () => {
+  // reset les 2 avant tout
+  setError(null);
+  setSuccessMsg(null);
+
+  if (!canViewViralLoad && !canViewCd4) {
+    setError("Veuillez sélectionner au moins une autorisation");
+    return;
+  }
+
+  try {
+    setSaving(true);
+
+    const expiresAt = computeExpiresAt(dureeMonths);
+    const response = await setPermission({
+      numero,
+      canViewViralLoad,
+      canViewCd4,
+      expiresAt,
+    });
+
+    setCurrentPermission(response.data);
+    setSuccessMsg(MESSAGES.success);
+
+    // ← auto clear après 3 secondes
+    setTimeout(() => setSuccessMsg(null), 3000);
+
+  } catch {
+    setError(MESSAGES.error);
+  } finally {
+    setSaving(false);
+  }
+};
 
   return {
     canViewViralLoad,
