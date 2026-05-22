@@ -1,41 +1,22 @@
-// cheked 15/04/2026
 import { MOBILE_ACCESS_STATUS } from "./mobileAccess.constants.js";
+import QRCode from "qrcode";
 
-// Determine account status from API response
 export const getAccountStatus = (data) => {
   if (!data.hasMobileAccount) return MOBILE_ACCESS_STATUS.NO_ACCOUNT;
   if (data.isActive) return MOBILE_ACCESS_STATUS.ACTIVE;
   return MOBILE_ACCESS_STATUS.INACTIVE;
 };
 
-// // Generate printable credentials content
-// export const buildPrintContent = (credentials) => {
-//   return `
-//     <html>
-//       <body style="font-family: Arial; padding: 40px;">
-//         <h2>VIHDataCare — Accès Application Mobile</h2>
-//         <hr/>
-//         <p><strong>Patient:</strong> ${credentials.patientName}</p>
-//         <p><strong>Identifiant:</strong> ${credentials.username}</p>
-//         <p><strong>Mot de passe:</strong> ${credentials.password}</p>
-//         <hr/>
-//         <p style="color: gray; font-size: 12px;">
-//           Changez votre mot de passe à la première connexion.
-//           Gardez ces informations confidentielles.
-//         </p>
-//       </body>
-//     </html>
-//   `;
-// };
-export const buildPrintContent = (credentials) => {
+export const buildPrintContent = (credentials, qrDataUrl) => {
   const date = new Date().toLocaleDateString('fr-TN', { day: '2-digit', month: 'long', year: 'numeric' });
 
   return `
     <html>
       <head>
-        <title> patient Accès </title>
+        <title>patient Accès</title>
         <style>
-          @page { margin: 15mm 20mm; }
+          @page { margin: 15mm 20mm; size: A4; }
+          @media print { head, header, footer { display: none !important; } }
           * { box-sizing: border-box; }
           body { font-family: Arial, sans-serif; color: #222; background: white; padding: 0; margin: 0; }
         </style>
@@ -97,8 +78,7 @@ export const buildPrintContent = (credentials) => {
 
             <div style="display:flex; flex-direction:column; align-items:center; gap:7px; min-width:110px;">
               <div style="width:100px; height:100px; border:1.5px solid #1a3a5c; border-radius:6px; display:flex; align-items:center; justify-content:center; background:#f8faff;">
-                <!-- REMPLACER PAR: <img src="URL_QR_CODE" width="88" height="88" /> -->
-                <div style="font-size:9px; color:#1a3a5c; text-align:center; padding:8px; line-height:1.5;">QR Code<br/>Application</div>
+                <img src="${qrDataUrl}" width="88" height="88" style="border-radius:4px; display:block;" />
               </div>
               <div style="font-size:9px; color:#999; text-align:center; width:100px; line-height:1.4;">Scanner pour télécharger l'application</div>
             </div>
@@ -110,15 +90,35 @@ export const buildPrintContent = (credentials) => {
   `;
 };
 
-// Print credentials using a hidden iframe (no new tab)
-export const printCredentials = (credentials) => {
-  const iframe = document.createElement("iframe");
-  iframe.style.cssText = "position:fixed; top:-9999px; left:-9999px; width:0; height:0; border:none;";
-  document.body.appendChild(iframe);
+export const printCredentials = async (credentials) => {
+  try {
+    const canvas = document.createElement("canvas");
+    document.body.appendChild(canvas); // ← ajoute au DOM d'abord
+    
+    await QRCode.toCanvas(canvas,
+      "https://expo.dev/accounts/zb9/projects/frontend-mobile/builds/8adb9b61-c468-4a40-9800-45e19730487e",
+      { width: 200, margin: 2 }
+    );
+    
+    const qrDataUrl = canvas.toDataURL("image/png");
+    document.body.removeChild(canvas); // ← retire du DOM
 
-  iframe.contentDocument.write(buildPrintContent(credentials));
-  iframe.contentDocument.close();
+    const iframe = document.createElement("iframe");
+    iframe.style.cssText = "position:fixed; top:-9999px; left:-9999px; width:0; height:0; border:none;";
+    document.body.appendChild(iframe);
 
-  iframe.contentWindow.onafterprint = () => document.body.removeChild(iframe);
-  iframe.contentWindow.print();
+    iframe.contentDocument.open();
+    iframe.contentDocument.write(buildPrintContent(credentials, qrDataUrl));
+    iframe.contentDocument.close();
+
+    // ← délai pour laisser le temps au iframe de charger
+    setTimeout(() => {
+      iframe.contentWindow.focus();
+      iframe.contentWindow.print();
+      iframe.contentWindow.onafterprint = () => document.body.removeChild(iframe);
+    }, 500);
+
+  } catch (err) {
+    console.error("QR generation error:", err);
+  }
 };
