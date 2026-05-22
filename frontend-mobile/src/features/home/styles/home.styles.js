@@ -9,6 +9,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingBottom: spacing.xxl,
+    paddingBottom: 150,
   },
 
   // Header

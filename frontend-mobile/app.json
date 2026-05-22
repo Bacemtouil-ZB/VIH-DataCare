@@ -6,11 +6,6 @@
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#1a6b4a"
-    },
     "ios": {
       "supportsTablet": true
     },
@@ -18,10 +13,8 @@
       "package": "com.zb9.vihdatacare",
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/android-icon-foreground.png",
-        "backgroundImage": "./assets/android-icon-background.png",
-        "monochromeImage": "./assets/android-icon-monochrome.png"
+        "foregroundImage": "./assets/icon.png",
+        "backgroundColor": "#1a6b4a"
       },
       "permissions": [
         "NOTIFICATIONS",
@@ -33,6 +26,18 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#1a6b4a",
+          "image": "./assets/icon.png",
+          "imageWidth": 200,
+          "dark": {
+            "backgroundColor": "#0d3d2a",
+            "image": "./assets/icon.png"
+          }
+        }
+      ],
       "expo-secure-store",
       "@react-native-community/datetimepicker",
       [

@@ -53,14 +53,9 @@ const RendezvousDetailScreen = () => {
     fetchDetail();
   }, [id, t]);
 
-  const handleGoBack = () => {
-    if (navigation.canGoBack()) {
-      navigation.goBack();
-    } else {
-      navigation.navigate("Rendezvous"); // écran de repli
-    }
-  };
-
+const handleGoBack = () => {
+  navigation.navigate("RendezvousList"); 
+};
   return (
     <SafeAreaView style={styles.detailContainer} edges={["top", "bottom"]}>
       <View style={styles.detailHeader}>
