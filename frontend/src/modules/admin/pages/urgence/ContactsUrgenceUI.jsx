@@ -69,13 +69,14 @@ export const ModalForm = ({
                   placeholder="+216 XX XXX XXX"
                   value={form.telephone}
                   onChange={handle("telephone")}
+                  
                 />
               </div>
               <FieldError error={errors.telephone} />
             </div>
 
             <div className="col-6">
-              <label className="urg-form-label">WhatsApp</label>
+              <label className="urg-form-label">WhatsApp <span style={{ color: "#ef4444" }}>*</span> </label>
               <div className="urg-input-icon">
                 <i className="bi bi-whatsapp"></i>
                 <input

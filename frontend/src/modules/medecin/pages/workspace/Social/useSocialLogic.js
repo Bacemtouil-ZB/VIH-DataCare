@@ -119,7 +119,6 @@ export function useSocialLogic() {
         setIsEditing(false); // ← seulement après succès
       }
     } catch (err) {
-      console.error("Erreur lors de l'enregistrement:", err);
       if (err?.errors && Array.isArray(err.errors)) {
         const formattedErrors = {};
 
