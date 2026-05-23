@@ -15,6 +15,7 @@
   padding: 16px;
   background: #ffffff;
   min-height: 100%;
+  
 }
 
 .audit--white {
@@ -36,6 +37,8 @@
 .auditContainer {
   max-width: 1200px;
   margin: 0 auto;
+  padding-bottom: 24px;
+  
 }
 
 .audit__card {
@@ -143,6 +146,7 @@
   height: 56vh;
   min-height: 360px;
   overflow: auto;
+  margin-bottom: 18px;
 }
 
 .auditTable table {

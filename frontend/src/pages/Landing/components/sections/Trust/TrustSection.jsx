@@ -2,7 +2,6 @@ import React from "react";
 import SectionShell from "../../ui/SectionShell.jsx";
 import SectionHeading from "../../ui/SectionHeading.jsx";
 import InfoCard from "../../ui/InfoCard.jsx";
-import trustMonitorImage from "../../../../../assets/images/landing-trust-monitor.jpg";
 
 const TRUST_ITEMS = [
   {
@@ -48,13 +47,10 @@ function TrustSection() {
           ))}
 
           <article className="overflow-hidden rounded-[1.4rem] border border-slate-200 bg-white shadow-sm ring-1 ring-slate-100">
-            <img
-              src={trustMonitorImage}
-              alt="Ecrans de suivi medical illustrant un environnement logiciel fiable et structure"
-              className="h-[130px] w-full object-cover"
-              loading="lazy"
-            />
-            <div className="p-4">
+            <div className="p-4 flex flex-col items-start">
+              <span className="inline-flex items-center justify-center rounded-md bg-[#E8F5E9] p-2 mb-2">
+                <i className="bi bi-eye text-lg text-[#1B5E20]" />
+              </span>
               <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-[#1B5E20]">
                 Vision systeme
               </p>

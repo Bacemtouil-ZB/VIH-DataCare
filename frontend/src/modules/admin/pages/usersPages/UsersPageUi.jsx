@@ -64,7 +64,7 @@ export default function UsersPageUI({
         <td>
           <Badge
             bg={user.isactivated ? "#198754" : "rgba(55, 54, 54, 0.25)"}
-            color="#0e0d0d"
+            color="#ffffff"
           >
             <i
               className={`bi ${
@@ -186,7 +186,7 @@ export default function UsersPageUI({
       {/* MODAL CHANGEMENT DE RÔLE */}
       <Modal show={showRoleModal} onHide={onCloseRoleModal} centered>
         <Modal.Header closeButton>
-          <Modal.Title>
+          <Modal.Title className="custom-title">
             Changer le rôle de {selectedUser?.prenom} {selectedUser?.nom}
           </Modal.Title>
         </Modal.Header>

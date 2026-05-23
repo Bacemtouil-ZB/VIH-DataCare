@@ -17,6 +17,7 @@ const useReminderStore = create((set, get) => ({
       const stored = await AsyncStorage.getItem(STORAGE_KEY);
       const reminders = stored ? JSON.parse(stored) : [];
       set({ reminders });
+      console.log('Reminders loaded:', reminders);
     } catch (error) {
       console.error('Failed to load reminders:', error);
     } finally {

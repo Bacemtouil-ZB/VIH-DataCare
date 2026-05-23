@@ -9,7 +9,7 @@ export const FORM_VIDE = {
 };
 
 export const TABLE_HEADERS = [
-  "#",
+  "n°",
   "Nom / Organisation",
   "Téléphone",
   "WhatsApp",

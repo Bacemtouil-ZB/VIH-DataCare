@@ -64,6 +64,12 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
+.custom-title {
+  font-family: 'Roboto', sans-serif;
+  font-size: 1.2rem;
+  font-weight: 300;
+  color: #333;
+}
 
 .stat-card strong {
   font-size: 1.05rem;
@@ -94,6 +100,9 @@
 .toolbar__search .form-control,
 .toolbar__select {
   border-color: var(--line);
+  height: 40px;
+  padding: 4px 10px;
+  line-height: 1.2;
 }
 
 .toolbar__search .form-control::placeholder {
@@ -110,7 +119,8 @@
   background: var(--card);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  overflow: hidden;
+  max-height: calc(100vh - 220px);
+  overflow: auto;
   box-shadow: var(--shadow);
 }
 

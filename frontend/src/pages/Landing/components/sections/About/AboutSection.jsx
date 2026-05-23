@@ -31,8 +31,8 @@ function AboutSection() {
       <div className="grid gap-4 lg:grid-cols-[minmax(0,0.95fr)_minmax(240px,0.65fr)] lg:items-start">
         <SectionHeading
           badge="A propos"
-          title="Suivi, protection, qualite"
-          description="Concu pour les equipes medicales."
+          title=" Suivi , protection  qualite "
+          description="Concu pour les equipes medicales"
         />
 
         <div className="rounded-[1.5rem] border border-[#C8E6C9]/70 bg-gradient-to-br from-[#F6FFF7] to-white p-4 shadow-sm">
