@@ -2,9 +2,7 @@ import { Card, Empty, Row, Col, Tabs } from "antd";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from "recharts";
 
-// ─────────────────────────────────────────────────────────────
-// Constantes : couleurs
-// ─────────────────────────────────────────────────────────────
+
 const GENDER_COLORS = {
   homme:      "#1890ff",
   femme:      "#eb2f96",
@@ -17,10 +15,6 @@ const GROUP_COLORS = {
   ps:          "#faad14",
   transgenres: "#722ed1",
 };
-
-// ─────────────────────────────────────────────────────────────
-// Helpers
-// ─────────────────────────────────────────────────────────────
 
 /**
  * Agrège les données de tous les groupes par tranche d'âge.
@@ -58,7 +52,7 @@ const AggregatedBar = ({ data = [] }) => (
         <CartesianGrid strokeDasharray="3 3" vertical={false} />
         <XAxis dataKey="tranche" tick={{ fontSize: 10 }} />
         <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
-        <Tooltip />
+        <Tooltip wrapperStyle={{ zIndex: 100, pointerEvents: "none" }} />
         <Legend wrapperStyle={{ fontSize: 10 }} />
         <Bar dataKey="hsh"         name="HSH"         fill={GROUP_COLORS.hsh}         radius={[2, 2, 0, 0]} />
         <Bar dataKey="udi"         name="UDI"         fill={GROUP_COLORS.udi}         radius={[2, 2, 0, 0]} />
@@ -96,7 +90,7 @@ const DetailBar = ({ data = [], hideSex = false }) => (
         <CartesianGrid strokeDasharray="3 3" vertical={false} />
         <XAxis dataKey="tranche" tick={{ fontSize: 10 }} />
         <YAxis allowDecimals={false} tick={{ fontSize: 10 }} />
-        <Tooltip content={hideSex ? <TooltipTotal /> : undefined} />
+        <Tooltip content={hideSex ? <TooltipTotal /> : undefined} wrapperStyle={{ zIndex: 100, pointerEvents: "none" }} />
         <Legend wrapperStyle={{ fontSize: 10 }} />
         <Bar dataKey="homme"      name="Hommes"      fill={GENDER_COLORS.homme}      radius={[2, 2, 0, 0]} />
         <Bar dataKey="femme"      name="Femmes"      fill={GENDER_COLORS.femme}      radius={[2, 2, 0, 0]} />
@@ -167,7 +161,7 @@ const PopulationsClesChart = ({ data, loading }) => {
                     <Cell key={entry.name} fill={entry.fill} />
                   ))}
                 </Pie>
-                <Tooltip />
+                <Tooltip wrapperStyle={{ zIndex: 100, pointerEvents: "none" }} />
               </PieChart>
             </ResponsiveContainer>
           ) : (
