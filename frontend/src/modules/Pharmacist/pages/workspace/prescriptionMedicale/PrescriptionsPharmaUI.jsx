@@ -77,7 +77,7 @@ function PriseDateCell({ dateProchainePrise, dateEcart }) {
 // ── RDV cell ──────────────────────────────────────────────────
 function RdvCell({ rdv }) {
   if (!rdv?.date) {
-    return <span className="rdv-none">Aucun RDV</span>;
+    return <span className="rdv-none">Aucun</span>;
   }
   return <span className="rdv-date">{formatDateFr(rdv.date, "—")}</span>;
 }
@@ -164,7 +164,7 @@ export default function PrescriptionsUI({
               {/* Date naissance */}
               <td className="col-date">
                 {p.dateNaissance
-                  ? `- ${new Date(p.dateNaissance).toLocaleDateString("fr-FR")}`
+                  ? ` ${new Date(p.dateNaissance).toLocaleDateString("fr-FR")}`
                   : "—"}
               </td>
 

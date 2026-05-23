@@ -19,6 +19,10 @@
   margin-bottom: 14px;
 }
 
+.pcEditorSection {
+  margin-bottom: 24px;
+}
+
 /* ══════════════════════════════════════
    BUTTONS
    ══════════════════════════════════════ */
@@ -153,6 +157,10 @@
   justify-content: flex-end;
   gap: 8px;
   margin-top: 12px;
+}
+
+.pcHistorySection {
+  margin-top: 0;
 }
 
 /* ── Pagination ── */

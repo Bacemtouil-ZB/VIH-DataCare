@@ -72,7 +72,6 @@ export function useBilanExamenLogic(numero) {
     setEditingId(item.id);
     setFormData(extractBilanFields(item));
     setShowForm(true);
-    toast.info("Mode modification activé");
   };
 
   // ── Afficher le détail ────────────────────────────────────

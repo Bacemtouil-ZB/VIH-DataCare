@@ -82,7 +82,7 @@ export const loginUser = async (email, password) => {
   );
 
   if (!isActivated) {
-    throw new Error("Account is not activated");
+    throw new Error("Le compte est inactif,contactez l'administrateur");
   }
 
   // Générer un token JWT

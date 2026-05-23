@@ -33,6 +33,15 @@ import {
 function ChampResultat({ champ, value, onChange, disabled, error }) {
   const { label, type, unite, key } = champ;
   const isWide = type === "textarea";
+  const isNumeric = type === "number";
+
+  const handleNumericChange = (e) => {
+    const nextValue = e.target.value;
+
+    if (nextValue === "" || /^\d*([.,]\d*)?$/.test(nextValue)) {
+      onChange({ target: { value: nextValue } });
+    }
+  };
 
   const renderInput = () => {
     // Type "select" → 3 boutons radio inline : Négatif · Positif · NF
@@ -72,13 +81,15 @@ function ChampResultat({ champ, value, onChange, disabled, error }) {
     return (
       <div className="rb-input-unit">
         <Input
-          type={type}
+          type={isNumeric ? "text" : type}
           className={`form-control ${error ? "is-invalid" : ""}`}
           value={value}
-          onChange={onChange}
+          onChange={isNumeric ? handleNumericChange : onChange}
           placeholder="—"
           disabled={disabled}
-          min={type === "number" ? "0" : undefined}
+          inputMode={isNumeric ? "decimal" : undefined}
+          min={isNumeric ? "0" : undefined}
+          step={isNumeric ? "any" : undefined}
         />
         {unite && <span className="rb-unite">{unite}</span>}
       </div>
@@ -273,9 +284,6 @@ const SectionBilan = forwardRef((
 
 SectionBilan.displayName = "SectionBilan";
 
-// ─────────────────────────────────────────────────────────────────────────────
-// ACTIONS PAR LIGNE DE BILAN (tableau historique)
-// ─────────────────────────────────────────────────────────────────────────────
 function BilanRowActions({ bilan, resultat, onSaisir, onModifier, onDetail }) {
   if (!resultat) {
     return (

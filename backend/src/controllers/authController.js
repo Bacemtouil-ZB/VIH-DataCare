@@ -6,40 +6,10 @@ import {
 } from "../services/authService.js";
 import { logAction } from "../services/auditService.js";
 
-
-// Register controller
-export const registerController = async (req, res) => {
-  const { nom, prenom, email, password } = req.body;
-
-  try {
-    const user = await registerUser(nom, prenom, email, password);
-
-    res.status(201).json({
-      success: true,
-      message:
-        "Utilisateur cree avec succes. Votre compte doit etre active par un administrateur avant de pouvoir vous connecter.",
-      user: {
-        id: user.id,
-        nom: user.nom,
-        prenom: user.prenom,
-        email: user.email,
-        role: user.role,
-        isActivated: user.isactivated,
-      },
-    });
-  } catch (error) {
-    console.error("Register error:", error.message);
-    res.status(400).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
-
 // Login controller
 export const loginController = async (req, res) => {
   const { email, password } = req.body;
-  if (!email || !password) {   //or
+  if (!email || !password) {
     return res.status(400).json({
       message: "Email et mot de passe sont requis",
     });
@@ -48,8 +18,8 @@ export const loginController = async (req, res) => {
   try {
     const { user, token } = await loginUser(email, password);
 
-    res.cookie("token", token, { // save token in httpOnly cookie for security
-      httpOnly: true, 
+    res.cookie("token", token, {
+      httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "Strict" : "Lax",
       maxAge: 8 * 60 * 60 * 1000,
@@ -89,7 +59,36 @@ export const loginController = async (req, res) => {
     });
 
     console.error("Login error:", error.message);
-    res.status(401).json({ message: "Email ou mot de passe incorrect" });
+    res.status(401).json({ message: error.message });
+  }
+};
+
+// Register controller
+export const registerController = async (req, res) => {
+  const { nom, prenom, email, password, role } = req.body;
+
+  try {
+    const user = await registerUser(nom, prenom, email, password, role);
+
+    res.status(201).json({
+      success: true,
+      message:
+        "Utilisateur cree avec succes. Votre compte doit etre active par un administrateur avant de pouvoir vous connecter.",
+      user: {
+        id: user.id,
+        nom: user.nom,
+        prenom: user.prenom,
+        email: user.email,
+        role: user.role,
+        isActivated: user.isactivated,
+      },
+    });
+  } catch (error) {
+    console.error("Register error:", error.message);
+    res.status(400).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
 
@@ -157,7 +156,6 @@ export const logoutController = async (req, res) => {
   }
 };
 
-// get me used to get the current logged in user's info
 export const getMe = (req, res) => {
   res.json({
     success: true,

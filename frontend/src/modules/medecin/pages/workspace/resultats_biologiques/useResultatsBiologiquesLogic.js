@@ -24,6 +24,32 @@ import {
 
 const GENOTYPAGE_DRAFT_STORAGE_KEY = "resultatsBiologiquesGenotypage";
 
+const normalizeDecimalValue = (value) => {
+  if (value === "" || value === null || value === undefined) return value;
+  if (typeof value === "number") return value;
+  if (typeof value !== "string") return value;
+
+  return value.trim().replace(",", ".");
+};
+
+const normalizeNumericFields = (data, champsActifs) => {
+  const normalized = { ...data };
+
+  champsActifs.forEach((section) => {
+    section.champs.forEach(({ key, type }) => {
+      if (type === "number") {
+        const normalizedValue = normalizeDecimalValue(normalized[key]);
+        normalized[key] =
+          normalizedValue === "" || normalizedValue === null || normalizedValue === undefined
+            ? normalizedValue
+            : Number(normalizedValue);
+      }
+    });
+  });
+
+  return normalized;
+};
+
 
 const validateNumericFields = (formData, champsActifs, nfSections) => {
   const errors = {};
@@ -35,10 +61,12 @@ const validateNumericFields = (formData, champsActifs, nfSections) => {
     // ── Validation champs numériques ──────────────────────────────────────
     section.champs.forEach(({ key, type, label }) => {
       if (type === "number") {
-        const value = formData[key];
+        const value = normalizeDecimalValue(formData[key]);
 
         if (value === "" || value === null || value === undefined) {
           errors[key] = `${label} est obligatoire`;
+        } else if (Number.isNaN(Number(value))) {
+          errors[key] = `${label} doit etre un nombre valide`;
         } else if (Number(value) < 0) {
           errors[key] = `${label} ne peut pas être négatif`;
         }
@@ -278,7 +306,9 @@ const handleSubmit = async (e) => {
       }
     });
 
-    const normalizedData = normalizeDates(formData); // ← normalisation ici
+    const normalizedData = normalizeDates(
+      normalizeNumericFields(cleanedData, champsActifs)
+    );
 
     if (isModifying && editingId) {
       const res = await updateResultat(editingId, normalizedData); // ← appliqué

@@ -35,52 +35,53 @@ export default function ConclusionUI({
 
   return (
     <>
-      
-      <HistoriqueAccordeon
-        title="Historique des conclusions"
-        count={total}
-        open={histOpen}
-        onToggle={onToggleHist}
-        contentClassName="bg-white p-3"
-      >
-        {histLoading ? (
-          <Spinner />
-        ) : (
-          <>
-            <HistoriqueTable
-              headers={TABLE_HEADERS}
-              items={conclusions}
-              renderRow={renderRow}
-              emptyMessage="Aucune conclusion enregistrée pour ce patient."
-            />
-            {conclusions.length > 0 && (
-              <div className="pcPager">
-                <div className="text-muted small">
-                  Page {page} sur {totalPages} — {total} résultat{total > 1 ? "s" : ""}
+      <div className="pcHistorySection">
+        <HistoriqueAccordeon
+          title="Historique des conclusions"
+          count={total}
+          open={histOpen}
+          onToggle={onToggleHist}
+          contentClassName="bg-white p-3"
+        >
+          {histLoading ? (
+            <Spinner />
+          ) : (
+            <>
+              <HistoriqueTable
+                headers={TABLE_HEADERS}
+                items={conclusions}
+                renderRow={renderRow}
+                emptyMessage="Aucune conclusion enregistrée pour ce patient."
+              />
+              {conclusions.length > 0 && (
+                <div className="pcPager">
+                  <div className="text-muted small">
+                    Page {page} sur {totalPages} — {total} résultat{total > 1 ? "s" : ""}
+                  </div>
+                  <div className="d-flex gap-2">
+                    <button
+                      className="pcBtnPager"
+                      type="button"
+                      onClick={() => setOffset(Math.max(0, offset - limit))}
+                      disabled={page <= 1}
+                    >
+                      <i className="bi bi-chevron-left me-1" /> Précédent
+                    </button>
+                    <button
+                      className="pcBtnPager"
+                      type="button"
+                      onClick={() => setOffset(offset + limit)}
+                      disabled={page >= totalPages}
+                    >
+                      Suivant <i className="bi bi-chevron-right ms-1" />
+                    </button>
+                  </div>
                 </div>
-                <div className="d-flex gap-2">
-                  <button
-                    className="pcBtnPager"
-                    type="button"
-                    onClick={() => setOffset(Math.max(0, offset - limit))}
-                    disabled={page <= 1}
-                  >
-                    <i className="bi bi-chevron-left me-1" /> Précédent
-                  </button>
-                  <button
-                    className="pcBtnPager"
-                    type="button"
-                    onClick={() => setOffset(offset + limit)}
-                    disabled={page >= totalPages}
-                  >
-                    Suivant <i className="bi bi-chevron-right ms-1" />
-                  </button>
-                </div>
-              </div>
-            )}
-          </>
-        )}
-      </HistoriqueAccordeon>
+              )}
+            </>
+          )}
+        </HistoriqueAccordeon>
+      </div>
 
       {previewItem && (
         <div className="pcModalOverlay" onClick={() => setPreviewItem(null)}>
