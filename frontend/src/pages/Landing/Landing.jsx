@@ -14,7 +14,7 @@ function Landing() {
       <div className="pointer-events-none absolute -right-24 bottom-32 h-80 w-80 rounded-full bg-[#C8E6C9]/50 blur-[110px]" />
 
       <LandingNavbar />
-      <div className="relative z-10 pt-24 md:pt-28">
+      <div className="relative z-8 pt-20 md:pt-15">
         <Hero />
         <div className="mx-auto h-px w-[min(72rem,92%)] bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
         <AboutSection />
