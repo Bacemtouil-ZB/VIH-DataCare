@@ -332,6 +332,9 @@
   border: 1px solid #dee2e6;
   border-radius: 6px;
   box-shadow: 0 4px 16px rgba(0,0,0,.12);
+  overflow: visible;
+  padding-bottom: 16px;
+  box-sizing: border-box;
 }
 
 .pe-ms-search {
@@ -368,22 +371,53 @@
 /* ── Footer du dropdown avec bouton Valider/Fermer ── */
 .pe-ms-footer {
   border-top: 1px solid #f0f0f0;
-  padding: 8px 12px;
+  padding: 10px 12px 0;
   display: flex;
   justify-content: flex-end;
+  background: #fff;
+  position: relative;
+  z-index: 2;
 }
 
 .pe-ms-close-btn {
-  background: #1a5c35;
-  color: #fff;
-  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+  background: #1a5c35 !important;
+  color: #fff !important;
+  border: 1px solid #1a5c35 !important;
   border-radius: 5px;
   padding: 5px 16px;
   font-size: 0.82rem;
   font-weight: 600;
   cursor: pointer;
+  opacity: 1 !important;
+  visibility: visible !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  appearance: none;
+  -webkit-appearance: none;
+  transform: none !important;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease !important;
+  position: relative;
+  z-index: 3;
+  pointer-events: auto !important;
+  filter: none !important;
+  margin-bottom: 0;
 }
-.pe-ms-close-btn:hover { background: #14472a; }
+.pe-ms-close-btn:hover,
+.pe-ms-close-btn:focus,
+.pe-ms-close-btn:active {
+  background: #14472a !important;
+  color: #fff !important;
+  transform: none !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  position: relative;
+  z-index: 3;
+  pointer-events: auto !important;
+  filter: none !important;
+}
 
 
 /* ── Pills traitement dans la table et le détail ── */

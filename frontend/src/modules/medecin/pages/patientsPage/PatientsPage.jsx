@@ -145,8 +145,10 @@ export default function PatientsPage() {
       {/* ── Toolbar ── */}
       <div className="patients-toolbar">
         <div className="toolbar-left">
-          <PageTitle title="Patients" className="mb-0" />
-          <span className="count">{filteredPatients.length} resultats</span>
+          <PageTitle
+            title={` ${filteredPatients.length} patient${filteredPatients.length > 1 ? "s" : ""}`}
+            className="mb-0"
+          />
         </div>
 
         <div className="patients-controls-row">

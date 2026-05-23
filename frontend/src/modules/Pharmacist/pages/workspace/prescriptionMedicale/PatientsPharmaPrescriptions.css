@@ -105,8 +105,8 @@
 .col-traitement{ width: 165px; min-width: 165px; }
 .col-prise     { width: 140px; min-width: 140px; }
 .col-statut    { width: 180px; min-width: 180px; }
-.col-rdv       { width: 110px; min-width: 110px; }
-.col-action    { width: 230px; min-width: 230px; text-align: center; white-space: nowrap; }
+.col-rdv       { width: 85px;  min-width: 85px;  }
+.col-action    { width: 255px; min-width: 255px; text-align: center; white-space: nowrap; }
 
 .prescriptions-page-container .table thead th.col-date,
 .prescriptions-page-container .table tbody td.col-date {
@@ -154,15 +154,15 @@
   align-items: center;
   justify-content: flex-end;
   flex-wrap: nowrap;
-  gap: 0.28rem !important;
+  gap: 0.35rem !important;
 }
 
 .col-action .btn,
 .col-action .ec-action-btn {
   width: auto;
-  min-height: 28px;
-  padding: 0.22rem 0.42rem;
-  font-size: 0.7rem;
+  min-height: 30px;
+  padding: 0.28rem 0.55rem;
+  font-size: 0.75rem;
   font-weight: 600;
   line-height: 1.1;
   border-radius: 8px;
@@ -294,6 +294,6 @@
   }
 
   .col-action {
-    min-width: 230px;
+    min-width: 255px;
   }
 }

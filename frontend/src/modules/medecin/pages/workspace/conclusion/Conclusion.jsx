@@ -25,17 +25,18 @@ export default function PatientConclusionPage() {
       </div>
 
       {logic.showEditor && (
-        <ConclusionEditor
-          editorRef={logic.editorRef}
-          editorValue={logic.editorValue}
-          onChange={logic.handleEditorChange}          
-          isEditing={!!logic.editingId}
-          saving={logic.saving}
-          onSave={logic.onSave}
-          onCancel={logic.cancelEditor}
-          error={logic.errors.content}                 
-
-        />
+        <div className="pcEditorSection">
+          <ConclusionEditor
+            editorRef={logic.editorRef}
+            editorValue={logic.editorValue}
+            onChange={logic.handleEditorChange}
+            isEditing={!!logic.editingId}
+            saving={logic.saving}
+            onSave={logic.onSave}
+            onCancel={logic.cancelEditor}
+            error={logic.errors.content}
+          />
+        </div>
       )}
 
       <ConclusionUI
