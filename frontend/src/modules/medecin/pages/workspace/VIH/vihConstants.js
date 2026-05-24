@@ -19,7 +19,6 @@ export const MODES_CONTAMINATION = [
   "Mère/Nouveau-né",
   "Toxicomanie IV",
   "Transfusion",
-  "Hémophilie",
   "Inconnu",
   "Autre",
 ];

@@ -13,7 +13,7 @@ export default function AntecedentsLayout() {
 useEffect(() => {
   if (!numero) return;
   getPatientByNumero(numero)
-    .then((data) => setGender(data?.patient?.gender || null)) // ← data.patient.gender
+    .then((data) => setGender(data?.patient?.gender || null)) // data.patient.gender
     .catch(() => setGender(null))
     .finally(() => setLoading(false));
 }, [numero]);
