@@ -92,8 +92,6 @@ import {
 // ── Mettre à jour les infos personnelles ──────────────────────────────────────
 export const updateMyProfileController = async (req, res) => {
   const { nom, prenom, email } = req.body;
-  console.log("req.body:", req.body);
-  console.log("req.user:", req.user);
 
   try {
     if (!nom || !prenom || !email) {

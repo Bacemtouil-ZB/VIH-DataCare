@@ -8,7 +8,7 @@ const Sidebar = () => {
   const { user } = useAuth();
   const userRole = user?.role ;
   
-  // Configuration des liens par rÃ´le
+  // Configuration des liens par role utilisateur
   const roleLinks = {
     admin: [
       {

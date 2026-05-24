@@ -75,7 +75,11 @@ export const useInfoForm = (user) => {
         setSavedForm(form);
         toast.success(TOAST_MESSAGES.INFO_SUCCESS);
       } catch (err) {
-        toast.error(err.message || TOAST_MESSAGES.INFO_ERROR);
+        if (err.response?.data?.message) {
+          console.error(err.response.data.message);
+        } else {
+          toast.error("mail deja utilise !");
+        }
       } finally {
         setLoading(false);
       }
