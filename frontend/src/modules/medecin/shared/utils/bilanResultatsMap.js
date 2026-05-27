@@ -75,7 +75,7 @@ export const BILAN_RESULTATS_MAP = {
     label: "Sérologie VHA",
     hasDate: true,
     champs: [
-      { key: "vha_igg", label: "VHA IgG", type: "select", options: ["Positif", "Négatif"] },
+      { key: "vha_igg", label: "VHA IgG", type: "select", options: ["Positif", "Négatif"] ,noNF: true},
     ],
   },
 
@@ -83,7 +83,7 @@ export const BILAN_RESULTATS_MAP = {
     label: "Sérologie VHC",
     hasDate: true,
     champs: [
-      { key: "vhc", label: "VHC", type: "select", options: ["Positif", "Négatif"] },
+      { key: "vhc", label: "VHC", type: "select", options: ["Positif", "Négatif"], noNF: true },
     ],
   },
 
@@ -118,7 +118,7 @@ export const BILAN_RESULTATS_MAP = {
     label: "Sérologie leishmaniose",
     hasDate: true,
     champs: [
-      { key: "leishmania_ac", label: "Leishmaniose", type: "select", options: ["Positif", "Négatif"] },
+      { key: "leishmania_ac", label: "Leishmaniose", type: "select", options: ["Positif", "Négatif"] ,noNF: true},
     ],
   },
 
@@ -133,8 +133,8 @@ export const BILAN_RESULTATS_MAP = {
         key: "idr_tuberculine",
         label: "IDR à la tuberculine",
         type: "select",
-        options: ["Négatif", "Positif"],
-      },
+        options: ["Négatif", "Positif"],noNF: true
+      }
     ],
   },
 
@@ -156,10 +156,10 @@ export const BILAN_RESULTATS_MAP = {
     label: "Radio thorax",
     hasDate: true,
     champs: [
-      { key: "radio_resultat", label: "Résultat radio", type: "select", options: ["Positif", "Négatif"] },
+      { key: "radio_resultat", label: "Résultat radio", type: "select", options: ["Positif", "Négatif"] ,noNF: true},
       { key: "radio_description", label: "Description", type: "textarea" },
     ],
-  },
+  }
 };
 
 export const getChampActifs = (bilanPrescrit) => {
