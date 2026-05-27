@@ -44,27 +44,51 @@ function ChampResultat({ champ, value, onChange, disabled, error }) {
   };
 
   const renderInput = () => {
-    // Type "select" → 3 boutons radio inline : Négatif · Positif · NF
+    // // Type "select" → 3 boutons radio inline : Négatif · Positif · NF
+    // if (type === "select") {
+    //   return (
+    //     <div className="rb-radio-group">
+    //       {RADIO_OPTIONS_3.map((opt) => (
+    //         <label key={opt.value} className="rb-radio-item">
+    //           <input
+    //             type="radio"
+    //             name={key}
+    //             value={opt.value}
+    //             checked={value === opt.value}
+    //             onChange={onChange}
+    //             disabled={disabled}
+    //             className="rb-radio-input"
+    //           />
+    //           <span className="rb-radio-label">{opt.label}</span>
+    //         </label>
+    //       ))}
+    //     </div>
+    //   );
+    // }
     if (type === "select") {
-      return (
-        <div className="rb-radio-group">
-          {RADIO_OPTIONS_3.map((opt) => (
-            <label key={opt.value} className="rb-radio-item">
-              <input
-                type="radio"
-                name={key}
-                value={opt.value}
-                checked={value === opt.value}
-                onChange={onChange}
-                disabled={disabled}
-                className="rb-radio-input"
-              />
-              <span className="rb-radio-label">{opt.label}</span>
-            </label>
-          ))}
-        </div>
-      );
-    }
+  const radioOptions = champ.noNF   // used to check if this champ should have the "Non Fait" option or not
+    ? RADIO_OPTIONS_3.filter((opt) => opt.value !== "NF")
+    : RADIO_OPTIONS_3;
+
+  return (
+    <div className="rb-radio-group">
+      {radioOptions.map((opt) => (
+        <label key={opt.value} className="rb-radio-item">
+          <input
+            type="radio"
+            name={key}
+            value={opt.value}
+            checked={value === opt.value}
+            onChange={onChange}
+            disabled={disabled}
+            className="rb-radio-input"
+          />
+          <span className="rb-radio-label">{opt.label}</span>
+        </label>
+      ))}
+    </div>
+  );
+}
 
     if (type === "textarea") {
       return (
@@ -128,8 +152,8 @@ const SectionBilan = forwardRef((
     disabled,
     errors,
     onChooseGenotypageFile,
-    isNF,        // ← true si cette section est marquée Non Fait
-    onToggleNF,  // ← callback pour basculer NF
+    isNF,        //  true si cette section est marquée Non Fait
+    onToggleNF,  //  callback pour basculer NF
   },
   ref
 ) => {

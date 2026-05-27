@@ -150,8 +150,7 @@ export default function useGyneco(numero) {
       setIsEditing(false);
       toast.success(isNewRecord ? "Antécédent gynécologique créé." : "Antécédent gynécologique enregistré.");
     } catch (err) {
-      // Erreurs de validation champ-par-champ → FieldError (pas de toast)
-      // Les erreurs croisées gestite/parite/avortement remontent sur leur champ respectif
+      
       if (err?.errors && Array.isArray(err.errors)) {
         const formattedErrors = {};
         err.errors.forEach((e) => {

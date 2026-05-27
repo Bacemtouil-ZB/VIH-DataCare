@@ -21,28 +21,28 @@ import { requireFemme } from "../middlewares/checkPatientGender.js";
 // ─────────────────────────────────────────────
 router.get("/family/:patientId",    protect,authorizeMedecin, getFamilyController);
 router.post("/family/:patientId",   protect,authorizeMedecin, validateFamily, createFamilyController);
-router.put("/family/:patientId",    protect,authorizeMedecin, updateFamilyController);
+router.put("/family/:patientId",    protect,authorizeMedecin, validateFamily, updateFamilyController);
 
 // ─────────────────────────────────────────────
 // Antécédent Gynécologique
 // ─────────────────────────────────────────────
 router.get("/gyneco/:patientId",  protect, authorizeMedecin, requireFemme, getGynecoController);
 router.post("/gyneco/:patientId", protect, authorizeMedecin, requireFemme, validateGyneco, createGynecoController);
-router.put("/gyneco/:patientId",  protect, authorizeMedecin, requireFemme, updateGynecoController);
+router.put("/gyneco/:patientId",  protect, authorizeMedecin, requireFemme, validateGyneco, updateGynecoController);
 
 // ─────────────────────────────────────────────
 // Habitudes de Vie
 // ─────────────────────────────────────────────
 router.get("/habitudes-vie/:patientId",   protect,authorizeMedecin, getHabitudesVieController);
 router.post("/habitudes-vie/:patientId",  protect,authorizeMedecin, validateHabitudesVie, createHabitudesVieController);
-router.put("/habitudes-vie/:patientId",   protect,authorizeMedecin, updateHabitudesVieController);
+router.put("/habitudes-vie/:patientId",   protect,authorizeMedecin, validateHabitudesVie, updateHabitudesVieController);
 
 // ─────────────────────────────────────────────
 // Antécédent Médical
 // ─────────────────────────────────────────────
 router.get("/medical/:patientId",   protect,authorizeMedecin, getMedicalController);
 router.post("/medical/:patientId",  protect,authorizeMedecin, validateMedical, createMedicalController);
-router.put("/medical/:patientId",   protect,authorizeMedecin, updateMedicalController);
+router.put("/medical/:patientId",   protect,authorizeMedecin, validateMedical, updateMedicalController);
 
 // ─────────────────────────────────────────────
 // Antécédent Chirurgical
@@ -57,7 +57,7 @@ router.delete("/surgical/:id",      protect,authorizeMedecin, deleteSurgicalCont
 // ─────────────────────────────────────────────
 router.get("/therapeutic/:patientId",   protect,authorizeMedecin, getTherapeuticController);
 router.post("/therapeutic/:patientId",  protect,authorizeMedecin, validateTherapeutic, createTherapeuticController);
-router.put("/therapeutic/:patientId",   protect,authorizeMedecin,  updateTherapeuticController);
+router.put("/therapeutic/:patientId",   protect,authorizeMedecin, validateTherapeutic, updateTherapeuticController);
 
 // ─────────────────────────────────────────────
 // Antécédent TPE/PrEP

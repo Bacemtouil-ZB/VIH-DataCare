@@ -5,7 +5,7 @@ export const requireFemme = async (req, res, next) => {
   
   try {
     const result = await pool.query(
-      "SELECT gender FROM patients WHERE numero = $1", // ← WHERE numero au lieu de WHERE id
+      "SELECT gender FROM patients WHERE numero = $1", //  WHERE numero au lieu de WHERE id
       [patientId]
     );
     

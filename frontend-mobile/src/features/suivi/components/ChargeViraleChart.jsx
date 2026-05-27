@@ -102,10 +102,8 @@ const ChargeViraleChart = ({ data = [], periodes = [], authorized = true }) => {
           <Text style={styles.title}>{t("suivi.chartViralTitle")}</Text>
           <Text style={styles.unit}>{t("suivi.chartViralUnit")}</Text>
         </View>
-        <View style={styles.accessDenied}>
-          <Text style={styles.accessDeniedIcon}>{"\uD83D\uDD12"}</Text>
-          <Text style={styles.accessDeniedTitle}>{t("suivi.accessDeniedTitle")}</Text>
-          <Text style={styles.accessDeniedText}>{t("suivi.accessDeniedMessage")}</Text>
+        <View style={styles.empty}>
+          <Text style={styles.emptyText}>{t("suivi.noData")}</Text>
         </View>
       </View>
     );

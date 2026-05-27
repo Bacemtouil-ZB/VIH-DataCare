@@ -144,7 +144,7 @@ accessRestrictedMessage: "L'accès à vos données biologiques n'a pas encore é
       inProgress: "en cours",
       accessDeniedTitle: "Acces non autorise",
       accessDeniedMessage:
-        "Votre medecin n'a pas encore active l'acces a vos donnees de charge virale.",
+        "Aucune donnee disponible",
       loadError: "Erreur lors du chargement des graphiques",
     },
     errors: {
@@ -291,7 +291,7 @@ accessRestrictedMessage: "L'accès à vos données biologiques n'a pas encore é
         `حد غير قابل للكشف ${threshold} نسخة/مل`,
       inProgress: "جار",
       accessDeniedTitle: "وصول غير مصرح",
-      accessDeniedMessage: "لم يفعل طبيبك بعد الوصول الى بيانات الحمل الفيروسي.",
+      accessDeniedMessage: "لا توجد بيانات متاحة",
       loadError: "حدث خطا اثناء تحميل الرسوم البيانية",
     },
     errors: {

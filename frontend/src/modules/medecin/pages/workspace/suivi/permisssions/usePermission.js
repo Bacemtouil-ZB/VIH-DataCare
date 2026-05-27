@@ -68,19 +68,20 @@ useEffect(() => {
   //   }
   // };
 const handleSave = async () => {
-  // reset les 2 avant tout
   setError(null);
   setSuccessMsg(null);
-
-  if (!canViewViralLoad && !canViewCd4) {
-    setError("Veuillez sélectionner au moins une autorisation");
-    return;
-  }
 
   try {
     setSaving(true);
 
-    const expiresAt = computeExpiresAt(dureeMonths);
+    const hasPermission =
+      canViewViralLoad || canViewCd4;
+
+    const expiresAt = hasPermission
+      ? computeExpiresAt(dureeMonths)
+      : new Date().toISOString(); 
+      // fallback required because backend NOT NULL
+
     const response = await setPermission({
       numero,
       canViewViralLoad,
@@ -89,12 +90,17 @@ const handleSave = async () => {
     });
 
     setCurrentPermission(response.data);
-    setSuccessMsg(MESSAGES.success);
 
-    // ← auto clear après 3 secondes
+    setSuccessMsg(
+      hasPermission
+        ? MESSAGES.success
+        : "Permissions désactivées"
+    );
+
     setTimeout(() => setSuccessMsg(null), 3000);
 
-  } catch {
+  } catch (err) {
+    console.error(err);
     setError(MESSAGES.error);
   } finally {
     setSaving(false);

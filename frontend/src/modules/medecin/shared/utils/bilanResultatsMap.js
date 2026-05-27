@@ -6,7 +6,7 @@ export const BILAN_RESULTATS_MAP = {
     label: "Sérologie VIH",
     hasDate: true,
     champs: [
-      { key: "serologie_vih", label: "Charge virale", type: "select", options: ["Positif", "Négatif"] },
+      { key: "serologie_vih", label: "Charge virale", type: "select", options: ["Positif", "Négatif"] ,noNF: true },
     ],
   },
 
