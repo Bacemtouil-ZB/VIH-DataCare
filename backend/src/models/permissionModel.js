@@ -7,7 +7,7 @@ const ensurePermissionTable = async () => {
 
   await pool.query(`
     CREATE TABLE IF NOT EXISTS permissions (
-      id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+      id                  SERIAL PRIMARY KEY , 
       patient_id          INTEGER NOT NULL REFERENCES patients(id) ON DELETE CASCADE,
       medecin_id          INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       can_view_viral_load BOOLEAN DEFAULT false,
@@ -21,7 +21,7 @@ const ensurePermissionTable = async () => {
   permissionTableReady = true;
 };
 
-// numero → patientId
+// numero => patientId
 export const findPatientIdByNumero = async (numero) => {
   const result = await pool.query(
     `SELECT id FROM patients WHERE numero = $1`,

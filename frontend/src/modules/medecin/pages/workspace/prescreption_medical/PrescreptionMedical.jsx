@@ -41,10 +41,10 @@ export default function PrescriptionMedical() {
       // Champs de formulaire
       field={logic.field}
       setMedicamentIds={logic.setMedicamentIds}
-      setSearchTerm={logic.setSearchTerm}
+      setStatusFilter={logic.setStatusFilter}
       setSearchDate={logic.setSearchDate}
       // Props dynamiques
-      searchTerm={logic.searchTerm}
+      statusFilter={logic.statusFilter}
       searchDate={logic.searchDate}
     />
   );

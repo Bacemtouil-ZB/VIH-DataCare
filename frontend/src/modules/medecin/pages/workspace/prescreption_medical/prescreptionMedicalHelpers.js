@@ -18,29 +18,21 @@ export function filterStockItems(items, searchTerm) {
 }
 
 /**
- * Filtre les prescriptions selon un terme et une date
+ * Filtre les prescriptions selon un statut et une date
  */
 export function filterPrescriptions(
   prescriptions,
-  searchTerm,
+  statusFilter,
   searchDate
 ) {
-  const q = searchTerm.trim().toLowerCase();
+  const statusQ = statusFilter.trim();
   const dateQ = searchDate.trim();
 
   return prescriptions.filter((p) => {
-    // les noms viennent depuis medicaments[]
-    const nomsStr = (p.medicaments || [])
-      .map((m) => m.medicament_nom_snapshot || "")
-      .join(", ")
-      .toLowerCase();
+    // Filtrer par statut
+    if (statusQ && p.statut !== statusQ) return false;
 
-    const matchesText =
-      !q ||
-      nomsStr.includes(q) ||
-      (p.statut || "").toLowerCase().includes(q);
-
-    if (!matchesText) return false;
+    // Filtrer par date
     if (!dateQ) return true;
 
     const raw = p.date || p.created_at || "";

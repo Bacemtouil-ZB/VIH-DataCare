@@ -12,17 +12,29 @@ export const INITIAL_FORM = {
 export const STATUT_LABELS = {
   envoyee: "Envoyee",
   delivree: "Delivree",
+  modifie: "Modifiee",
+  non_validee: "Non Validee",
 };
 
 export const STATUT_STYLE = {
   envoyee: { bg: "#fef9c3", color: "#854d0e" },
   delivree: { bg: "#dcfce7", color: "#166534" },
+  modifie: { bg: "#fce7f3", color: "#831843" },
+  non_validee: { bg: "#fee2e2", color: "#991b1b" },
 };
+
+export const STATUS_FILTER_OPTIONS = [
+  { value: "", label: "Tous les statuts" },
+  { value: "envoyee", label: "Envoyee" },
+  { value: "delivree", label: "Delivree" },
+  { value: "modifie", label: "Modifiee" },
+  { value: "non_validee", label: "Non Validee" },
+];
 
 // ── Textes UI ─────────────────────────────────────────────────
 export const UI_TEXTS = {
   pageTitle: "Prescription medicale",
-  searchPlaceholder: "Rechercher un medicament, ..",
+  statusFilterPlaceholder: "Filtrer par statut...",
   addButton: "Ajouter",
   cancelButton: "Annuler",
   createLabel: "Nouvelle prescription medicale",

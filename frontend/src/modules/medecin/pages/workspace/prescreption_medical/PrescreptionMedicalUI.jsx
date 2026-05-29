@@ -21,7 +21,7 @@ import {
   getMultiSelectFooterLabel,
   isOutOfStock,
 } from "./prescreptionMedicalHelpers";
-import { STATUT_LABELS, UI_TEXTS, FORM_FIELDS, TABLE_HEADERS } from "./prescreptionMedicalConstants";
+import { STATUT_LABELS, UI_TEXTS, FORM_FIELDS, TABLE_HEADERS, STATUS_FILTER_OPTIONS } from "./prescreptionMedicalConstants";
 import ConfirmPrescriptionModal from "../../../components/UI/Confirmprescriptionmodal";
 import { useMedicationMultiSelect } from "./usePrescreptionMedicalLogic";
 
@@ -187,11 +187,11 @@ export default function PrescreptionMedicalUI({
   // Champs de formulaire
   field,
   setMedicamentIds,
-  setSearchTerm,
+  setStatusFilter,
   setSearchDate,
 
   // Props dynamiques
-  searchTerm,
+  statusFilter,
   searchDate,
 }) {
   const today = toInputDate(new Date());
@@ -203,12 +203,17 @@ export default function PrescreptionMedicalUI({
       {/* ── Toolbar ── */}
       <div className="pe-toolbar">
         <div className="pe-toolbar-left">
-          <SearchBar
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder={UI_TEXTS.searchPlaceholder}
-            wrapperClassName="pe-search"
-          />
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="pe-status-filter"
+          >
+            {STATUS_FILTER_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
           <SearchBar
             type="date"
             value={searchDate}

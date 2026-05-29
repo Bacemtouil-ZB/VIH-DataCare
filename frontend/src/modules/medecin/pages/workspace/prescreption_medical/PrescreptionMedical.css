@@ -1,7 +1,7 @@
 ﻿/* ── PrescriptionExamens.css ─────────────────────────────────── */
 
 .pe-page {
-  padding: 1.25rem 1.5rem;
+  padding: 1rem 1.5rem;
 }
 
 /* Toolbar */
@@ -9,26 +9,61 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
 .pe-toolbar-left {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 8px;
   flex: 1;
 }
 
+.pe-toolbar-left .pe-search {
+  margin: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.pe-toolbar-left .form-label {
+  margin: 0 !important;
+}
+
+.pe-toolbar-left .sh-searchbar-input {
+  height: 34px !important;
+}
+
+.pe-status-filter {
+  padding: 6px 10px !important;
+  font-size: 13px !important;
+  border-radius: 4px !important;
+  border: 1px solid #e5e7eb !important;
+  background: #ffffff !important;
+  color: #111827 !important;
+  min-width: 140px;
+  max-width: 160px;
+  height: 34px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.pe-status-filter:focus {
+  border-color: #1a7a5e !important;
+  outline: none;
+}
+
+.pe-status-filter:hover {
+  border-color: #d1d5db !important;
+}
 
 .pe-search {
   margin-bottom: 0 !important;
-  flex: O;
+  flex: 0;
   max-width: 280px;
 }
 
 .pe-search-date {
-  max-width: 190px;
+  max-width: 140px;
 }
 
 /* Formulaire — grille 2 colonnes */

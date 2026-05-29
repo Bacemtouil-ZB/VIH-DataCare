@@ -77,7 +77,7 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
   const [showHistory, setShowHistory] = useState(true);
   const [detailItem, setDetailItem] = useState(null);
   const [formData, setFormData] = useState(INITIAL_FORM);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
   const [searchDate, setSearchDate] = useState("");
   const [confirmationModal, setConfirmationModal] = useState(null);
   const [patient, setPatient] = useState(null);
@@ -112,8 +112,8 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
   }, [currentUser]);
 
   const filtered = useMemo(
-    () => filterPrescriptions(prescriptions, searchTerm, searchDate),
-    [prescriptions, searchTerm, searchDate]
+    () => filterPrescriptions(prescriptions, statusFilter, searchDate),
+    [prescriptions, statusFilter, searchDate]
   );
 
 //maj un champ précis
@@ -242,7 +242,7 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
 
     // Handlers de formulaire
     field,
-    setSearchTerm,
+    setStatusFilter,
     setSearchDate,
     setMedicamentIds,
     openCreate,
@@ -255,7 +255,7 @@ export function usePrescreptionMedicalLogic(numero, currentUser) {
     handleValidate,
 
     // Propriétés dynamiques
-    searchTerm,
+    statusFilter,
     searchDate,
   };
 }

@@ -111,7 +111,7 @@ export const printCredentials = async (credentials) => {
     iframe.contentDocument.write(buildPrintContent(credentials, qrDataUrl));
     iframe.contentDocument.close();
 
-    // ← délai pour laisser le temps au iframe de charger
+    //  délai pour laisser le temps au iframe de charger
     setTimeout(() => {
       iframe.contentWindow.focus();
       iframe.contentWindow.print();
