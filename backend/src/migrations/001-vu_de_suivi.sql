@@ -3,28 +3,28 @@ CREATE OR REPLACE VIEW vue_periodes_arv AS
 WITH prescriptions_ordonnees AS (
   SELECT
     pm.patient_id,
-    pm.date                          AS date_prescription,
-    pm.id                            AS prescription_id,
+    pm.date  AS date_prescription,
+    pm.id   AS prescription_id,
     -- Regrouper tous les médicaments de l'ordonnance
     STRING_AGG(
       COALESCE(sm.composition, pl.medicament_nom_snapshot),
       ' + ' ORDER BY pl.id
-    )                                AS nom_medicament,
+    )  AS nom_medicament,
     STRING_AGG(
       COALESCE(sm.code, pl.medicament_nom_snapshot),
       ' + ' ORDER BY pl.id
-    )                                AS code_medicament,
+    )  AS code_medicament,
     -- Pour détecter un vrai changement de protocole
     STRING_AGG(
       pl.medicament_id::TEXT,
       ',' ORDER BY pl.medicament_id
-    )                                AS combo_ids,
+    )  AS combo_ids,
     LAG(
       STRING_AGG(pl.medicament_id::TEXT, ',' ORDER BY pl.medicament_id)
     ) OVER (
       PARTITION BY pm.patient_id
       ORDER BY pm.date, pm.id
-    )                                AS combo_precedent
+    )     AS combo_precedent
   FROM prescription_medicale pm
   INNER JOIN prescription_lignes   pl ON pl.prescription_id = pm.id
   LEFT  JOIN stock_medicaments     sm ON sm.id = pl.medicament_id
@@ -178,7 +178,7 @@ SELECT
   rb.ldl,
   rb.triglycerides,
 
-  -- ── sérologie VHB ────────────────────────────────────────────────────
+  -- ── sérologie VHB ──ed──────────────────────────────────────────────────
   rb.vhb_ag_hbs,
   rb.vhb_ac_hbs,
   rb.vhb_ac_hbc,

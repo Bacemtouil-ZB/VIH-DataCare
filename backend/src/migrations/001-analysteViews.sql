@@ -6,7 +6,7 @@ CREATE OR REPLACE VIEW v_dim_temps AS
 SELECT DISTINCT
   EXTRACT(YEAR    FROM date_vih_positif)::int AS annee,
   EXTRACT(QUARTER FROM date_vih_positif)::int AS trimestre,
-  EXTRACT(MONTH   FROM date_vih_positif)::int AS mois
+  EXTRACT(MONTH   FROM date_vih_positif)::int AS mois 
 FROM vih
 WHERE date_vih_positif IS NOT NULL;
 
@@ -294,7 +294,7 @@ cv_controle AS (
   WHERE rb.charge_virale_valeur IS NOT NULL
     AND rb.date_charge_virale_vih IS NOT NULL
     AND pp.date_debut_arv <= NOW() - INTERVAL '6 months'
-    AND rb.date_charge_virale_vih >= pp.date_debut_arv + INTERVAL '6 months'  -- CORRECTION
+    AND rb.date_charge_virale_vih >= pp.date_debut_arv + INTERVAL '6 months' 
   ORDER BY rb.patient_id, rb.date_charge_virale_vih DESC
 )
 

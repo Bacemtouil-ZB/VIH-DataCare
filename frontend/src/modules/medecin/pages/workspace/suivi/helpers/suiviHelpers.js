@@ -1,4 +1,3 @@
-
 import {
   SEUILS_CD4,
   SEUILS_CV,
@@ -7,6 +6,7 @@ import {
   COULEURS_STATUT,
   COULEURS_STATUT_HEX,
   COULEURS_ARV,
+  COULEUR_HBV_INCONNU,
 } from "../constants/suiviConstants";
 
 // ── Formatage dates ───────────────────────────────────────────
@@ -40,7 +40,7 @@ export const formatCD4 = (valeur) => {
   return valeur.toLocaleString("fr-FR");
 };
 
-export const formatCreatinine = (valeur) => {  
+export const formatCreatinine = (valeur) => {
   if (valeur === null || valeur === undefined) return "---";
   const num = parseFloat(valeur);
   if (isNaN(num)) return "---";
@@ -69,11 +69,25 @@ export const getCVAntColor = (valeur) => {
   return COULEURS_STATUT[STATUTS.BON];
 };
 
-export const getCreatinineAntColor = (valeur) => { 
+export const getCVHexColor = (valeur) => {
+  if (valeur === null || valeur === undefined) return COULEURS_STATUT_HEX[STATUTS.INCONNU];
+  if (valeur > SEUILS_CV.DETECTABLE)   return COULEURS_STATUT_HEX[STATUTS.CRITIQUE];
+  if (valeur > SEUILS_CV.INDETECTABLE) return COULEURS_STATUT_HEX[STATUTS.MOYEN];
+  return COULEURS_STATUT_HEX[STATUTS.BON];
+};
+
+export const getCreatinineAntColor = (valeur) => {
   if (valeur === null || valeur === undefined) return COULEURS_STATUT[STATUTS.INCONNU];
   if (valeur > SEUILS_CREATININE.CRITIQUE) return COULEURS_STATUT[STATUTS.CRITIQUE];
   if (valeur > SEUILS_CREATININE.NORMAL)   return COULEURS_STATUT[STATUTS.MOYEN];
   return COULEURS_STATUT[STATUTS.BON];
+};
+
+export const getCreatinineHexColor = (valeur) => {
+  if (valeur === null || valeur === undefined) return COULEURS_STATUT_HEX[STATUTS.INCONNU];
+  if (valeur > SEUILS_CREATININE.CRITIQUE) return COULEURS_STATUT_HEX[STATUTS.CRITIQUE];
+  if (valeur > SEUILS_CREATININE.NORMAL)   return COULEURS_STATUT_HEX[STATUTS.MOYEN];
+  return COULEURS_STATUT_HEX[STATUTS.BON];
 };
 
 // ── Données Recharts ──────────────────────────────────────────
@@ -99,7 +113,6 @@ export const getCouleurARV = (index) => {
 
 export const formatTooltipCV = (valeur) => {
   if (valeur === null || valeur === undefined) return "---";
-  //if (valeur < SEUILS_CV.INDETECTABLE) return "Indétectable";
   return `${valeur.toLocaleString("fr-FR")} copies/mL`;
 };
 
@@ -118,23 +131,33 @@ export const getDureeTraitement = (dateDebut, dateFin) => {
   return `${mois} mois`;
 };
 
-// cards de serologie VHB
-import { COULEUR_HBV_INCONNU } from "../constants/suiviConstants";
-
-
+// ── Sérologie VHB ─────────────────────────────────────────────
 export const getHBVHexColor = (marqueur, valeur) => {
   if (!valeur) return COULEUR_HBV_INCONNU;
 
   const normalizedValue = String(valeur).trim().toLowerCase();
+  const isPositif = normalizedValue === "positif";
+  const isNegatif = normalizedValue === "négatif" || normalizedValue === "negatif";
 
-  if (normalizedValue === "positif") return "#DC2626";
-  if (normalizedValue === "négatif" || normalizedValue === "negatif") {
-    return "#16A34A";
+  if (!isPositif && !isNegatif) return COULEUR_HBV_INCONNU;
+
+  switch (marqueur) {
+    case "ag_hbs":
+      // Positif = infection active → danger
+      return isPositif ? "#DC2626" : "#16A34A";
+
+    case "anti_hbs":
+      // Positif = immunisé → bon
+      return isPositif ? "#16A34A" : "#DC2626";
+
+    case "anti_hbc":
+      // Positif = contact antérieur → ambigu
+      return isPositif ? "#D97706" : "#16A34A";
+
+    default:
+      return COULEUR_HBV_INCONNU;
   }
-
-  return COULEUR_HBV_INCONNU;
 };
-
 
 export const getHBVSignification = (marqueur, valeur) => {
   if (!valeur) return "Non déterminé";
@@ -153,5 +176,47 @@ export const getHBVSignification = (marqueur, valeur) => {
     },
   };
   return map[marqueur]?.[valeur] ?? "Non déterminé";
-
 };
+
+
+
+/*
+ *
+ * CD4 (cellules/mm³)
+ * ───────────────────────────────────────────────────────────────
+ * 🔴 CRITIQUE  — CD4 < SEUILS_CD4.CRITIQUE          → Immunodépression sévère
+ * 🟠 MOYEN     — CD4 ≤ SEUILS_CD4.MOYEN_MAX          → Immunodépression modérée
+ * 🟢 BON       — CD4 > SEUILS_CD4.MOYEN_MAX          → Immunité satisfaisante
+ * ⚫ INCONNU   — Valeur absente                       → Donnée non disponible
+ *
+ * CHARGE VIRALE (copies/mL)
+ * ───────────────────────────────────────────────────────────────
+ * 🔴 CRITIQUE  — CV > SEUILS_CV.DETECTABLE           → Charge virale élevée, échec virologique
+ * 🟠 MOYEN     — CV > SEUILS_CV.INDETECTABLE         → Charge virale faible mais détectable
+ * 🟢 BON       — CV ≤ SEUILS_CV.INDETECTABLE         → Charge virale indétectable, succès thérapeutique
+ * ⚫ INCONNU   — Valeur absente                       → Donnée non disponible
+ *
+ * CRÉATININE (µmol/L)
+ * ───────────────────────────────────────────────────────────────
+ * 🔴 CRITIQUE  — Créatinine > SEUILS_CREATININE.CRITIQUE → Insuffisance rénale sévère
+ * 🟠 MOYEN     — Créatinine > SEUILS_CREATININE.NORMAL   → Fonction rénale altérée
+ * 🟢 BON       — Créatinine ≤ SEUILS_CREATININE.NORMAL   → Fonction rénale normale
+ * ⚫ INCONNU   — Valeur absente                           → Donnée non disponible
+ *
+ * SÉROLOGIE VHB
+ * ───────────────────────────────────────────────────────────────
+ * AgHBs  (Antigène de surface)
+ *   🔴 Positif → Infection active en cours               → Danger
+ *   🟢 Négatif → Pas d'infection active                  → Normal
+ *
+ * Anti-HBs  (Anticorps anti-surface)
+ *   🟢 Positif → Immunisé (vaccination ou guérison)      → Protégé
+ *   🔴 Négatif → Non immunisé                            → Vaccination à envisager
+ *
+ * Anti-HBc  (Anticorps anti-core)
+ *   🟠 Positif → Contact antérieur avec le VHB           → Surveillance requise
+ *   🟢 Négatif → Jamais exposé au VHB                    → Normal
+ *
+ * ⚫ INCONNU  — Valeur absente ou non reconnue            → Donnée non disponible
+ * ═══════════════════════════════════════════════════════════════
+ */

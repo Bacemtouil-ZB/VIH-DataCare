@@ -1,8 +1,3 @@
-// ============================================================
-//  useSuiviKpis.js
-//  Hook Zone 1 — KPIs + alertes
-//  Fetch : dernier CD4, dernière CV, créatinine, statut global
-// ============================================================
 
 import { useState, useEffect } from "react";
 import { getKpisSuivi } from "../../../../services/suiviBiologiqueService";
@@ -10,7 +5,7 @@ import { getKpisSuivi } from "../../../../services/suiviBiologiqueService";
 const INITIAL_STATE = {
   cd4:        null,
   cv:         null,
-  creatinine: null,  // ✅ remplace hemoglobine
+  creatinine: null,  
   statut:     null,
   alertes:    [],
 };
